@@ -20,10 +20,8 @@
 package org.eclipse.tractusx.edc.policy.cx.precedence;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
 
@@ -31,29 +29,16 @@ import java.util.Set;
  * This is a placeholder constraint function for Precedence. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class PrecedenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class PrecedenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
     public static final String PRECEDENCE_LITERAL = "Precedence";
-    public static final Set<String> VALID_VALUES = Set.of(
-            "cx.precedence.contractreference:1",
-            "cx.precedence.rcagreement:1"
-    );
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.EQ
-    );
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-        return rightValue instanceof String && VALID_VALUES.contains(rightValue.toString().toLowerCase())
-                ? Result.success()
-                : Result.failure("Invalid right-operand: this constraint only allows the following right-operands: %s, but received '%s'."
-                .formatted(String.join(", ", VALID_VALUES), rightValue));
+    public PrecedenceConstraintFunction() {
+        super(
+                Set.of(Operator.EQ),
+                Set.of(
+                        "cx.precedence.contractreference:1",
+                        "cx.precedence.rcagreement:1"
+                )
+        );
     }
 }

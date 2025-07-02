@@ -1,4 +1,4 @@
-/*
+/********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,9 +15,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.warrenty;
+package org.eclipse.tractusx.edc.policy.cx.common;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
@@ -27,15 +27,12 @@ import org.eclipse.edc.spi.result.Result;
 
 import java.util.Set;
 
-/**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
- * the validation of policies to be strictly enforced.
- */
-public class WarrantyDurationMonthsConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    public static final String WARRANTY = "WarrantyDurationMonths";
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.EQ
-    );
+public abstract class BaseConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+    private final Set<Operator> allowedOperators;
+
+    protected BaseConstraintFunction(Set<Operator> allowedOperators) {
+        this.allowedOperators = allowedOperators;
+    }
 
     @Override
     public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
@@ -44,12 +41,12 @@ public class WarrantyDurationMonthsConstraintFunction<C extends ParticipantAgent
 
     @Override
     public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
+        if (!allowedOperators.contains(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'."
+                    .formatted(allowedOperators, operator));
         }
-
-        return rightValue instanceof Integer
-                ? Result.success()
-                : Result.failure("Invalid right-operand: this constraint only allows integer values.");
+        return validateRightOperand(rightValue);
     }
+
+    protected abstract Result<Void> validateRightOperand(Object rightValue);
 }

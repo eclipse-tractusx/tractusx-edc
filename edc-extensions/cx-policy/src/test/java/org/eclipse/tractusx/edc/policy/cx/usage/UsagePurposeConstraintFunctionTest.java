@@ -25,6 +25,8 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -36,7 +38,26 @@ class UsagePurposeConstraintFunctionTest {
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "usagePurpose", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.IS_ALL_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null, context)).isTrue();
     }
 
+    @Test
+    void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
+        var result = function.validate(Operator.IS_ALL_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenInvalidOperator_thenFailure() {
+        var result = function.validate(Operator.EQ, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid operator");
+    }
+
+    @Test
+    void validate_whenInvalidValue_thenFailure() {
+        var result = function.validate(Operator.IS_ALL_OF, List.of("BPNL00000000001A"), null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    }
 }

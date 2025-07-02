@@ -20,10 +20,8 @@
 package org.eclipse.tractusx.edc.policy.cx.datausage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
 
@@ -31,27 +29,13 @@ import java.util.Set;
  * This is a placeholder constraint function for DataUsageEndDate. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class DataUsageEndDateConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class DataUsageEndDateConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
     public static final String DATA_USAGE_END_DATE = "DataUsageEndDate";
-    public static final String PATTERN = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$";
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.EQ
-    );
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        var pattern = java.util.regex.Pattern.compile(PATTERN);
-        return rightValue instanceof String s && pattern.matcher(s).matches() ?
-                Result.success() :
-                Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(PATTERN));
+    public DataUsageEndDateConstraintFunction() {
+        super(
+                Set.of(Operator.EQ),
+                "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$"
+        );
     }
 }

@@ -47,7 +47,7 @@ class WarrantyConstraintFunctionTest {
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF,"cx.warranty.none:1", null);
+        var result = function.validate(Operator.IS_ANY_OF, "cx.warranty.none:1", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }

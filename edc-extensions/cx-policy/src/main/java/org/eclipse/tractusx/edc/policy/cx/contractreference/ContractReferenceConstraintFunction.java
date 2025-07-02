@@ -20,10 +20,8 @@
 package org.eclipse.tractusx.edc.policy.cx.contractreference;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
 
@@ -32,24 +30,13 @@ import java.util.Set;
  * This is a placeholder constraint function for ContractReference. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
     public static final String CONTRACT_REFERENCE = "ContractReference";
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.IS_ALL_OF
-    );
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule){
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-        return rightValue instanceof String ?
-                Result.success() :
-                Result.failure("Invalid right-operand: this constraint only allows string right-operands.");
+    public ContractReferenceConstraintFunction() {
+        super(
+                Set.of(Operator.IS_ALL_OF),
+                "[\\s\\S]+"
+        );
     }
 }

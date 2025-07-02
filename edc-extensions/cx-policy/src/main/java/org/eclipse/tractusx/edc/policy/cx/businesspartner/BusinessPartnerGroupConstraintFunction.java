@@ -20,48 +20,23 @@
 package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
-import java.util.List;
 import java.util.Set;
 
 /**
  * This is a placeholder constraint function for BusinessPartnerGroup. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
     public static final String BUSINESS_PARTNER_GROUP = "BusinessPartnerGroup";
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.IS_ANY_OF,
-            Operator.IS_NONE_OF
-    );
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        if (!(rightValue instanceof List<?> list) || list.isEmpty()) {
-            return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
-        }
-
-        var distinctValues = list.stream()
-                .filter(String.class::isInstance)
-                .map(String.class::cast)
-                .distinct()
-                .count();
-
-        return distinctValues == list.size() ?
-                Result.success() :
-                Result.failure("Invalid right-operand: list must contain only unique values");
+    public BusinessPartnerGroupConstraintFunction() {
+        super(
+                Set.of(Operator.IS_ANY_OF, Operator.IS_NONE_OF),
+                "[\\s\\S]+",
+                true
+        );
     }
 }

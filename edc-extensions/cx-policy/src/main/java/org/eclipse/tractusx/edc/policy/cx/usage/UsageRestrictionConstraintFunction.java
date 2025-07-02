@@ -20,54 +20,29 @@
 package org.eclipse.tractusx.edc.policy.cx.usage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
-import java.util.List;
 import java.util.Set;
 
 /**
  * This is a placeholder constraint function for UsageRestriction. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
     public static final String USAGE_RESTRICTION = "UsageRestriction";
-    private static final Set<String> ALLOWED_VALUES = Set.of(
-            "cx.thirdparty.forbidden:1",
-            "cx.manipulation.forbidden:1",
-            "cx.derivations.forbidden:1",
-            "cx.extraordinaryanalytics.forbidden:1",
-            "cx.dataProviderremoval.forbidden:1"
-    );
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.IS_ALL_OF
-    );
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule){
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        if (!(rightValue instanceof List<?> list) || list.isEmpty()) {
-            return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
-        }
-
-        var invalidValues = list.stream()
-                .filter(String.class::isInstance)
-                .map(String.class::cast)
-                .filter(value -> !ALLOWED_VALUES.contains(value))
-                .toList();
-
-        return invalidValues.isEmpty() ?
-                Result.success() :
-                Result.failure("Invalid right-operand: the following values are not allowed: %s".formatted(invalidValues));
+    public UsageRestrictionConstraintFunction() {
+        super(
+                Set.of(Operator.IS_ALL_OF),
+                Set.of(
+                        "cx.thirdparty.forbidden:1",
+                        "cx.manipulation.forbidden:1",
+                        "cx.derivations.forbidden:1",
+                        "cx.extraordinaryanalytics.forbidden:1",
+                        "cx.dataProviderremoval.forbidden:1"
+                ),
+                true
+        );
     }
 }

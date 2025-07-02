@@ -20,57 +20,32 @@
 package org.eclipse.tractusx.edc.policy.cx.managedlegalentity;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
-import java.util.List;
 import java.util.Set;
 
 /**
  * This is a placeholder constraint function for ManagedLegalEntityRegion. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ManagedLegalEntityRegionConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class ManagedLegalEntityRegionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
     public static final String AFFILIATES_REGION = "ManagedLegalEntityRegion";
-    public static final Set<String> POSSIBLE_VALUES = Set.of(
-            "cx.region.all:1",
-            "cx.region.europe:1",
-            "cx.region.northAmerica:1",
-            "cx.region.southAmerica:1",
-            "cx.region.africa:1",
-            "cx.region.asia:1",
-            "cx.region.oceania:1",
-            "cx.region.antarctica:1"
-    );
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.IS_ANY_OF
-    );
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        if (!(rightValue instanceof List<?> list) || list.isEmpty()) {
-            return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
-        }
-
-        var invalidValues = list.stream()
-                .filter(String.class::isInstance)
-                .map(String.class::cast)
-                .filter(value -> !POSSIBLE_VALUES.contains(value))
-                .toList();
-
-        return invalidValues.isEmpty() ?
-                Result.success() :
-                Result.failure("Invalid right-operand: the following values are not allowed: %s".formatted(invalidValues));
+    public ManagedLegalEntityRegionConstraintFunction() {
+        super(
+                Set.of(Operator.IS_ANY_OF),
+                Set.of(
+                        "cx.region.all:1",
+                        "cx.region.europe:1",
+                        "cx.region.northAmerica:1",
+                        "cx.region.southAmerica:1",
+                        "cx.region.africa:1",
+                        "cx.region.asia:1",
+                        "cx.region.oceania:1",
+                        "cx.region.antarctica:1"
+                ),
+                true
+        );
     }
 }
