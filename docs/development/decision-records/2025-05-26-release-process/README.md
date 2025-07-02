@@ -7,13 +7,16 @@ use separate `bugfix/*` branches for release purposes, nor will we cut releases 
 there will be no distinction between bugfix and release branches — everything intended for a release must reside in a 
 `release/*` branch. 
 
-Additionally, draft releases workflow input version will be selected from predefined options (`RC` as the default, 
-`bugfix`, or `official release`) instead of entering a free-text.
+__Additionally, draft releases workflow input version will be selected from predefined options (`RC` as the default, 
+`bugfix`, or `official release`) instead of entering a free-text.__
 
 ## Rationale
 
-We want to follow the release process of providing release candidates (RC) for testing and then promoting the
-successfully tested candidate to an official release. Simultaneously, we maintain a separate bugfix release process that
+We want to follow the release process of providing release candidates (RC) for testing and then promoting
+
+Lars: this does not mean automation, it is a convention that the one doing the release considers, but it is a mindful decision, where to start the release
+
+the successfully tested candidate to an official release. Simultaneously, we maintain a separate bugfix release process that
 needs to be harmonized by providing some cohesion  — whether a bugfix, RC, or the official version, the release will
 start from a `release/*` branch.
 
@@ -55,27 +58,27 @@ release/X.Y.1 ->> release/X.Y.1 : Release "X.Y.1"
 
 1. **`draft-release.yaml`**
 - **Trigger:** Should be started from the `HEAD` of `main` for an RC and the `HEAD` of a `release/*` 
-   branch to promote an RC to an official version or to create a bugfix
+   branch to promote an RC to an official version or to create a bugfix --> Should is ok, must is not!
 - **Inputs:**
-    1) Choice that will include `RC` (default), `bugfix`, `official release`.
+    1) Choice that will include `RC` (default), `bugfix`, `official release`. --> Should be the version string
 - **Actions:**
     1) Identify branch name basing on the input.
     2) Create a new `release/*` branch.
     3) Run `generate-and-check-dependencies` action in strict mode.
-    4) Run automated tests.  
-    5) Bump the project version in `gradle.properties` and the Helm chart version based on the workflow’s input parameter.
+    4) Run automated tests.  --> Can be postponed, but final things, like tags or main branch changes can only be done, if all release checks are through
+    5) Bump the project version in `gradle.properties` and the Helm chart version based on the workflow’s input parameter. --> I would phrase this as Adapt the release version to the final version information, not bumping it
 
 2. **`release.yml`**
 - **Trigger:** Should be started from the `HEAD` of a `release/*` branch.
 - **Actions:**
-    1) Publish artifacts (Maven, Docker, Helm).
+    1) Publish artifacts (Maven, Docker, Helm). --> Run tests first and abort if not successful
     2) Create the Git tag for this release.
     3) Generate a GitHub Release entry.
     4) Publish the OpenAPI UI spec to GitHub Pages.
     5) Update release notes with a link to the Allure test-report.
     6) If the `official release`  released, make a changes on `main`:
        - Bump the project version in `gradle.properties` to the X.Y+1.0-SNAPSHOT.
-       - Update the Helm chart version with the X.Y.0 version.
+       - Update the Helm chart version with the X.Y.0 version. --> Isn't that X.Y+1.0?
 
 3. **New Action:** `update-version-and-charts`
     - Automates version update in `gradle.properties` and `Chart.yaml`
