@@ -27,7 +27,7 @@ import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator
 @Extension(FinitenessEvaluatorExtension.NAME)
 public class FinitenessEvaluatorExtension implements ServiceExtension {
 
-    public static final String NAME = "Finiteness Evaluator";
+    protected static final String NAME = "Finiteness Evaluator";
 
     @Override
     public String name() {

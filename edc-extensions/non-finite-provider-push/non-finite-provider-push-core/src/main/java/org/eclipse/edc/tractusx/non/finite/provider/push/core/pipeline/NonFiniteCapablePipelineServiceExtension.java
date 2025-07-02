@@ -30,7 +30,7 @@ import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator
 @Extension(NonFiniteCapablePipelineServiceExtension.NAME)
 public class NonFiniteCapablePipelineServiceExtension implements ServiceExtension {
 
-    public static final String NAME = "Non Finite Capable Pipeline Service";
+    protected static final String NAME = "Non Finite Capable Pipeline Service";
 
     @Inject
     private Monitor monitor;
