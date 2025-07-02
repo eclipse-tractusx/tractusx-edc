@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.edc.tractusx.non.finite.provider.push.core.pipeline;
+package org.eclipse.tractusx.edc.non.finite.provider.push.core.pipeline;
 
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
