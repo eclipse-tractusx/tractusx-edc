@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       DOCKER_HUB_TOKEN: ${{ steps.secret-presence.outputs.DOCKER_HUB_TOKEN }}
-      HAS_OSSRH: ${{ steps.secret-presence.outputs.HAS_OSSRH }}
+      HAS_MVNCRED: ${{ steps.secret-presence.outputs.HAS_MVNCRED }}
       HAS_SWAGGER: ${{ steps.secret-presence.outputs.HAS_SWAGGER }}
     steps:
       - name: Check whether secrets exist
@@ -57,8 +57,8 @@ jobs:
           [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "DOCKER_HUB_TOKEN=true" >> $GITHUB_OUTPUT
           [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] &&
           [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] &&
-          [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] &&
-          [ ! -z "${{ secrets.ORG_OSSRH_PASSWORD }}" ]  && echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}" ] &&
+          [ ! -z "${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}" ]  && echo "HAS_MVNCRED=true" >> $GITHUB_OUTPUT
           [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  &&
           [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true" >> $GITHUB_OUTPUT
           exit 0
@@ -100,10 +100,8 @@ jobs:
     permissions:
       contents: read
     needs: [ secret-presence, determine-version ]
-
-    # do not run on PR branches, do not run on releases
     if: |
-      needs.secret-presence.outputs.HAS_OSSRH
+      needs.secret-presence.outputs.HAS_MVNCRED
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets: inherit
     with:
