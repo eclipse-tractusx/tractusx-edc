@@ -1,5 +1,4 @@
 #################################################################################
-#  Copyright (c) 2025 Cofinity-X GmbH
 #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
 #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
 #
@@ -28,6 +27,7 @@ on:
   workflow_dispatch:
 
 jobs:
+
   test-prepare:
     runs-on: ubuntu-latest
     steps:
