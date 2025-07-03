@@ -51,8 +51,11 @@ jobs:
         id: update-main
         run: |
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ steps.release-version.outputs.RELEASE_VERSION }}" 
-          if [[ $PATCH == '0' && -z $SNAPSHOT ]]; then
+          if [[ $PATCH == '0' && -z $SNAPSHOT ]]; 
+          then
             echo "update_main_branch_version=true" >> $GITHUB_OUTPUT
+          else 
+            echo "update_main_branch_version=false" >> $GITHUB_OUTPUT
           fi
       - name: Validations
         run: |
@@ -213,7 +216,7 @@ jobs:
     name: "Main Branch Update"
     runs-on: ubuntu-latest
     needs: [ validation, github-release ]
-    if: needs.validation.outputs.update_main_branch_version
+    if: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
     permissions:
       contents: write
       packages: write
