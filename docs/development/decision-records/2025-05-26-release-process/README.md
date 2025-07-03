@@ -56,9 +56,9 @@ release/X.Y.1 ->> release/X.Y.1 : Release "X.Y.1"
     1) Version - free text field
 - **Actions:**
     1) Validation
-       - forbid to create a release candidate from the official release or another release candidate
-       - forbid to create a bugfix from the release candidate or main
-       - forbid to create an official release from the bugfix or another official release
+       - Release Candidate: Can be created from a commit in main or a tagged release candidate commit.
+       - Bugfix: Can only be created from a tagged release bugfix or official release commit.
+       - Official Release: Can only be created from a tagged release candidate commit.
     2) Create a new `release/*` branch.
     3) Run `generate-and-check-dependencies` action in strict mode.
     4) Update in the created release/* branch the project version in `gradle.properties` and the Helm chart version based 
