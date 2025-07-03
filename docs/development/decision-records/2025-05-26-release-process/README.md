@@ -61,7 +61,8 @@ release/X.Y.1 ->> release/X.Y.1 : Release "X.Y.1"
        - forbid to create an official release from the bugfix or another official release
     2) Create a new `release/*` branch.
     3) Run `generate-and-check-dependencies` action in strict mode.
-    4) Update the project version in `gradle.properties` and the Helm chart version based on the workflow’s input parameter.
+    4) Update in the created release/* branch the project version in `gradle.properties` and the Helm chart version based 
+      on the workflow’s input parameter.
 
 2. **`release.yml`**
 - **Trigger:** Must be started from the `HEAD` of a `release/*` branch.
@@ -72,7 +73,7 @@ release/X.Y.1 ->> release/X.Y.1 : Release "X.Y.1"
     4) Generate a GitHub Release entry.
     5) Publish the OpenAPI UI spec to GitHub Pages.
     6) Update release notes with a link to the Allure test-report.
-    7) If the `official release`  released, make a changes on `main`:
+    7) If an `official release` is done, update versions on `main` branch:
        - Update the project version in `gradle.properties` to the X.Y+1.0-SNAPSHOT.
        - Update the Helm chart version with the X.Y+1.0 version.
 
