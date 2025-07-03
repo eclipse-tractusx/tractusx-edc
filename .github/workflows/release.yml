@@ -29,12 +29,17 @@ on:
 
 
 jobs:
+  run-all-tests:
+    name: "Run All Tests"
+    uses: ./.github/workflows/run-all-tests.yml
   # Gate
   validation:
     name: "Workflow Validation"
+    needs: [ run-all-tests ]
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+      update_main_branch_version: ${{ steps.update-main.outputs.update_main_branch_version }}
     steps:
       - uses: actions/checkout@v4
       - name: Output release version
@@ -42,6 +47,13 @@ jobs:
         run: |
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+      - name: Output update main branch version
+        id: update-main
+        run: |
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ steps.release-version.outputs.RELEASE_VERSION }}" 
+          if [[ $PATCH == '0' && -z $SNAPSHOT ]]; then
+            echo "update_main_branch_version=true" >> $GITHUB_OUTPUT
+          fi
       - name: Validations
         run: |
           if [[ "${{ github.repository }}" != "eclipse-tractusx/tractusx-edc" ]]; then
@@ -125,8 +137,6 @@ jobs:
     permissions:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
-    outputs:
-      patch: ${{ steps.resolve_version_patch.outputs.patch }}
     steps:
       - uses: actions/checkout@v4
       - name: Prepare Git Config
@@ -146,19 +156,13 @@ jobs:
           # Create & push tag
           git tag ${{ needs.validation.outputs.RELEASE_VERSION }}
           git push origin ${{ needs.validation.outputs.RELEASE_VERSION }}
-      - name: Resolve release version patch
-        id: version_patch
-        shell: bash
-        run: |
-          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ needs.validation.outputs.RELEASE_VERSION }}"   
-          echo "patch=${PATCH}" >> "$GITHUB_OUTPUT"
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           generateReleaseNotes: true
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ !contains(needs.validation.outputs.RELEASE_VERSION, 'rc') && steps.resolve_version_patch.outputs.patch == '0' }}
+          makeLatest: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
           removeArtifacts: true
 
   # Release: Publish specs to GitHub Pages
@@ -209,7 +213,7 @@ jobs:
     name: "Main Branch Update"
     runs-on: ubuntu-latest
     needs: [ validation, github-release ]
-    if: ${{ needs.github-release.outputs.patch == '0' && !contains(needs.validation.outputs.RELEASE_VERSION, 'rc') }}
+    if: needs.validation.outputs.update_main_branch_version
     permissions:
       contents: write
       packages: write
@@ -224,6 +228,7 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+          bump_version: "true"
       - name: Push main updates
         run: |
           git push origin main

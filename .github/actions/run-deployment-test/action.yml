@@ -48,6 +48,7 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-java
 
     - uses: ./.github/actions/setup-helm

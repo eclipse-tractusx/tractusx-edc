@@ -24,6 +24,9 @@ inputs:
   version:
     description: 'The release version'
     required: true
+  bump_version:
+    description: 'Should version be bumped'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -39,21 +42,19 @@ runs:
         options: -v ${{ github.workspace }}/charts:/helm-docs
         run: |
           helm-docs --log-level debug
-    - name: Bump version in gradle.properties
-      if: ${{ github.workflow == 'Draft Release' }}
+    - name: Update version in gradle.properties
       shell: bash
       run: |-
-        # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
-        sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-    - name: Bump snapshot version in gradle.properties
-      if: ${{ github.workflow == 'Release' }}
-      shell: bash
-      run: |-
-        IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
-          VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
+        if [[ "${{ inputs.bump_version }}" == "true" ]]
+          then
+            IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
+            VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
         
-          # Persist the "version" in the gradle.properties
-          sed -i "s/version=.*/version=$VERSION/g" gradle.properties
+            # Persist the "version" in the gradle.properties
+            sed -i "s/version=.*/version=$VERSION/g" gradle.properties
+          else
+            sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
+          fi
     - name: Commit changes
       id: make-commit
       shell: bash
