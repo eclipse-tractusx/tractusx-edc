@@ -24,7 +24,6 @@ name: "Upgradeability Tests"
 
 on:
   workflow_call:
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -45,6 +44,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - uses: ./.github/actions/setup-helm
       - uses: ./.github/actions/setup-kubectl
 
