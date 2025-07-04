@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.precedence;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -25,18 +25,20 @@ import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFuncti
 
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for Precedence. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class PrecedenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
+    public static final String PRECEDENCE_LITERAL = "Precedence";
 
-    public ContractReferenceConstraintFunction() {
+    public PrecedenceConstraintFunction() {
         super(
-                Set.of(Operator.IS_ALL_OF),
-                "[\\s\\S]+"
+                Set.of(Operator.EQ),
+                Set.of(
+                        "cx.precedence.contractreference:1",
+                        "cx.precedence.rcagreement:1"
+                )
         );
     }
 }

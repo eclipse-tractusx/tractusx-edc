@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.managedlegalentity;
 
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
@@ -30,33 +30,41 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class ContractReferenceConstraintFunctionTest {
+class ManagedLegalEntityBpnlConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final ContractReferenceConstraintFunction<ParticipantAgentPolicyContext> function = new ContractReferenceConstraintFunction<>();
+    private final ManagedLegalEntityBpnlConstraintFunction<ParticipantAgentPolicyContext> function = new ManagedLegalEntityBpnlConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "contractRef", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.IS_ANY_OF, "BPNL00000000001A", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ALL_OF, "valid-test", null);
+        var rightOperand = List.of("BPNL00000000001A", "BPNL00000000002A");
+        var result = function.validate(Operator.IS_ANY_OF, rightOperand, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenOperatorAndSingleRightOperandAreValid_thenSuccess() {
+        var rightOperand = List.of("BPNL00000000001A");
+        var result = function.validate(Operator.IS_ANY_OF, rightOperand, null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "valid-test", null);
+        var result = function.validate(Operator.EQ, List.of("BPNL00000000001A"), null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
 
     @Test
-    void validate_whenInvalidValueType_thenFailure() {
-        var result = function.validate(Operator.IS_ALL_OF, List.of("invalid"), null);
+    void validate_whenInvalidValue_thenFailure() {
+        var result = function.validate(Operator.IS_ANY_OF, "BPNL000000001A", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
     }

@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.managedlegalentity;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -25,18 +25,27 @@ import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFuncti
 
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for ManagedLegalEntityRegion. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class ManagedLegalEntityRegionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
+    public static final String AFFILIATES_REGION = "ManagedLegalEntityRegion";
 
-    public ContractReferenceConstraintFunction() {
+    public ManagedLegalEntityRegionConstraintFunction() {
         super(
-                Set.of(Operator.IS_ALL_OF),
-                "[\\s\\S]+"
+                Set.of(Operator.IS_ANY_OF),
+                Set.of(
+                        "cx.region.all:1",
+                        "cx.region.europe:1",
+                        "cx.region.northAmerica:1",
+                        "cx.region.southAmerica:1",
+                        "cx.region.africa:1",
+                        "cx.region.asia:1",
+                        "cx.region.oceania:1",
+                        "cx.region.antarctica:1"
+                ),
+                true
         );
     }
 }

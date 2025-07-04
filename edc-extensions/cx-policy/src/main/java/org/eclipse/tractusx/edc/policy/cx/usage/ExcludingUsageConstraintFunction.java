@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.usage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -25,18 +25,19 @@ import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFuncti
 
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for ExclusiveUsage. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class ExcludingUsageConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
+    public static final String USAGE_PURPOSE = "ExclusiveUsage";
 
-    public ContractReferenceConstraintFunction() {
+    public ExcludingUsageConstraintFunction() {
         super(
-                Set.of(Operator.IS_ALL_OF),
-                "[\\s\\S]+"
+                Set.of(Operator.EQ),
+                Set.of(
+                        "x.exclusiveusage.dataconsumer:1"
+                )
         );
     }
 }
