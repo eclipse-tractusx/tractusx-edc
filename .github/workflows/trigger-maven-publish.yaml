@@ -20,7 +20,7 @@
 
 
 ---
-name: "Publish Maven Artefacts to OSSRH"
+name: "Publish Maven Artefacts to Maven Central"
 
 on:
   workflow_dispatch:
@@ -55,8 +55,8 @@ jobs:
       # publish releases
       - name: Publish version
         env:
-          OSSRH_PASSWORD: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
-          OSSRH_USER: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+          CENTRAL_SONATYPE_TOKEN_PASSWORD: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+          CENTRAL_SONATYPE_TOKEN_USERNAME: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
         run: |-
           
