@@ -23,6 +23,15 @@ import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
+import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
+import org.eclipse.edc.iam.identitytrust.sts.spi.store.StsAccountStore;
+import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
+import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
+import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
+import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
@@ -58,6 +67,57 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
             settings.put("tx.edc.iam.sts.dim.url", dimUri.get().toString());
         }
         return super.getConfig().merge(ConfigFactory.fromMap(settings));
+    }
+
+    public void configureParticipant(DataspaceIssuer issuer, RuntimeExtension runtimeExtension) {
+        var participantContextService = runtimeExtension.getService(ParticipantContextService.class);
+        var vault = runtimeExtension.getService(Vault.class);
+
+        var participantKey = getKeyPairAsJwk();
+        var key = KeyDescriptor.Builder.newInstance()
+                .keyId(getKeyId())
+                .publicKeyJwk(participantKey.toPublicJWK().toJSONObject())
+                .privateKeyAlias(getPrivateKeyAlias())
+                .build();
+
+        var participantManifest = ParticipantManifest.Builder.newInstance()
+                .participantId(getDid())
+                .did(getDid())
+                .key(key)
+                .build();
+
+        participantContextService.createParticipantContext(participantManifest);
+        vault.storeSecret(getPrivateKeyAlias(), getPrivateKeyAsString());
+
+        var credentialStore = runtimeExtension.getService(CredentialStore.class);
+        issueCredentials(issuer).forEach(credentialStore::create);
+    }
+
+    public void configureParticipant(DataspaceIssuer issuer, RuntimeExtension runtimeExtension, RuntimeExtension stsRuntimeExtension) {
+        configureParticipant(issuer, runtimeExtension);
+
+        stsRuntimeExtension.getService(Vault.class).storeSecret(verificationId(), getPrivateKeyAsString());
+        stsRuntimeExtension.getService(Vault.class).storeSecret(getPrivateKeyAlias(), getPrivateKeyAsString());
+        var account = StsAccount.Builder.newInstance()
+                .id(getId())
+                .name(getName())
+                .clientId(getDid())
+                .did(getDid())
+                .privateKeyAlias(getPrivateKeyAlias())
+                .publicKeyReference(getFullKeyId())
+                .secretAlias("client_secret_alias")
+                .build();
+        stsRuntimeExtension.getService(StsAccountStore.class).create(account);
+    }
+
+    private List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer) {
+        return List.of(
+                issuer.issueMembershipCredential(getDid(), getBpn()),
+                issuer.issueDismantlerCredential(getDid(), getBpn()),
+                issuer.issueFrameworkCredential(getDid(), getBpn(), "PcfCredential"),
+                issuer.issueFrameworkCredential(getDid(), getBpn(), "BpnCredential"),
+                issuer.issueFrameworkCredential(getDid(), getBpn(), "DataExchangeGovernanceCredential")
+        );
     }
 
     public static class Builder extends TractusxIatpParticipantBase.Builder<IatpParticipant, Builder> {
