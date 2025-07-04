@@ -27,11 +27,12 @@ on:
   push:
     branches:
       - main
-      - bugfix/*
+      - release/*
   pull_request:
     paths-ignore:
       - docs/**
   workflow_dispatch:
+  workflow_call:
 
   schedule:
     - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
