@@ -112,6 +112,7 @@ edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", ve
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
 edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
+edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:provision-aws-s3", version.ref = "edc" }
 
 # DCP Modules
 edc-spi-identitytrust = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
@@ -179,6 +180,7 @@ restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssu
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
 testcontainers-minio = { module = "org.testcontainers:minio", version.ref = "testcontainers" }
+testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }
 
