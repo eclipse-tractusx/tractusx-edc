@@ -4,9 +4,11 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.AllowedConstraints.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 
 public class PolicyTypeResolver {
     public static String resolve(JsonObject policy) {
@@ -36,6 +38,7 @@ public class PolicyTypeResolver {
 
         return ACCESS_POLICY_TYPE;
     }
+
     private static String getActionFromRule(JsonObject rule) {
         if (rule.containsKey(ODRL_ACTION_ATTRIBUTE)) {
             JsonValue action = rule.get(ODRL_ACTION_ATTRIBUTE);
