@@ -3,16 +3,26 @@ package org.eclipse.tractusx.edc.policy.cx.validator;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
-import org.eclipse.edc.validator.jsonobject.validators.*;
+import org.eclipse.edc.validator.jsonobject.validators.MandatoryArray;
+import org.eclipse.edc.validator.jsonobject.validators.MandatoryIdNotBlank;
+import org.eclipse.edc.validator.jsonobject.validators.MandatoryObject;
+import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
+import org.eclipse.edc.validator.jsonobject.validators.OptionalIdNotBlank;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LEFT_OPERAND_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OPERATOR_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_RIGHT_OPERAND_ATTRIBUTE;
 import static org.eclipse.edc.validator.spi.Violation.violation;
-import static org.eclipse.tractusx.edc.policy.cx.validator.AllowedConstraints.*;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_ALLOWED_LEFT_OPERANDS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ALLOWED_LOGICAL_CONSTRAINTS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.NOT_ALLOWED_LOGICAL_CONSTRAINTS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_ALLOWED_LEFT_OPERANDS;
 
 public class ConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
@@ -52,41 +62,41 @@ public class ConstraintValidator implements Validator<JsonObject> {
     private record LogicalConstraintValidator(JsonLdPath path, String policyType) implements Validator<JsonObject> {
 
         @Override
-            public ValidationResult validate(JsonObject input) {
-                // Check for not allowed logical constraints
-                // TODO: Check only against allowed operator
-                var notAllowedKeys = input.keySet().stream()
-                        .filter(NOT_ALLOWED_LOGICAL_CONSTRAINTS::contains)
-                        .toList();
-                if (!notAllowedKeys.isEmpty()) {
-                    return ValidationResult.failure(
-                            violation("Policy includes not allowed Logical constraints: " + notAllowedKeys,
-                                    path.toString())
-                    );
-                }
-
-                // Validate allowed logical constraints
-                var logicalKeys = input.keySet().stream()
-                        .filter(ALLOWED_LOGICAL_CONSTRAINTS::contains)
-                        .toList();
-                if (logicalKeys.size() != 1) {
-                    return ValidationResult.failure(
-                            violation("Policy must have exactly one Logical constraint: " + logicalKeys,
-                                    path.toString())
-                    );
-                }
-
-                return validateLogicalConstraintContent(input, logicalKeys.get(0));
+        public ValidationResult validate(JsonObject input) {
+            // Check for not allowed logical constraints
+            // TODO: Check only against allowed operator
+            var notAllowedKeys = input.keySet().stream()
+                    .filter(NOT_ALLOWED_LOGICAL_CONSTRAINTS::contains)
+                    .toList();
+            if (!notAllowedKeys.isEmpty()) {
+                return ValidationResult.failure(
+                        violation("Policy includes not allowed Logical constraints: " + notAllowedKeys,
+                                path.toString())
+                );
             }
 
-            private ValidationResult validateLogicalConstraintContent(JsonObject input, String logicalKey) {
-                return JsonObjectValidator.newValidator()
-                        .verify(logicalKey, MandatoryArray::new)
-                        .verifyArrayItem(logicalKey, b -> ConstraintValidator.instance(b, policyType))
-                        .build()
-                        .validate(input);
+            // Validate allowed logical constraints
+            var logicalKeys = input.keySet().stream()
+                    .filter(ALLOWED_LOGICAL_CONSTRAINTS::contains)
+                    .toList();
+            if (logicalKeys.size() != 1) {
+                return ValidationResult.failure(
+                        violation("Policy must have exactly one Logical constraint: " + logicalKeys,
+                                path.toString())
+                );
             }
+
+            return validateLogicalConstraintContent(input, logicalKeys.get(0));
         }
+
+        private ValidationResult validateLogicalConstraintContent(JsonObject input, String logicalKey) {
+            return JsonObjectValidator.newValidator()
+                    .verify(logicalKey, MandatoryArray::new)
+                    .verifyArrayItem(logicalKey, b -> ConstraintValidator.instance(b, policyType))
+                    .build()
+                    .validate(input);
+        }
+    }
 
     private static final class LeftOperandValidator {
         public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType) {
@@ -117,7 +127,7 @@ public class ConstraintValidator implements Validator<JsonObject> {
             var value = input.getString(id, null);
             if (value == null || value.isBlank() || value.substring(value.lastIndexOf("/") + 1).isBlank()) {
                 return ValidationResult.failure(
-                        violation("leftOperand.'"+ id +"' value can not be null or empty", path.toString())
+                        violation("leftOperand.'" + id + "' value can not be null or empty", path.toString())
                 );
             }
             if (!allowedValues.contains(value)) {

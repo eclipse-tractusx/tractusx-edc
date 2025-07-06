@@ -15,7 +15,7 @@ class ActionTypeIsTest {
     private static final String ACTION_ATTR = ODRL_ACTION_ATTRIBUTE;
     private static final String EXPECTED_ACTION = "odrl:use";
     private final JsonLdPath path = JsonLdPath.path();
-            
+
 
     @Test
     void shouldReturnSuccess_whenActionIsStringAndMatches() {
@@ -30,7 +30,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void shouldReturnSuccess_whenActionIsStringAndInUpperCase() {
+    void shouldReturnSuccess_whenActionIsStringAndInUpperCaseAndMatches() {
         JsonObject input = Json.createObjectBuilder()
                 .add(ACTION_ATTR, "odrl:USE")
                 .build();
@@ -54,7 +54,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void validate_shouldReturnSuccess_whenActionIsObjectAndMatches() {
+    void shouldReturnSuccess_whenActionIsObjectAndMatches() {
         JsonObject actionObj = Json.createObjectBuilder()
                 .add("@id", EXPECTED_ACTION)
                 .build();
@@ -69,7 +69,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void validate_shouldReturnFailure_whenActionIsObjectAndDoesNotMatch() {
+    void shouldReturnFailure_whenActionIsObjectAndDoesNotMatch() {
         JsonObject actionObj = Json.createObjectBuilder()
                 .add("@id", "read")
                 .build();
@@ -84,7 +84,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void validate_shouldReturnSuccess_whenActionIsArrayAndFirstObjectMatches() {
+    void shouldReturnSuccess_whenActionIsArrayAndFirstObjectMatches() {
         JsonObject actionObj = Json.createObjectBuilder()
                 .add("@id", EXPECTED_ACTION)
                 .build();
@@ -100,7 +100,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void validate_shouldReturnFailure_whenActionIsArrayAndFirstObjectDoesNotMatch() {
+    void shouldReturnFailure_whenActionIsArrayAndFirstObjectDoesNotMatch() {
         JsonObject actionObj = Json.createObjectBuilder()
                 .add("@id", "READ")
                 .build();
@@ -116,7 +116,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void validate_shouldReturnFailure_whenActionIsMissing() {
+    void shouldReturnFailure_whenActionIsMissing() {
         JsonObject input = Json.createObjectBuilder().build();
 
         var validator = new ActionTypeIs(path, EXPECTED_ACTION);
