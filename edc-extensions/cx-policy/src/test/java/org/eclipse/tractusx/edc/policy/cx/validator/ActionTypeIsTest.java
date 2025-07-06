@@ -5,6 +5,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +17,12 @@ class ActionTypeIsTest {
     private static final String EXPECTED_ACTION = "odrl:use";
     private final JsonLdPath path = JsonLdPath.path();
 
+    private ActionTypeIs validator;
+
+    @BeforeEach
+    void setUp() {
+        validator = new ActionTypeIs(path, EXPECTED_ACTION);
+    }
 
     @Test
     void shouldReturnSuccess_whenActionIsStringAndMatches() {
@@ -23,7 +30,6 @@ class ActionTypeIsTest {
                 .add(ACTION_ATTR, EXPECTED_ACTION)
                 .build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.succeeded()).isTrue();
@@ -35,7 +41,6 @@ class ActionTypeIsTest {
                 .add(ACTION_ATTR, "odrl:USE")
                 .build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.succeeded()).isTrue();
@@ -47,7 +52,6 @@ class ActionTypeIsTest {
                 .add(ACTION_ATTR, "READ")
                 .build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.failed()).isTrue();
@@ -62,7 +66,6 @@ class ActionTypeIsTest {
                 .add(ACTION_ATTR, actionObj)
                 .build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.succeeded()).isTrue();
@@ -77,7 +80,6 @@ class ActionTypeIsTest {
                 .add(ACTION_ATTR, actionObj)
                 .build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.failed()).isTrue();
@@ -93,7 +95,6 @@ class ActionTypeIsTest {
                 .add(ACTION_ATTR, arrayBuilder)
                 .build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.succeeded()).isTrue();
@@ -109,7 +110,6 @@ class ActionTypeIsTest {
                 .add(ACTION_ATTR, arrayBuilder)
                 .build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.failed()).isTrue();
@@ -119,7 +119,6 @@ class ActionTypeIsTest {
     void shouldReturnFailure_whenActionIsMissing() {
         JsonObject input = Json.createObjectBuilder().build();
 
-        var validator = new ActionTypeIs(path, EXPECTED_ACTION);
         ValidationResult result = validator.validate(input);
 
         assertThat(result.failed()).isTrue();
