@@ -1,29 +1,22 @@
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
-import org.eclipse.edc.validator.jsonobject.validators.TypeIs;
-import org.eclipse.edc.validator.jsonobject.validators.OptionalIdNotBlank;
 import org.eclipse.edc.validator.jsonobject.validators.MandatoryObject;
+import org.eclipse.edc.validator.jsonobject.validators.OptionalIdNotBlank;
+import org.eclipse.edc.validator.jsonobject.validators.TypeIs;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_POLICY;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
-import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_TYPE_SET;
 import static org.eclipse.edc.validator.spi.Violation.violation;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.policy.cx.validator.AllowedConstraints.ACCESS_POLICY_TYPE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.AllowedConstraints.USAGE_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 
 /**
  * Validates Catena-X policy constraints according to the ODRL specification.
@@ -35,6 +28,7 @@ public class CxPolicyDefinitionValidator {
             ACCESS_POLICY_TYPE, AccessPolicyValidator::new,
             USAGE_POLICY_TYPE, UsagePolicyValidator::new
     );
+
     /**
      * Creates a new instance of the CX constraint validator.
      * This validator checks for the presence of a policy definition, permissions, and constraints
@@ -42,6 +36,7 @@ public class CxPolicyDefinitionValidator {
      * Logical constraints first checks if the Operand is in allowed logical constraints, then validates its atomic constraints.TODO: Why EDC doesnt have it?
      * Atomic constraints validate the left operand, operator, and right operand are present.
      * For left operand, it checks if the value is in the allowed left operands.
+     *
      * @return A validator for JSON object policy constraints
      */
     public static Validator<JsonObject> instance() {
