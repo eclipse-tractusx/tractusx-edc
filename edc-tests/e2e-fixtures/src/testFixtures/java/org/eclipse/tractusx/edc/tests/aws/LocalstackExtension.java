@@ -43,7 +43,6 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -102,33 +101,14 @@ public class LocalstackExtension implements BeforeAllCallback, AfterAllCallback 
         return bucketName;
     }
 
-    public CompletableFuture<String> createBucket(S3AsyncClient s3Client) {
-        var bucketName = UUID.randomUUID().toString();
-        return s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build())
-                .thenApply(response -> {
-                    assertThat(response.sdkHttpResponse().isSuccessful()).isTrue();
-                    return bucketName;
-                });
-    }
-
     public void uploadObjectOnBucket(String bucketName, String key, Path filePath) {
         var response = s3Client().putObject(PutObjectRequest.builder().bucket(bucketName).key(key).build(), filePath);
         assertThat(response.sdkHttpResponse().isSuccessful()).isTrue();
     }
 
-    public CompletableFuture<Void> uploadObjectOnBucket(String bucketName, String key, Path filePath, S3AsyncClient s3Client) {
-        return s3Client.putObject(PutObjectRequest.builder().bucket(bucketName).key(key).build(), filePath)
-                .thenAccept(response -> assertThat(response.sdkHttpResponse().isSuccessful()).isTrue());
-    }
-
     public List<String> listObjects(String bucketName) {
         return s3Client().listObjects(ListObjectsRequest.builder().bucket(bucketName).build())
                 .contents().stream().map(S3Object::key).toList();
-    }
-
-    public CompletableFuture<List<String>> listObjects(String bucketName, S3AsyncClient s3Client) {
-        return s3Client.listObjects(ListObjectsRequest.builder().bucket(bucketName).build())
-                .thenApply(response -> response.contents().stream().map(S3Object::key).toList());
     }
 
     private AwsClientProviderConfiguration getConfiguration() {

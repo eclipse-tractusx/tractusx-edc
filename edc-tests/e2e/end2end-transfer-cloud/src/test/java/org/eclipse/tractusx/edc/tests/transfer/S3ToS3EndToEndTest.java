@@ -133,17 +133,13 @@ public class S3ToS3EndToEndTest {
     @Test
     void transferFile_withBucketCreation_success() {
         var assetId = "s3-test-asset";
-        var providerAsyncClient = PROVIDER_CONTAINER.s3AsyncClient();
-        var consumerAsyncClient = CONSUMER_CONTAINER.s3AsyncClient();
-        var sourceBucketNameFuture = PROVIDER_CONTAINER.createBucket(providerAsyncClient);
-        var sourceBucketName = sourceBucketNameFuture.join();
+        var sourceBucketNameFuture = PROVIDER_CONTAINER.createBucket();
+        var sourceBucketName = sourceBucketNameFuture;
 
         PROVIDER_CONTAINER.uploadObjectOnBucket(
                         sourceBucketName,
                         TESTFILE_NAME,
-                        TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath(),
-                        providerAsyncClient)
-                .join();
+                        TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
 
         var destinationBucketName = "destination-bucket";
 
@@ -186,7 +182,7 @@ public class S3ToS3EndToEndTest {
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
             var state = CONSUMER.getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
-            assertThat(CONSUMER_CONTAINER.listObjects(destinationBucketName, consumerAsyncClient).join()).isNotEmpty();
+            assertThat(CONSUMER_CONTAINER.listObjects(destinationBucketName)).isNotEmpty();
         });
     }
 
