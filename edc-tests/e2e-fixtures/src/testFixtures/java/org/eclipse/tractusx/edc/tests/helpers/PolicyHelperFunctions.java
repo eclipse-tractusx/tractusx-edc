@@ -121,7 +121,7 @@ public class PolicyHelperFunctions {
                 .add(EDC_NAMESPACE + "policy", policy);
     }
 
-    public static JsonObject bnpPolicy(String... bnps) {
+    public static JsonObject bpnPolicy(String... bnps) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
                 .add(TYPE, "Set")

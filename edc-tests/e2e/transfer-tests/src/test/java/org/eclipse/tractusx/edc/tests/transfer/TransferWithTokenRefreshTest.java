@@ -50,7 +50,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.mockserver.model.HttpRequest.request;
@@ -233,10 +233,10 @@ public class TransferWithTokenRefreshTest {
     }
 
     protected JsonObject createAccessPolicy(String bpn) {
-        return bnpPolicy(bpn);
+        return bpnPolicy(bpn);
     }
 
     protected JsonObject createContractPolicy(String bpn) {
-        return bnpPolicy(bpn);
+        return bpnPolicy(bpn);
     }
 }

@@ -41,8 +41,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.BUSINESS_PARTNER_LEGACY_EVALUATION_KEY;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.QueryHelperFunctions.createQuery;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
@@ -95,8 +95,8 @@ public class CatalogTest {
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_shouldReject() {
-        var onlyConsumerPolicy = bnpPolicy("BPN1", "BPN2", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = bnpPolicy("ARISTOTELES-BPN");
+        var onlyConsumerPolicy = bpnPolicy("BPN1", "BPN2", CONSUMER.getBpn());
+        var onlyDiogenesPolicy = bpnPolicy("ARISTOTELES-BPN");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
@@ -121,7 +121,7 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
-        var onlyConsumerPolicy = bnpPolicy("BPN1", "BPN2", CONSUMER.getBpn());
+        var onlyConsumerPolicy = bpnPolicy("BPN1", "BPN2", CONSUMER.getBpn());
         var onlyDiogenesPolicy = frameworkPolicy(Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"));
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
