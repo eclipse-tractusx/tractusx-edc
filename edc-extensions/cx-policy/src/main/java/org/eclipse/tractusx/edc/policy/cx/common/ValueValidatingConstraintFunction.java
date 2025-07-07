@@ -21,12 +21,13 @@ package org.eclipse.tractusx.edc.policy.cx.common;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Rule;
 import org.eclipse.edc.spi.result.Result;
 
 import java.util.List;
 import java.util.Set;
 
-public abstract class ValueValidatingConstraintFunction<C extends ParticipantAgentPolicyContext> extends BaseConstraintFunction<C> {
+public abstract class ValueValidatingConstraintFunction<T extends Rule, C extends ParticipantAgentPolicyContext> extends BaseConstraintFunction<T, C> {
     private final Set<String> allowedValues;
     private final String pattern;
     private final boolean validateList;

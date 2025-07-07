@@ -32,7 +32,7 @@ import java.util.Set;
  * the validation of policies to be strictly enforced.
  */
 public class WarrantyDurationMonthsConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    public static final String WARRANTY = "WarrantyDurationMonths";
+    public static final String WARRANTY_DURATION_MONTHS = "WarrantyDurationMonths";
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
     );

@@ -22,12 +22,12 @@ package org.eclipse.tractusx.edc.policy.cx.common;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Rule;
 import org.eclipse.edc.spi.result.Result;
 
 import java.util.Set;
 
-public abstract class BaseConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public abstract class BaseConstraintFunction<T extends Rule, C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<T, C> {
     private final Set<Operator> allowedOperators;
 
     protected BaseConstraintFunction(Set<Operator> allowedOperators) {
@@ -35,12 +35,12 @@ public abstract class BaseConstraintFunction<C extends ParticipantAgentPolicyCon
     }
 
     @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
+    public boolean evaluate(Operator operator, Object rightOperand, T permission, C c) {
         return true;
     }
 
     @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
+    public Result<Void> validate(Operator operator, Object rightValue, T rule) {
         if (!allowedOperators.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'."
                     .formatted(allowedOperators, operator));

@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.usage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
@@ -29,7 +30,7 @@ import java.util.Set;
  * This is a placeholder constraint function for UsageRestriction. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
+public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Prohibition, C> {
     public static final String USAGE_RESTRICTION = "UsageRestriction";
 
     public UsageRestrictionConstraintFunction() {

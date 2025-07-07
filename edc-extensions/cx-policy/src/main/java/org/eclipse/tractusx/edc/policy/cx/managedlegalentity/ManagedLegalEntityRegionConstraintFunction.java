@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.managedlegalentity;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
@@ -29,8 +30,8 @@ import java.util.Set;
  * This is a placeholder constraint function for ManagedLegalEntityRegion. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ManagedLegalEntityRegionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
-    public static final String AFFILIATES_REGION = "ManagedLegalEntityRegion";
+public class ManagedLegalEntityRegionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
+    public static final String MANAGED_LEGAL_ENTITY_REGION = "ManagedLegalEntityRegion";
 
     public ManagedLegalEntityRegionConstraintFunction() {
         super(

@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.warrenty;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
@@ -29,7 +30,7 @@ import java.util.Set;
  * This is a placeholder constraint function for Warranty. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class WarrantyConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
+public class WarrantyConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
     public static final String WARRANTY = "Warranty";
 
     public WarrantyConstraintFunction() {

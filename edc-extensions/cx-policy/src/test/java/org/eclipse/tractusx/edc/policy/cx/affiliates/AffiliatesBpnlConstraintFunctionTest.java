@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 class AffiliatesBpnlConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final AffiliatesBpnlConstraintFunction<ParticipantAgentPolicyContext> function = new AffiliatesBpnlConstraintFunction<>();
+    private final AffiliatesBpnlProhibitionConstraintFunction<ParticipantAgentPolicyContext> function = new AffiliatesBpnlProhibitionConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test

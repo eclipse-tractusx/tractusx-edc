@@ -20,23 +20,14 @@
 package org.eclipse.tractusx.edc.policy.cx.affiliates;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
-
-import java.util.Set;
+import org.eclipse.edc.policy.model.Prohibition;
 
 /**
  * This is a placeholder constraint function for AffiliatesBpnl. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class AffiliatesBpnlConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
-    public static final String AFFILIATES_BPNL = "AffiliatesBpnl";
-
-    public AffiliatesBpnlConstraintFunction() {
-        super(
-                Set.of(Operator.IS_ANY_OF),
-                "^BPNL[0-9A-Z]{12}$",
-                true
-        );
+public class AffiliatesBpnlProhibitionConstraintFunction<C extends ParticipantAgentPolicyContext> extends AffiliatesBpnlBaseConstraintFunction<Prohibition, C> {
+    public AffiliatesBpnlProhibitionConstraintFunction() {
+        super();
     }
 }

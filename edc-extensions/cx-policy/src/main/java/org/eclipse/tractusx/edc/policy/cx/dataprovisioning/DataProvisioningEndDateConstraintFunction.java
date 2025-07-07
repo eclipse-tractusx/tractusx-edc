@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
@@ -29,7 +30,7 @@ import java.util.Set;
  * This is a placeholder constraint function for DataProvisioningEndDate. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class DataProvisioningEndDateConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
+public class DataProvisioningEndDateConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Duty, C> {
     public static final String DATA_PROVISIONING_END_DATE = "DataProvisioningEndDate";
 
     public DataProvisioningEndDateConstraintFunction() {

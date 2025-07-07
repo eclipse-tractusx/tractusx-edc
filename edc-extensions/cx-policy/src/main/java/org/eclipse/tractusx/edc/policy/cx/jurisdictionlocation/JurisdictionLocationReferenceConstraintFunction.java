@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
@@ -29,8 +30,8 @@ import java.util.Set;
  * This is a placeholder constraint function for JurisdictionLocation. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class JurisdictionLocationReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<C> {
-    public static final String JURISDICTION_LOCATION_REFERENCE_LITERAL = "JurisdictionLocationReference";
+public class JurisdictionLocationReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
+    public static final String JURISDICTION_LOCATION_REFERENCE = "JurisdictionLocationReference";
 
     public JurisdictionLocationReferenceConstraintFunction() {
         super(
