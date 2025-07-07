@@ -19,6 +19,7 @@
 
 plugins {
     `java-library`
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -41,4 +42,6 @@ dependencies {
     implementation("com.networknt:json-schema-validator:1.5.6") {
         because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
     }
+    testFixturesImplementation(libs.edc.junit)
+    testFixturesImplementation(libs.edc.spi.jsonld)
 }
