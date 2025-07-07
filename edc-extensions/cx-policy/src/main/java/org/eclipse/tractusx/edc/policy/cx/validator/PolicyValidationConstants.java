@@ -33,7 +33,6 @@ public final class PolicyValidationConstants {
     public static final Set<String> USAGE_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             CX_POLICY_NS + "UsagePurpose",
             CX_POLICY_NS + "Membership",
-            CX_POLICY_NS + "AffiliatesRegion",
-            CX_POLICY_NS + "FrameworkAgreement"
+            CX_POLICY_NS + "AffiliatesRegion"
     );
 }
