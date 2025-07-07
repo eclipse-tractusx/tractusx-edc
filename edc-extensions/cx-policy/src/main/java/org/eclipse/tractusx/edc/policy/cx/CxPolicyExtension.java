@@ -192,70 +192,70 @@ public class CxPolicyExtension implements ServiceExtension {
         );
 
         // Usage Permission Validators
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlPermissionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlPermissionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlPermissionConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionPermissionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionPermissionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionPermissionConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_TERMINATION, new ContractTerminationConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_TERMINATION, new ContractTerminationConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_TERMINATION, new ContractTerminationConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + CONFIDENTIAL_INFORMATION_MEASURES, new ConfidentialInformationMeasuresConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONFIDENTIAL_INFORMATION_MEASURES, new ConfidentialInformationMeasuresConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONFIDENTIAL_INFORMATION_MEASURES, new ConfidentialInformationMeasuresConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + CONFIDENTIAL_INFORMATION_SHARING, new ConfidentialInformationSharingConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONFIDENTIAL_INFORMATION_SHARING, new ConfidentialInformationSharingConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONFIDENTIAL_INFORMATION_SHARING, new ConfidentialInformationSharingConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + EXCLUSIVE_USAGE, new ExcludingUsageConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + EXCLUSIVE_USAGE, new ExcludingUsageConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + EXCLUSIVE_USAGE, new ExcludingUsageConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION, new JurisdictionLocationConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION, new JurisdictionLocationConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION, new JurisdictionLocationConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION_REFERENCE, new JurisdictionLocationReferenceConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION_REFERENCE, new JurisdictionLocationReferenceConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION_REFERENCE, new JurisdictionLocationReferenceConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + LIABILITY, new LiabilityConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + LIABILITY, new LiabilityConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + LIABILITY, new LiabilityConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_BPNL_LITERAL, new ManagedLegalEntityBpnlConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_BPNL_LITERAL, new ManagedLegalEntityBpnlConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_BPNL_LITERAL, new ManagedLegalEntityBpnlConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_REGION, new ManagedLegalEntityRegionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_REGION, new ManagedLegalEntityRegionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_REGION, new ManagedLegalEntityRegionConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + PRECEDENCE, new PrecedenceConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + PRECEDENCE, new PrecedenceConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + PRECEDENCE, new PrecedenceConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + VERSION_CHANGES, new VersionChangesConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + VERSION_CHANGES, new VersionChangesConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + VERSION_CHANGES, new VersionChangesConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY, new WarrantyConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY, new WarrantyConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY, new WarrantyConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DEFINITION, new WarrantyDefinitionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DEFINITION, new WarrantyDefinitionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DEFINITION, new WarrantyDefinitionConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DURATION_MONTHS, new WarrantyDurationMonthsConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DURATION_MONTHS, new WarrantyDurationMonthsConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DURATION_MONTHS, new WarrantyDurationMonthsConstraintFunction<>());
     }
 
