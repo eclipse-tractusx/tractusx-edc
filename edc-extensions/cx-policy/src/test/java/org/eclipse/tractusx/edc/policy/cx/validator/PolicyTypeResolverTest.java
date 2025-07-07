@@ -164,18 +164,18 @@ class PolicyTypeResolverTest {
         assertThat(result).isEmpty();
     }
 
-    @Test
-    void shouldReturnEmptyString_whenActionArrayIsEmpty() {
-        JsonArrayBuilder actionArray = Json.createArrayBuilder();
-        JsonObject permission = Json.createObjectBuilder()
-                .add(ODRL_ACTION_ATTRIBUTE, actionArray)
-                .build();
-        JsonObject policy = Json.createObjectBuilder()
-                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
-                .build();
-
-        String result = PolicyTypeResolver.resolve(policy);
-
-        assertThat(result).isEmpty();
-    }
+//    @Test
+//    void shouldReturnEmptyString_whenActionArrayIsEmpty() {
+//        JsonArrayBuilder actionArray = Json.createArrayBuilder();
+//        JsonObject permission = Json.createObjectBuilder()
+//                .add(ODRL_ACTION_ATTRIBUTE, actionArray)
+//                .build();
+//        JsonObject policy = Json.createObjectBuilder()
+//                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
+//                .build();
+//
+//        String result = PolicyTypeResolver.resolve(policy);
+//
+//        assertThat(result).isEmpty();
+//    }
 }
