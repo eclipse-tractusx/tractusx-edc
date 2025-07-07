@@ -22,7 +22,10 @@ package org.eclipse.tractusx.edc.policy.cx;
 import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
-import org.eclipse.edc.policy.engine.spi.*;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
+import org.eclipse.edc.policy.engine.spi.PolicyContext;
+import org.eclipse.edc.policy.engine.spi.PolicyEngine;
+import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
@@ -64,7 +67,6 @@ import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDefinitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDurationMonthsConstraintFunction;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -291,7 +293,7 @@ public class CxPolicyExtension implements ServiceExtension {
 
     private static <R extends Rule, C extends PolicyContext> void registerForContexts(Class<C> context, Class<R> type, PolicyEngine engine, Map<String, AtomicConstraintRuleFunction<R, C>> constraints) {
         constraints.forEach((functionId, constraintFunction) ->
-            engine.registerFunction(context, type, functionId, constraintFunction)
+                engine.registerFunction(context, type, functionId, constraintFunction)
         );
     }
 }

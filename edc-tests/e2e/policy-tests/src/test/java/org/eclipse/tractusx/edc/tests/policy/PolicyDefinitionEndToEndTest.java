@@ -107,7 +107,7 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.EQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (EQ, exact match)"),
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Tatra")), "Dismantler allowedBrands (IS_NONE_OF, no intersect)"),
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler allowedBrands (IN, fully contained)"),
-                    Arguments.of(frameworkPolicy(namespace + "UsagePurpose", Operator.IS_ALL_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1")), "Usage Purpose"),
+                    Arguments.of(frameworkPolicy(namespace + "UsagePurpose", Operator.IS_ALL_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), true), "Usage Purpose"),
                     Arguments.of(frameworkPolicy(namespace + "ContractReference", Operator.IS_ALL_OF, "contractReference"), "Contract reference")
             );
         }
