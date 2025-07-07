@@ -28,7 +28,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version you want to release. Ref should be either main for release candidate or a release branch for bugfix and official release. '
+        description: 'The version you want to release. The start point of the workflow must be either main for release candidate or a tag for bugfix and official release.'
         required: true
 
 jobs:
@@ -50,15 +50,26 @@ jobs:
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION" 
           
-          # Release Candidate: Can be created from a commit in main or a tagged release candidate commit.
-          if [[ !( ! -z $SNAPSHOT && ! -z $SNAPSHOT_INPUT )
-          # Bugfix: Can only be created from a tagged release bugfix or official release commit.
-            && !( ${{ github.ref_name }} == release/* && -z $SNAPSHOT && -z $SNAPSHOT_INPUT && $PATCH_INPUT != '0' )
-          # Official Release: Can only be created from a tagged release candidate commit.
-            && !( ${{ github.ref_name }} == release/* && $SNAPSHOT == *rc* && -z $SNAPSHOT_INPUT && $PATCH_INPUT == '0' ) ]]
-          then
-            echo "Ref branch does not match required criteria. Should either be "main" or release branch for "release candidate", a release branch for "bugfix" or a release rc branch for "official release"."
+          # Release Candidate    
+          if [[ ! -z $SNAPSHOT_INPUT ]] then
+            if [[ -z $SNAPSHOT ]] then
+              echo "You want to build a release candidate, but the selected commit is neither on main not a release candidate."
             exit 1
+            fi
+          
+          # Bugfix
+          elif [[ -z $SNAPSHOT_INPUT && $PATCH_INPUT != '0' ]] then 
+            if [[ ${{ github.ref_type }}  != 'tag'  || ! -z $SNAPSHOT  ]] then
+              echo "You want to build a bugfix, but the selected commit is neither a bugfix not a official release"
+            exit 1
+            fi
+          
+          # Official Release
+          elif [[ -z $SNAPSHOT_INPUT && $PATCH_INPUT == '0' ]] then
+            if [[ ${{ github.ref_type }} != 'tag' || $SNAPSHOT != *rc* ]] then
+              echo "You want to build an official release, but the selected commit is not a release candidate"
+            exit 1
+            fi
           fi
       - id: check-tag
         name: "Check if tag exists"
