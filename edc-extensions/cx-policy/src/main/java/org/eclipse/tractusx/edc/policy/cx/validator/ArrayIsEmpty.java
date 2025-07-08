@@ -10,21 +10,20 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 
 public class ArrayIsEmpty implements Validator<JsonObject> {
     private final JsonLdPath path;
-    private final String arrayAttribute;
 
-    public ArrayIsEmpty(JsonLdPath path, String arrayAttribute) {
+    public ArrayIsEmpty(JsonLdPath path) {
         this.path = path;
-        this.arrayAttribute = arrayAttribute;
     }
 
     @Override
     public ValidationResult validate(JsonObject input) {
         // Missing attribute - return success
-        if (!input.containsKey(arrayAttribute)) {
+        String key = path.last();
+        if (!input.containsKey(path.last())) {
             return ValidationResult.success();
         }
 
-        var value = input.get(arrayAttribute);
+        var value = input.get(path.last());
 
         // Null value - return success
         if (value.getValueType() == JsonValue.ValueType.NULL) {
@@ -34,14 +33,14 @@ public class ArrayIsEmpty implements Validator<JsonObject> {
         // Non-array type - return failure with specific message
         if (value.getValueType() != JsonValue.ValueType.ARRAY) {
             return ValidationResult.failure(
-                    violation(arrayAttribute + " must be of type array", path.toString())
+                    violation("Array must be of type array", path.toString())
             );
         }
 
         // Array type - must be empty
         if (!value.asJsonArray().isEmpty()) {
             return ValidationResult.failure(
-                    violation(arrayAttribute + " must be empty", path.toString())
+                    violation("Array must be empty", path.toString())
             );
         }
         return ValidationResult.success();
