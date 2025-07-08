@@ -111,7 +111,6 @@ public class NonFiniteCapablePipelineService implements PipelineService {
         return transfer(request, sink);
     }
 
-    @WithSpan
     @Override
     public CompletableFuture<StreamResult<Object>> transfer(DataFlowStartMessage request, DataSink sink) {
         var sourceFactory = getSourceFactory(request);
