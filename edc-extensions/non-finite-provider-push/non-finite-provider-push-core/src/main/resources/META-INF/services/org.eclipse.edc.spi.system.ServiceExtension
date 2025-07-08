@@ -17,5 +17,5 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.non.finite.provider.push.core.evaluator.FinitenessEvaluatorExtension
-org.eclipse.tractusx.edc.non.finite.provider.push.core.pipeline.NonFiniteCapablePipelineServiceExtension
+org.eclipse.tractusx.edc.nonfiniteproviderpush.core.evaluator.FinitenessEvaluatorExtension
+org.eclipse.tractusx.edc.nonfiniteproviderpush.core.pipeline.NonFiniteCapablePipelineServiceExtension

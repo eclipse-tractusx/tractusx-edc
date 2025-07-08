@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.non.finite.provider.push.core.pipeline;
+package org.eclipse.tractusx.edc.nonfiniteproviderpush.core.pipeline;
 
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;

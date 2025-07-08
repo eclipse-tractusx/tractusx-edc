@@ -17,36 +17,31 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.non.finite.provider.push.core.pipeline;
+package org.eclipse.tractusx.edc.nonfiniteproviderpush.core.evaluator;
 
-import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
-import org.eclipse.edc.runtime.metamodel.annotation.Extension;
-import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.connector.dataplane.spi.DataFlow;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
 
-@Extension(NonFiniteCapablePipelineServiceExtension.NAME)
-public class NonFiniteCapablePipelineServiceExtension implements ServiceExtension {
+import static java.lang.Boolean.parseBoolean;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
-    protected static final String NAME = "Non Finite Capable Pipeline Service";
+public class FinitenessEvaluatorImpl implements FinitenessEvaluator {
 
-    @Inject
-    private Monitor monitor;
-
-    @Inject
-    private FinitenessEvaluator finitenessEvaluator;
+    private static final String IS_NON_FINITE_PROP = EDC_NAMESPACE + "isNonFinite";
 
     @Override
-    public String name() {
-        return NAME;
+    public boolean isNonFinite(DataFlow dataflow) {
+        return containsNonFiniteProperty(dataflow.getSource());
     }
 
-    @Provider
-    public PipelineService pipelineService() {
-        return new NonFiniteCapablePipelineService(monitor, finitenessEvaluator);
+    @Override
+    public boolean isNonFinite(DataFlowStartMessage message) {
+        return containsNonFiniteProperty(message.getSourceDataAddress());
     }
 
+    private boolean containsNonFiniteProperty(DataAddress address) {
+        return parseBoolean(address.getStringProperty(IS_NON_FINITE_PROP));
+    }
 }
-

@@ -17,31 +17,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.non.finite.provider.push.core.evaluator;
+package org.eclipse.tractusx.edc.nonfiniteproviderpush.core.evaluator;
 
-import org.eclipse.edc.connector.dataplane.spi.DataFlow;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
 
-import static java.lang.Boolean.parseBoolean;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+@Extension(FinitenessEvaluatorExtension.NAME)
+public class FinitenessEvaluatorExtension implements ServiceExtension {
 
-public class FinitenessEvaluatorImpl implements FinitenessEvaluator {
-
-    private static final String IS_NON_FINITE_PROP = EDC_NAMESPACE + "isNonFinite";
+    protected static final String NAME = "Finiteness Evaluator";
 
     @Override
-    public boolean isNonFinite(DataFlow dataflow) {
-        return containsNonFiniteProperty(dataflow.getSource());
+    public String name() {
+        return NAME;
     }
 
-    @Override
-    public boolean isNonFinite(DataFlowStartMessage message) {
-        return containsNonFiniteProperty(message.getSourceDataAddress());
+    @Provider(isDefault = true)
+    public FinitenessEvaluator finitenessEvaluator() {
+        return new FinitenessEvaluatorImpl();
     }
 
-    private boolean containsNonFiniteProperty(DataAddress address) {
-        return parseBoolean(address.getStringProperty(IS_NON_FINITE_PROP));
-    }
 }

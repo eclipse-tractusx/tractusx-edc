@@ -17,26 +17,36 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.non.finite.provider.push.core.evaluator;
+package org.eclipse.tractusx.edc.nonfiniteproviderpush.core.pipeline;
 
+import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
 
-@Extension(FinitenessEvaluatorExtension.NAME)
-public class FinitenessEvaluatorExtension implements ServiceExtension {
+@Extension(NonFiniteCapablePipelineServiceExtension.NAME)
+public class NonFiniteCapablePipelineServiceExtension implements ServiceExtension {
 
-    protected static final String NAME = "Finiteness Evaluator";
+    protected static final String NAME = "Non Finite Capable Pipeline Service";
+
+    @Inject
+    private Monitor monitor;
+
+    @Inject
+    private FinitenessEvaluator finitenessEvaluator;
 
     @Override
     public String name() {
         return NAME;
     }
 
-    @Provider(isDefault = true)
-    public FinitenessEvaluator finitenessEvaluator() {
-        return new FinitenessEvaluatorImpl();
+    @Provider
+    public PipelineService pipelineService() {
+        return new NonFiniteCapablePipelineService(monitor, finitenessEvaluator);
     }
 
 }
+
