@@ -13,6 +13,9 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 public final class PolicyValidationConstants {
     private PolicyValidationConstants() {}
 
+    public static final String ACTION_ACCESS = EDC_NAMESPACE + "access";
+    public static final String ACTION_USAGE = ODRL_SCHEMA + "use";
+
     public static final String ACCESS_POLICY_TYPE = EDC_NAMESPACE + "access";
     public static final String USAGE_POLICY_TYPE = ODRL_SCHEMA + "use";
 
