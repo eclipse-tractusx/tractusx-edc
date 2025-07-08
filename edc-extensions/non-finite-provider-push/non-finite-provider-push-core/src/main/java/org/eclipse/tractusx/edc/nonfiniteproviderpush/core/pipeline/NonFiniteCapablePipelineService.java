@@ -192,16 +192,14 @@ public class NonFiniteCapablePipelineService implements PipelineService {
 
     private StreamResult<Void> terminate(String dataFlowId) {
         var source = sources.remove(dataFlowId);
-        if (source == null) {
-            return StreamResult.notFound();
-        } else {
+        if (source != null) {
             try {
                 source.close();
-                return StreamResult.success();
             } catch (Exception e) {
                 return StreamResult.error("Cannot terminate DataFlow %s: %s".formatted(dataFlowId, e.getMessage()));
             }
         }
+        return StreamResult.success();
     }
 
     @NotNull

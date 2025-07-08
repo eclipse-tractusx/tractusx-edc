@@ -49,7 +49,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Reason.GENERAL_ERROR;
-import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Reason.NOT_FOUND;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
@@ -273,12 +272,12 @@ class NonFiniteCapablePipelineServiceTest {
             }
 
             @Test
-            void terminate_shouldFail_whenTransferDoesNotExist() {
+            void terminate_shouldSucceed_whenTransferDoesNotExist() {
                 var dataFlow = dataFlow(SUPPORTED_SOURCE_TYPE, SUPPORTED_DESTINATION_TYPE);
 
                 var result = service.terminate(dataFlow);
 
-                assertThat(result).isFailed().extracting(StreamFailure::getReason).isEqualTo(NOT_FOUND);
+                assertThat(result).isSucceeded();
                 verifyNoInteractions(source);
             }
         }
