@@ -35,7 +35,7 @@ jobs:
   validate-and-prepare:
     name: "Validate that tag does not already exist and prepare branch"
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
+    if: ${{ github.ref_name == 'main' || github.ref_type == 'tag'  }}
     outputs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
     steps:
@@ -46,24 +46,24 @@ jobs:
         name: "Validations"
         run: |
           IFS=.- read -r MAJOR_INPUT MINOR_INPUT PATCH_INPUT SNAPSHOT_INPUT<<<"${{ inputs.version }}" 
-          
+
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION" 
-          
+
           # Release Candidate    
           if [[ ! -z $SNAPSHOT_INPUT ]] then
             if [[ -z $SNAPSHOT ]] then
               echo "You want to build a release candidate, but the selected commit is neither on main not a release candidate."
             exit 1
             fi
-          
+
           # Bugfix
           elif [[ -z $SNAPSHOT_INPUT && $PATCH_INPUT != '0' ]] then 
             if [[ ${{ github.ref_type }}  != 'tag'  || ! -z $SNAPSHOT  ]] then
               echo "You want to build a bugfix, but the selected commit is neither a bugfix not a official release"
             exit 1
             fi
-          
+
           # Official Release
           elif [[ -z $SNAPSHOT_INPUT && $PATCH_INPUT == '0' ]] then
             if [[ ${{ github.ref_type }} != 'tag' || $SNAPSHOT != *rc* ]] then
@@ -79,7 +79,7 @@ jobs:
 
           if [ ! -z $tag ];
           then
-            echo "Tag ${{ inputs.version }} already exists! Please check the correctness of the selected branch."
+            echo "Tag ${{ inputs.version }} already exists! Please choose another tag."
             exit 1
           fi
       - id: resolve_branch
