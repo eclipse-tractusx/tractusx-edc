@@ -108,11 +108,7 @@ include(":edc-dataplane")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 
-
-include(":samples:multi-tenancy")
 include(":samples:testing-with-mocked-connector")
-include(":samples:edc-dast:edc-dast-runtime")
-include(":samples:edc-dast:edc-dast-extensions")
 
 plugins {
     id("com.gradle.develocity") version "4.0.2"

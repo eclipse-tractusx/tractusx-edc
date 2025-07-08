@@ -57,7 +57,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatpRuntime;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.stsRuntime;
 import static org.mockserver.model.HttpRequest.request;
@@ -225,7 +225,7 @@ public class CredentialSpoofTest {
     }
 
     protected JsonObject createAccessPolicy(String bpn) {
-        return bnpPolicy(bpn);
+        return bpnPolicy(bpn);
     }
 
 }
