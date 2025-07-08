@@ -325,7 +325,7 @@ public class CxPolicyExtension implements ServiceExtension {
     }
 
     private static void registerBindingSets(RuleBindingRegistry registry, Set<String> names, Set<String> scopes) {
-        scopes.forEach(scope-> names.forEach(name -> registry.bind(name, scope)));
+        scopes.forEach(scope -> names.forEach(name -> registry.bind(name, scope)));
     }
 
     @Override

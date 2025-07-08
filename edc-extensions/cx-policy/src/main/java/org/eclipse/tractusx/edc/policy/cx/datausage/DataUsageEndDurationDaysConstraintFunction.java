@@ -48,7 +48,7 @@ public class DataUsageEndDurationDaysConstraintFunction<C extends ParticipantAge
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
 
-        if (rightValue instanceof Integer){
+        if (rightValue instanceof Integer) {
             return Result.success();
         }
 

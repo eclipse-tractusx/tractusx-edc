@@ -80,7 +80,7 @@ public abstract class ValueValidatingConstraintFunction<T extends Rule, C extend
 
     private Result<Void> validateList(Object rightValue) {
         List<?> list = List.of();
-        if (rightValue instanceof String s ) {
+        if (rightValue instanceof String s) {
             list = s.contains(",") ? List.of(s.split(",")) : List.of(s);
         }
         if (rightValue instanceof List<?> rightValuelist) {
