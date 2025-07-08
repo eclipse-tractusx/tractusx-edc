@@ -23,8 +23,7 @@ import jakarta.json.Json;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
-import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
-import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.aws.LocalstackExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.Order;
@@ -42,7 +41,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -74,9 +73,9 @@ public class S3ToS3EndToEndTest {
     private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES, CONSUMER::getConfig);
 
     @RegisterExtension
-    private static final MinioExtension PROVIDER_CONTAINER = new MinioExtension();
+    private static final LocalstackExtension PROVIDER_CONTAINER = new LocalstackExtension();
     @RegisterExtension
-    private static final MinioExtension CONSUMER_CONTAINER = new MinioExtension();
+    private static final LocalstackExtension CONSUMER_CONTAINER = new LocalstackExtension();
 
     @Test
     void transferFile_success() {
@@ -100,9 +99,9 @@ public class S3ToS3EndToEndTest {
         );
 
         // create objects in EDC
-        provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
-        provider().createContractDefinition(assetId, "def-1", policyId, policyId);
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        PROVIDER.createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destination = Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
@@ -118,25 +117,73 @@ public class S3ToS3EndToEndTest {
                         .build()
                 ).build();
 
-        var transferProcessId = consumer()
-                .requestAssetFrom(assetId, provider())
+        var transferProcessId = CONSUMER
+                .requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("AmazonS3-PUSH")
                 .withDestination(destination)
                 .execute();
 
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-            var state = consumer().getTransferProcessState(transferProcessId);
+            var state = CONSUMER.getTransferProcessState(transferProcessId);
             assertThat(state).isEqualTo(COMPLETED.name());
             assertThat(CONSUMER_CONTAINER.listObjects(destinationBucketName)).isNotEmpty();
         });
     }
 
-    public TractusxParticipantBase provider() {
-        return PROVIDER;
-    }
+    @Test
+    void transferFile_withBucketCreation_success() {
+        var assetId = "s3-test-asset";
+        var sourceBucketNameFuture = PROVIDER_CONTAINER.createBucket();
+        var sourceBucketName = sourceBucketNameFuture;
 
-    public TractusxParticipantBase consumer() {
-        return CONSUMER;
+        PROVIDER_CONTAINER.uploadObjectOnBucket(
+                        sourceBucketName,
+                        TESTFILE_NAME,
+                        TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
+
+        var destinationBucketName = "destination-bucket";
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "@type", "DataAddress",
+                "type", "AmazonS3",
+                "objectName", TESTFILE_NAME,
+                "region", PROVIDER_CONTAINER.getS3region(),
+                "bucketName", sourceBucketName,
+                "accessKeyId", PROVIDER_CONTAINER.getCredentials().accessKeyId(),
+                "secretAccessKey", PROVIDER_CONTAINER.getCredentials().secretAccessKey(),
+                "endpointOverride", PROVIDER_CONTAINER.getEndpointOverride()
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        PROVIDER.createContractDefinition(assetId, "def-1", policyId, policyId);
+
+        var destination = Json.createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "AmazonS3")
+                .add(EDC_NAMESPACE + "properties", Json.createObjectBuilder()
+                        .add(EDC_NAMESPACE + "type", "AmazonS3")
+                        .add(EDC_NAMESPACE + "objectName", TESTFILE_NAME)
+                        .add(EDC_NAMESPACE + "region", CONSUMER_CONTAINER.getS3region())
+                        .add(EDC_NAMESPACE + "bucketName", destinationBucketName)
+                        .add(EDC_NAMESPACE + "endpointOverride", CONSUMER_CONTAINER.getEndpointOverride())
+                        .add(EDC_NAMESPACE + "accessKeyId", CONSUMER_CONTAINER.getCredentials().accessKeyId())
+                        .add(EDC_NAMESPACE + "secretAccessKey", CONSUMER_CONTAINER.getCredentials().secretAccessKey())
+                        .build()
+                ).build();
+
+        var transferProcessId = CONSUMER
+                .requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("AmazonS3-PUSH")
+                .withDestination(destination)
+                .execute();
+
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            var state = CONSUMER.getTransferProcessState(transferProcessId);
+            assertThat(state).isEqualTo(COMPLETED.name());
+            assertThat(CONSUMER_CONTAINER.listObjects(destinationBucketName)).isNotEmpty();
+        });
     }
 
 }

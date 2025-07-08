@@ -39,15 +39,18 @@ import java.time.Duration;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.mockserver.model.HttpRequest.request;
@@ -113,7 +116,8 @@ public class TransferWithTokenRefreshTest {
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination()).execute();
 
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
@@ -171,7 +175,8 @@ public class TransferWithTokenRefreshTest {
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination()).execute();
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
@@ -212,16 +217,26 @@ public class TransferWithTokenRefreshTest {
         server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.exactly(1));
     }
 
+    private JsonObject httpDataDestination() {
+        return createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "DataAddress")
+                .add(EDC_NAMESPACE + "type", "HttpData")
+                .add(EDC_NAMESPACE + "properties", createObjectBuilder()
+                        .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
+                        .build())
+                .build();
+    }
+
     @AfterEach
     void teardown() {
         server.stop();
     }
 
     protected JsonObject createAccessPolicy(String bpn) {
-        return bnpPolicy(bpn);
+        return bpnPolicy(bpn);
     }
 
     protected JsonObject createContractPolicy(String bpn) {
-        return bnpPolicy(bpn);
+        return bpnPolicy(bpn);
     }
 }
