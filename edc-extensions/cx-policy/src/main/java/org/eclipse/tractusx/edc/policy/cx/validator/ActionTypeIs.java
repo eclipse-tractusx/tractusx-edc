@@ -13,15 +13,27 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 public class ActionTypeIs implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String expectedAction;
+    private final boolean allowAbsent;
 
-    public ActionTypeIs(JsonLdPath path, String expectedAction) {
+    private ActionTypeIs(JsonLdPath path, String expectedAction, boolean allowAbsent) {
         this.path = path;
         this.expectedAction = expectedAction;
+        this.allowAbsent = allowAbsent;
+    }
+    public ActionTypeIs(JsonLdPath path, String expectedAction) {
+        this(path, expectedAction, false);
+    }
+
+    public static ActionTypeIs orAbsent(JsonLdPath path, String expectedType) {
+        return new ActionTypeIs(path, expectedType, true);
     }
 
     @Override
     public ValidationResult validate(JsonObject input) {
         if (!input.containsKey(ODRL_ACTION_ATTRIBUTE)) {
+            if (allowAbsent) {
+                return ValidationResult.success();
+            }
             return ValidationResult.failure(
                     violation("Action property is missing", path.toString())
             );
