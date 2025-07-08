@@ -30,11 +30,23 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Resolve version
+      id: resolver
+      shell: bash
+      run: |
+        if [[ "${{ inputs.bump_version }}" == "true" ]] then
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
+          VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
+        else
+          VERSION=${{ inputs.version }}
+        fi
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
     - name: Bump version in /charts
       uses: mikefarah/yq@v4.45.2
       with:
         cmd: |
-          find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
+          find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ steps.resolver.outputs.version }}" 
+            | .version = "${{ steps.resolver.outputs.version }}"'
     - name: Update Chart READMEs
       uses: addnab/docker-run-action@v3
       with:
@@ -45,16 +57,7 @@ runs:
     - name: Update version in gradle.properties
       shell: bash
       run: |-
-        if [[ "${{ inputs.bump_version }}" == "true" ]]
-          then
-            IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
-            VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
-        
-            # Persist the "version" in the gradle.properties
-            sed -i "s/version=.*/version=$VERSION/g" gradle.properties
-          else
-            sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-          fi
+        sed -i  's/version=.*/version=${{ steps.resolver.outputs.version }}/g' gradle.properties
     - name: Commit changes
       id: make-commit
       shell: bash

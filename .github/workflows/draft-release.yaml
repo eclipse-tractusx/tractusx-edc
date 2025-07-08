@@ -28,7 +28,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version you want to release. The start point of the workflow must be either main for release candidate or a tag for bugfix and official release.'
+        description: 'The version you want to release.'
         required: true
 
 jobs:
@@ -53,14 +53,14 @@ jobs:
           # Release Candidate    
           if [[ ! -z $SNAPSHOT_INPUT ]] then
             if [[ -z $SNAPSHOT ]] then
-              echo "You want to build a release candidate, but the selected commit is neither on main not a release candidate."
+              echo "You want to build a release candidate, but the selected commit is neither on main nor a release candidate."
             exit 1
             fi
 
           # Bugfix
           elif [[ -z $SNAPSHOT_INPUT && $PATCH_INPUT != '0' ]] then 
             if [[ ${{ github.ref_type }}  != 'tag'  || ! -z $SNAPSHOT  ]] then
-              echo "You want to build a bugfix, but the selected commit is neither a bugfix not a official release"
+              echo "You want to build a bugfix, but the selected commit is neither a bugfix nor a official release"
             exit 1
             fi
 
