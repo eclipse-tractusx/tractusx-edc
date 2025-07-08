@@ -37,10 +37,10 @@ public class UsagePurposeConstraintFunction<C extends ParticipantAgentPolicyCont
         super(
                 Set.of(Operator.IS_ALL_OF),
                 Set.of(
-                        "cx.core.legalRequirementForThirdparty:1",
+                        "cx.core.legalrequirementforthirdparty:1",
                         "cx.core.industrycore:1",
-                        "cx.core.qualityNotifications:1",
-                        "cx.core.digitalTwinRegistry:1",
+                        "cx.core.qualitynotifications:1",
+                        "cx.core.digitaltwinregistry:1",
                         "cx.pcf.base:1",
                         "cx.quality.base:1",
                         "cx.dcm.base:1",

@@ -271,13 +271,61 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
         
-        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, CATALOG_SCOPE);
-        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, NEGOTIATION_SCOPE);
-        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, TRANSFER_PROCESS_SCOPE);
+        registerBindingSets(
+                registry,
+                Set.of(CX_POLICY_NS + USAGE_PURPOSE, CX_POLICY_NS + CONTRACT_REFERENCE),
+                Set.of(CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
 
-        registry.bind(CX_POLICY_NS + CONTRACT_REFERENCE, CATALOG_SCOPE);
-        registry.bind(CX_POLICY_NS + CONTRACT_REFERENCE, NEGOTIATION_SCOPE);
-        registry.bind(CX_POLICY_NS + CONTRACT_REFERENCE, TRANSFER_PROCESS_SCOPE);
+        // Usage Duty Validators
+        registerBindingSets(
+                registry,
+                Set.of(CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, CX_POLICY_NS + DATA_PROVISIONING_END_DATE),
+                Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
+
+        // Usage Prohibition Validators
+        registerBindingSets(
+                registry,
+                Set.of(CX_POLICY_NS + AFFILIATES_BPNL, CX_POLICY_NS + AFFILIATES_REGION, CX_POLICY_NS + USAGE_RESTRICTION),
+                Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
+
+        // Access Permission Validators
+        registerBindingSets(
+                registry,
+                Set.of(CX_POLICY_NS + BUSINESS_PARTNER_GROUP, CX_POLICY_NS + BUSINESS_PARTNER_NUMBER),
+                Set.of(CATALOG_SCOPE));
+
+        // Usage Permission Validators
+        registerBindingSets(
+                registry,
+                Set.of(
+                        CX_POLICY_NS + AFFILIATES_BPNL,
+                        CX_POLICY_NS + AFFILIATES_REGION,
+                        CX_POLICY_NS + CONTRACT_REFERENCE,
+                        CX_POLICY_NS + CONTRACT_TERMINATION,
+                        CX_POLICY_NS + CONFIDENTIAL_INFORMATION_MEASURES,
+                        CX_POLICY_NS + CONFIDENTIAL_INFORMATION_SHARING,
+                        CX_POLICY_NS + DATA_FREQUENCY,
+                        CX_POLICY_NS + DATA_USAGE_END_DATE,
+                        CX_POLICY_NS + DATA_USAGE_END_DEFINITION,
+                        CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS,
+                        CX_POLICY_NS + EXCLUSIVE_USAGE,
+                        CX_POLICY_NS + JURISDICTION_LOCATION,
+                        CX_POLICY_NS + JURISDICTION_LOCATION_REFERENCE,
+                        CX_POLICY_NS + LIABILITY,
+                        CX_POLICY_NS + MANAGED_LEGAL_ENTITY_BPNL_LITERAL,
+                        CX_POLICY_NS + MANAGED_LEGAL_ENTITY_REGION,
+                        CX_POLICY_NS + PRECEDENCE,
+                        CX_POLICY_NS + USAGE_PURPOSE,
+                        CX_POLICY_NS + VERSION_CHANGES,
+                        CX_POLICY_NS + WARRANTY,
+                        CX_POLICY_NS + WARRANTY_DEFINITION,
+                        CX_POLICY_NS + WARRANTY_DURATION_MONTHS),
+                Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
+
+    }
+
+    private static void registerBindingSets(RuleBindingRegistry registry, Set<String> names, Set<String> scopes) {
+        scopes.forEach(scope-> names.forEach(name -> registry.bind(name, scope)));
     }
 
     @Override

@@ -48,7 +48,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
-@EndToEndTest
+//@EndToEndTest
 public class PolicyDefinitionEndToEndTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
@@ -108,7 +108,26 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Tatra")), "Dismantler allowedBrands (IS_NONE_OF, no intersect)"),
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler allowedBrands (IN, fully contained)"),
                     Arguments.of(frameworkPolicy(namespace + "UsagePurpose", Operator.IS_ALL_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), true), "Usage Purpose"),
-                    Arguments.of(frameworkPolicy(namespace + "ContractReference", Operator.IS_ALL_OF, "contractReference"), "Contract reference")
+                    Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1", "cx.region.northAmerica:1"), true), "Affiliates Region"),
+                    Arguments.of(frameworkPolicy(namespace + "ContractReference", Operator.IS_ALL_OF, "contractReference"), "Contract reference"),
+                    Arguments.of(frameworkPolicy(namespace + "ContractTermination", Operator.EQ, "cx.data.deletion:1"), "ContractTermination"),
+                    Arguments.of(frameworkPolicy(namespace + "ConfidentialInformationMeasures", Operator.EQ, "cx.confidentiality.measures:1"), "Confidential Information Measures"),
+                    Arguments.of(frameworkPolicy(namespace + "ConfidentialInformationSharing", Operator.EQ, "cx.sharing.affiliates:1"), "Confidential Information Sharing"),
+                    Arguments.of(frameworkPolicy(namespace + "DataFrequency", Operator.EQ, "cx.datafrequency.once:1"), "Data Frequency"),
+                    Arguments.of(frameworkPolicy(namespace + "DataUsageEndDate", Operator.EQ, "2025-06-30T14:30:00Z"), "Data Usage End Date"),
+                    Arguments.of(frameworkPolicy(namespace + "DataUsageEndDefinition", Operator.EQ, "cx.datausageend.unlimited:1"), "Data Usage End Date Definition"),
+                    Arguments.of(frameworkPolicy(namespace + "DataUsageEndDurationDays", Operator.EQ, 3), "Data Usage End Duration Days"),
+                    Arguments.of(frameworkPolicy(namespace + "ExclusiveUsage", Operator.EQ, "x.exclusiveusage.dataconsumer:1"), "Exclusive Usage"),
+                    Arguments.of(frameworkPolicy(namespace + "JurisdictionLocation", Operator.EQ, "test location"), "Jurisdiction Location"),
+                    Arguments.of(frameworkPolicy(namespace + "JurisdictionLocationReference", Operator.EQ, "cx.location.dataconsumer:1"), "Jurisdiction Location Reference"),
+                    Arguments.of(frameworkPolicy(namespace + "Liability", Operator.EQ, "cx.grossnegligence:1"), "Liability"),
+                    Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1"), true), "Managed Legal Entity Region"),
+                    Arguments.of(frameworkPolicy(namespace + "Precedence", Operator.EQ,  "cx.precedence.contractreference:1"), "Precedence"),
+                    Arguments.of(frameworkPolicy(namespace + "UsagePurpose", Operator.IS_ALL_OF,  List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), true), "Usage Purpose"),
+                    Arguments.of(frameworkPolicy(namespace + "VersionChanges", Operator.EQ,  "cx.versionchanges.minor:1"), "Version Changes"),
+                    Arguments.of(frameworkPolicy(namespace + "Warranty", Operator.EQ,  "cx.warranty.none:1"), "Warranty"),
+                    Arguments.of(frameworkPolicy(namespace + "WarrantyDefinition", Operator.EQ,  "cx.warranty.contractenddate:1"), "Warranty Definition"),
+                    Arguments.of(frameworkPolicy(namespace + "WarrantyDurationMonths", Operator.EQ,  3), "Warranty Duration Months")
             );
         }
     }

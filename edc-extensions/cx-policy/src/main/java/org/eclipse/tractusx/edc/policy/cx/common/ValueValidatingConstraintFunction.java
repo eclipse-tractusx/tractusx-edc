@@ -26,6 +26,7 @@ import org.eclipse.edc.spi.result.Result;
 
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public abstract class ValueValidatingConstraintFunction<T extends Rule, C extends ParticipantAgentPolicyContext> extends BaseConstraintFunction<T, C> {
     private final Set<String> allowedValues;
@@ -71,14 +72,22 @@ public abstract class ValueValidatingConstraintFunction<T extends Rule, C extend
                     .formatted(String.join(", ", allowedValues), rightValue));
         }
 
-        var compiledPattern = java.util.regex.Pattern.compile(pattern);
+        var compiledPattern = Pattern.compile(pattern);
         return rightValue instanceof String s && compiledPattern.matcher(s).matches()
                 ? Result.success()
                 : Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(pattern));
     }
 
     private Result<Void> validateList(Object rightValue) {
-        if (!(rightValue instanceof List<?> list) || list.isEmpty()) {
+        List<?> list = List.of();
+        if (rightValue instanceof String s ) {
+            list = s.contains(",") ? List.of(s.split(",")) : List.of(s);
+        }
+        if (rightValue instanceof List<?> rightValuelist) {
+            list = rightValuelist;
+        }
+
+        if (list.isEmpty()) {
             return Result.failure("Invalid right-operand: must be a list and contain at least 1 value");
         }
 
@@ -94,7 +103,7 @@ public abstract class ValueValidatingConstraintFunction<T extends Rule, C extend
                     : Result.failure("Invalid right-operand: the following values are not allowed: %s".formatted(invalidValues));
         }
 
-        var compiledPattern = java.util.regex.Pattern.compile(pattern);
+        var compiledPattern = Pattern.compile(pattern);
         var distinctValues = list.stream()
                 .filter(String.class::isInstance)
                 .map(String.class::cast)

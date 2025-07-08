@@ -27,6 +27,8 @@ import org.eclipse.edc.spi.result.Result;
 
 import java.util.Set;
 
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+
 public abstract class BaseConstraintFunction<T extends Rule, C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<T, C> {
     private final Set<Operator> allowedOperators;
 
@@ -35,7 +37,7 @@ public abstract class BaseConstraintFunction<T extends Rule, C extends Participa
     }
 
     @Override
-    public boolean evaluate(Operator operator, Object rightOperand, T permission, C c) {
+    public boolean evaluate(Operator operator, Object rightOperand, T rule, C c) {
         return true;
     }
 
