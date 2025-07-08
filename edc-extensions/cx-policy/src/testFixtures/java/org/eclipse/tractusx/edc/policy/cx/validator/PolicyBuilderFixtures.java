@@ -6,6 +6,7 @@ import jakarta.json.JsonObject;
 import java.util.Collection;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.*;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 
 public final class PolicyBuilderFixtures {
 
@@ -38,6 +39,45 @@ public final class PolicyBuilderFixtures {
         }
         return Json.createObjectBuilder()
                 .add(constraintType, arrayBuilder)
+                .build();
+    }
+
+    public static JsonObject rule(String actionType, JsonObject... constraints) {
+        var arrayBuilder = Json.createArrayBuilder();
+        for (JsonObject constraint : constraints) {
+            arrayBuilder.add(constraint);
+        }
+        return Json.createObjectBuilder()
+                .add(ODRL_ACTION_ATTRIBUTE, actionType)
+                .add(ODRL_CONSTRAINT_ATTRIBUTE, arrayBuilder)
+                .build();
+    }
+
+    public static JsonObject emptyRule() {
+        return Json.createObjectBuilder()
+                .build();
+    }
+
+
+    public static JsonObject policy(String policyType, String ruleType, JsonObject... constraints) {
+        JsonObject rule = rule(policyType, constraints);
+
+        return Json.createObjectBuilder()
+                .add(ruleType, Json.createArrayBuilder().add(rule))
+                .build();
+    }
+
+    public static JsonObject policy(String ruleType, JsonObject rule) {
+        return Json.createObjectBuilder()
+                .add(ruleType, Json.createArrayBuilder().add(rule))
+                .build();
+    }
+
+    public static JsonObject policy(String policyType, String ruleType) {
+        JsonObject rule = rule(policyType);
+
+        return Json.createObjectBuilder()
+                .add(ruleType, Json.createArrayBuilder().add(rule))
                 .build();
     }
 }
