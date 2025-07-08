@@ -16,6 +16,13 @@ public final class PolicyValidationConstants {
     public static final String ACCESS_POLICY_TYPE = EDC_NAMESPACE + "access";
     public static final String USAGE_POLICY_TYPE = ODRL_SCHEMA + "use";
 
+    public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_NS + "FrameworkAgreement";
+    public static final String MEMBERSHIP_LITERAL = CX_POLICY_NS + "Membership";
+    public static final String BUSINESS_PARTNER_GROUP_LITERAL = CX_POLICY_NS + "BusinessPartnerGroup";
+    public static final String BUSINESS_PARTNER_NUMBER_LITERAL = CX_POLICY_NS + "BusinessPartnerNumber";
+    public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
+    public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_NS + "AffiliatesRegion";
+
     public static final Set<String> NOT_ALLOWED_LOGICAL_CONSTRAINTS = Set.of(
             ODRL_XONE_CONSTRAINT_ATTRIBUTE,
             ODRL_OR_CONSTRAINT_ATTRIBUTE,
@@ -25,14 +32,14 @@ public final class PolicyValidationConstants {
             ODRL_AND_CONSTRAINT_ATTRIBUTE
     );
     public static final Set<String> ACCESS_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            CX_POLICY_NS + "FrameworkAgreement",
-            CX_POLICY_NS + "Membership",
-            CX_POLICY_NS + "BusinessPartnerGroup",
-            CX_POLICY_NS + "BusinessPartnerNumber"
+            FRAMEWORK_AGREEMENT_LITERAL,
+            MEMBERSHIP_LITERAL,
+            BUSINESS_PARTNER_GROUP_LITERAL,
+            BUSINESS_PARTNER_NUMBER_LITERAL
     );
     public static final Set<String> USAGE_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            CX_POLICY_NS + "UsagePurpose",
-            CX_POLICY_NS + "Membership",
-            CX_POLICY_NS + "AffiliatesRegion"
+            USAGE_PURPOSE_LITERAL,
+            MEMBERSHIP_LITERAL,
+            AFFILIATES_REGION_LITERAL
     );
 }
