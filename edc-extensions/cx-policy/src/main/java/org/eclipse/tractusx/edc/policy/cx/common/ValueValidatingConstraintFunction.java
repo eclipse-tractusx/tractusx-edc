@@ -24,6 +24,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Rule;
 import org.eclipse.edc.spi.result.Result;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -81,7 +82,11 @@ public abstract class ValueValidatingConstraintFunction<T extends Rule, C extend
     private Result<Void> validateList(Object rightValue) {
         List<?> list = List.of();
         if (rightValue instanceof String s) {
-            list = s.contains(",") ? List.of(s.split(",")) : List.of(s);
+            list = s.contains(",") ?
+                    Arrays.stream(s.split(","))
+                    .map(String::trim)
+                    .toList() :
+                    List.of(s.trim());
         }
         if (rightValue instanceof List<?> rightValuelist) {
             list = rightValuelist;

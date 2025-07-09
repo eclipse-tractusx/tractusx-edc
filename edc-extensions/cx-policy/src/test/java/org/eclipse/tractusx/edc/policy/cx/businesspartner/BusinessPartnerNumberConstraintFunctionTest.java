@@ -49,6 +49,13 @@ class BusinessPartnerNumberConstraintFunctionTest {
     }
 
     @Test
+    void validate_whenIsAnyOfAndRightValuePassedAsString_thenSuccess() {
+        var rightValue = "BPNL00000000001A, BPNL00000000002B";
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
     void validate_whenIsNoneOfAndValidRightValueArePassed_thenSuccess() {
         var rightValue = List.of("BPNL00000000001A", "BPNL00000000002B");
         var result = function.validate(Operator.IS_NONE_OF, rightValue, null);
