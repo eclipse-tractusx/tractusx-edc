@@ -23,6 +23,7 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
     @Override
     public ValidationResult validate(JsonObject input) {
         return JsonObjectValidator.newValidator()
+                .verify(AtLeastOneRuleExists::new)
                 .verifyArrayItem(ODRL_PERMISSION_ATTRIBUTE, UsagePermissionValidator::instance)
                 .verifyArrayItem(ODRL_OBLIGATION_ATTRIBUTE, UsageDutyValidator::instance)
                 .verifyArrayItem(ODRL_PROHIBITION_ATTRIBUTE, UsageProhibitionValidator::instance)
