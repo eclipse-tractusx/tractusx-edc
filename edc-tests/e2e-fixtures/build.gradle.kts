@@ -43,6 +43,7 @@ dependencies {
     testFixturesApi(libs.edc.spi.identity.did)
     testFixturesApi(libs.edc.spi.policy)
     testFixturesApi(libs.edc.spi.transfer)
+    testFixturesApi(libs.edc.spi.dataplane.dataplane)
     testFixturesApi(testFixtures(libs.edc.api.management.test.fixtures))
 
     testFixturesApi(libs.awaitility)

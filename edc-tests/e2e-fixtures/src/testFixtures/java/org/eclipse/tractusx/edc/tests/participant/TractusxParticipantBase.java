@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.tests.participant;
 
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
@@ -241,6 +242,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .post("/v1alpha/catalog/query")
                 .then();
 
+    }
+
+    public String negotiateContract(Participant provider, String assetId) {
+        String negotiationId = this.initContractNegotiation(provider, assetId);
+        await().atMost(this.timeout).untilAsserted(() -> {
+            String state = this.getContractNegotiationState(negotiationId);
+            assertThat(state).isEqualTo(ContractNegotiationStates.FINALIZED.name());
+        });
+        return getContractNegotiationField(negotiationId, "contractAgreementId");
     }
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {

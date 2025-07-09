@@ -19,14 +19,21 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
+import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
+import org.eclipse.tractusx.edc.tests.RuntimeAwareTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,20 +42,17 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
-import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
-import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.TERMINATED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
-import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.mockserver.model.HttpRequest.request;
 
 /**
  * Base tests for Provider PUSH scenario
  */
-public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
+public abstract class ProviderPushBaseTest implements ParticipantAwareTest, RuntimeAwareTest {
 
     public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
     public static final String MOCK_BACKEND_SOURCE_PATH = "/mock/api/provider";
@@ -105,28 +109,50 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest {
         var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
-        var destination = httpDataAddress(destinationUrl);
-        var transferProcessId = consumer()
-                .requestAssetFrom(assetId, provider())
-                .withDestination(destination)
-                .withTransferType("HttpData-PUSH")
-                .execute();
+        var contractAgreementId = consumer().negotiateContract(provider(), assetId);
+        var consumerTransferProcessId = consumer().initiateTransfer(
+                provider(),
+                contractAgreementId,
+                null,
+                httpDataAddress(destinationUrl),
+                "HttpData-PUSH");
 
-        consumer().awaitTransferToBeInState(transferProcessId, STARTED);
+        consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.STARTED);
 
         // Reassert after 3 seconds
         await().pollDelay(3, SECONDS).atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-            var state = consumer().getTransferProcessState(transferProcessId);
-            assertThat(state).isEqualTo(STARTED.name());
+            var state = consumer().getTransferProcessState(consumerTransferProcessId);
+            assertThat(state).isEqualTo(TransferProcessStates.STARTED.name());
         });
 
-        consumer().terminateTransfer(transferProcessId);
-        consumer().awaitTransferToBeInState(transferProcessId, TERMINATED);
+        var providerTransferProcessId = getProviderTransferProcessId(contractAgreementId);
+        var dataflow = providerRuntime().getService(DataPlaneStore.class).findById(providerTransferProcessId);
+        await().atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.STARTED));
+
+        consumer().terminateTransfer(consumerTransferProcessId);
+        consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
+        await().atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.TERMINATED));
     }
 
     @AfterEach
     void teardown() {
         server.stop();
+    }
+
+    private String getProviderTransferProcessId(String contractId) {
+        var query = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
+                .add("@type", "QuerySpec")
+                .add("filterExpression", Json.createArrayBuilder()
+                        .add(Json.createObjectBuilder()
+                                .add("@type", "CriterionDto")
+                                .add("operandLeft", "contractId")
+                                .add("operator", "=")
+                                .add("operandRight", contractId)))
+                .build();
+        return provider().getTransferProcesses(query).getJsonObject(0).getString("@id");
     }
 
     private String createMockHttpDataUrl(String path) {
