@@ -43,7 +43,7 @@ class UsagePurposeConstraintFunctionTest {
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ALL_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null);
+        var result = function.validate(Operator.IS_ALL_OF, List.of("cx.core.legalrequirementforthirdparty:1", "cx.core.industrycore:1"), null);
         assertThat(result.succeeded()).isTrue();
     }
 

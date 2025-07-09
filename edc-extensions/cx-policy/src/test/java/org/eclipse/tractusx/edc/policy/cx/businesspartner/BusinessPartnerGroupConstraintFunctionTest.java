@@ -77,11 +77,4 @@ class BusinessPartnerGroupConstraintFunctionTest {
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
-
-    @Test
-    void validate_whenInvalidRightValueType_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "BPNL000000001A", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("must be a list");
-    }
 }

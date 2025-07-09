@@ -124,6 +124,18 @@ public class FrameworkAgreementCredentialConstraintFunction<C extends Participan
         return leftValue instanceof String && leftValue.toString().startsWith(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL);
     }
 
+    @Override
+    public Result<Void> validate(Object leftOperand, Operator operator, Object rightValue, Permission rule) {
+        if (!Operator.EQ.equals(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(Operator.EQ, operator));
+        }
+
+        return rightValue instanceof String s && s.equals("DataExchangeGovernance:2.0") ?
+                Result.success() :
+                Result.failure("Invalid right-operand: allowed values are '%s'."
+                .formatted("DataExchangeGovernance:2.0"));
+    }
+
     @NotNull
     private Predicate<VerifiableCredential> reducePredicates(List<Predicate<VerifiableCredential>> predicates, Operator operator) {
         return Operator.EQ.equals(operator) ?
@@ -181,5 +193,4 @@ public class FrameworkAgreementCredentialConstraintFunction<C extends Participan
     private String capitalize(@NotNull String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
-
 }
