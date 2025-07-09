@@ -19,8 +19,6 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
@@ -33,10 +31,10 @@ import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,12 +126,12 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
         var providerTransferProcessId = getProviderTransferProcessId(contractAgreementId);
         var dataflow = providerRuntime().getService(DataPlaneStore.class).findById(providerTransferProcessId);
         await().atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.STARTED));
+                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.STARTED.code()));
 
         consumer().terminateTransfer(consumerTransferProcessId);
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
         await().atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.TERMINATED));
+                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.TERMINATED.code()));
     }
 
     @AfterEach
@@ -142,11 +140,11 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
     }
 
     private String getProviderTransferProcessId(String contractId) {
-        var query = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
+        var query = createObjectBuilder()
+                .add("@context", createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
                 .add("@type", "QuerySpec")
-                .add("filterExpression", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
+                .add("filterExpression", createArrayBuilder()
+                        .add(createObjectBuilder()
                                 .add("@type", "CriterionDto")
                                 .add("operandLeft", "contractId")
                                 .add("operator", "=")
