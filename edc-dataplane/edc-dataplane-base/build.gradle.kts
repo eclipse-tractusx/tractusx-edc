@@ -32,8 +32,8 @@ dependencies {
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
     runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
     runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
-
     runtimeOnly(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"))
+    runtimeOnly(project(":edc-extensions:dataplane:dataflow:dataflow-service"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)

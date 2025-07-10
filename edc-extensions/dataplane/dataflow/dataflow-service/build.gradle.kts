@@ -17,21 +17,17 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.spi.dataflow;
+plugins {
+    `java-library`
+    `maven-publish`
+}
 
-import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
-import org.eclipse.edc.spi.result.ServiceResult;
-import org.jetbrains.annotations.NotNull;
+dependencies {
+    api(project(":spi:dataflow-spi"))
+    api(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-spi"))
 
-@ExtensionPoint
-public interface DataFlowService {
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.dataplane.dataplane)
 
-    /**
-     * Trigger a data transfer.
-     *
-     * @param dataflowId the dataflow id of the dataflow to be trigerred.
-     * @return success if the transfer was triggered, failure otherwise
-     */
-    @NotNull
-    ServiceResult<Void> trigger(String dataflowId);
+    testImplementation(libs.edc.junit)
 }
