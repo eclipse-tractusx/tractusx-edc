@@ -78,6 +78,7 @@ include(":edc-extensions:dataplane:dataplane-selector-configuration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 include(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2")
+include(":edc-extensions:dataplane:dataflow:dataflow-api")
 include(":edc-extensions:dataplane:dataflow:dataflow-service")
 
 include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-spi")
