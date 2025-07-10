@@ -4,13 +4,13 @@
 
 A small extension will be added to the Tractus-X connector which subscribes to all internal events 
 and publishes the information directly to an OpenTelemetry collector instance via http.
-The extension can be switched of by configuration. By default it is disabled.
+The extension can be switched off/on via configuration. By default it is disabled.
 
 ## Rationale
 
 The Tractus-X connector has an embedded event mechanism that informs potential listeners about specific incidents, 
 like finalized contract negotiations or ongoing transfers. 
-It should be possible to forward these events to logging & monitorings stacks
+It should be possible to forward these events to a monitoring stack
 to provide the information for further processing, e.g., for metric calculation or dashboards.
 Using an OpenTelemetry collector instance is also agnostic to the concrete logging & monitoring stack used.
 
