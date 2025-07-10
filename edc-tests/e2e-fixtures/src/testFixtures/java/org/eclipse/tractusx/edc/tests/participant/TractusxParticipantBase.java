@@ -243,6 +243,17 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     }
 
+    public String getTransferProcessField(String transferProcessId, String fieldName) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .then()
+                .statusCode(200)
+                .extract().body().jsonPath()
+                .getString(fieldName);
+    }
+
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
         protected Builder(P participant) {
             super(participant);

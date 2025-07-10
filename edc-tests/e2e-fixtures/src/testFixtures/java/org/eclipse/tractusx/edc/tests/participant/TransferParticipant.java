@@ -95,7 +95,7 @@ public class TransferParticipant extends TractusxParticipantBase {
         private final BlockingQueue<JsonObject> events = new LinkedBlockingQueue<>();
         private final Duration timeout;
 
-        public EventSubscription(Duration timeout) {
+        EventSubscription(Duration timeout) {
             this.timeout = timeout;
             server.when(request()).respond(httpRequest -> {
                 var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();

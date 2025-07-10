@@ -14,6 +14,7 @@ jakarta-json = "2.0.1"
 nimbus = "10.3"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.17.0"
+opentelemetry-instrumentation = "2.16.0"
 postgres = "42.7.7"
 restAssured = "5.5.5"
 rsApi = "4.0.0"
@@ -174,6 +175,7 @@ jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsA
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
+opentelemetry-instrumentation-annotations = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations", version.ref = "opentelemetry-instrumentation" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
