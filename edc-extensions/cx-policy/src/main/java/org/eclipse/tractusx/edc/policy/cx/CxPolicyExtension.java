@@ -40,6 +40,11 @@ import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibition
 import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 
@@ -60,9 +65,13 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PR
 import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
 import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction.JURISDICTION_LOCATION;
+import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction.JURISDICTION_LOCATION_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction.LIABILITY;
+import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction.MANAGED_LEGAL_ENTITY_BPNL_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction.MANAGED_LEGAL_ENTITY_REGION;
 import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
-
 
 /**
  * Provides implementations of standard CX usage policies.
@@ -124,6 +133,21 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
 
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION, new JurisdictionLocationConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION, new JurisdictionLocationConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION_REFERENCE, new JurisdictionLocationReferenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + JURISDICTION_LOCATION_REFERENCE, new JurisdictionLocationReferenceConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + LIABILITY, new LiabilityConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + LIABILITY, new LiabilityConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_BPNL_LITERAL, new ManagedLegalEntityBpnlConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_BPNL_LITERAL, new ManagedLegalEntityBpnlConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_REGION, new ManagedLegalEntityRegionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + MANAGED_LEGAL_ENTITY_REGION, new ManagedLegalEntityRegionConstraintFunction<>());
+
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
     }
@@ -158,6 +182,11 @@ public class CxPolicyExtension implements ServiceExtension {
                         CX_POLICY_NS + AFFILIATES_BPNL,
                         CX_POLICY_NS + AFFILIATES_REGION,
                         CX_POLICY_NS + CONTRACT_REFERENCE,
+                        CX_POLICY_NS + JURISDICTION_LOCATION,
+                        CX_POLICY_NS + JURISDICTION_LOCATION_REFERENCE,
+                        CX_POLICY_NS + LIABILITY,
+                        CX_POLICY_NS + MANAGED_LEGAL_ENTITY_BPNL_LITERAL,
+                        CX_POLICY_NS + MANAGED_LEGAL_ENTITY_REGION,
                         CX_POLICY_NS + USAGE_PURPOSE),
                 Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
 
