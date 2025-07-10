@@ -26,6 +26,7 @@ import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
+import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.policy.model.Rule;
@@ -38,6 +39,12 @@ import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionCo
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionPermissionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
@@ -58,6 +65,12 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction.DATA_FREQUENCY;
+import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction.DATA_PROVISIONING_END_DATE;
+import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction.DATA_PROVISIONING_END_DURATION_DAYS;
+import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFunction.DATA_USAGE_END_DATE;
+import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction.DATA_USAGE_END_DEFINITION;
+import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction.DATA_USAGE_END_DURATION_DAYS;
 import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
@@ -81,6 +94,24 @@ public class CxPolicyExtension implements ServiceExtension {
     private RuleBindingRegistry bindingRegistry;
 
     public static void registerFunctions(PolicyEngine engine) {
+
+        // Usage Duty Validators
+        registerForContexts(
+                ContractNegotiationPolicyContext.class,
+                Duty.class,
+                engine,
+                Map.of(
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, new DataProvisioningEndDurationDaysConstraintFunction<>(),
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DATE, new DataProvisioningEndDateConstraintFunction<>())
+        );
+        registerForContexts(
+                TransferProcessPolicyContext.class,
+                Duty.class,
+                engine,
+                Map.of(
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, new DataProvisioningEndDurationDaysConstraintFunction<>(),
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DATE, new DataProvisioningEndDateConstraintFunction<>())
+        );
 
         // Usage Prohibition Validators
         registerForContexts(
@@ -124,6 +155,18 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
 
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
+
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
     }
@@ -145,6 +188,12 @@ public class CxPolicyExtension implements ServiceExtension {
                 Set.of(CX_POLICY_NS + USAGE_PURPOSE, CX_POLICY_NS + CONTRACT_REFERENCE),
                 Set.of(CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
 
+        // Usage Duty Validators
+        registerBindingSets(
+                registry,
+                Set.of(CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, CX_POLICY_NS + DATA_PROVISIONING_END_DATE),
+                Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
+
         // Usage Prohibition Validators
         registerBindingSets(
                 registry,
@@ -158,6 +207,10 @@ public class CxPolicyExtension implements ServiceExtension {
                         CX_POLICY_NS + AFFILIATES_BPNL,
                         CX_POLICY_NS + AFFILIATES_REGION,
                         CX_POLICY_NS + CONTRACT_REFERENCE,
+                        CX_POLICY_NS + DATA_FREQUENCY,
+                        CX_POLICY_NS + DATA_USAGE_END_DATE,
+                        CX_POLICY_NS + DATA_USAGE_END_DEFINITION,
+                        CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS,
                         CX_POLICY_NS + USAGE_PURPOSE),
                 Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
 
