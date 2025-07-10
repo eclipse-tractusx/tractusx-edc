@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.tests.participant;
 
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
@@ -244,13 +243,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     }
 
-    public String negotiateContract(Participant provider, String assetId) {
-        String negotiationId = this.initContractNegotiation(provider, assetId);
-        await().atMost(this.timeout).untilAsserted(() -> {
-            String state = this.getContractNegotiationState(negotiationId);
-            assertThat(state).isEqualTo(ContractNegotiationStates.FINALIZED.name());
-        });
-        return getContractNegotiationField(negotiationId, "contractAgreementId");
+    public String getTransferProcessField(String transferProcessId, String fieldName) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .then()
+                .statusCode(200)
+                .extract().body().jsonPath()
+                .getString(fieldName);
     }
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {

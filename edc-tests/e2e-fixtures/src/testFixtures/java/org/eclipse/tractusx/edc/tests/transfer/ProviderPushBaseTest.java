@@ -34,7 +34,6 @@ import org.mockserver.model.HttpResponse;
 import java.util.Map;
 import java.util.UUID;
 
-import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,13 +106,12 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
         var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
-        var contractAgreementId = consumer().negotiateContract(provider(), assetId);
-        var consumerTransferProcessId = consumer().initiateTransfer(
-                provider(),
-                contractAgreementId,
-                null,
-                httpDataAddress(destinationUrl),
-                "HttpData-PUSH");
+        var destination = httpDataAddress(destinationUrl);
+        var consumerTransferProcessId = consumer()
+                .requestAssetFrom(assetId, provider())
+                .withDestination(destination)
+                .withTransferType("HttpData-PUSH")
+                .execute();
 
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.STARTED);
 
@@ -123,34 +121,23 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
             assertThat(state).isEqualTo(TransferProcessStates.STARTED.name());
         });
 
-        var providerTransferProcessId = getProviderTransferProcessId(contractAgreementId);
-        var dataflow = providerRuntime().getService(DataPlaneStore.class).findById(providerTransferProcessId);
-        await().atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.STARTED.code()));
+        var providerTransferProcessId = consumer().getTransferProcessField(consumerTransferProcessId, "correlationId");
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            var dataflow = providerRuntime().getService(DataPlaneStore.class).findById(providerTransferProcessId);
+            assertThat(dataflow.getState()).isEqualTo(DataFlowStates.STARTED.code());
+        });
 
         consumer().terminateTransfer(consumerTransferProcessId);
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
-        await().atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> assertThat(dataflow.getState()).isEqualTo(DataFlowStates.TERMINATED.code()));
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
+            var dataflow = providerRuntime().getService(DataPlaneStore.class).findById(providerTransferProcessId);
+            assertThat(dataflow.getState()).isEqualTo(DataFlowStates.TERMINATED.code());
+        });
     }
 
     @AfterEach
     void teardown() {
         server.stop();
-    }
-
-    private String getProviderTransferProcessId(String contractId) {
-        var query = createObjectBuilder()
-                .add("@context", createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
-                .add("@type", "QuerySpec")
-                .add("filterExpression", createArrayBuilder()
-                        .add(createObjectBuilder()
-                                .add("@type", "CriterionDto")
-                                .add("operandLeft", "contractId")
-                                .add("operator", "=")
-                                .add("operandRight", contractId)))
-                .build();
-        return provider().getTransferProcesses(query).getJsonObject(0).getString("@id");
     }
 
     private String createMockHttpDataUrl(String path) {
