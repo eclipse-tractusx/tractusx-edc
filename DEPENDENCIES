@@ -212,9 +212,12 @@ maven/mavencentral/io.netty/netty-transport/4.1.112.Final, Apache-2.0 AND BSD-3-
 maven/mavencentral/io.netty/netty-transport/4.1.118.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.16.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry.javaagent/opentelemetry-javaagent/2.17.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
+maven/mavencentral/io.opentelemetry/opentelemetry-api/1.50.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.32.0, Apache-2.0, approved, #11683
+maven/mavencentral/io.opentelemetry/opentelemetry-context/1.50.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.48, Apache-2.0, approved, #9687
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.48, Apache-2.0, approved, #11661
 maven/mavencentral/io.projectreactor/reactor-core/3.4.41, Apache-2.0, approved, #7517
