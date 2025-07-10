@@ -16,18 +16,24 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 public class TypedMandatoryArray implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final Integer min;
+    private final boolean orAbsent;
 
     public TypedMandatoryArray(JsonLdPath path) {
-        this(path, null);
+        this(path, null, false);
     }
 
-    public TypedMandatoryArray(JsonLdPath path, Integer min) {
+    public TypedMandatoryArray(JsonLdPath path, Integer min, boolean orAbsent) {
         this.path = path;
         this.min = min;
+        this.orAbsent = orAbsent;
     }
 
     public static Function<JsonLdPath, Validator<JsonObject>> min(Integer min) {
-        return path -> new TypedMandatoryArray(path, min);
+        return path -> new TypedMandatoryArray(path, min, false);
+    }
+
+    public static Function<JsonLdPath, Validator<JsonObject>> orAbsent() {
+        return path -> new TypedMandatoryArray(path, null, true);
     }
 
     @Override
@@ -40,7 +46,14 @@ public class TypedMandatoryArray implements Validator<JsonObject> {
                     }
                     return validateMin(value.asJsonArray());
                 })
-                .orElseGet(() -> ValidationResult.failure(violation(format("mandatory array '%s' is missing", path), path.toString())));
+                .orElseGet(
+                        () -> {
+                            if (orAbsent) {
+                                return ValidationResult.success();
+                            }
+                            return ValidationResult.failure(violation(format("mandatory array '%s' is missing", path), path.toString()));
+                        }
+                );
     }
 
     private ValidationResult validateMin(JsonArray array) {
