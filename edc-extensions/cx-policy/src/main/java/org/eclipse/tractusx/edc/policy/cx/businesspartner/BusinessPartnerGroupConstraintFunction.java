@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+/*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,9 +15,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -26,18 +26,18 @@ import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFuncti
 
 import java.util.Set;
 
-
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for BusinessPartnerGroup. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
-    public static final String CONTRACT_REFERENCE = "ContractReference";
+public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
+    public static final String BUSINESS_PARTNER_GROUP = "BusinessPartnerGroup";
 
-    public ContractReferenceConstraintFunction() {
+    public BusinessPartnerGroupConstraintFunction() {
         super(
-                Set.of(Operator.IS_ALL_OF),
-                "[\\s\\S]+"
+                Set.of(Operator.IS_ANY_OF, Operator.IS_NONE_OF),
+                "[\\s\\S]+",
+                true
         );
     }
 }
