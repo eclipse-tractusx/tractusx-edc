@@ -10,6 +10,12 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 
+/**
+ * Resolves the type of policy based on the action type of its rules.
+ * It checks for a non-empty permission, obligations, or prohibitions and determines the
+ * policy type from the first found action.
+ * If all of these are empty, it defaults to the access policy type.
+ */
 public class PolicyTypeResolver {
     public static String resolve(JsonObject policy) {
         // Check permissions
