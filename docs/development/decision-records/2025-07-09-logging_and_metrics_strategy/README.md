@@ -1,4 +1,4 @@
-# Logging/Eventing/Metrics Framework
+# Logging/Eventing/Metrics Strategy
 
 The purpose of this decision record is to agree on the general strategy concerning how log information and domain
 event information is processed in the connector and in background services that take the information and process
@@ -19,18 +19,18 @@ it further.
 
 There is a large and basically individual number of metrics that are of interest for a company operating a connector.
 In addition, the calculation of metrics requires infrastructure that is already provided by typical operation stacks.
-As a consequence, it makes sense to just provide the information out of the connector to keep complexity out of the
-connector and to provide flexibility for an operator to manage the connector according to the local requirements.
+As a consequence, it makes sense to just provide the incident information to external services in order to keep
+complexity out of the connector and to provide flexibility for an operator to manage the connector according to
+the local requirements.
 
 To allow easy processing of the information, a structured output allows to use the data directly without the need
 for reengineering the meaning of the information.
 
-There was an agreement by the involved parties, that OpenTelemetry is the right technology to provide information
-out of the connector to background services that manage operations. But the usage of the java agent is consuming a
-high number of resources, that is why the SDK approach of using OpenTelemetry was preferred.
+There was an agreement by the involved parties, that OpenTelemetry is the right technology to provide incident
+information to background services that manage operations. But the usage of the java agent is consuming a
+high amount of resources, that is why the SDK approach of using OpenTelemetry was preferred.
 
 ## Approach
 
 The concrete changes required to meet the requirements of this decision record are part of further records looking
-into single changes needed to meet the goals described by this decision record. The goal here is to bring the
-different changes into an overall context.
+into single changes needed. The goal here is to bring the different changes into an overall context.
