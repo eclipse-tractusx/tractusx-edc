@@ -59,6 +59,9 @@ public abstract class BaseBusinessPartnerGroupApiController {
 
     public void deleteEntry(@PathParam("bpn") String bpn) {
         businessPartnerService.delete(bpn)
+                .onSuccess(v -> businessPartnerObservable
+                        .invokeForEach(l -> l.deleted(bpn))
+                )
                 .orElseThrow(f -> new ObjectNotFoundException(List.class, f.getFailureDetail()));
     }
 
@@ -66,6 +69,9 @@ public abstract class BaseBusinessPartnerGroupApiController {
         var bpn = getBpn(object);
         var groups = getGroups(object);
         businessPartnerService.update(bpn, groups)
+                .onSuccess(v -> businessPartnerObservable
+                        .invokeForEach(l -> l.updated(bpn, groups))
+                )
                 .orElseThrow(f -> new ObjectNotFoundException(List.class, f.getFailureDetail()));
     }
 
@@ -73,6 +79,9 @@ public abstract class BaseBusinessPartnerGroupApiController {
         var bpn = getBpn(object);
         var groups = getGroups(object);
         businessPartnerService.save(bpn, groups)
+                .onSuccess(v -> businessPartnerObservable
+                        .invokeForEach(l -> l.created(bpn, groups))
+                )
                 .orElseThrow(f -> new ObjectConflictException(f.getFailureDetail()));
     }
 
