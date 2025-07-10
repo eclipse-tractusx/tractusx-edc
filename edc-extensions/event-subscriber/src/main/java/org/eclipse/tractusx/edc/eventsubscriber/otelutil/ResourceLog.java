@@ -20,34 +20,17 @@
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-public class ResourceLog {
-    private Resource resource;
-    private List<ScopeLog> scopeLogs;
-
-
-    public ResourceLog(Resource resource, List<ScopeLog> scopeLogs) {
-        this.resource = resource;
-        this.scopeLogs = scopeLogs;
-    }
-
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
-    public List<ScopeLog> getScopeLogs() {
-        return scopeLogs;
-    }
-
-    public void setScopeLogs(List<ScopeLog> scopeLogs) {
-        this.scopeLogs = scopeLogs;
-    }
+/**
+ * Top level class of otel HTTP call request body.
+ */
+public record ResourceLog(
+        @JsonProperty("resource") Resource resource,
+        @JsonProperty("scopeLogs") List<ScopeLog> scopeLogs
+) {
 }
 
 

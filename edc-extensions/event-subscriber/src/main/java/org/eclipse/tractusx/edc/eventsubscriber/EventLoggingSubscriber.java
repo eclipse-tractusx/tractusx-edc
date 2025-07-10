@@ -52,13 +52,15 @@ public class EventLoggingSubscriber implements EventSubscriber {
     private final TypeManager typeManager;
     private final Monitor monitor;
     private final EdcHttpClient httpClient;
-    private static final String OTEL_LOGS_ENDPOINT = System.getProperty("otel.exporter.otlp.endpoint", "http://umbrella-opentelemetry-collector.umbrella:4318") + "/v1/logs";
-    private static final String OTEL_SERVICE_NAME = System.getenv("OTEL_SERVICE_NAME") != null ? System.getenv("OTEL_SERVICE_NAME") : "unknown_service";
+    private final String otelLogsEndpoint;
+    private final String serviceName;
 
-    public EventLoggingSubscriber(TypeManager typeManager, Monitor monitor, EdcHttpClient httpClient) {
+    public EventLoggingSubscriber(TypeManager typeManager, Monitor monitor, EdcHttpClient httpClient, String otelLogsEndpoint, String serviceName) {
         this.typeManager = typeManager;
         this.monitor = monitor;
         this.httpClient = httpClient;
+        this.otelLogsEndpoint = otelLogsEndpoint;
+        this.serviceName = serviceName;
     }
 
 
@@ -82,7 +84,7 @@ public class EventLoggingSubscriber implements EventSubscriber {
         var jsonWritter = typeManager.getMapper().writerWithDefaultPrettyPrinter();
         try {
             return requestBuilder.post(RequestBody.create(jsonWritter.writeValueAsString(messageWrapper), JSON_MEDIA_TYPE))
-                    .url(OTEL_LOGS_ENDPOINT)
+                    .url(otelLogsEndpoint)
                     .build();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -91,8 +93,8 @@ public class EventLoggingSubscriber implements EventSubscriber {
 
     private ResourceLog createResourceLog(String message, String eventName) {
         return new ResourceLog(
-                new Resource(List.of(new Attribute("service.name", new StringValue(OTEL_SERVICE_NAME)))),
-                List.of(new ScopeLog(new Scope("default scope", "1.0.0", new ArrayList<>()), List.of(new SubscribedEventLogRecord(new StringValue(message), eventName))))
+                new Resource(List.of(new Attribute("service.name", new StringValue(serviceName)))),
+                List.of(new ScopeLog(new Scope("default scope", "1.0.0", new ArrayList<>()), List.of(SubscribedEventLogRecord.of(new StringValue(message), eventName))))
             );
     }
 }

@@ -19,11 +19,20 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
+/**
+ * Scope of software from which data originates. The instrumentation scope is defined by the (name,version,schema_url,attributes).
+ *
+ * @param name - name of software
+ * @param version - version of software
+ * @param attributes - optional list of params
+ * */
 public record Scope(
-        String name,
-        String version,
-        List<Attribute> attributes
+        @JsonProperty("name") String name,
+        @JsonProperty("version") String version,
+        @JsonProperty("attributes") List<Attribute> attributes
 ) {
 }

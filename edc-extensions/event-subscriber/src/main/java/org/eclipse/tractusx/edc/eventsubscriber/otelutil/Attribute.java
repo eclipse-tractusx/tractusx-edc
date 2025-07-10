@@ -19,8 +19,16 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * Attribute class is a wrapper for Key-Value data model inside additional attributes
+ *
+ * @param key - key of an attribute
+ * @param value - value of an attribute
+ */
 public record Attribute(
-        String key,
-        StringValue value
+        @JsonProperty("key") String key,
+        @JsonProperty("value") StringValue value
 ) {
 }

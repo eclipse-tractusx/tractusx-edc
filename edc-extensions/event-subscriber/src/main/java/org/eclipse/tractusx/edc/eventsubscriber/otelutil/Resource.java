@@ -19,7 +19,14 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-public record Resource(List<Attribute> attributes) {
+/**
+ * Resource is a set of attributes defining the telemetry source
+ *
+ * @param attributes - Optional attributes
+ */
+public record Resource(@JsonProperty("attributes") List<Attribute> attributes) {
 }

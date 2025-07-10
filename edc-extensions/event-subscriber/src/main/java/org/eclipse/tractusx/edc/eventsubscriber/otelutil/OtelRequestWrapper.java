@@ -19,24 +19,16 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.List;
 
+/**
+ * Util class, which is used for JSON serialization / deserialization.
+ */
 @JsonSerialize
-public class OtelRequestWrapper {
-    private List<ResourceLog> resourceLogs;
-
-    public OtelRequestWrapper(List<ResourceLog> resourceLogs) {
-        this.resourceLogs = resourceLogs;
-    }
-
-
-    public List<ResourceLog> getResourceLogs() {
-        return resourceLogs;
-    }
-
-    public void setResourceLogs(List<ResourceLog> resourceLogs) {
-        this.resourceLogs = resourceLogs;
-    }
+public record OtelRequestWrapper(
+        @JsonProperty("resourceLogs") List<ResourceLog> resourceLogs
+) {
 }

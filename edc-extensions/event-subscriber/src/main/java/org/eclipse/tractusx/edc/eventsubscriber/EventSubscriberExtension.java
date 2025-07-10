@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.eventsubscriber;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -34,6 +35,12 @@ import static org.eclipse.tractusx.edc.eventsubscriber.EventSubscriberExtension.
 public class EventSubscriberExtension implements ServiceExtension {
 
     public static final String NAME = "Tractus-X Event Subscriber Extension";
+    @Setting(required = false)
+    public static final String OTEL_LOGS_ENDPOINT = "tx.edc.otel.logs.endpoint";
+    @Setting(required = false)
+    public static final String OTEL_SERVICE_NAME = "tx.edc.otel.service.name";
+    @Setting(required = false)
+    public static final String IS_EVENT_SUBSCRIBER_ACTIVE = "tx.edc.otel.event.subscriber.active";
 
     @Inject
     private EventRouter eventRouter;
@@ -50,6 +57,11 @@ public class EventSubscriberExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager, context.getMonitor(), httpClient));
+        var isOtelEnabled = context.getSetting(IS_EVENT_SUBSCRIBER_ACTIVE, false);
+        if (isOtelEnabled) {
+            var otelLogsEndpoint = context.getSetting(OTEL_LOGS_ENDPOINT, "http://localhost:4318/v1/logs");
+            var serviceName = context.getSetting(OTEL_SERVICE_NAME, "unknown_service");
+            eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager, context.getMonitor(), httpClient, otelLogsEndpoint, serviceName));
+        }
     }
 }

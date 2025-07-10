@@ -19,7 +19,18 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-public record ScopeLog(Scope scope, List<SubscribedEventLogRecord> logRecords) {
+/**
+ * Aggregates source from which information comes {@link Scope} and list of detailed logs definitions - {@link SubscribedEventLogRecord}.
+ *
+ * @param scope - Origin from which log comes from
+ * @param logRecords - Actual log information
+ */
+public record ScopeLog(
+        @JsonProperty("scope") Scope scope,
+        @JsonProperty("logRecords") List<SubscribedEventLogRecord> logRecords
+) {
 }

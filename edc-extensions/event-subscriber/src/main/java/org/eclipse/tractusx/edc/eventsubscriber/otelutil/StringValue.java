@@ -19,4 +19,13 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
-public record StringValue(String stringValue) { }
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * Wrapper for plaintext values.
+ *
+ * @param stringValue - Wrapped plaintext
+ */
+public record StringValue(
+        @JsonProperty("stringValue") String stringValue
+) { }

@@ -19,93 +19,27 @@
 
 package org.eclipse.tractusx.edc.eventsubscriber.otelutil;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
-public class SubscribedEventLogRecord {
-
-    private long timeUnixNano;
-    private long observedTimeUnixNano;
-    private String severityText;
-    private StringValue body;
-    private String eventName;
-    private int severityNumber;
-    private List<Attribute> attributes = new ArrayList<>();
-    private String traceId;
-    private String spanId;
-
-
-    public SubscribedEventLogRecord(StringValue body, String eventName) {
-        this.body = body;
-        this.eventName = eventName;
+/**
+ * Class containing log and event record definition.
+ */
+public record SubscribedEventLogRecord(
+        @JsonProperty("timeUnixNano") long timeUnixNano,
+        @JsonProperty("observedTimeUnixNano") long observedTimeUnixNano,
+        @JsonProperty("severityText") String severityText,
+        @JsonProperty("body") StringValue body,
+        @JsonProperty("eventName") String eventName,
+        @JsonProperty("severityNumber") int severityNumber,
+        @JsonProperty("attributes") List<Attribute> attributes,
+        @JsonProperty("traceId") String traceId,
+        @JsonProperty("spanId") String spanId
+) {
+    public static SubscribedEventLogRecord of(StringValue body, String eventName) {
         var nowNanos = Instant.now().toEpochMilli() * 1_000_000;
-        this.timeUnixNano = nowNanos;
-        this.observedTimeUnixNano = nowNanos;
-        this.severityText = "Information";
-        this.severityNumber = 10;
-    }
-
-
-    public long getTimeUnixNano() {
-        return timeUnixNano;
-    }
-
-    public void setTimeUnixNano(long timeUnixNano) {
-        this.timeUnixNano = timeUnixNano;
-    }
-
-    public long getObservedTimeUnixNano() {
-        return observedTimeUnixNano;
-    }
-
-    public void setObservedTimeUnixNano(long observedTimeUnixNano) {
-        this.observedTimeUnixNano = observedTimeUnixNano;
-    }
-
-    public String getSeverityText() {
-        return severityText;
-    }
-
-    public void setSeverityText(String severityText) {
-        this.severityText = severityText;
-    }
-
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public int getSeverityNumber() {
-        return severityNumber;
-    }
-
-    public void setSeverityNumber(int severityNumber) {
-        this.severityNumber = severityNumber;
-    }
-
-
-    public StringValue getBody() {
-        return body;
-    }
-
-    public void setBody(StringValue body) {
-        this.body = body;
-    }
-
-    public List<Attribute> getAttributes() {
-        return attributes;
-    }
-
-    public String getTraceId() {
-        return traceId;
-    }
-
-    public String getSpanId() {
-        return spanId;
+        return new SubscribedEventLogRecord(nowNanos, nowNanos, "INFORMATION", body, eventName, 10, List.of(), null, null);
     }
 }
