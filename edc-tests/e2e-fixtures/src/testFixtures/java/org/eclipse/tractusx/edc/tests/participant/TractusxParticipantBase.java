@@ -254,6 +254,16 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .getString(fieldName);
     }
 
+    public void triggerDataTransfer(String dataFlowId) {
+        baseManagementRequest()
+                // .header(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY)
+                .when()
+                .post("/v1/dataflows/{id}/trigger", dataFlowId)
+                .then()
+                .log().ifError()
+                .statusCode(204);
+    }
+
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
         protected Builder(P participant) {
             super(participant);
