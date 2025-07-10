@@ -28,7 +28,7 @@ import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.api.bpn.v1.BusinessPartnerGroupApiV1Controller;
 import org.eclipse.tractusx.edc.api.bpn.v3.BusinessPartnerGroupApiV3Controller;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;

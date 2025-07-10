@@ -27,7 +27,7 @@ import jakarta.ws.rs.PathParam;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ObjectConflictException;
 import org.eclipse.edc.web.spi.exception.ObjectNotFoundException;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

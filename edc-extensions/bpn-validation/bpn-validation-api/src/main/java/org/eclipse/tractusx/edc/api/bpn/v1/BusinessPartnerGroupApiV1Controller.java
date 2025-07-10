@@ -32,7 +32,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiController;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
 

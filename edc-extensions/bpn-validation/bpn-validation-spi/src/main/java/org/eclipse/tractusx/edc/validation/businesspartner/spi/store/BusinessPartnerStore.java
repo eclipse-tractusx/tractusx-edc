@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.validation.businesspartner.spi;
+package org.eclipse.tractusx.edc.validation.businesspartner.spi.store;
 
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.result.StoreResult;

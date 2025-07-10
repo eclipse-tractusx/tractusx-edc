@@ -33,7 +33,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.web.spi.exception.ObjectNotFoundException;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiController;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import java.util.List;
 
