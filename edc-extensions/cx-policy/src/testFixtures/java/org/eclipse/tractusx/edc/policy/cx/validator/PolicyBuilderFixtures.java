@@ -1,11 +1,13 @@
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
+import jakarta.json.*;
 
 import java.util.Collection;
+import java.util.Map;
+
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.*;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 
 public final class PolicyBuilderFixtures {
@@ -52,6 +54,15 @@ public final class PolicyBuilderFixtures {
                 .add(ODRL_CONSTRAINT_ATTRIBUTE, arrayBuilder)
                 .build();
     }
+    public static JsonObject ruleWithoutActionType(JsonObject... constraints) {
+        var arrayBuilder = Json.createArrayBuilder();
+        for (JsonObject constraint : constraints) {
+            arrayBuilder.add(constraint);
+        }
+        return Json.createObjectBuilder()
+                .add(ODRL_CONSTRAINT_ATTRIBUTE, arrayBuilder)
+                .build();
+    }
 
     public static JsonObject emptyRule() {
         return Json.createObjectBuilder()
@@ -67,12 +78,6 @@ public final class PolicyBuilderFixtures {
                 .build();
     }
 
-    public static JsonObject policy(String ruleType, JsonObject rule) {
-        return Json.createObjectBuilder()
-                .add(ruleType, Json.createArrayBuilder().add(rule))
-                .build();
-    }
-
     public static JsonObject policy(String policyType, String ruleType) {
         JsonObject rule = rule(policyType);
 
@@ -80,4 +85,19 @@ public final class PolicyBuilderFixtures {
                 .add(ruleType, Json.createArrayBuilder().add(rule))
                 .build();
     }
+
+    public static JsonObject policy(String ruleType, JsonObject rule) {
+        return Json.createObjectBuilder()
+                .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
+                .add(ruleType, Json.createArrayBuilder().add(rule))
+                .build();
+    }
+
+    public static JsonObject policyDefinition(JsonObject policy, String id) {
+        return Json.createObjectBuilder()
+                .add(ID, id)
+                .add(EDC_NAMESPACE + "policy", Json.createArrayBuilder().add(policy))
+                .build();
+    }
+
 }
