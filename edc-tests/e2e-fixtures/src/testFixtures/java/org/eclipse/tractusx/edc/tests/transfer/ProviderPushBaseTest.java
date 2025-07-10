@@ -24,7 +24,6 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
-import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
 import org.eclipse.tractusx.edc.tests.RuntimeAwareTest;
 import org.junit.jupiter.api.AfterEach;
@@ -153,10 +152,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
     }
 
     private void dataFlowIsInState(String dataFlowId, DataFlowStates state) {
-        assertThat(providerRuntime().getService(DataPlaneStore.class))
-                .extracting(service -> service.findById(dataFlowId))
-                .extracting(DataFlow::getState)
-                .isEqualTo(state.code());
+        var dataflow = providerRuntime().getService(DataPlaneStore.class).findById(dataFlowId);
+        assertThat(dataflow.getState()).isEqualTo(state.code());
     }
 
     private String createMockHttpDataUrl(String path) {
