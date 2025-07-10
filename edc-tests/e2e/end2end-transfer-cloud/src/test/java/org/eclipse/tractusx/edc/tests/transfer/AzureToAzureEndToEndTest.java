@@ -51,7 +51,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bnpPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -144,7 +144,7 @@ public class AzureToAzureEndToEndTest {
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
+        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destfolder = "destfolder";
@@ -198,7 +198,7 @@ public class AzureToAzureEndToEndTest {
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
+        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destination = createObjectBuilder()
@@ -249,7 +249,7 @@ public class AzureToAzureEndToEndTest {
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bnpPolicy(consumer().getBpn()));
+        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destinationContainerName = UUID.randomUUID().toString();

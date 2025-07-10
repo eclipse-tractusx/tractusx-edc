@@ -35,6 +35,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.rules.ExpirationIssuedAtValidationRule;
@@ -258,7 +259,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     }
 
     @Override
-    public Result<Void> revoke(String transferProcessId, String reason) {
+    public ServiceResult<Void> revoke(String transferProcessId, String reason) {
         var query = QuerySpec.Builder.newInstance()
                 .filter(new Criterion("additionalProperties.process_id", "=", transferProcessId))
                 .build();
@@ -266,7 +267,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         var tokens = accessTokenDataStore.query(query);
         return tokens.stream().map(this::deleteTokenData)
                 .reduce(Result::merge)
-                .orElseGet(() -> Result.failure("AccessTokenData associated to the transfer with ID '%s' does not exist.".formatted(transferProcessId)));
+                .map(ServiceResult::from)
+                .orElseGet(() -> ServiceResult.notFound("AccessTokenData associated to the transfer with ID '%s' does not exist.".formatted(transferProcessId)));
     }
 
     private Result<Void> deleteTokenData(AccessTokenData tokenData) {

@@ -94,7 +94,10 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
@@ -151,7 +154,10 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
         var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL").execute();
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
