@@ -27,6 +27,7 @@ import jakarta.ws.rs.PathParam;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ObjectConflictException;
 import org.eclipse.edc.web.spi.exception.ObjectNotFoundException;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.observe.BusinessPartnerObservable;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,9 +41,11 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public abstract class BaseBusinessPartnerGroupApiController {
 
     protected final BusinessPartnerStore businessPartnerService;
+    protected final BusinessPartnerObservable businessPartnerObservable;
 
-    public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
+    public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService, BusinessPartnerObservable businessPartnerObservable) {
         this.businessPartnerService = businessPartnerService;
+        this.businessPartnerObservable = businessPartnerObservable;
     }
 
     public JsonObject resolve(String bpn) {
