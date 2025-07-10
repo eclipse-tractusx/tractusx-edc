@@ -36,6 +36,7 @@ include(":spi:edr-spi")
 include(":spi:core-spi")
 include(":spi:tokenrefresh-spi")
 include(":spi:bdrs-client-spi")
+include(":spi:dataflow-spi")
 
 
 // core modules
