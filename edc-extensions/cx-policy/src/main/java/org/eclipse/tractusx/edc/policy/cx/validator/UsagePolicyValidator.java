@@ -46,11 +46,24 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
 
     @Override
     public ValidationResult validate(JsonObject input) {
+        var typeValidator = typeValidator(input);
+        if (typeValidator.failed()) {
+            return typeValidator;
+        }
         return JsonObjectValidator.newValidator()
                 .verify(AtLeastOneRuleExists::new)
                 .verifyArrayItem(ODRL_PERMISSION_ATTRIBUTE, UsagePermissionValidator::instance)
                 .verifyArrayItem(ODRL_OBLIGATION_ATTRIBUTE, UsageObligationValidator::instance)
                 .verifyArrayItem(ODRL_PROHIBITION_ATTRIBUTE, UsageProhibitionValidator::instance)
+                .build()
+                .validate(input);
+    }
+    private ValidationResult typeValidator(JsonObject input) {
+        return JsonObjectValidator.newValidator()
+                .verify(AtLeastOneRuleExists::new)
+                .verify(ODRL_PERMISSION_ATTRIBUTE, TypedMandatoryArray.orAbsent())
+                .verify(ODRL_PROHIBITION_ATTRIBUTE, TypedMandatoryArray.orAbsent())
+                .verify(ODRL_OBLIGATION_ATTRIBUTE, TypedMandatoryArray.orAbsent())
                 .build()
                 .validate(input);
     }
