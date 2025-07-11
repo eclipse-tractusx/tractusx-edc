@@ -31,31 +31,31 @@ public interface BusinessPartnerListener {
 
 
     /**
-     * Called after a BusinessPartnerNumber was created.
+     * Called after a bpn was created.
      *
-     * @param businessPartnerNumber the businessPartnerNumber that has been created.
-     * @param businessPartnerGroups the businessPartnerGroups that have been assigned to the businessPartnerNumber
+     * @param bpn the bpn that has been created.
+     * @param groups the bpn groups that have been assigned to the bpn
      */
-    default void created(String businessPartnerNumber, List<String> businessPartnerGroups) {
+    default void created(String bpn, List<String> groups) {
 
     }
 
     /**
-     * Called after a BusinessPartnerNumber was deleted.
+     * Called after a bpn was deleted.
      *
-     * @param businessPartnerNumber the businessPartnerNumber that has been deleted.
+     * @param bpn the bpn that has been deleted.
      */
-    default void deleted(String businessPartnerNumber) {
+    default void deleted(String bpn) {
 
     }
 
     /**
-     * Called after a BusinessPartnerNumber was updated.
+     * Called after a bpn was updated.
      *
-     * @param businessPartnerNumber the businessPartnerNumber that has been deleted.
-     * @param businessPartnerGroups the businessPartnerGroups that have been assigned to the businessPartnerNumber
+     * @param bpn the bpn that has been deleted.
+     * @param groups the bpn groups that have been assigned to the bpn
      */
-    default void updated(String businessPartnerNumber, List<String> businessPartnerGroups) {
+    default void updated(String bpn, List<String> groups) {
 
     }
 }

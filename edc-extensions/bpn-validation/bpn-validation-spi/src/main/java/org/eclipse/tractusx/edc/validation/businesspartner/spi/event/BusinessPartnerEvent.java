@@ -25,15 +25,15 @@ import java.util.List;
 
 public abstract class BusinessPartnerEvent extends Event {
 
-    protected String businessPartnerNumber;
-    protected List<String> businessPartnerGroups;
+    protected String bpn;
+    protected List<String> groups;
 
-    public String getBusinessPartnerNumber() {
-        return businessPartnerNumber;
+    public String getBpn() {
+        return bpn;
     }
 
-    public List<String> getBusinessPartnerGroups() {
-        return businessPartnerGroups;
+    public List<String> getGroups() {
+        return groups;
     }
 
     public abstract static class Builder<T extends BusinessPartnerEvent, B extends BusinessPartnerEvent.Builder<T, B>> {
@@ -46,13 +46,13 @@ public abstract class BusinessPartnerEvent extends Event {
 
         public abstract B self();
 
-        public B businessPartnerNumber(String businessPartnerNumber) {
-            event.businessPartnerNumber = businessPartnerNumber;
+        public B bpn(String bpn) {
+            event.bpn = bpn;
             return self();
         }
 
-        public B businessPartnerGroups(List<String> businessPartnerGroups) {
-            event.businessPartnerGroups = businessPartnerGroups;
+        public B groups(List<String> groups) {
+            event.groups = groups;
             return self();
         }
 

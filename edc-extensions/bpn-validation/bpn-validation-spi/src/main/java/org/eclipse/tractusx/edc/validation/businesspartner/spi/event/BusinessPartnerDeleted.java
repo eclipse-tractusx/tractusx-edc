@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.validation.businesspartner.spi.event;
 public class BusinessPartnerDeleted extends BusinessPartnerEvent {
     @Override
     public String name() {
-        return "business.partner.number.deleted";
+        return "bpn.deleted";
     }
 
     public static class Builder extends BusinessPartnerEvent.Builder<BusinessPartnerDeleted, BusinessPartnerDeleted.Builder> {

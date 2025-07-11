@@ -40,29 +40,29 @@ public class BusinessPartnerEventListener implements BusinessPartnerListener {
     }
 
     @Override
-    public void created(String businessPartnerNumber, List<String> businessPartnerGroups) {
+    public void created(String bpn, List<String> groups) {
         var event = BusinessPartnerCreated.Builder.newInstance()
-                .businessPartnerNumber(businessPartnerNumber)
-                .businessPartnerGroups(businessPartnerGroups)
+                .bpn(bpn)
+                .groups(groups)
                 .build();
 
         publish(event);
     }
 
     @Override
-    public void deleted(String businessPartnerNumber) {
+    public void deleted(String bpn) {
         var event = BusinessPartnerDeleted.Builder.newInstance()
-                .businessPartnerNumber(businessPartnerNumber)
+                .bpn(bpn)
                 .build();
 
         publish(event);
     }
 
     @Override
-    public void updated(String businessPartnerNumber, List<String> businessPartnerGroups) {
+    public void updated(String bpn, List<String> groups) {
         var event = BusinessPartnerUpdated.Builder.newInstance()
-                .businessPartnerNumber(businessPartnerNumber)
-                .businessPartnerGroups(businessPartnerGroups)
+                .bpn(bpn)
+                .groups(groups)
                 .build();
 
         publish(event);
