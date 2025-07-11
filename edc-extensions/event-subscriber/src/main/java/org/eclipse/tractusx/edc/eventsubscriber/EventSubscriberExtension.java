@@ -41,7 +41,7 @@ public class EventSubscriberExtension implements ServiceExtension {
     @Setting(required = false, key =  "tx.edc.otel.service.name", defaultValue = "unknown_service")
     private String otelServiceName;
 
-    @Setting(required = false, key = "tx.edc.otel.event.subscriber.active", defaultValue = "false")
+    @Setting(required = false, key = "tx.edc.otel.events.subscriber.active", defaultValue = "false")
     private String isOtelEnabled;
 
     @Inject
