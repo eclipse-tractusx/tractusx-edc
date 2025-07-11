@@ -39,7 +39,8 @@ public record SubscribedEventLogRecord(
         @JsonProperty("spanId") String spanId
 ) {
     public static SubscribedEventLogRecord of(StringValue body, String eventName) {
-        var nowNanos = Instant.now().toEpochMilli() * 1_000_000;
+        var instant = Instant.now();
+        var nowNanos = instant.getEpochSecond() * 1_000_000_000 + instant.getNano();
         return new SubscribedEventLogRecord(nowNanos, nowNanos, "INFORMATION", body, eventName, 10, List.of(), null, null);
     }
 }

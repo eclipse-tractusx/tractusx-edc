@@ -35,12 +35,14 @@ import static org.eclipse.tractusx.edc.eventsubscriber.EventSubscriberExtension.
 public class EventSubscriberExtension implements ServiceExtension {
 
     public static final String NAME = "Tractus-X Event Subscriber Extension";
-    @Setting(required = false)
-    public static final String OTEL_LOGS_ENDPOINT = "tx.edc.otel.logs.endpoint";
-    @Setting(required = false)
-    public static final String OTEL_SERVICE_NAME = "tx.edc.otel.service.name";
-    @Setting(required = false)
-    public static final String IS_EVENT_SUBSCRIBER_ACTIVE = "tx.edc.otel.event.subscriber.active";
+    @Setting(required = false, key = "tx.edc.otel.logs.endpoint", defaultValue = "http://localhost:4318/v1/logs")
+    private String otelLogsEndpoint;
+
+    @Setting(required = false, key =  "tx.edc.otel.service.name", defaultValue = "unknown_service")
+    private String otelServiceName;
+
+    @Setting(required = false, key = "tx.edc.otel.event.subscriber.active", defaultValue = "false")
+    private String isOtelEnabled;
 
     @Inject
     private EventRouter eventRouter;
@@ -57,11 +59,8 @@ public class EventSubscriberExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var isOtelEnabled = context.getSetting(IS_EVENT_SUBSCRIBER_ACTIVE, false);
-        if (isOtelEnabled) {
-            var otelLogsEndpoint = context.getSetting(OTEL_LOGS_ENDPOINT, "http://localhost:4318/v1/logs");
-            var serviceName = context.getSetting(OTEL_SERVICE_NAME, "unknown_service");
-            eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager, context.getMonitor(), httpClient, otelLogsEndpoint, serviceName));
+        if (Boolean.parseBoolean(isOtelEnabled)) {
+            eventRouter.register(Event.class, new EventLoggingSubscriber(typeManager, context.getMonitor(), httpClient, otelLogsEndpoint, otelServiceName));
         }
     }
 }
