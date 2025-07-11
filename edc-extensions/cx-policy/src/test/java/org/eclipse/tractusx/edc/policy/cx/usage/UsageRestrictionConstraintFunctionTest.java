@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,26 +30,26 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class UsagePurposeConstraintFunctionTest {
+class UsageRestrictionConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final UsagePurposeConstraintFunction<ParticipantAgentPolicyContext> function = new UsagePurposeConstraintFunction<>();
+    private final UsageRestrictionConstraintFunction<ParticipantAgentPolicyContext> function = new UsageRestrictionConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.IS_ALL_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null, context)).isTrue();
+        assertThat(function.evaluate(Operator.IS_ALL_OF, "cx.thirdparty.forbidden:1", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ALL_OF, List.of("cx.core.legalrequirementforthirdparty:1", "cx.core.industrycore:1"), null);
+        var result = function.validate(Operator.IS_ALL_OF, List.of("cx.thirdparty.forbidden:1"), null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.EQ, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null);
+        var result = function.validate(Operator.EQ, List.of("cx.thirdparty.forbidden:1"), null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }

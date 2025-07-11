@@ -41,7 +41,14 @@ import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceCon
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.precedence.PrecedenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDefinitionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDurationMonthsConstraintFunction;
 
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +68,14 @@ import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractRefer
 import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.precedence.PrecedenceConstraintFunction.PRECEDENCE;
+import static org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction.EXCLUSIVE_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
+import static org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction.USAGE_RESTRICTION;
+import static org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction.VERSION_CHANGES;
+import static org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyConstraintFunction.WARRANTY;
+import static org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDefinitionConstraintFunction.WARRANTY_DEFINITION;
+import static org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDurationMonthsConstraintFunction.WARRANTY_DURATION_MONTHS;
 
 
 /**
@@ -81,7 +95,6 @@ public class CxPolicyExtension implements ServiceExtension {
     private RuleBindingRegistry bindingRegistry;
 
     public static void registerFunctions(PolicyEngine engine) {
-
         // Usage Prohibition Validators
         registerForContexts(
                 ContractNegotiationPolicyContext.class,
@@ -89,7 +102,8 @@ public class CxPolicyExtension implements ServiceExtension {
                 engine,
                 Map.of(
                         CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>(),
-                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>())
+                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>(),
+                        CX_POLICY_NS + USAGE_RESTRICTION, new UsageRestrictionConstraintFunction<>())
         );
 
         registerForContexts(
@@ -98,7 +112,8 @@ public class CxPolicyExtension implements ServiceExtension {
                 engine,
                 Map.of(
                         CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>(),
-                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>())
+                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>(),
+                        CX_POLICY_NS + USAGE_RESTRICTION, new UsageRestrictionConstraintFunction<>())
         );
 
         // Access and Usage Permission Validators
@@ -124,8 +139,26 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
 
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + EXCLUSIVE_USAGE, new ExcludingUsageConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + EXCLUSIVE_USAGE, new ExcludingUsageConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + PRECEDENCE, new PrecedenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + PRECEDENCE, new PrecedenceConstraintFunction<>());
+
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + VERSION_CHANGES, new VersionChangesConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + VERSION_CHANGES, new VersionChangesConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY, new WarrantyConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY, new WarrantyConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DEFINITION, new WarrantyDefinitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DEFINITION, new WarrantyDefinitionConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DURATION_MONTHS, new WarrantyDurationMonthsConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + WARRANTY_DURATION_MONTHS, new WarrantyDurationMonthsConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
@@ -148,7 +181,7 @@ public class CxPolicyExtension implements ServiceExtension {
         // Usage Prohibition Validators
         registerBindingSets(
                 registry,
-                Set.of(CX_POLICY_NS + AFFILIATES_BPNL, CX_POLICY_NS + AFFILIATES_REGION),
+                Set.of(CX_POLICY_NS + AFFILIATES_BPNL, CX_POLICY_NS + AFFILIATES_REGION, CX_POLICY_NS + USAGE_RESTRICTION),
                 Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
 
         // Usage Permission Validators
@@ -158,7 +191,13 @@ public class CxPolicyExtension implements ServiceExtension {
                         CX_POLICY_NS + AFFILIATES_BPNL,
                         CX_POLICY_NS + AFFILIATES_REGION,
                         CX_POLICY_NS + CONTRACT_REFERENCE,
-                        CX_POLICY_NS + USAGE_PURPOSE),
+                        CX_POLICY_NS + EXCLUSIVE_USAGE,
+                        CX_POLICY_NS + PRECEDENCE,
+                        CX_POLICY_NS + USAGE_PURPOSE,
+                        CX_POLICY_NS + VERSION_CHANGES,
+                        CX_POLICY_NS + WARRANTY,
+                        CX_POLICY_NS + WARRANTY_DEFINITION,
+                        CX_POLICY_NS + WARRANTY_DURATION_MONTHS),
                 Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
 
     }
