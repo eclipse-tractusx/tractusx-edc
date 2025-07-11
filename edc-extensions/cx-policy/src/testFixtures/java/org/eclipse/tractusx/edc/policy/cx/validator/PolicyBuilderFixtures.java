@@ -86,10 +86,14 @@ public final class PolicyBuilderFixtures {
                 .build();
     }
 
-    public static JsonObject policy(String ruleType, JsonObject rule) {
+    public static JsonObject policy(String ruleType, JsonObject... rules) {
+        var rulesArrayBuilder = Json.createArrayBuilder();
+        for (JsonObject rule : rules) {
+            rulesArrayBuilder.add(rule);
+        }
         return Json.createObjectBuilder()
                 .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
-                .add(ruleType, Json.createArrayBuilder().add(rule))
+                .add(ruleType, rulesArrayBuilder)
                 .build();
     }
 
