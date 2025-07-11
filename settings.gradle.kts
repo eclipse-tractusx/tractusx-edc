@@ -56,6 +56,7 @@ include(":edc-extensions:tokenrefresh-handler")
 include(":edc-extensions:bdrs-client")
 include(":edc-extensions:provision-additional-headers")
 include(":edc-extensions:federated-catalog")
+include(":edc-extensions:event-subscriber")
 include(":edc-extensions:edr:edr-api-v2")
 include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:edr:edr-index-lock-sql")
@@ -77,6 +78,9 @@ include(":edc-extensions:dataplane:dataplane-selector-configuration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 include(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2")
+
+include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-spi")
+include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core")
 
 // test modules
 include(":edc-tests:e2e-fixtures")

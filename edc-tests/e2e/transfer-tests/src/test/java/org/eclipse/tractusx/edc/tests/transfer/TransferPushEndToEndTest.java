@@ -65,4 +65,14 @@ public class TransferPushEndToEndTest extends ProviderPushBaseTest {
         return CONSUMER;
     }
 
+    @Override
+    public RuntimeExtension providerRuntime() {
+        return PROVIDER_RUNTIME;
+    }
+
+    @Override
+    public RuntimeExtension consumerRuntime() {
+        return CONSUMER_RUNTIME;
+    }
+
 }
