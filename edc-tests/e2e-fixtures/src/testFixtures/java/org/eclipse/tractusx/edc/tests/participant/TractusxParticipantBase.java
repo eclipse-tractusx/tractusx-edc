@@ -256,6 +256,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public void triggerDataTransfer(String dataFlowId) {
         baseManagementRequest()
+                .contentType(JSON)
                 // .header(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY)
                 .when()
                 .post("/v1/dataflows/{id}/trigger", dataFlowId)
