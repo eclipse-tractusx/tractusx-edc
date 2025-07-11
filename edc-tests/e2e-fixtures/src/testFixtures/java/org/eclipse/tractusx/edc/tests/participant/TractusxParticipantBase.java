@@ -168,6 +168,34 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .statusCode(204);
     }
 
+    /**
+     * Updates a BPN's groups
+     */
+    public void updateBusinessPartner(String bpn, String... groups) {
+        var body = createObjectBuilder()
+                .add(ID, bpn)
+                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
+                .build();
+        baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .put("/v3/business-partner-groups")
+                .then()
+                .statusCode(204);
+    }
+
+    /**
+     * Delete a BPN
+     */
+    public void deleteBusinessPartner(String bpn) {
+        baseManagementRequest()
+                .when()
+                .delete("/v3/business-partner-groups/{bpn}", bpn)
+                .then()
+                .statusCode(204);
+    }
+
     public ValidatableResponse retireProviderAgreement(String agreementId) {
         var body = createObjectBuilder()
                 .add(TYPE, AR_ENTRY_TYPE)
