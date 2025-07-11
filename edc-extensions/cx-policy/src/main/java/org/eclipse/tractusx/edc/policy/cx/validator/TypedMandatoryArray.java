@@ -51,7 +51,7 @@ public class TypedMandatoryArray implements Validator<JsonObject> {
                             if (orAbsent) {
                                 return ValidationResult.success();
                             }
-                            return ValidationResult.failure(violation(format("mandatory array '%s' is missing", path), path.toString()));
+                            return ValidationResult.failure(violation(format("Mandatory array '%s' is missing", path), path.toString()));
                         }
                 );
     }
@@ -60,6 +60,6 @@ public class TypedMandatoryArray implements Validator<JsonObject> {
         if (min == null || (array.size() >= min)) {
             return ValidationResult.success();
         }
-        return ValidationResult.failure(violation(format("array '%s' should at least contains '%s' elements", path, min), path.toString()));
+        return ValidationResult.failure(violation(format("Array '%s' should at least contains '%s' elements", path, min), path.toString()));
     }
 }
