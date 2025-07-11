@@ -81,9 +81,9 @@ public class EventLoggingSubscriber implements EventSubscriber {
     @NotNull
     private Request createRequest(OtelRequestWrapper messageWrapper) {
         var requestBuilder = new Request.Builder();
-        var jsonWritter = typeManager.getMapper().writerWithDefaultPrettyPrinter();
+        var jsonWriter = typeManager.getMapper().writerWithDefaultPrettyPrinter();
         try {
-            return requestBuilder.post(RequestBody.create(jsonWritter.writeValueAsString(messageWrapper), JSON_MEDIA_TYPE))
+            return requestBuilder.post(RequestBody.create(jsonWriter.writeValueAsString(messageWrapper), JSON_MEDIA_TYPE))
                     .url(otelLogsEndpoint)
                     .build();
         } catch (JsonProcessingException e) {
