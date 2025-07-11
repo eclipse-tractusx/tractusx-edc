@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
-import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
@@ -113,9 +112,9 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 .withDestination(destination)
                 .withTransferType("HttpData-PUSH")
                 .execute();
-        var providerTransferProcessId = consumer().getTransferProcessField(consumerTransferProcessId, "correlationId");
 
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.STARTED);
+        var providerTransferProcessId = consumer().getTransferProcessField(consumerTransferProcessId, "correlationId");
 
         // Reassert after 3 seconds
         waitAndAssert(
