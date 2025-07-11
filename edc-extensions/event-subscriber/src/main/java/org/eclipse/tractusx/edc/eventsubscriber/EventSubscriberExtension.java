@@ -35,7 +35,7 @@ import static org.eclipse.tractusx.edc.eventsubscriber.EventSubscriberExtension.
 public class EventSubscriberExtension implements ServiceExtension {
 
     public static final String NAME = "Tractus-X Event Subscriber Extension";
-    @Setting(required = false, key = "tx.edc.otel.logs.endpoint", defaultValue = "http://localhost:4318/v1/logs")
+    @Setting(required = false, key = "tx.edc.otel.events.endpoint", defaultValue = "http://localhost:4318/v1/logs")
     private String otelLogsEndpoint;
 
     @Setting(required = false, key =  "tx.edc.otel.service.name", defaultValue = "unknown_service")
