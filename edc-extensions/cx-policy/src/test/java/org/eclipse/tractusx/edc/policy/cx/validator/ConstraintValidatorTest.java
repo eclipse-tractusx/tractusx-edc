@@ -20,7 +20,7 @@ class ConstraintValidatorTest {
 
     @BeforeEach
     void setUp() {
-        accessPolicyValidator = ConstraintValidator.instance(JsonObjectValidator.newValidator(), ACCESS_POLICY_TYPE).build();
+        accessPolicyValidator = ConstraintValidator.instance(JsonObjectValidator.newValidator(), ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE).build();
     }
 
     @Test
