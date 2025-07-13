@@ -12,14 +12,16 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 public class ConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
+    private final String ruleType;
 
-    private ConstraintValidator(JsonLdPath path, String policyType) {
+    private ConstraintValidator(JsonLdPath path, String policyType, String ruleType) {
         this.path = path;
         this.policyType = policyType;
+        this.ruleType = ruleType;
     }
 
-    public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType) {
-        return builder.verify(path -> new ConstraintValidator(path, policyType));
+    public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType, String ruleType) {
+        return builder.verify(path -> new ConstraintValidator(path, policyType, ruleType));
     }
 
     @Override
@@ -29,7 +31,7 @@ public class ConstraintValidator implements Validator<JsonObject> {
                         NOT_ALLOWED_LOGICAL_CONSTRAINTS.contains(key));
 
         return isLogical ?
-                LogicalConstraintValidator.instance(path, policyType).validate(input) :
-                AtomicConstraintValidator.instance(path, policyType).validate(input);
+                LogicalConstraintValidator.instance(path, policyType, ruleType).validate(input) :
+                AtomicConstraintValidator.instance(path, policyType, ruleType).validate(input);
     }
 }

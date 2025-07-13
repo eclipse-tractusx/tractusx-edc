@@ -36,7 +36,7 @@ public class AccessPolicyValidator implements Validator<JsonObject> {
         public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder) {
             return builder
                     .verify(path -> ActionTypeIs.orAbsent(path, ACCESS_POLICY_TYPE))
-                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACCESS_POLICY_TYPE));
+                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE));
         }
     }
 }
