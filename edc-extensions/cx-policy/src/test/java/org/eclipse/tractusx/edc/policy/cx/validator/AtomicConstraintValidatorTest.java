@@ -24,8 +24,8 @@ class AtomicConstraintValidatorTest {
     @BeforeEach
     void setUp() {
         path = JsonLdPath.path();
-        accessPolicyValidator = AtomicConstraintValidator.instance(path, ACCESS_POLICY_TYPE);
-        usagePolicyValidator = AtomicConstraintValidator.instance(path, USAGE_POLICY_TYPE);
+        accessPolicyValidator = AtomicConstraintValidator.instance(path, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        usagePolicyValidator = AtomicConstraintValidator.instance(path, USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
     }
 
     @Test

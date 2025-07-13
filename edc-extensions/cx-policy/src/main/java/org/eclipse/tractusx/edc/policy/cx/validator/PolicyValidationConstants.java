@@ -26,6 +26,9 @@ public final class PolicyValidationConstants {
     public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
     public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_NS + "AffiliatesRegion";
 
+    // old
+    public static final String INFORCE_POLICY_LITERAL = "https://w3id.org/edc/v0.0.1/ns/inForceDate";
+
     public static final Set<String> NOT_ALLOWED_LOGICAL_CONSTRAINTS = Set.of(
             ODRL_XONE_CONSTRAINT_ATTRIBUTE,
             ODRL_OR_CONSTRAINT_ATTRIBUTE,
@@ -34,15 +37,43 @@ public final class PolicyValidationConstants {
     public static final Set<String> ALLOWED_LOGICAL_CONSTRAINTS = Set.of(
             ODRL_AND_CONSTRAINT_ATTRIBUTE
     );
-    public static final Set<String> ACCESS_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
+    public static final Set<String> ACCESS_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             FRAMEWORK_AGREEMENT_LITERAL,
             MEMBERSHIP_LITERAL,
             BUSINESS_PARTNER_GROUP_LITERAL,
-            BUSINESS_PARTNER_NUMBER_LITERAL
+            BUSINESS_PARTNER_NUMBER_LITERAL,
+            INFORCE_POLICY_LITERAL
     );
-    public static final Set<String> USAGE_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
+    public static final Set<String> ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
+            FRAMEWORK_AGREEMENT_LITERAL,
+            MEMBERSHIP_LITERAL,
+            BUSINESS_PARTNER_GROUP_LITERAL,
+            BUSINESS_PARTNER_NUMBER_LITERAL,
+            INFORCE_POLICY_LITERAL
+    );
+    public static final Set<String> ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
+            FRAMEWORK_AGREEMENT_LITERAL,
+            MEMBERSHIP_LITERAL,
+            BUSINESS_PARTNER_GROUP_LITERAL,
+            BUSINESS_PARTNER_NUMBER_LITERAL,
+            INFORCE_POLICY_LITERAL
+    );
+    public static final Set<String> USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             USAGE_PURPOSE_LITERAL,
             MEMBERSHIP_LITERAL,
-            AFFILIATES_REGION_LITERAL
+            AFFILIATES_REGION_LITERAL,
+            INFORCE_POLICY_LITERAL
+    );
+    public static final Set<String> USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
+            USAGE_PURPOSE_LITERAL,
+            MEMBERSHIP_LITERAL,
+            AFFILIATES_REGION_LITERAL,
+            INFORCE_POLICY_LITERAL
+    );
+    public static final Set<String> USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
+            USAGE_PURPOSE_LITERAL,
+            MEMBERSHIP_LITERAL,
+            AFFILIATES_REGION_LITERAL,
+            INFORCE_POLICY_LITERAL
     );
 }

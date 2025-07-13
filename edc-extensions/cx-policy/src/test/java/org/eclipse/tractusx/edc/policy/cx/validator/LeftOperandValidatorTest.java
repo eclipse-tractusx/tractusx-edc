@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 
@@ -99,7 +100,7 @@ class LeftOperandValidatorTest {
     }
 
     private ValidationResult validateLeftOperand(JsonObject input, String policyType) {
-        return LeftOperandValidator.instance(JsonObjectValidator.newValidator(), policyType)
+        return LeftOperandValidator.instance(JsonObjectValidator.newValidator(), policyType, ODRL_PERMISSION_ATTRIBUTE)
                 .build()
                 .validate(input);
     }

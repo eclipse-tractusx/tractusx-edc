@@ -10,20 +10,24 @@ import org.eclipse.edc.validator.spi.Validator;
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
 import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.*;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
 
 public class LeftOperandValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
+    private final String ruleType;
 
-    private LeftOperandValidator(JsonLdPath path, String policyType) {
+    private LeftOperandValidator(JsonLdPath path, String policyType, String ruleType) {
         this.path = path;
         this.policyType = policyType;
+        this.ruleType = ruleType;
     }
 
-    public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType) {
-        return builder.verify(path -> new LeftOperandValidator(path, policyType));
+    public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType, String ruleType) {
+        return builder.verify(path -> new LeftOperandValidator(path, policyType, ruleType));
     }
 
     @Override
@@ -36,9 +40,33 @@ public class LeftOperandValidator implements Validator<JsonObject> {
     }
 
     private Set<String> getAllowedLeftOperands() {
-        return policyType.equals(ACCESS_POLICY_TYPE) ?
-                ACCESS_POLICY_ALLOWED_LEFT_OPERANDS :
-                USAGE_POLICY_ALLOWED_LEFT_OPERANDS;
+        if (policyType.equals(ACCESS_POLICY_TYPE)) {
+            switch (ruleType) {
+                case ODRL_PERMISSION_ATTRIBUTE -> {
+                    return ACCESS_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
+                }
+                case ODRL_PROHIBITION_ATTRIBUTE -> {
+                    return ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
+                }
+                case ODRL_OBLIGATION_ATTRIBUTE -> {
+                    return ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
+                }
+            }
+        }
+        else {
+            switch (ruleType) {
+                case ODRL_PERMISSION_ATTRIBUTE -> {
+                    return USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
+                }
+                case ODRL_PROHIBITION_ATTRIBUTE -> {
+                    return USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
+                }
+                case ODRL_OBLIGATION_ATTRIBUTE -> {
+                    return USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
+                }
+            }
+        }
+        return Set.of();
     }
 
     private static final class ValueIn implements Validator<JsonObject> {
