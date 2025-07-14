@@ -65,7 +65,7 @@ class AtomicConstraintValidatorTest {
         var constraint = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
                 .add(ODRL_LEFT_OPERAND_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder()
-                        .add(ID, "https://w3id.org/catenax/policy/FrameworkAgreement")))
+                        .add(ID, FRAMEWORK_AGREEMENT_LITERAL)))
                 .add(ODRL_RIGHT_OPERAND_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder().add(VALUE, "test-value")))
                 .build();
 
@@ -81,7 +81,7 @@ class AtomicConstraintValidatorTest {
         var constraint = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
                 .add(ODRL_LEFT_OPERAND_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder()
-                        .add(ID, "https://w3id.org/catenax/policy/FrameworkAgreement")))
+                        .add(ID, FRAMEWORK_AGREEMENT_LITERAL)))
                 .add(ODRL_OPERATOR_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder().add(ID, "odrl:eq")))
                 .build();
 

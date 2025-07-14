@@ -11,6 +11,20 @@ import org.eclipse.edc.validator.spi.Validator;
 
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
 
+/**
+ * Validator for atomic constraints, enforces the presence and structure
+ * of left operand, operator, and right operand components.
+ * <p>
+ * This validator ensures that:
+ * <ul>
+ *   <li>The left operand is present and valid according to policy and rule type constraints</li>
+ *   <li>The operator is present with a valid identifier</li>
+ *   <li>The right operand is present with a valid value</li>
+ * </ul>
+ * <p>
+ * The validator is configured with policy type and rule type to apply appropriate
+ * validation rules for different policy contexts.
+ */
 public class AtomicConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
