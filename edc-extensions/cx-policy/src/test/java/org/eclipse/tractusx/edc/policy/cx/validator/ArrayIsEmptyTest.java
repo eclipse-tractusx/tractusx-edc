@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ArrayIsEmptyTest {
 
-    private final String ARRAY_ATTRIBUTE = "testArray";
-    private final JsonLdPath path = JsonLdPath.path(ARRAY_ATTRIBUTE);
+    private final String arrayAttribute = "testArray";
+    private final JsonLdPath path = JsonLdPath.path(arrayAttribute);
 
     private ArrayIsEmpty validator;
 
@@ -56,7 +56,7 @@ class ArrayIsEmptyTest {
     void shouldReturnSuccess_whenArrayIsEmpty() {
         JsonArray emptyArray = Json.createArrayBuilder().build();
         JsonObject input = Json.createObjectBuilder()
-                .add(ARRAY_ATTRIBUTE, emptyArray)
+                .add(arrayAttribute, emptyArray)
                 .build();
 
         ValidationResult result = validator.validate(input);
@@ -70,7 +70,7 @@ class ArrayIsEmptyTest {
                 .add("item")
                 .build();
         JsonObject input = Json.createObjectBuilder()
-                .add(ARRAY_ATTRIBUTE, array)
+                .add(arrayAttribute, array)
                 .build();
 
         ValidationResult result = validator.validate(input);
@@ -82,7 +82,7 @@ class ArrayIsEmptyTest {
     @Test
     void shouldReturnFailure_whenAttributeIsNotArray() {
         JsonObject input = Json.createObjectBuilder()
-                .add(ARRAY_ATTRIBUTE, "notAnArray")
+                .add(arrayAttribute, "notAnArray")
                 .build();
 
         ValidationResult result = validator.validate(input);
@@ -94,7 +94,7 @@ class ArrayIsEmptyTest {
     @Test
     void shouldReturnSuccess_whenAttributeIsNull() {
         JsonObject input = Json.createObjectBuilder()
-                .addNull(ARRAY_ATTRIBUTE)
+                .addNull(arrayAttribute)
                 .build();
 
         ValidationResult result = validator.validate(input);

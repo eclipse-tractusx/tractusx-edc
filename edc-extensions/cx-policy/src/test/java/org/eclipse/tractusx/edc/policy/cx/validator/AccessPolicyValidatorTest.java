@@ -27,9 +27,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.*;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.*;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.emptyRule;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.policy;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.rule;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 
 class AccessPolicyValidatorTest {
 
