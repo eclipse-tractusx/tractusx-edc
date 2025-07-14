@@ -27,10 +27,20 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_TYPE_SET;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.*;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.*;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.policy;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.policyDefinition;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.rule;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.ruleWithoutActionType;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 
 class CxPolicyDefinitionValidatorTest {
 
@@ -93,7 +103,7 @@ class CxPolicyDefinitionValidatorTest {
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
         assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("mandatory object '"+EDC_NAMESPACE + "policy' is missing"));
+        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("mandatory object '" + EDC_NAMESPACE + "policy' is missing"));
     }
 
     @Test
@@ -121,6 +131,7 @@ class CxPolicyDefinitionValidatorTest {
 
         assertThat(result.succeeded()).isTrue();
     }
+
     @Test
     void shouldReturnFailure_whenRuleContainDifferentPolicyType() {
         JsonObject usageConstraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
