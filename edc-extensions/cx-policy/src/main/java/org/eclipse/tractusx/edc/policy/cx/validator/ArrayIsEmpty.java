@@ -17,22 +17,21 @@ public class ArrayIsEmpty implements Validator<JsonObject> {
 
     @Override
     public ValidationResult validate(JsonObject input) {
-        // Missing attribute - return success
         if (!input.containsKey(path.last())) {
             return ValidationResult.success();
         }
         var value = input.get(path.last());
-        // Null value - return success
+
         if (value.getValueType() == JsonValue.ValueType.NULL) {
             return ValidationResult.success();
         }
-        // Non-array type - return failure with specific message
+
         if (value.getValueType() != JsonValue.ValueType.ARRAY) {
             return ValidationResult.failure(
                     violation("Array must be of type array", path.toString())
             );
         }
-        // Array type - must be empty
+
         if (!value.asJsonArray().isEmpty()) {
             return ValidationResult.failure(
                     violation("Array must be empty", path.toString())

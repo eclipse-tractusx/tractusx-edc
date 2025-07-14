@@ -9,6 +9,20 @@ import org.eclipse.edc.validator.spi.Validator;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ALLOWED_LOGICAL_CONSTRAINTS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.NOT_ALLOWED_LOGICAL_CONSTRAINTS;
 
+/**
+ * Validator that routes constraint validation to either logical or atomic constraint validators
+ * based on the constraint type detected in the JSON object.
+ * <p>
+ * This validator acts as a dispatcher that:
+ * <ul>
+ *   <li>Analyzes the constraint structure to determine if it's logical or atomic</li>
+ *   <li>Routes logical constraints to {@link LogicalConstraintValidator}</li>
+ *   <li>Routes atomic constraints to {@link AtomicConstraintValidator}</li>
+ * </ul>
+ * <p>
+ * The validator is configured with policy type and rule type to pass appropriate
+ * context to the underlying specialized validators.
+ */
 public class ConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
