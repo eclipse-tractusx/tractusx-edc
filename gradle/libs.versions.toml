@@ -19,7 +19,7 @@ postgres = "42.7.7"
 restAssured = "5.5.5"
 rsApi = "4.0.0"
 testcontainers = "1.21.3"
-testcontainers-keycloak = "3.7.0"
+testcontainers-keycloak = "3.8.0"
 titanium = "1.6.0"
 
 
