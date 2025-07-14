@@ -45,20 +45,8 @@ public final class PolicyValidationConstants {
             BUSINESS_PARTNER_NUMBER_LITERAL,
             INFORCE_POLICY_LITERAL
     );
-    public static final Set<String> ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            FRAMEWORK_AGREEMENT_LITERAL,
-            MEMBERSHIP_LITERAL,
-            BUSINESS_PARTNER_GROUP_LITERAL,
-            BUSINESS_PARTNER_NUMBER_LITERAL,
-            INFORCE_POLICY_LITERAL
-    );
-    public static final Set<String> ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            FRAMEWORK_AGREEMENT_LITERAL,
-            MEMBERSHIP_LITERAL,
-            BUSINESS_PARTNER_GROUP_LITERAL,
-            BUSINESS_PARTNER_NUMBER_LITERAL,
-            INFORCE_POLICY_LITERAL
-    );
+    public static final Set<String> ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of();
+    public static final Set<String> ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of();
     public static final Set<String> USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             USAGE_PURPOSE_LITERAL,
             MEMBERSHIP_LITERAL,
@@ -66,15 +54,9 @@ public final class PolicyValidationConstants {
             INFORCE_POLICY_LITERAL
     );
     public static final Set<String> USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            USAGE_PURPOSE_LITERAL,
-            MEMBERSHIP_LITERAL,
-            AFFILIATES_REGION_LITERAL,
-            INFORCE_POLICY_LITERAL
+            USAGE_PURPOSE_LITERAL
     );
     public static final Set<String> USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            USAGE_PURPOSE_LITERAL,
-            MEMBERSHIP_LITERAL,
-            AFFILIATES_REGION_LITERAL,
-            INFORCE_POLICY_LITERAL
+            AFFILIATES_REGION_LITERAL
     );
 }
