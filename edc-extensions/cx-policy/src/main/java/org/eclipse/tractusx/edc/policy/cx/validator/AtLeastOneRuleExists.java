@@ -9,6 +9,17 @@ import org.eclipse.edc.validator.spi.Validator;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
 import static org.eclipse.edc.validator.spi.Violation.violation;
 
+/**
+ * Validator that ensures a policy contains at least one rule of any type.
+ * <p>
+ * This validator enforces that the policy must have at least one:
+ * <ul>
+ *   <li>Permission rule</li>
+ *   <li>Obligation rule</li>
+ *   <li>Prohibition rule</li>
+ * </ul>
+ * <p>
+ */
 public class AtLeastOneRuleExists implements Validator<JsonObject> {
     private final JsonLdPath path;
 

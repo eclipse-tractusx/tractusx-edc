@@ -12,15 +12,17 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 
+/**
+ * Validates access policy constraints according to the specification.
+ * Ensures that access policies contain only permissions with valid constraints,
+ * while obligations and prohibitions must be empty.
+ */
 public class AccessPolicyValidator implements Validator<JsonObject> {
-
-
     private final JsonLdPath path;
 
     public AccessPolicyValidator(JsonLdPath path) {
         this.path = path;
     }
-
 
     @Override
     public ValidationResult validate(JsonObject input) {

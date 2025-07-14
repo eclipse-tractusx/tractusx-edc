@@ -19,25 +19,27 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 
 /**
- * Validates Catena-X policy constraints according to the ODRL specification.
- * Supports both logical and atomic constraints validation.
+ * Validates Catena-X policy constraints according to the specification.
  */
 public class CxPolicyDefinitionValidator {
 
-    private static Map<String, Function<JsonLdPath, Validator<JsonObject>>> POLICY_VALIDATORS = Map.of(
+    private static final Map<String, Function<JsonLdPath, Validator<JsonObject>>> POLICY_VALIDATORS = Map.of(
             ACCESS_POLICY_TYPE, AccessPolicyValidator::new,
             USAGE_POLICY_TYPE, UsagePolicyValidator::new
     );
 
     /**
-     * Creates a new instance of the CX constraint validator.
-     * This validator checks for the presence of a policy definition, permissions, and constraints
-     * Validates the constraints based on if it is a logical or atomic constraint.
-     * Logical constraints first checks if the Operand is in allowed logical constraints, then validates its atomic constraints.TODO: Why EDC doesnt have it?
-     * Atomic constraints validate the left operand, operator, and right operand are present.
-     * For left operand, it checks if the value is in the allowed left operands.
+     * Creates a validator for Catena-X policy definitions.
+     * <p>
+     * The validator performs the following checks:
+     * <ul>
+     *   <li>Validates optional ID is not blank if present</li>
+     *   <li>Ensures policy object is present and mandatory</li>
+     *   <li>Validates policy type and applies appropriate policy-specific validation</li>
+     *   <li>Supports ACCESS and USAGE policy types with their respective constraint rules</li>
+     * </ul>
      *
-     * @return A validator for JSON object policy constraints
+     * @return a validator instance for JSON object policy definitions
      */
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()

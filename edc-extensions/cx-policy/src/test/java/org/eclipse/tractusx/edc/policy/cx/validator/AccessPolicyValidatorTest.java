@@ -87,26 +87,6 @@ class AccessPolicyValidatorTest {
         assertThat(result.succeeded()).isTrue();
     }
 
-//    @Test
-//    void shouldReturnFailure_whenDutyArrayIsNotEmpty() {
-//        JsonObject input = rule(ACTION_ACCESS, ODRL_DUTY_ATTRIBUTE);
-//
-//        ValidationResult result = validator.validate(input);
-//
-//        assertThat(result.failed()).isTrue();
-//    }
-//
-//    @Test
-//    void shouldReturnSuccess_whenDutyArrayIsEmpty() {
-//        JsonObject input = Json.createObjectBuilder()
-//                .add(ODRL_DUTY_ATTRIBUTE, Json.createArrayBuilder())
-//                .build();
-//
-//        ValidationResult result = validator.validate(input);
-//
-//        assertThat(result.succeeded()).isTrue();
-//    }
-
     @Test
     void shouldReturnSuccess_whenObligationArrayIsEmpty() {
         JsonObject input = Json.createObjectBuilder()
