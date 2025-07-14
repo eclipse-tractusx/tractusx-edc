@@ -1,18 +1,37 @@
+/********************************************************************************
+ * Copyright (c) 2025 Fraunhofer Institute for Software and Systems Engineering - initial API and implementation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
-import jakarta.json.*;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 import java.util.Collection;
-import java.util.Map;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.*;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 
 public final class PolicyBuilderFixtures {
 
-    private PolicyBuilderFixtures() {}
+    private PolicyBuilderFixtures() {
+    }
 
     public static JsonObject atomicConstraint(String leftOperand, String operator, Object rightOperand) {
         var builder = Json.createObjectBuilder()
@@ -54,6 +73,7 @@ public final class PolicyBuilderFixtures {
                 .add(ODRL_CONSTRAINT_ATTRIBUTE, arrayBuilder)
                 .build();
     }
+
     public static JsonObject ruleWithoutActionType(JsonObject... constraints) {
         var arrayBuilder = Json.createArrayBuilder();
         for (JsonObject constraint : constraints) {
