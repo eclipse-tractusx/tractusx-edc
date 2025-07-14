@@ -91,7 +91,7 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsageObligationWithConstraints() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
+        JsonObject constraint = atomicConstraint(AFFILIATES_REGION_LITERAL);
         JsonObject obligation = rule(ACTION_USAGE, constraint);
         JsonObject input = policy(ODRL_OBLIGATION_ATTRIBUTE, obligation);
 
@@ -138,11 +138,9 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenCompleteValidUsagePolicy() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-
-        JsonObject permission = rule(ACTION_USAGE, constraint);
-        JsonObject prohibition = rule(ACTION_USAGE, constraint);
-        JsonObject obligation = rule(ACTION_USAGE, constraint);
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL));
+        JsonObject prohibition = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL));
+        JsonObject obligation = rule(ACTION_USAGE, atomicConstraint(AFFILIATES_REGION_LITERAL));
 
         JsonObject input = Json.createObjectBuilder()
                 .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
