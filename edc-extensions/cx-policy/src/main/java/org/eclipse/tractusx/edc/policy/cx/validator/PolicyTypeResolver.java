@@ -4,10 +4,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 
 /**
@@ -18,7 +15,6 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
  */
 public class PolicyTypeResolver {
     public static String resolve(JsonObject policy) {
-        // Check permissions
         if (policy.containsKey(ODRL_PERMISSION_ATTRIBUTE)) {
             JsonValue permissions = policy.get(ODRL_PERMISSION_ATTRIBUTE);
             if (!permissions.asJsonArray().isEmpty()) {
@@ -26,7 +22,6 @@ public class PolicyTypeResolver {
             }
         }
 
-        // Check obligations
         if (policy.containsKey(ODRL_OBLIGATION_ATTRIBUTE)) {
             JsonValue obligations = policy.get(ODRL_OBLIGATION_ATTRIBUTE);
             if (!obligations.asJsonArray().isEmpty()) {
@@ -34,7 +29,6 @@ public class PolicyTypeResolver {
             }
         }
 
-        // Check prohibitions
         if (policy.containsKey(ODRL_PROHIBITION_ATTRIBUTE)) {
             JsonValue prohibitions = policy.get(ODRL_PROHIBITION_ATTRIBUTE);
             if (!prohibitions.asJsonArray().isEmpty()) {

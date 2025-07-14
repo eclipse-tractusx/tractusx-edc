@@ -15,6 +15,20 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.*;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
 
+
+/**
+ * Validator for left operands that enforces allowed operand values
+ * based on policy type and rule type combinations.
+ * <p>
+ * This validator ensures that:
+ * <ul>
+ *   <li>The left operand has a mandatory, non-blank ID</li>
+ *   <li>The operand value is within the allowed set for the specific policy and rule type</li>
+ * </ul>
+ * <p>
+ * The validator is configured with policy type and rule type to determine the appropriate
+ * set of allowed left operand values for validation.
+ */
 public class LeftOperandValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;

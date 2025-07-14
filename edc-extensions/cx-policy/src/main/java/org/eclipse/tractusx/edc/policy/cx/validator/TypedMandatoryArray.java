@@ -13,6 +13,23 @@ import java.util.function.Function;
 import static java.lang.String.format;
 import static org.eclipse.edc.validator.spi.Violation.violation;
 
+/**
+ * Validator for JSON arrays that enforces mandatory presence and optional minimum size constraints.
+ * <p>
+ * This validator can be configured to:
+ * <ul>
+ *   <li>Require a mandatory array at the specified path</li>
+ *   <li>Allow the array to be absent (orAbsent mode)</li>
+ *   <li>Enforce a minimum number of elements in the array</li>
+ * </ul>
+ * <p>
+ * The validator fails if:
+ * <ul>
+ *   <li>The field is not an array type</li>
+ *   <li>The array is missing when not in orAbsent mode</li>
+ *   <li>The array size is below the specified minimum</li>
+ * </ul>
+ */
 public class TypedMandatoryArray implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final Integer min;

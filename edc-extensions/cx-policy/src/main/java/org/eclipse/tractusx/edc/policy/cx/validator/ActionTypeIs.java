@@ -10,6 +10,12 @@ import org.eclipse.edc.validator.spi.Validator;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
 import static org.eclipse.edc.validator.spi.Violation.violation;
 
+/**
+ * Validator that ensures an action property matches a specific expected value.
+ * The validator can be configured to either require the action property to be present
+ * or allow it to be absent. When absent actions are allowed, validation succeeds
+ * if the property is missing.
+ */
 public class ActionTypeIs implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String expectedAction;
