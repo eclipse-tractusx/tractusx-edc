@@ -46,9 +46,9 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
 
     @Override
     public ValidationResult validate(JsonObject input) {
-        var typeValidator = typeValidator(input);
-        if (typeValidator.failed()) {
-            return typeValidator;
+        var structureValidator = validateBasicStructure(input);
+        if (structureValidator.failed()) {
+            return structureValidator;
         }
         return JsonObjectValidator.newValidator()
                 .verify(AtLeastOneRuleExists::new)
@@ -58,7 +58,16 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
                 .build()
                 .validate(input);
     }
-    private ValidationResult typeValidator(JsonObject input) {
+
+    /**
+     * Validates the basic structure of usage policy rules.
+     * Ensures at least one rule exists and validates the type structure
+     * of permission, prohibition, and obligation arrays.
+     *
+     * @param input the JSON object to validate
+     * @return validation result indicating success or failure
+     */
+    private ValidationResult validateBasicStructure(JsonObject input) {
         return JsonObjectValidator.newValidator()
                 .verify(AtLeastOneRuleExists::new)
                 .verify(ODRL_PERMISSION_ATTRIBUTE, TypedMandatoryArray.orAbsent())
