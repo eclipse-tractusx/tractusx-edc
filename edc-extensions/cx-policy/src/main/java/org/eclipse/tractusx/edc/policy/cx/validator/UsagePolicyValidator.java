@@ -12,6 +12,11 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 
+/**
+ * Validates usage policy constraints according to the ODRL specification.
+ * Ensures that usage policies contain at least one rule (permission, obligation, or prohibition)
+ * and validates constraints for each rule type.
+ */
 public class UsagePolicyValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
 
@@ -22,9 +27,9 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
 
     @Override
     public ValidationResult validate(JsonObject input) {
-        var typeValidator = typeValidator(input);
-        if (typeValidator.failed()) {
-            return typeValidator;
+        var structureValidator = validateBasicStructure(input);
+        if (structureValidator.failed()) {
+            return structureValidator;
         }
         return JsonObjectValidator.newValidator()
                 .verify(AtLeastOneRuleExists::new)
@@ -34,7 +39,16 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
                 .build()
                 .validate(input);
     }
-    private ValidationResult typeValidator(JsonObject input) {
+
+    /**
+     * Validates the basic structure of usage policy rules.
+     * Ensures at least one rule exists and validates the type structure
+     * of permission, prohibition, and obligation arrays.
+     *
+     * @param input the JSON object to validate
+     * @return validation result indicating success or failure
+     */
+    private ValidationResult validateBasicStructure(JsonObject input) {
         return JsonObjectValidator.newValidator()
                 .verify(AtLeastOneRuleExists::new)
                 .verify(ODRL_PERMISSION_ATTRIBUTE, TypedMandatoryArray.orAbsent())

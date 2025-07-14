@@ -74,7 +74,7 @@ class CxPolicyDefinitionValidatorTest {
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
         assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("mandatory object '"+EDC_NAMESPACE + "policy"+"' is missing"));
+        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("mandatory object '"+EDC_NAMESPACE + "policy' is missing"));
     }
 
     @Test

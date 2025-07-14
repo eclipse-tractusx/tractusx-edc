@@ -10,6 +10,21 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ALLOWED_LOGICAL_CONSTRAINTS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.NOT_ALLOWED_LOGICAL_CONSTRAINTS;
 
+/**
+ * Validator for logical constraints, enforces allowed logical constraint
+ * and validates structure.
+ * <p>
+ * This validator ensures that:
+ * <ul>
+ *   <li>Only allowed logical constraints are present (e.g., AND constraints)</li>
+ *   <li>Exactly one logical constraint is specified per policy</li>
+ *   <li>The logical constraint is properly formatted as an array</li>
+ *   <li>Each constraint within the logical constraint is valid</li>
+ * </ul>
+ * <p>
+ * The validator is configured with policy type and rule type to apply appropriate
+ * validation rules for different policy contexts.
+ */
 public class LogicalConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
