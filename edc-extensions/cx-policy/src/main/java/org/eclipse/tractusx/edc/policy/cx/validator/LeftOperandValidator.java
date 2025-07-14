@@ -1,3 +1,22 @@
+/********************************************************************************
+ * Copyright (c) 2025 Fraunhofer Institute for Software and Systems Engineering - initial API and implementation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
 import jakarta.json.JsonObject;
@@ -10,10 +29,17 @@ import org.eclipse.edc.validator.spi.Validator;
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
 import static org.eclipse.edc.validator.spi.Violation.violation;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.*;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
 
 
 /**
@@ -53,6 +79,7 @@ public class LeftOperandValidator implements Validator<JsonObject> {
                 .validate(input);
     }
 
+    @SuppressWarnings("checkstyle:RightCurly")
     private Set<String> getAllowedLeftOperands() {
         if (policyType.equals(ACCESS_POLICY_TYPE)) {
             switch (ruleType) {
@@ -65,9 +92,11 @@ public class LeftOperandValidator implements Validator<JsonObject> {
                 case ODRL_OBLIGATION_ATTRIBUTE -> {
                     return ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
                 }
+                default -> {
+                    return Set.of();
+                }
             }
-        }
-        else {
+        } else {
             switch (ruleType) {
                 case ODRL_PERMISSION_ATTRIBUTE -> {
                     return USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
@@ -78,9 +107,11 @@ public class LeftOperandValidator implements Validator<JsonObject> {
                 case ODRL_OBLIGATION_ATTRIBUTE -> {
                     return USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
                 }
+                default -> {
+                    return Set.of();
+                }
             }
         }
-        return Set.of();
     }
 
     private static final class ValueIn implements Validator<JsonObject> {
