@@ -65,26 +65,27 @@ public class PolicyHelperFunctions {
      * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
      * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
      */
-    public static JsonObject frameworkPolicy(String id, Map<String, String> permissions) {
-        return policyDefinitionBuilder(frameworkPolicy(permissions))
+
+    public static JsonObject frameworkPolicy(String id, Map<String, String> permissions, String action) {
+        return policyDefinitionBuilder(frameworkPolicy(permissions, action))
                 .add(ID, id)
                 .build();
     }
 
-    public static JsonObject frameworkPolicy(Map<String, String> permissions) {
+    public static JsonObject frameworkPolicy(Map<String, String> permissions, String action) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
-                        .add(frameworkPermission(permissions)))
+                        .add(frameworkPermission(permissions, action)))
                 .build();
     }
 
-    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand) {
+    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, String action) {
         var constraint = atomicConstraint(leftOperand, operator.getOdrlRepresentation(), rightOperand);
 
         var permission = Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("or", constraint)
@@ -130,16 +131,15 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-
     private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
 
         var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups));
 
         var permission = Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", "access")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", groupConstraint)
+                        .add("and", groupConstraint)
                         .build())
                 .build();
 
@@ -166,25 +166,25 @@ public class PolicyHelperFunctions {
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", "access")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", bpnConstraints)
+                        .add("and", bpnConstraints)
                         .build())
                 .build();
     }
 
-    private static JsonObject frameworkPermission(Map<String, String> permissions) {
+    private static JsonObject frameworkPermission(Map<String, String> permissions, String action) {
 
         var constraints = permissions.entrySet().stream()
                 .map(permission -> atomicConstraint(permission.getKey(), "eq", permission.getValue()))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", constraints)
+                        .add("and", constraints)
                         .build())
                 .build();
     }
