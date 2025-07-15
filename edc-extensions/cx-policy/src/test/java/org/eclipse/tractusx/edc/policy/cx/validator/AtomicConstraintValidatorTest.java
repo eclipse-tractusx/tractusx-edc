@@ -12,8 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.*;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.*;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.*;
 
 class AtomicConstraintValidatorTest {
 
@@ -30,7 +29,7 @@ class AtomicConstraintValidatorTest {
 
     @Test
     void validate_shouldSucceed_whenValidAccessPolicyConstraint() {
-        var constraint = atomicConstraint("https://w3id.org/catenax/policy/FrameworkAgreement");
+        var constraint = atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL);
         String jsonString = constraint.toString();
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
@@ -39,7 +38,7 @@ class AtomicConstraintValidatorTest {
 
     @Test
     void validate_shouldSucceed_whenValidUsagePolicyConstraint() {
-        var constraint = atomicConstraint("https://w3id.org/catenax/policy/UsagePurpose");
+        var constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
 
         ValidationResult result = usagePolicyValidator.validate(constraint);
 
@@ -95,10 +94,10 @@ class AtomicConstraintValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "https://w3id.org/catenax/policy/FrameworkAgreement",
-            "https://w3id.org/catenax/policy/Membership",
-            "https://w3id.org/catenax/policy/BusinessPartnerGroup",
-            "https://w3id.org/catenax/policy/BusinessPartnerNumber"
+            FRAMEWORK_AGREEMENT_LITERAL,
+            MEMBERSHIP_LITERAL,
+            BUSINESS_PARTNER_GROUP_LITERAL,
+            BUSINESS_PARTNER_NUMBER_LITERAL
     })
     void validate_shouldSucceed_whenValidAccessPolicyLeftOperand(String leftOperand) {
         var constraint = atomicConstraint(leftOperand);
@@ -110,9 +109,9 @@ class AtomicConstraintValidatorTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "https://w3id.org/catenax/policy/UsagePurpose",
-            "https://w3id.org/catenax/policy/Membership",
-            "https://w3id.org/catenax/policy/AffiliatesRegion"
+            USAGE_PURPOSE_LITERAL,
+            MEMBERSHIP_LITERAL,
+            AFFILIATES_REGION_LITERAL
     })
     void validate_shouldSucceed_whenValidUsagePolicyLeftOperand(String leftOperand) {
         var constraint = atomicConstraint(leftOperand);
@@ -124,7 +123,7 @@ class AtomicConstraintValidatorTest {
 
     @Test
     void validate_shouldFail_whenInvalidLeftOperandForAccessPolicy() {
-        var constraint = atomicConstraint("https://w3id.org/catenax/policy/UsagePurpose");
+        var constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
@@ -135,7 +134,7 @@ class AtomicConstraintValidatorTest {
 
     @Test
     void validate_shouldFail_whenInvalidLeftOperandForUsagePolicy() {
-        var constraint = atomicConstraint("https://w3id.org/catenax/policy/BusinessPartnerNumber");
+        var constraint = atomicConstraint(BUSINESS_PARTNER_NUMBER_LITERAL);
 
         ValidationResult result = usagePolicyValidator.validate(constraint);
 
@@ -176,7 +175,7 @@ class AtomicConstraintValidatorTest {
         var constraint = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
                 .add(ODRL_LEFT_OPERAND_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder()
-                        .add("@id", "https://w3id.org/catenax/policy/FrameworkAgreement")))
+                        .add("@id", FRAMEWORK_AGREEMENT_LITERAL)))
                 .add(ODRL_OPERATOR_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder()))
                 .add(ODRL_RIGHT_OPERAND_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder().add(VALUE, "test-value")))
                 .build();
