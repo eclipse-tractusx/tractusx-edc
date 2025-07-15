@@ -121,7 +121,7 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
-        var onlyConsumerPolicy = bpnPolicy( CONSUMER.getBpn());
+        var onlyConsumerPolicy = bpnPolicy(CONSUMER.getBpn());
         var onlyDiogenesPolicy = frameworkPolicy(Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"), "access");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
