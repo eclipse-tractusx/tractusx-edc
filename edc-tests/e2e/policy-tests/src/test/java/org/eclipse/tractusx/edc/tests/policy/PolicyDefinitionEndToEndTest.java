@@ -43,7 +43,9 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPermission;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyFromRules;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 @EndToEndTest
@@ -79,8 +81,15 @@ public class PolicyDefinitionEndToEndTest {
 
     @DisplayName("Policy is accepted")
     @ParameterizedTest(name = "{1}")
+    @ArgumentsSource(InValidNamespaceContractPolicyProvider.class)
+    void shouldNotAcceptInvalidNamespacePolicyDefinitions(JsonObject policy, String description) {
+        assertThatThrownBy(() -> PROVIDER.createPolicyDefinition(policy));
+    }
+
+    @DisplayName("Policy is not accepted")
+    @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InValidContractPolicyProvider.class)
-    void shouldNotAcceptInvalidValidPolicyDefinitions(JsonObject policy, String description) {
+    void shouldNotAcceptInvalidPolicyDefinitions(JsonObject policy, String description) {
         assertThatThrownBy(() -> PROVIDER.createPolicyDefinition(policy));
     }
 
@@ -116,10 +125,39 @@ public class PolicyDefinitionEndToEndTest {
         }
     }
 
+    private static class InValidNamespaceContractPolicyProvider extends BaseContractPolicyProvider {
+
+        private InValidNamespaceContractPolicyProvider() {
+            super("");
+        }
+    }
+
     private static class InValidContractPolicyProvider extends BaseContractPolicyProvider {
 
         private InValidContractPolicyProvider() {
-            super("");
+            super(CX_POLICY_NS);
+        }
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of(policyFromRules("permission",
+                            frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), "access"),
+                            frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "use")), "Policy with different actions types"),
+                    Arguments.of(policyFromRules("permission",
+                            frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), "unknown-action")), "Policy with unknown actions types"),
+                    Arguments.of(policyFromRules("prohibition",
+                            frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), "access")), "Access Policy with prohibition rule"),
+                    Arguments.of(policyFromRules("permission",
+                            frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "access")), "Access policy permission with not allowed constraints"),
+                    Arguments.of(policyFromRules("permission",
+                            frameworkPermission(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use")), "Usage policy permission with not allowed constraints"),
+                    Arguments.of(policyFromRules("prohibition",
+                            frameworkPermission(Map.of(CX_POLICY_NS + "AffiliatesRegion", "cx.region.europe:1"), "use")), "Usage policy prohibition with not allowed constraints"),
+                    Arguments.of(policyFromRules("obligation",
+                            frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "use")), "Usage policy obligation with not allowed constraints")
+
+            );
         }
     }
 
