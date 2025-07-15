@@ -279,7 +279,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"));
+        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), "access");
     }
 
     protected abstract RuntimeExtension consumerRuntime();
@@ -312,6 +312,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
                     Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.NEQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (NEQ, but is equal)"),
                     Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Lada")), "Dismantler allowedBrands (IS_NONE_OF, but is one contains)"),
                     Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo")), "Dismantler allowedBrands (IN, but not subset)")
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "traceability"), "access"), "Traceability Use Case (new notation)")
             );
         }
     }
