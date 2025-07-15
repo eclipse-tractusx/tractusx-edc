@@ -29,7 +29,6 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialC
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
