@@ -81,6 +81,18 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject policyFromRules(String ruleType, JsonObject... rules) {
+        var rulesArrayBuilder = Json.createArrayBuilder();
+        for (JsonObject rule : rules) {
+            rulesArrayBuilder.add(rule);
+        }
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add(ruleType, rulesArrayBuilder)
+                .build();
+    }
+
     public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, String action) {
         return frameworkPolicy(leftOperand, operator, rightOperand, action, false);
     }
@@ -178,7 +190,7 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-    private static JsonObject frameworkPermission(Map<String, String> permissions, String action) {
+    public static JsonObject frameworkPermission(Map<String, String> permissions, String action) {
 
         var constraints = permissions.entrySet().stream()
                 .map(permission -> atomicConstraint(permission.getKey(), "eq", permission.getValue(), false))
