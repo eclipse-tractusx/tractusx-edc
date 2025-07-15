@@ -65,8 +65,7 @@ public class BusinessPartnerEventTest {
         var event = PROVIDER.waitForEvent("BusinessPartnerCreated");
         var payload = event.getJsonObject("payload");
 
-        assertThat(payload).containsKey("bpn");
-        assertThat(payload).containsKey("groups");
+        assertThat(payload).containsKeys("bpn", "groups");
         assertThat(payload.getString("bpn")).isEqualTo(PROVIDER.getBpn());
         assertThat(payload.getJsonArray("groups")).containsExactlyElementsOf(
                 GROUPS.stream()
@@ -84,8 +83,7 @@ public class BusinessPartnerEventTest {
         var event = PROVIDER.waitForEvent("BusinessPartnerUpdated");
         var payload = event.getJsonObject("payload");
 
-        assertThat(payload).containsKey("bpn");
-        assertThat(payload).containsKey("groups");
+        assertThat(payload).containsKeys("bpn", "groups");
         assertThat(payload.getString("bpn")).isEqualTo(PROVIDER.getBpn());
         assertThat(payload.getJsonArray("groups")).containsExactlyElementsOf(
                 updatedGroups.stream()

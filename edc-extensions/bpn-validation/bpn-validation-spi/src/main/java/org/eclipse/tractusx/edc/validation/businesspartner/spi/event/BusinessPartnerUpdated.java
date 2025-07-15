@@ -19,24 +19,35 @@
 
 package org.eclipse.tractusx.edc.validation.businesspartner.spi.event;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
+@JsonDeserialize(builder = BusinessPartnerUpdated.Builder.class)
 public class BusinessPartnerUpdated extends BusinessPartnerEvent {
+
+    private BusinessPartnerUpdated() {
+    }
+
     @Override
     public String name() {
         return "bpn.updated";
     }
 
-    public static class Builder extends BusinessPartnerEvent.Builder<BusinessPartnerUpdated, BusinessPartnerUpdated.Builder> {
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class Builder extends BusinessPartnerEvent.Builder<BusinessPartnerUpdated, Builder> {
 
         private Builder() {
             super(new BusinessPartnerUpdated());
         }
 
-        public static BusinessPartnerUpdated.Builder newInstance() {
+        @JsonCreator
+        public static Builder newInstance() {
             return new Builder();
         }
 
         @Override
-        public BusinessPartnerUpdated.Builder self() {
+        public Builder self() {
             return this;
         }
     }
