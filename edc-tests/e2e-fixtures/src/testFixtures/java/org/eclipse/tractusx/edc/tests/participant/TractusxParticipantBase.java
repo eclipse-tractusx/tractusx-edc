@@ -258,7 +258,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .post("/v1/dataflows/{id}/trigger", dataFlowId)
+                .post("/v4alpha/dataflows/{id}/trigger", dataFlowId)
                 .then()
                 .log().ifError()
                 .statusCode(204);

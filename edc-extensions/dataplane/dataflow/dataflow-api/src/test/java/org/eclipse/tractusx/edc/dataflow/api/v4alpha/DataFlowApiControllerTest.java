@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.dataflow.api.v1;
+package org.eclipse.tractusx.edc.dataflow.api.v4alpha;
 
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -45,7 +45,7 @@ class DataFlowApiControllerTest extends RestControllerTestBase {
     private RequestSpecification baseRequest() {
         return given()
                 .baseUri("http://localhost:" + port)
-                .basePath("/v1/dataflows");
+                .basePath("/v4alpha/dataflows");
     }
 
     @Nested

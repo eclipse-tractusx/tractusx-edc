@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.dataflow.api.v1;
+package org.eclipse.tractusx.edc.dataflow.api.v4alpha;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,20 +30,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.eclipse.edc.api.model.ApiCoreSchema;
 
-@OpenAPIDefinition(info = @Info(version = "v1"))
-@Tag(name = "DataFlow API V1")
+@OpenAPIDefinition(info = @Info(version = "v4alpha"))
+@Tag(name = "DataFlow API V4Alpha")
 public interface DataFlowApi {
 
     String ASYNC_WARNING = "Due to the asynchronous nature of transfers, a successful response only indicates that the request was successfully received.";
 
     @Operation(description = "Requests the trigger of a data transfer. " + ASYNC_WARNING,
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Request was sucessfully received", links = @Link(name = "poll-state", operationId = "triggerDataTransferV1")),
+                    @ApiResponse(responseCode = "204", description = "Request was sucessfully received", links = @Link(name = "poll-state", operationId = "triggerDataTransferV4Alpha")),
                     @ApiResponse(responseCode = "400", description = "Request was malformed", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class)))),
                     @ApiResponse(responseCode = "404", description = "Data flow with the given ID does not exist", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class)))),
                     @ApiResponse(responseCode = "409", description = "Data flow is not in a required state", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiCoreSchema.ApiErrorDetailSchema.class))))
             }
     )
-    void triggerDataTransferV1(String id);
+    void triggerDataTransferV4Alpha(String id);
 
 }

@@ -26,13 +26,13 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
-import org.eclipse.tractusx.edc.dataflow.api.v1.DataFlowApiController;
+import org.eclipse.tractusx.edc.dataflow.api.v4alpha.DataFlowApiController;
 import org.eclipse.tractusx.edc.spi.dataflow.DataFlowService;
 
 @Extension(DataFlowApiExtension.NAME)
 public class DataFlowApiExtension implements ServiceExtension {
 
-    protected static final String NAME = "DataFlow API";
+    protected static final String NAME = "DataFlow Management API";
 
     @Inject
     private Monitor monitor;

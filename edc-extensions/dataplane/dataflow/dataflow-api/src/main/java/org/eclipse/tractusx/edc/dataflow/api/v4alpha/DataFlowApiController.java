@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.dataflow.api.v1;
+package org.eclipse.tractusx.edc.dataflow.api.v4alpha;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -34,7 +34,7 @@ import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMa
 
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
-@Path("/v1/dataflows")
+@Path("/v4alpha/dataflows")
 public class DataFlowApiController implements DataFlowApi {
 
     private final Monitor monitor;
@@ -48,7 +48,7 @@ public class DataFlowApiController implements DataFlowApi {
     @POST
     @Path("/{id}/trigger")
     @Override
-    public void triggerDataTransferV1(@PathParam("id") String id) {
+    public void triggerDataTransferV4Alpha(@PathParam("id") String id) {
         service.trigger(id)
                 .onSuccess(v -> monitor.debug(format("Trigger requested for dataflow with ID %s", id)))
                 .orElseThrow(exceptionMapper(DataFlow.class, id));
