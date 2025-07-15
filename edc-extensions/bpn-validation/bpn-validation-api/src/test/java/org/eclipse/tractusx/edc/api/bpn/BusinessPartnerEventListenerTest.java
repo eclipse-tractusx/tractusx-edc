@@ -44,10 +44,11 @@ class BusinessPartnerEventListenerTest {
 
     private static final String BPN = "test-bpn";
     private static final List<String> GROUPS = List.of("group1", "group2");
+    private static final Long TIMESTAMP = 123456789L;
 
     @BeforeEach
     void setUp() {
-        when(clock.millis()).thenReturn(123456789L);
+        when(clock.millis()).thenReturn(TIMESTAMP);
     }
 
     @Test
@@ -66,7 +67,7 @@ class BusinessPartnerEventListenerTest {
                 .isEqualTo(BPN);
         assertThat(((BusinessPartnerCreated) event).getGroups())
                 .isEqualTo(GROUPS);
-        assertThat(envelope.getAt()).isEqualTo(123456789L);
+        assertThat(envelope.getAt()).isEqualTo(TIMESTAMP);
     }
 
     @Test
@@ -83,7 +84,7 @@ class BusinessPartnerEventListenerTest {
         assertThat(event.name()).isEqualTo("bpn.deleted");
         assertThat(((BusinessPartnerDeleted) event).getBpn())
                 .isEqualTo(BPN);
-        assertThat(envelope.getAt()).isEqualTo(123456789L);
+        assertThat(envelope.getAt()).isEqualTo(TIMESTAMP);
     }
 
     @Test
@@ -102,6 +103,6 @@ class BusinessPartnerEventListenerTest {
                 .isEqualTo(BPN);
         assertThat(((BusinessPartnerUpdated) event).getGroups())
                 .isEqualTo(GROUPS);
-        assertThat(envelope.getAt()).isEqualTo(123456789L);
+        assertThat(envelope.getAt()).isEqualTo(TIMESTAMP);
     }
 }

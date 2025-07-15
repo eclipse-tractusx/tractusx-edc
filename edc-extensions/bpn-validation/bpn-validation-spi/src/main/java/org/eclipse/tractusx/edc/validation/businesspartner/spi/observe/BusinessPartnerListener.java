@@ -52,7 +52,7 @@ public interface BusinessPartnerListener {
     /**
      * Called after a bpn was updated.
      *
-     * @param bpn the bpn that has been deleted.
+     * @param bpn the bpn that has been updated.
      * @param groups the bpn groups that have been assigned to the bpn
      */
     default void updated(String bpn, List<String> groups) {
