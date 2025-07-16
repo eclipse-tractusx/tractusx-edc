@@ -85,7 +85,6 @@ include(":edc-extensions:dataplane:dataflow:dataflow-service")
 include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-spi")
 include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core")
 
-
 // test modules
 include(":edc-tests:e2e-fixtures")
 include(":edc-tests:e2e:catalog-tests")
