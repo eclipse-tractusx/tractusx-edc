@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.dataflow.api.v4alpha;
 
 import io.restassured.specification.RequestSpecification;
+import org.eclipse.edc.junit.annotations.ApiTest;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.tractusx.edc.spi.dataflow.DataFlowService;
@@ -31,6 +32,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ApiTest
 class DataFlowApiControllerTest extends RestControllerTestBase {
 
     private static final String DATAFLOW_ID = "123";
