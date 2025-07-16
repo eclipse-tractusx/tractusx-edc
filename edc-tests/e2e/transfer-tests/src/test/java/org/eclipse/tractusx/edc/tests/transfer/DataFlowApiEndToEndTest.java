@@ -25,6 +25,7 @@ import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
@@ -89,6 +90,7 @@ public class DataFlowApiEndToEndTest {
         var pullDataFlow = DataFlow.Builder.newInstance()
                 .state(STARTED.code())
                 .transferType(new TransferType("HttpData", PULL))
+                .source(DataAddress.Builder.newInstance().build())
                 .build();
         var expectedErrorMessage = "Could not trigger dataflow %s because it's not PUSH flow type"
                 .formatted(pullDataFlow.getId());
@@ -109,6 +111,7 @@ public class DataFlowApiEndToEndTest {
         var finiteDataFlow = DataFlow.Builder.newInstance()
                 .state(STARTED.code())
                 .transferType(new TransferType("HttpData", PUSH))
+                .source(DataAddress.Builder.newInstance().build())
                 .build();
         var expectedErrorMessage = "Could not trigger dataflow %s because underlying asset is finite"
                 .formatted(finiteDataFlow.getId());
@@ -129,6 +132,7 @@ public class DataFlowApiEndToEndTest {
         var terminatedDataFlow = DataFlow.Builder.newInstance()
                 .state(TERMINATED.code())
                 .transferType(new TransferType("HttpData", PUSH))
+                .source(DataAddress.Builder.newInstance().property("isNonFinite", "true").build())
                 .build();
         var expectedErrorMessage = "Could not trigger dataflow %s because it's not STARTED. Current state is %s"
                 .formatted(terminatedDataFlow.getId(), terminatedDataFlow.stateAsString());
@@ -142,6 +146,19 @@ public class DataFlowApiEndToEndTest {
         assertThat(body).isNotNull()
                 .extracting(this::extractErrorMessage)
                 .isEqualTo(expectedErrorMessage);
+    }
+
+    @Test
+    void trigger_shouldReturnSuccess_whenAllValidationsSucceed() {
+        var dataFlow = DataFlow.Builder.newInstance()
+                .state(STARTED.code())
+                .transferType(new TransferType("destination", PUSH))
+                .source(DataAddress.Builder.newInstance().property("isNonFinite", "true").build())
+                .build();
+
+        RUNTIME.getService(DataPlaneStore.class).save(dataFlow);
+
+        PARTICIPANT.triggerDataTransfer(dataFlow.getId());
     }
 
     @AfterEach
