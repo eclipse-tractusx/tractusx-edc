@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,18 +17,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.validation.businesspartner.defaults;
+plugins {
+    `java-library`
+    `java-test-fixtures`
+}
 
-import org.eclipse.edc.runtime.metamodel.annotation.Extension;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
+dependencies {
+    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+}
 
-@Extension("Provides a default BusinessPartnerGroupStore")
-public class DefaultStoreProviderExtension implements ServiceExtension {
-
-    @Provider(isDefault = true)
-    public BusinessPartnerStore createInMemStore() {
-        return new InMemoryBusinessPartnerStore();
-    }
+// do not publish
+edcBuild {
+    publish.set(false)
 }

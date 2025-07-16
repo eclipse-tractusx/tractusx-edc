@@ -22,13 +22,17 @@ package org.eclipse.tractusx.edc.api.bpn;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.api.bpn.v1.BusinessPartnerGroupApiV1Controller;
 import org.eclipse.tractusx.edc.api.bpn.v3.BusinessPartnerGroupApiV3Controller;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.observe.BusinessPartnerObservableImpl;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
+
+import java.time.Clock;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
@@ -43,12 +47,23 @@ public class BusinessPartnerGroupApiExtension implements ServiceExtension {
     @Inject
     private BusinessPartnerStore businessPartnerStore;
 
+    @Inject
+    private Clock clock;
+    @Inject
+    private EventRouter eventRouter;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
 
-        webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV1Controller(businessPartnerStore, context.getMonitor()));
-        webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV3Controller(businessPartnerStore));
+        var businessPartnerObservable = new BusinessPartnerObservableImpl();
+        businessPartnerObservable.registerListener(new BusinessPartnerEventListener(clock, eventRouter));
 
+        webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV1Controller(
+                businessPartnerStore, businessPartnerObservable, context.getMonitor()
+        ));
+        webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV3Controller(
+                businessPartnerStore, businessPartnerObservable
+        ));
     }
 }

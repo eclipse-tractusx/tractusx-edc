@@ -84,6 +84,7 @@ include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"
 
 // test modules
 include(":edc-tests:e2e-fixtures")
+include(":edc-tests:e2e:bpn-event-tests")
 include(":edc-tests:e2e:catalog-tests")
 include(":edc-tests:e2e:cloud-transfer-tests")
 include(":edc-tests:e2e:edc-dataplane-tokenrefresh-tests")
