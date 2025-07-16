@@ -96,7 +96,7 @@ public class DataFlowApiEndToEndTest {
         RUNTIME.getService(DataPlaneStore.class).save(pullDataFlow);
 
         var body = triggerDataTransfer(pullDataFlow.getId())
-                .statusCode(409)
+                .statusCode(400)
                 .extract().body().jsonPath();
 
         assertThat(body).isNotNull()
@@ -112,6 +112,8 @@ public class DataFlowApiEndToEndTest {
                 .build();
         var expectedErrorMessage = "Could not trigger dataflow %s because underlying asset is finite"
                 .formatted(finiteDataFlow.getId());
+
+        RUNTIME.getService(DataPlaneStore.class).save(finiteDataFlow);
 
         var body = triggerDataTransfer(finiteDataFlow.getId())
                 .statusCode(400)
@@ -130,6 +132,8 @@ public class DataFlowApiEndToEndTest {
                 .build();
         var expectedErrorMessage = "Could not trigger dataflow %s because it's not STARTED. Current state is %s"
                 .formatted(terminatedDataFlow.getId(), terminatedDataFlow.stateAsString());
+
+        RUNTIME.getService(DataPlaneStore.class).save(terminatedDataFlow);
 
         var body = triggerDataTransfer(terminatedDataFlow.getId())
                 .statusCode(409)
