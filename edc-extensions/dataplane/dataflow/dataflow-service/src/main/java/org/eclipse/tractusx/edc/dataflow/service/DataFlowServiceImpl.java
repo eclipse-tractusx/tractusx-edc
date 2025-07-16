@@ -69,11 +69,11 @@ public class DataFlowServiceImpl implements DataFlowService {
     }
 
     private boolean isPushFlowType(DataFlow dataflow) {
-        return dataflow.getTransferType().flowType().equals(PUSH);
+        return PUSH.equals(dataflow.getTransferType().flowType());
     }
 
     private boolean isInStartedState(DataFlow dataflow) {
-        return dataflow.stateAsString().equals(STARTED.name());
+        return STARTED.name().equals(dataflow.stateAsString());
     }
 
 }
