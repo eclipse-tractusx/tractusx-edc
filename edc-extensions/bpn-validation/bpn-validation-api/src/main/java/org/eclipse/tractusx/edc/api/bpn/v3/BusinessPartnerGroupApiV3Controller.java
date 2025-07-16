@@ -33,7 +33,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.web.spi.exception.ObjectNotFoundException;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiController;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.observe.BusinessPartnerObservable;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import java.util.List;
 
@@ -46,8 +47,8 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 @Path("/v3/business-partner-groups")
 public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGroupApiController implements BusinessPartnerGroupApiV3 {
 
-    public BusinessPartnerGroupApiV3Controller(BusinessPartnerStore businessPartnerService) {
-        super(businessPartnerService);
+    public BusinessPartnerGroupApiV3Controller(BusinessPartnerStore businessPartnerService, BusinessPartnerObservable businessPartnerObservable) {
+        super(businessPartnerService, businessPartnerObservable);
     }
 
     @GET

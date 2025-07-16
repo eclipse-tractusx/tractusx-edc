@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,18 +17,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.validation.businesspartner.defaults;
+package org.eclipse.tractusx.edc.validation.businesspartner.spi.observe;
 
-import org.eclipse.edc.runtime.metamodel.annotation.Extension;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
+import org.eclipse.edc.spi.observe.Observable;
 
-@Extension("Provides a default BusinessPartnerGroupStore")
-public class DefaultStoreProviderExtension implements ServiceExtension {
+/**
+ * Manages and invokes {@link BusinessPartnerListener}s when a state change related to a business partner group has happened.
+ */
+public interface BusinessPartnerObservable extends Observable<BusinessPartnerListener> {
 
-    @Provider(isDefault = true)
-    public BusinessPartnerStore createInMemStore() {
-        return new InMemoryBusinessPartnerStore();
-    }
 }
