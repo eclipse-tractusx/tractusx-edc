@@ -47,6 +47,7 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.verify.VerificationTimes.exactly;
 
 /**
  * Base tests for Provider PUSH scenario
@@ -88,6 +89,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 .execute();
 
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> transferProcessIsInState(transferProcessId, COMPLETED));
+        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH));
+        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH));
     }
 
     @Test
@@ -121,6 +124,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 POLL_DELAY,
                 () -> transferProcessIsInState(consumerTransferProcessId, TransferProcessStates.STARTED),
                 () -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.STARTED));
+        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH));
+        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH));
 
         provider().triggerDataTransfer(providerTransferProcessId);
 
@@ -128,6 +133,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 POLL_DELAY,
                 () -> transferProcessIsInState(consumerTransferProcessId, TransferProcessStates.STARTED),
                 () -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.STARTED));
+        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH), exactly(2));
+        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH), exactly(2));
 
         consumer().terminateTransfer(consumerTransferProcessId);
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
