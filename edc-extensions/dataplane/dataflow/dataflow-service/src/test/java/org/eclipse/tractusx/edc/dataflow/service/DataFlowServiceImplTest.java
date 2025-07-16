@@ -27,6 +27,7 @@ import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.STARTED;
 import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.TERMINATED;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
@@ -73,9 +74,13 @@ class DataFlowServiceImplTest {
 
         when(store.findByIdAndLease(DATAFLOW_ID)).thenReturn(StoreResult.success(pullDataFlow));
 
+        var expectedErrorMessage = "Could not trigger dataflow %s because it's not PUSH flow type"
+                .formatted(pullDataFlow.getId());
+
         var result = service.trigger(DATAFLOW_ID);
 
         assertThat(result).isFailed().extracting(ServiceFailure::getReason).isEqualTo(BAD_REQUEST);
+        assertThat(result.getFailureDetail()).isEqualTo(expectedErrorMessage);
     }
 
     @Test
@@ -87,9 +92,13 @@ class DataFlowServiceImplTest {
         when(store.findByIdAndLease(DATAFLOW_ID)).thenReturn(StoreResult.success(finiteDataFlow));
         when(finitenessEvaluator.isNonFinite(finiteDataFlow)).thenReturn(false);
 
+        var expectedErrorMessage = "Could not trigger dataflow %s because underlying asset is finite"
+                .formatted(finiteDataFlow.getId());
+
         var result = service.trigger(DATAFLOW_ID);
 
         assertThat(result).isFailed().extracting(ServiceFailure::getReason).isEqualTo(BAD_REQUEST);
+        assertThat(result.getFailureDetail()).isEqualTo(expectedErrorMessage);
     }
 
     @Test
@@ -102,9 +111,13 @@ class DataFlowServiceImplTest {
         when(store.findByIdAndLease(DATAFLOW_ID)).thenReturn(StoreResult.success(terminatedDataFlow));
         when(finitenessEvaluator.isNonFinite(terminatedDataFlow)).thenReturn(true);
 
+        var expectedErrorMessage = "Could not trigger dataflow %s because it's not STARTED. Current state is %s"
+                .formatted(terminatedDataFlow.getId(), terminatedDataFlow.stateAsString());
+
         var result = service.trigger(DATAFLOW_ID);
 
         assertThat(result).isFailed().extracting(ServiceFailure::getReason).isEqualTo(CONFLICT);
+        assertThat(result.getFailureDetail()).isEqualTo(expectedErrorMessage);
     }
 
     @Test
