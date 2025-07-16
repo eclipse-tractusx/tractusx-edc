@@ -42,6 +42,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.STARTED;
 import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.TERMINATED;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PULL;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PUSH;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -132,7 +133,7 @@ public class DataFlowApiEndToEndTest {
         var terminatedDataFlow = DataFlow.Builder.newInstance()
                 .state(TERMINATED.code())
                 .transferType(new TransferType("HttpData", PUSH))
-                .source(dataAddressBuilder().property("isNonFinite", "true").build())
+                .source(dataAddressBuilder().property(EDC_NAMESPACE + "isNonFinite", "true").build())
                 .build();
         var expectedErrorMessage = "Could not trigger dataflow %s because it's not STARTED. Current state is %s"
                 .formatted(terminatedDataFlow.getId(), terminatedDataFlow.stateAsString());
@@ -153,7 +154,7 @@ public class DataFlowApiEndToEndTest {
         var dataFlow = DataFlow.Builder.newInstance()
                 .state(STARTED.code())
                 .transferType(new TransferType("destination", PUSH))
-                .source(dataAddressBuilder().property("isNonFinite", "true").build())
+                .source(dataAddressBuilder().property(EDC_NAMESPACE + "isNonFinite", "true").build())
                 .build();
 
         RUNTIME.getService(DataPlaneStore.class).save(dataFlow);
