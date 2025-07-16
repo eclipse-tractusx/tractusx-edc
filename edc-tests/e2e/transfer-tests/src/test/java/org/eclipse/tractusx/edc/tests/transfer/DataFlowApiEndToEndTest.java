@@ -19,6 +19,8 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.ValidatableResponse;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -32,9 +34,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
-
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.ValidatableResponse;
 
 import java.util.UUID;
 
