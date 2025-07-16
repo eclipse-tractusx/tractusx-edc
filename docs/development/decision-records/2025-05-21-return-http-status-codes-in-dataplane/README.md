@@ -18,56 +18,53 @@ The original consideration was to perform this change in Upstream, however the p
 
 ## Approach
 
-1. Pull implementations available in the upstream modules `data-plane-http` and `data-plane-http-spi` (
-   like `HttpDataSource`, `HttpRequestParams` or `HttpDataAddress`) into the Tractus-X EDC distribution and update them
-   to meet the new requirements.
+1. Pull the upstream modules `data-plane-http` and `data-plane-http-spi` into the Tractus-X EDC distribution.
 2. A new `proxyOriginalResponse` flag will be added to the `HttpDataAddress`. When the value is set to `true`, the
-   dataplane will return the original datasource response. In the `HttpRequestParams` include the new optional
+   dataplane will return the original datasource response. In the `HttpRequestParams` is included this new optional
    parameter `proxyOriginalResponse` flag. If is not set, the default behaviour (`false`) will be kept, i.e., return
-   only 2XX's and 5XX's. This flag will then be evaluated in ```HttpDataSource.openPartStream()```.
-3. For a failing datasource response, a new ```ProxyStreamFailure``` will be added (that extends
-   the ```StreamFailure```) which includes the original response. This will include the `mediaType`, `statusCode`
-   and `content`. This class will only be used to encapsulate the failure response when the `proxyOriginalResponse` is
-   enabled and is needed since current approach does not allow to return a Failure message with "dynamic" status code,
-   media type and content. For a successful response, the existing `StreamResult` can be used.
-4. In the `HttpDataSource` included implementation, update the `openPartStream()` overridden method to handle the
-   datasource response based on flag value.
+   only 2XX's and 5XX's.
+3. Update the `HttpDataSource` to proxy the entire response from the source, successful or not, including the status
+   code, media type and content. The proxied response will also contain the value of the new `proxyOriginalResponse`
+   flag in a
+   new `StreamResult` implementation that extends the one from upstream. This flag will then be evaluated in the last
+   step of the request processing.
 
-Expected change will be applied on a handle failure method that will return a `ProxyStreamFailure` containing the exact
-status code, message and response body.
+The following code snippet illustrates the changes made to the `HttpDataSource`.
 
 ```java
+private StreamResult<Stream<Part>> handleSuccessfulResponse(Response response) {
+    // Response body validation will be kept here, just removed to reduce the noise.
+    var mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
+    var statusCode = (String.valueOf(response.code()));
+    return success(
+            Stream.of(new HttpPart(name, stream, mediaType)),
+            mediaType,
+            statusCode,
+            params.isProxyOriginalResponseEnabled());
+}
+
 private StreamResult<Stream<Part>> handleFailureResponse(Response response, String statusCode) {
-    try {
-        var body = response.body();
-        String mediaType = null;
-        InputStream stream = null;
-        if (body != null) {
-            mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
-            stream = body.byteStream();
-        }
-        var streamFailure = new ProxyStreamFailure(
-                List.of(
-                        response.message(),
-                        format("Received code transferring HTTP data: %s - %s.", statusCode, response.message())),
-                null,
-                stream,
-                mediaType,
-                statusCode);
-        return failure(streamFailure);
-    } finally {
-        try {
-            response.close();
-        } catch (Exception e) {
-            monitor.severe("Error closing failed response", e);
-        }
+    var body = response.body();
+    String mediaType = null;
+    Stream<Part> content = null;
+    if (body != null) {
+        mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).get();
+        var stream = body.byteStream();
+        content = Stream.of(new HttpPart(name, stream, mediaType));
     }
+    return failure(
+            content,
+            mediaType,
+            statusCode,
+            new StreamFailure(List.of(format("Received code transferring HTTP data: %s - %s.",
+                    response.code(), response.message())), null),
+            params.isProxyOriginalResponseEnabled());
 }
 ```
 
-The above snippet will only be applied to the proxy scenario, where the existing one will be maintained as it is.
+The ```success()``` and ```failure()``` methods will be included in the new `StreamResult` implementation.
 
-For the successful response, the existing logic still applies, in the sense that media type and content are already
-extracted from the response while a `StreamResult<Stream<Part>>` is returned.
-
-5. Update the `DataPlanePublicApiV2Controller` to evaluate and return the proxied response.
+5. Update the `DataPlanePublicApiV2Controller` to evaluate and return the proxied response. For a successful scenario,
+   an additional step will be created to evaluate the response's status code and media type and inject those values in
+   the
+   callback.
