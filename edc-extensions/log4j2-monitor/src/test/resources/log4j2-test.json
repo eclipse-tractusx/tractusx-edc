@@ -1,0 +1,18 @@
+{
+  "Configuration": {
+    "Appenders": {
+      "List": {
+        "name": "LIST"
+      }
+    },
+    "Loggers": {
+      "Logger": {
+        "name": "org.eclipse.edc.monitor.logger",
+        "level": "ALL",
+        "AppenderRef": {
+          "ref": "LIST"
+        }
+      }
+    }
+  }
+}

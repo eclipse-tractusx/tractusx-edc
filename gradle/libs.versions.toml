@@ -21,6 +21,7 @@ rsApi = "4.0.0"
 testcontainers = "1.21.3"
 testcontainers-keycloak = "3.8.0"
 titanium = "1.6.0"
+log4j2 = "2.24.3"
 
 
 [libraries]
@@ -188,6 +189,11 @@ testcontainers-minio = { module = "org.testcontainers:minio", version.ref = "tes
 testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }
+
+log4j2-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j2" }
+log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
+log4j2-core-test = { module = "org.apache.logging.log4j:log4j-core-test", version.ref = "log4j2" }
+log4j2-json-template = { module = "org.apache.logging.log4j:log4j-layout-template-json", version.ref = "log4j2" }
 
 [bundles]
 edc-monitoring = ["edc-micrometer-core", "edc-micrometer-jersey", "edc-micrometer-jetty"]

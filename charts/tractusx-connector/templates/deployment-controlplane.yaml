@@ -151,6 +151,14 @@ spec:
             - name: "EDC_IAM_ISSUER_ID"
               value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote}}
 
+            ###########################
+            ## LOGGING CONFIGURATION ##
+            ###########################
+            {{ if .Values.log4j2.enableJsonLogs}}
+            - name: LOG4J_CONFIGURATION_FILE
+              value: "/app/log4j2.yaml"
+            {{ end }}
+
             #######
             # API #
             #######
@@ -335,6 +343,9 @@ spec:
             - name: "configuration"
               mountPath: "/app/opentelemetry.properties"
               subPath: "opentelemetry.properties"
+            - name: log4j2-config
+              mountPath: /app/log4j2.yaml
+              subPath: log4j2.yaml
             {{- if .Values.customCaCerts }}
             - name: custom-cacerts
               mountPath: /opt/java/openjdk/lib/security/cacerts
@@ -352,6 +363,12 @@ spec:
             items:
               - key: "opentelemetry.properties"
                 path: "opentelemetry.properties"
+        - name: "log4j2-config"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-log4j2
+            items:
+              - key: "log4j2.yaml"
+                path: "log4j2.yaml"
         {{- if .Values.customCaCerts }}
         - name: custom-cacertificates
           configMap:

@@ -1,0 +1,24 @@
+{
+  "Configuration": {
+    "Appenders": {
+      "Console": {
+        "name": "CONSOLE",
+        "PatternLayout": {
+          "pattern": "%level %d{yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS} %msg%n"
+        }
+      }
+    },
+    "Loggers": {
+      "Root": {
+        "level": "OFF"
+      },
+      "Logger": {
+        "name": "org.eclipse.edc.monitor.logger",
+        "level": "INFO",
+        "AppenderRef": {
+          "ref": "CONSOLE"
+        }
+      }
+    }
+  }
+}

@@ -150,6 +150,14 @@ spec:
             - name: "EDC_IAM_ISSUER_ID"
               value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote}}
 
+            ###########################
+            ## LOGGING CONFIGURATION ##
+            ###########################
+            {{ if .Values.log4j2.enableJsonLogs}}
+            - name: LOG4J_CONFIGURATION_FILE
+              value: "/app/log4j2.yaml"
+            {{ end }}
+
             #######
             # API #
             #######
@@ -350,6 +358,9 @@ spec:
               mountPath: /opt/java/openjdk/lib/security/cacerts
               subPath: cacerts
             {{- end }}
+            - name: log4j2-config
+              mountPath: /app/log4j2.yaml
+              subPath: log4j2.yaml
             - name: "tmp"
               mountPath: "/tmp"
       volumes:
@@ -362,6 +373,12 @@ spec:
           emptyDir:
             sizeLimit: 1Mi
         {{- end }}
+        - name: "log4j2-config"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-log4j2
+            items:
+              - key: "log4j2.yaml"
+                path: "log4j2.yaml"
         - name: "tmp"
           emptyDir: { }
       {{- with .Values.runtime.nodeSelector }}

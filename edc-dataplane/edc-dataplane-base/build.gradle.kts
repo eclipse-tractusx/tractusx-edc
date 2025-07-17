@@ -26,6 +26,7 @@ dependencies {
     runtimeOnly(libs.edc.bom.dataplane.base)
 
     runtimeOnly(project(":core:edr-core"))
+    runtimeOnly(project(":edc-extensions:log4j2-monitor"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
@@ -49,4 +50,5 @@ dependencies {
     runtimeOnly(libs.edc.dpf.awss3)
     runtimeOnly(libs.edc.dpf.azblob)
     runtimeOnly(libs.edc.identity.did.web)
+    runtimeOnly(libs.log4j2.core)
 }
