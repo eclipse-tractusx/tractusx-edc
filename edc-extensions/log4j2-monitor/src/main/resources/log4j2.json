@@ -4,7 +4,7 @@
       "Console": {
         "name": "CONSOLE",
         "PatternLayout": {
-          "pattern": "%d [%t] %5p %c{1.} - %m%n"
+          "pattern": "%level %d{yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS} %msg%n"
         }
       }
     },
@@ -14,7 +14,7 @@
       },
       "Logger": {
         "name": "org.eclipse.edc.monitor.logger",
-        "level": "DEBUG",
+        "level": "INFO",
         "AppenderRef": {
           "ref": "CONSOLE"
         }
