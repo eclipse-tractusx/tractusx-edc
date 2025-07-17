@@ -81,7 +81,11 @@ public class PolicyHelperFunctions {
     }
 
     public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand) {
-        var constraint = atomicConstraint(leftOperand, operator.getOdrlRepresentation(), rightOperand);
+        return frameworkPolicy(leftOperand, operator, rightOperand, false);
+    }
+
+    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, boolean createRightOperandsAsArray) {
+        var constraint = atomicConstraint(leftOperand, operator.getOdrlRepresentation(), rightOperand, createRightOperandsAsArray);
 
         var permission = Json.createObjectBuilder()
                 .add("action", "use")
@@ -133,7 +137,7 @@ public class PolicyHelperFunctions {
 
     private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
 
-        var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups));
+        var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups), false);
 
         var permission = Json.createObjectBuilder()
                 .add("action", "use")
@@ -162,7 +166,7 @@ public class PolicyHelperFunctions {
     private static JsonObject permission(String... bpns) {
 
         var bpnConstraints = Stream.of(bpns)
-                .map(bpn -> atomicConstraint(TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY, "eq", bpn))
+                .map(bpn -> atomicConstraint(TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY, "eq", bpn, false))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
@@ -177,7 +181,7 @@ public class PolicyHelperFunctions {
     private static JsonObject frameworkPermission(Map<String, String> permissions) {
 
         var constraints = permissions.entrySet().stream()
-                .map(permission -> atomicConstraint(permission.getKey(), "eq", permission.getValue()))
+                .map(permission -> atomicConstraint(permission.getKey(), "eq", permission.getValue(), false))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
@@ -189,13 +193,18 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-    private static JsonObject atomicConstraint(String leftOperand, String operator, Object rightOperand) {
+    private static JsonObject atomicConstraint(String leftOperand, String operator, Object rightOperand, boolean createRightOperandsAsArray) {
         var builder = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
                 .add("leftOperand", leftOperand)
                 .add("operator", operator);
 
-        if (rightOperand instanceof Collection<?> coll) {
+        if (rightOperand instanceof Collection<?> coll && createRightOperandsAsArray) {
+            builder.add("rightOperand", coll.stream()
+                    .map(Object::toString)
+                    .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add)
+                    .build());
+        } else if (rightOperand instanceof Collection<?> coll) {
             builder.add("rightOperand", coll.stream().map(Object::toString).collect(Collectors.joining(",")));
         } else {
             builder.add("rightOperand", rightOperand.toString());
