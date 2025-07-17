@@ -108,7 +108,12 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Tatra")), "Dismantler allowedBrands (IS_NONE_OF, no intersect)"),
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler allowedBrands (IN, fully contained)"),
                     Arguments.of(frameworkPolicy(Map.of(namespace + "UsagePurpose", "cx.core.industrycore:1")), "Usage Purpose"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "ContractReference", "contractReference")), "Contract reference")
+                    Arguments.of(frameworkPolicy(Map.of(namespace + "ContractReference", "contractReference")), "Contract reference"),
+                    Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1", "cx.region.northAmerica:1"), true), "Affiliates Region"),
+                    Arguments.of(frameworkPolicy(namespace + "JurisdictionLocation", Operator.EQ, "test location"), "Jurisdiction Location"),
+                    Arguments.of(frameworkPolicy(namespace + "JurisdictionLocationReference", Operator.EQ, "cx.location.dataconsumer:1"), "Jurisdiction Location Reference"),
+                    Arguments.of(frameworkPolicy(namespace + "Liability", Operator.EQ, "cx.grossnegligence:1"), "Liability"),
+                    Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1"), true), "Managed Legal Entity Region")
             );
         }
     }
