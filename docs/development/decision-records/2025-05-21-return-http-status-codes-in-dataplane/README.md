@@ -21,9 +21,9 @@ deprecated.
 
 1. Pull the upstream modules `data-plane-http` and `data-plane-http-spi` into the Tractus-X EDC distribution.
 2. A new `proxyOriginalResponse` flag will be added to the `HttpDataAddress`. When the value is set to `true`, the
-   dataplane will return the original datasource response. In the `HttpRequestParams` is included this new optional
-   parameter `proxyOriginalResponse` flag. If is not set, the default behaviour (`false`) will be kept, i.e., return
-   only 2XX's and 5XX's.
+   dataplane will return the original datasource response. During the instantiation of `HttpDataSource` the value is set
+   to the parameter `proxyOriginalResponse`. If is not present in the `HttpDataAddress`, the default behaviour (`false`)
+   will be kept, i.e., return only 2XX's and 5XX's.
 3. Update the `HttpDataSource` to proxy the entire response from the source, successful or not, including the status
    code, media type and content. The proxied response will also contain the value of the new `proxyOriginalResponse`
    flag in a
