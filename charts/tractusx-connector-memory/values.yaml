@@ -57,8 +57,11 @@ iatp:
 # -- Add custom ca certificates to the truststore
 customCaCerts: {}
 
+# -- Configuration for the log4j2 logger
 log4j2:
+  # -- Whether to enable the json log config in log4j2.config
   enableJsonLogs: true
+  # -- Log4j2 configuration for json log formatting.
   config: |-
     Appenders:
       Console:
