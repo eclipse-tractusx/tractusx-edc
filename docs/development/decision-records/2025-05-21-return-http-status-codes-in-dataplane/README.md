@@ -2,19 +2,20 @@
 
 ## Decision
 
-The dataplane API will expose the original response from a datasource based on a new proxy status flag in the request
-parameters.
+The dataplane public API will optionally expose the original response from an HTTP data source based on a new attribute
+flag in the source data address.
 
 ## Rationale
 
 Currently, the dataplane does not return status code different from 2XX or 5XX. This was implemented as so to avoid
 exposing any potential sensitive information to external parties.
-However, there is a new requirement to allow the option of proxying the original response from the datasource back to
-the consumer. So the current implementation will be extended to allow the proxying of the datasource response (
-successful and otherwise) and will only apply to HTTP Data Sources (for PULL transfer types) depending on a new flag
-added to the http data address. The current behaviour will be kept as the default one.
+However, there is a new requirement to allow the option of proxying the original response from the HTTP datasource back
+to the consumer. The current implementation will be extended to optionally allow proxying of the datasource response (
+successful and otherwise) and will only be applicable to HTTP Data Sources (for PULL transfer types) depending on a new
+flag added by the data provider to the http source data address.
 
-The original consideration was to perform this change in Upstream, however the proxy dataplane was marked as deprecated.
+The original consideration was to perform this change upstream, however the dataplane public API was marked as
+deprecated.
 
 ## Approach
 
