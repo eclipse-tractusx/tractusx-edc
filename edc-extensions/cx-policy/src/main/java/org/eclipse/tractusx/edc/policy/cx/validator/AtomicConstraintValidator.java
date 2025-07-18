@@ -28,6 +28,9 @@ import org.eclipse.edc.validator.jsonobject.validators.OptionalIdNotBlank;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LEFT_OPERAND_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OPERATOR_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_RIGHT_OPERAND_ATTRIBUTE;
@@ -50,22 +53,28 @@ public class AtomicConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
     private final String ruleType;
+    private final Set<String> encounteredConstraints;
 
-    private AtomicConstraintValidator(JsonLdPath path, String policyType, String ruleType) {
+    private AtomicConstraintValidator(JsonLdPath path, String policyType, String ruleType, Set<String> encounteredConstraints) {
         this.path = path;
         this.policyType = policyType;
         this.ruleType = ruleType;
+        this.encounteredConstraints = encounteredConstraints;
+    }
+
+    public static AtomicConstraintValidator instance(JsonLdPath path, String policyType, String ruleType, Set<String> encounteredConstraints) {
+        return new AtomicConstraintValidator(path, policyType, ruleType, encounteredConstraints);
     }
 
     public static AtomicConstraintValidator instance(JsonLdPath path, String policyType, String ruleType) {
-        return new AtomicConstraintValidator(path, policyType, ruleType);
+        return new AtomicConstraintValidator(path, policyType, ruleType, new HashSet<>());
     }
 
     @Override
     public ValidationResult validate(JsonObject input) {
         return JsonObjectValidator.newValidator()
                 .verify(ODRL_LEFT_OPERAND_ATTRIBUTE, MandatoryObject::new)
-                .verifyObject(ODRL_LEFT_OPERAND_ATTRIBUTE, b -> LeftOperandValidator.instance(b, policyType, ruleType))
+                .verifyObject(ODRL_LEFT_OPERAND_ATTRIBUTE, b -> LeftOperandValidator.instance(b, policyType, ruleType, encounteredConstraints))
                 .verify(ODRL_OPERATOR_ATTRIBUTE, MandatoryObject::new)
                 .verifyObject(ODRL_OPERATOR_ATTRIBUTE, b -> b.verifyId(OptionalIdNotBlank::new))
                 .verify(ODRL_RIGHT_OPERAND_ATTRIBUTE, MandatoryValue::new)

@@ -25,6 +25,9 @@ import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ALLOWED_LOGICAL_CONSTRAINTS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.NOT_ALLOWED_LOGICAL_CONSTRAINTS;
 
@@ -46,15 +49,21 @@ public class ConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
     private final String ruleType;
+    private final Set<String> encounteredConstraints;
 
-    private ConstraintValidator(JsonLdPath path, String policyType, String ruleType) {
+    private ConstraintValidator(JsonLdPath path, String policyType, String ruleType, Set<String> encounteredConstraints) {
         this.path = path;
         this.policyType = policyType;
         this.ruleType = ruleType;
+        this.encounteredConstraints = encounteredConstraints;
+    }
+
+    public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType, String ruleType, Set<String> encounteredConstraints) {
+        return builder.verify(path -> new ConstraintValidator(path, policyType, ruleType, encounteredConstraints));
     }
 
     public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType, String ruleType) {
-        return builder.verify(path -> new ConstraintValidator(path, policyType, ruleType));
+        return builder.verify(path -> new ConstraintValidator(path, policyType, ruleType, new HashSet<>()));
     }
 
     @Override
@@ -64,7 +73,7 @@ public class ConstraintValidator implements Validator<JsonObject> {
                         NOT_ALLOWED_LOGICAL_CONSTRAINTS.contains(key));
 
         return isLogical ?
-                LogicalConstraintValidator.instance(path, policyType, ruleType).validate(input) :
-                AtomicConstraintValidator.instance(path, policyType, ruleType).validate(input);
+                LogicalConstraintValidator.instance(path, policyType, ruleType, encounteredConstraints).validate(input) :
+                AtomicConstraintValidator.instance(path, policyType, ruleType, encounteredConstraints).validate(input);
     }
 }

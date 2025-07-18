@@ -28,6 +28,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
@@ -37,6 +40,8 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.AFFILIATES_REGION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_GROUP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.INFORCE_POLICY_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 
@@ -170,6 +175,36 @@ class LeftOperandValidatorTest {
         ValidationResult result = validateLeftOperand(input, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
+    }
+
+    @Test
+    void shouldReturnSuccess_whenNotMutuallyExclusiveConstraintsPresent() {
+        JsonObject input = Json.createObjectBuilder()
+                .add(ID, INFORCE_POLICY_LITERAL)
+                .build();
+
+        ValidationResult result = LeftOperandValidator
+                .instance(JsonObjectValidator.newValidator(), USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(MEMBERSHIP_LITERAL)))
+                .build()
+                .validate(input);
+
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFailure_whenMutuallyExclusiveConstraintsPresent() {
+        JsonObject input = Json.createObjectBuilder()
+                .add(ID, INFORCE_POLICY_LITERAL)
+                .build();
+
+        ValidationResult result = LeftOperandValidator
+                .instance(JsonObjectValidator.newValidator(), USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(USAGE_PURPOSE_LITERAL)))
+                .build()
+                .validate(input);
+
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureMessages()).anyMatch(msg ->
+                msg.contains("is mutually exclusive"));
     }
 
     private ValidationResult validateLeftOperand(JsonObject input, String policyType, String ruleType) {
