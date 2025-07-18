@@ -40,7 +40,6 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.INFORCE_POLICY_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_RESTRICTION_LITERAL;
