@@ -26,6 +26,7 @@ import org.eclipse.edc.validator.jsonobject.validators.MandatoryIdNotBlank;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
@@ -37,6 +38,7 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MUTUALLY_EXCLUSIVE_CONSTRAINTS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
@@ -59,22 +61,28 @@ public class LeftOperandValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
     private final String ruleType;
+    private final Set<String> encounteredConstraints;
 
-    private LeftOperandValidator(JsonLdPath path, String policyType, String ruleType) {
+    private LeftOperandValidator(JsonLdPath path, String policyType, String ruleType, Set<String> encounteredConstraints) {
         this.path = path;
         this.policyType = policyType;
         this.ruleType = ruleType;
+        this.encounteredConstraints = encounteredConstraints;
+    }
+
+    public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType, String ruleType, Set<String> leftOperands) {
+        return builder.verify(path -> new LeftOperandValidator(path, policyType, ruleType, leftOperands));
     }
 
     public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, String policyType, String ruleType) {
-        return builder.verify(path -> new LeftOperandValidator(path, policyType, ruleType));
+        return builder.verify(path -> new LeftOperandValidator(path, policyType, ruleType, new HashSet<>()));
     }
 
     @Override
     public ValidationResult validate(JsonObject input) {
         return JsonObjectValidator.newValidator()
                 .verifyId(MandatoryIdNotBlank::new)
-                .verify(ID, path -> new ValueIn(path, getAllowedLeftOperands()))
+                .verify(ID, path -> new ValueIn(path, getAllowedLeftOperands(), encounteredConstraints))
                 .build()
                 .validate(input);
     }
@@ -118,11 +126,13 @@ public class LeftOperandValidator implements Validator<JsonObject> {
         private final Set<String> allowedValues;
         private final JsonLdPath path;
         private final String id;
+        private final Set<String> encounteredConstraints;
 
-        private ValueIn(JsonLdPath path, Set<String> allowedValues) {
+        private ValueIn(JsonLdPath path, Set<String> allowedValues, Set<String> encounteredConstraints) {
             this.path = path;
             this.allowedValues = allowedValues;
             this.id = path.last();
+            this.encounteredConstraints  = encounteredConstraints;
         }
 
         @Override
@@ -138,7 +148,26 @@ public class LeftOperandValidator implements Validator<JsonObject> {
                         violation("leftOperand.@id value '" + value + "' is not allowed. Expected one of: " + allowedValues, path.toString())
                 );
             }
+            var hasMutualExclusionConflict = hasMutualExclusionConflict(value);
+            if (hasMutualExclusionConflict.failed()) {
+                return hasMutualExclusionConflict;
+            }
+            if (encounteredConstraints  != null)encounteredConstraints.add(value);
             return ValidationResult.success();
         }
+
+        private ValidationResult hasMutualExclusionConflict(String leftOperand) {
+            Set<String> mutuallyExclusiveWithCurrent = MUTUALLY_EXCLUSIVE_CONSTRAINTS.getOrDefault(leftOperand, Set.of());
+
+            return encounteredConstraints.stream()
+                    .filter(mutuallyExclusiveWithCurrent::contains)
+                    .findFirst()
+                    .map(conflictingKey -> {
+                        return ValidationResult.failure(
+                                violation(String.format("Constraint '%s' is mutually exclusive with constraint '%s'.", leftOperand, conflictingKey), path.toString()));
+                    })
+                    .orElse(ValidationResult.success());
+        }
+
     }
 }
