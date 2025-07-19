@@ -31,7 +31,7 @@ to the `HttpDataSource`.
 
 ```java
 private StreamResult<Stream<Part>> handleResponse(Response response) {
-    // Check response body
+    // Omitted check response body here.
     var mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
     var statusCode = (String.valueOf(response.code()));
     Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode));
