@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,14 +17,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.tests.tck.dsp;
 
-dependencies {
-    implementation(project(":spi:core-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.jsonld)
-    implementation(libs.dsp.spi.v2025)
-    testImplementation(testFixtures(libs.edc.junit))
+import org.testcontainers.containers.GenericContainer;
+
+public class TckContainer<SELF extends TckContainer<SELF>> extends GenericContainer<SELF> {
+    public TckContainer(String imageName) {
+        super(imageName);
+        addFixedExposedPort(8083, 8083); // TCK will use this as callback address - must be fixed!
+    }
+
 }

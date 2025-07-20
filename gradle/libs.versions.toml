@@ -2,15 +2,17 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.14.0-20250626-SNAPSHOT"
+edc = "0.14.0-20250719-SNAPSHOT"
 allure = "2.29.1"
 awaitility = "4.3.0"
 aws = "2.31.78"
 azure-storage-blob = "12.30.1"
 bouncyCastle-jdk18on = "1.81"
+dsp-tck = "1.0.0-RC4"
 flyway = "11.10.2"
 jackson = "2.19.1"
 jakarta-json = "2.0.1"
+junit = "1.13.3"
 nimbus = "10.3.1"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.17.1"
@@ -129,11 +131,24 @@ edc-identity-trust-service = { module = "org.eclipse.edc:identity-trust-service"
 edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
 
 # DCP for Testing
-edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }
 edc-identity-trust-sts-remote-lib = { module = "org.eclipse.edc:identity-trust-sts-remote-lib", version.ref = "edc" }
 edc-sts-core = { module = "org.eclipse.edc:sts-core", version.ref = "edc" }
 edc-sts-api = { module = "org.eclipse.edc:sts-api", version.ref = "edc" }
 edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
+
+# DSP-TCK libraries
+dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }
+dsp-tck-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dsp-tck" }
+dsp-tck-api = { module = "org.eclipse.dataspacetck.dsp:dsp-api", version.ref = "dsp-tck" }
+dsp-tck-system = { module = "org.eclipse.dataspacetck.dsp:dsp-system", version.ref = "dsp-tck" }
+dsp-tck-contractnegotiation = { module = "org.eclipse.dataspacetck.dsp:dsp-contract-negotiation", version.ref = "dsp-tck" }
+dsp-tck-transferprocess = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer-process", version.ref = "dsp-tck" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
+tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
+
+# DSP libraries
+dsp-v2025 = { module = "org.eclipse.edc:dsp-2025", version.ref = "edc" }
+dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
 
 # Federated Catalog modules
 edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }

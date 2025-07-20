@@ -69,4 +69,9 @@ public class ContractNegotiationServiceStub extends AbstractServiceStub implemen
     public ServiceResult<Void> terminate(TerminateNegotiationCommand command) {
         return responseQueue.getNext(Void.class, "Error terminating ContractAgreement: %s");
     }
+
+    @Override
+    public ServiceResult<Void> delete(String negotiationId) {
+        return responseQueue.getNext(Void.class, "Error deleting ContractAgreement: %s");
+    }
 }

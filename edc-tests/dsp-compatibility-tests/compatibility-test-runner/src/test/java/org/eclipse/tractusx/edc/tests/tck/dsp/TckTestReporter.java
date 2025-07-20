@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,14 +17,34 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.tests.tck.dsp;
 
-dependencies {
-    implementation(project(":spi:core-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.jsonld)
-    implementation(libs.dsp.spi.v2025)
-    testImplementation(testFixtures(libs.edc.junit))
+import org.testcontainers.containers.output.OutputFrame;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+
+public class TckTestReporter implements Consumer<OutputFrame> {
+
+    private final List<String> failures = new ArrayList<>();
+    private final Pattern failedRegex = Pattern.compile("FAILED: (\\w+:.*)");
+
+    public TckTestReporter() {
+    }
+
+    @Override
+    public void accept(OutputFrame outputFrame) {
+        var line = outputFrame.getUtf8String();
+        var failed = failedRegex.matcher(line);
+        if (failed.find()) {
+            failures.add(failed.group(1));
+        }
+    }
+
+    public List<String> failures() {
+        return new ArrayList<>(failures);
+    }
+
 }
