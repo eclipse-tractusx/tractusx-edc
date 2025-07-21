@@ -9,6 +9,7 @@ in the source data address.
 
 Currently, the dataplane does not return status code different from 2XX or 5XX. This was implemented as so to avoid
 exposing any potential sensitive information to external parties.
+
 However, there is a new requirement to allow the option of proxying the original response from the HTTP datasource back
 to the consumer. The current implementation will be extended to optionally allow proxying of the datasource response
 (successful and otherwise) and will only be applicable to HTTP Data Sources (for PULL transfer types) depending on a new
