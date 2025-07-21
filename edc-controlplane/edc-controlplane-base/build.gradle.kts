@@ -40,6 +40,7 @@ dependencies {
 
     implementation(project(":core:edr-core"))
     implementation(project(":core:json-ld-core"))
+    implementation(project(":edc-extensions:log4j2-monitor"))
     implementation(project(":edc-extensions:agreements"))
     implementation(project(":edc-extensions:bdrs-client"))
     implementation(project(":edc-extensions:bpn-validation"))
@@ -62,5 +63,7 @@ dependencies {
     runtimeOnly(libs.edc.aws.provision.s3)
     runtimeOnly(libs.edc.controlplane.callback.staticendpoint)
     runtimeOnly(libs.edc.validator.data.address.http.data)
+    runtimeOnly(libs.log4j2.core)
+    runtimeOnly(libs.log4j2.json.template)
 
 }
