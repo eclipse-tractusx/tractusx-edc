@@ -66,6 +66,7 @@ include(":edc-extensions:dcp:tx-dcp")
 include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
 include(":edc-extensions:validators:empty-asset-selector")
+include(":edc-extensions:log4j2-monitor")
 
 include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
@@ -121,7 +122,7 @@ include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 include(":samples:testing-with-mocked-connector")
 
 plugins {
-    id("com.gradle.develocity") version "4.0.2"
+    id("com.gradle.develocity") version "4.1"
     id("com.gradle.common-custom-user-data-gradle-plugin") version "2.3"
 }
 
