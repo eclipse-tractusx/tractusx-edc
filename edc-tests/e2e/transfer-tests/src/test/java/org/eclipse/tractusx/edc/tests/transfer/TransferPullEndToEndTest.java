@@ -29,6 +29,7 @@ import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockserver.model.HttpResponse;
 import org.mockserver.verify.VerificationTimes;
 
 import java.util.Map;
@@ -180,7 +181,77 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
     }
 
     @Test
-    void transferData_success_withProxyOriginalResponse_withTerminate() {
+    void transferData_successful_notReturnOriginalSourceResponseCode_withTerminate() {
+        var assetId = "api-asset-1";
+
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", privateBackendUrl,
+                "type", "HttpData",
+                "contentType", "application/json"
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(201).withBody("test response"));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(200)
+                .extract().body().asString();
+        assertThat(data).isNotNull().isEqualTo("test response");
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+    }
+
+    @Test
+    void transferData_unsuccessful_notReturnOriginalSourceResponseCode_withTerminate() {
+        var assetId = "api-asset-1";
+
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+
+        Map<String, Object> dataAddress = Map.of(
+                "baseUrl", privateBackendUrl,
+                "type", "HttpData",
+                "contentType", "application/json"
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(417));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(500);
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+    }
+
+    @Test
+    void transferData_success_withProxyOriginalResponse() {
         var assetId = "api-asset-1";
 
         var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
@@ -210,22 +281,15 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
         // consumer can fetch data with a valid token
-        var data = CONSUMER.data().pullData(edr, Map.of());
+        var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(201)
+                .extract().body().asString();
         assertThat(data).isNotNull().isEqualTo("test created");
 
         server.verify(requestDefinition, VerificationTimes.exactly(1));
-
-        //CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
-
-        // consumer cannot fetch data with the prev token (suspended)
-        var body = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(201).extract().body().asString();
-        System.out.println("Response body: " + body);
-        assertThat(body).isNotNull().isEqualTo("test created");
-        //server.verify(requestDefinition, VerificationTimes.exactly(1));
     }
 
     @Test
-    void transferData_failing_withProxyOriginalResponse_withTerminate() {
+    void transferData_failing_withProxyOriginalResponse() {
         var assetId = "api-asset-1";
 
         var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
@@ -249,22 +313,20 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
-        // wait until EDC is available on the consumer side
-        server.when(requestDefinition).respond(response().withStatusCode(417).withBody("test response"));
+        server.when(requestDefinition).respond(response().withStatusCode(417).withBody("test failed response"));
 
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-        // consumer can fetch data with a valid token
         var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(417)
                 .extract().body().asString();
 
-        assertThat(data).isNotNull().isEqualTo("test response");
+        assertThat(data).isNotNull().isEqualTo("test failed response");
 
         server.verify(requestDefinition, VerificationTimes.exactly(1));
     }
 
     @Test
-    void transferData_failing_withProxyOriginalResponse_withoutSourceResponseBody_withTerminate() {
+    void transferData_failingWithNotFound_withProxyOriginalResponse() {
         var assetId = "api-asset-1";
 
         var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
@@ -288,12 +350,47 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
-        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(HttpResponse.notFoundResponse().withBody("NOT FOUND"));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(404)
+                .extract().body().asString();
+
+        assertThat(data).isNotNull().isEqualTo("NOT FOUND");
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+    }
+
+    @Test
+    void transferData_failing_withProxyOriginalResponse_withoutSourceResponseBody() {
+        var assetId = "api-asset-1";
+
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", privateBackendUrl,
+                "type", "ProxyHttpData",
+                "contentType", "application/json"
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
         server.when(requestDefinition).respond(response().withStatusCode(511));
 
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-        // consumer can fetch data with a valid token
         var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(511)
                 .extract().body().asString();
 
