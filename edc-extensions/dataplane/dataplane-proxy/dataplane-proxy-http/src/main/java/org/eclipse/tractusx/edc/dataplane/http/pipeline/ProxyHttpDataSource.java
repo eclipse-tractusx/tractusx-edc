@@ -31,6 +31,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.tractusx.edc.ProxyStreamResult;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,14 +41,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress.OCTET_STREAM;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 
 public class ProxyHttpDataSource implements DataSource {
-
-    private static final String FORBIDDEN = "401";
-    private static final String NOT_AUTHORIZED = "403";
-    private static final String NOT_FOUND = "404";
 
     private String name;
     private HttpRequestParams params;
@@ -67,7 +65,11 @@ public class ProxyHttpDataSource implements DataSource {
         try {
             // NB: Do not close the response as the body input stream needs to be read after this method returns. The response closes the body stream.
             var response = httpClient.execute(request);
-            return handleResponse(response);
+            var statusCode = (String.valueOf(response.code()));
+
+            return response.isSuccessful()
+                    ? handleResponse(response, statusCode)
+                    : handleFailureResponse(response, statusCode);
         } catch (IOException e) {
             throw new EdcException(e);
         }
@@ -86,38 +88,16 @@ public class ProxyHttpDataSource implements DataSource {
         return success(content);
     }
 
-    private StreamResult<Stream<Part>> handleSuccessfulResponse(Response response) {
-        var body = response.body();
-        if (body == null) {
-            throw new EdcException(format("Received empty response body transferring HTTP data for request %s: %s", requestId, response.code()));
-        }
-        var stream = body.byteStream();
-        responseBodyStream.set(new ResponseBodyStream(body, stream));
-        var mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
-        var statusCode = (String.valueOf(response.code()));
-        Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode, proxyOriginalResponse));
-        return success(content);
-    }
-
     private StreamResult<Stream<Part>> handleFailureResponse(Response response, String statusCode) {
-        try {
-            var body = response.body();
-            String mediaType = null;
-            InputStream stream = null;
-            if (body != null) {
-                mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
-                stream = body.byteStream();
-            }
-            Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode, proxyOriginalResponse));
-            //return failure(content, new StreamFailure(emptyList(), resolveReason(statusCode))); // TODO: maybe have list for when proxy flag is true
-            return null;
-        } finally {
-            try {
-                response.close();
-            } catch (Exception e) {
-                monitor.severe("Error closing failed response", e);
-            }
+        var body = response.body();
+        Stream<Part> content = null;
+        if (body != null) {
+            var stream = body.byteStream();
+            var mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
+            content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode));
         }
+
+        return ProxyStreamResult.failure(content, new StreamFailure(emptyList(), null));
     }
 
     @Override
@@ -131,21 +111,6 @@ public class ProxyHttpDataSource implements DataSource {
                 // do nothing
             }
         }
-    }
-
-    private StreamFailure.Reason resolveReason(String statusCode) {
-        StreamFailure.Reason reason = null;
-        // if (!proxyOriginalResponse) {
-        if (NOT_AUTHORIZED.equalsIgnoreCase(statusCode) || FORBIDDEN.equalsIgnoreCase(statusCode)) {
-            reason = StreamFailure.Reason.NOT_AUTHORIZED;
-        } else if (NOT_FOUND.equalsIgnoreCase(statusCode)) {
-            reason = StreamFailure.Reason.NOT_FOUND;
-        } else {
-            reason = StreamFailure.Reason.GENERAL_ERROR;
-        }
-        //}
-
-        return reason;
     }
 
     private record ResponseBodyStream(ResponseBody responseBody, InputStream stream) {

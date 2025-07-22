@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
@@ -51,6 +52,7 @@ public class AsyncStreamingDataSink implements DataSink {
 
     public static final String TYPE = "AsyncStreaming";
     private static final String DEFAULT_SUCCESSFUL_RESPONSE_STATUS_CODE = "200";
+    private static final String DEFAULT_UNSUCCESSFUL_RESPONSE_STATUS_CODE = "500";
 
     private final AsyncResponseContext asyncContext;
     private final ExecutorService executorService;
@@ -63,7 +65,12 @@ public class AsyncStreamingDataSink implements DataSink {
     @Override
     public CompletableFuture<StreamResult<Object>> transfer(DataSource source) {
         var streamResult = source.openPartStream();
-        if (streamResult.failed() && streamResult.getContent() == null) {
+        if (streamResult.failed()) {
+            if (streamResult.getContent() == null) {
+                completedFuture(StreamResult.failure(streamResult.getFailure()));
+            }
+
+            handleProxyFailure(streamResult);
             return completedFuture(ProxyStreamResult.failure(streamResult.getContent(), streamResult.getFailure()));
         }
 
@@ -94,6 +101,26 @@ public class AsyncStreamingDataSink implements DataSink {
         }, part.mediaType(), extractResponseCode(part)));
 
         return result ? StatusResult.success() : failure(FATAL_ERROR, "Could not resume output stream write");
+    }
+
+    private void handleProxyFailure(StreamResult<Stream<DataSource.Part>> streamResult) {
+        try (var partStream = streamResult.getContent()) {
+            var proxyHttpPart = partStream
+                    .filter(ProxyHttpPart.class::isInstance)
+                    .map(ProxyHttpPart.class::cast)
+                    .findFirst()
+                    .orElse(null);
+
+            var statusCode = proxyHttpPart != null ? proxyHttpPart.statusCode() : DEFAULT_UNSUCCESSFUL_RESPONSE_STATUS_CODE;
+
+            asyncContext.register(new AsyncResponseCallback(outputStream -> {
+                try (var content = proxyHttpPart.openStream()) {
+                    outputStream.write(content.readAllBytes());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }, proxyHttpPart.mediaType(), statusCode));
+        }
     }
 
     private String extractResponseCode(DataSource.Part part) {

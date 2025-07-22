@@ -33,6 +33,7 @@ dependencies {
 
     implementation(project(":edc-extensions:dataplane:dataplane-util"))
     implementation(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http"))
+    implementation(project(":spi:core-spi"))
     implementation(libs.jakarta.rsApi)
 
     testImplementation(libs.edc.ext.http)

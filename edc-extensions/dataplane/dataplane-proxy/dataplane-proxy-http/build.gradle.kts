@@ -22,7 +22,7 @@ dependencies {
     api(libs.edc.spi.dataplane.http)
     implementation(libs.edc.lib.util)
     implementation(libs.edc.dpf.http)
-    //implementation(project(":edc-extensions:dataplane:dataplane-util"))
+    implementation(project(":spi:core-spi"))
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.runtime)
