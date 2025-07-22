@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,11 +17,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.dataplane.http.pipeline;
 
-dependencies {
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.dataplane.dataplane)
+import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
+
+import java.io.InputStream;
+
+public record ProxyHttpPart(String name, InputStream content, String mediaType,
+                            String statusCode, boolean proxyOriginalResponse) implements DataSource.Part {
+    @Override
+    public long size() {
+        return SIZE_UNKNOWN;
+    }
+
+    @Override
+    public InputStream openStream() {
+        return content;
+    }
+
+    @Override
+    public String mediaType() {
+        return mediaType;
+    }
 }

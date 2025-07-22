@@ -19,10 +19,13 @@
 
 package org.eclipse.tractusx.edc.dataplane.proxy.api;
 
+import org.eclipse.edc.connector.dataplane.http.params.HttpRequestFactory;
+import org.eclipse.edc.connector.dataplane.http.spi.HttpRequestParamsProvider;
 import org.eclipse.edc.connector.dataplane.spi.Endpoint;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -36,6 +39,7 @@ import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.edc.web.spi.configuration.PortMapping;
 import org.eclipse.edc.web.spi.configuration.PortMappingRegistry;
+import org.eclipse.tractusx.edc.dataplane.http.pipeline.ProxyHttpDataSourceFactory;
 import org.eclipse.tractusx.edc.dataplane.proxy.api.controller.DataPlanePublicApiV2Controller;
 
 import java.util.concurrent.Executors;
@@ -73,6 +77,10 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
     private PublicEndpointGeneratorService generatorService;
     @Inject
     private Hostname hostname;
+    @Inject
+    private EdcHttpClient httpClient;
+    @Inject
+    private HttpRequestParamsProvider paramsProvider;
 
     @Override
     public String name() {
@@ -99,8 +107,21 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
             generatorService.addGeneratorFunction("HttpData", () -> Endpoint.url(publicApiResponseUrl));
         }
 
+        generatorService.addGeneratorFunction("ProxyHttpData", dataAddress -> endpoint);
+
+        if (publicApiResponseUrl != null) {
+            generatorService.addGeneratorFunction("ProxyHttpData", () -> Endpoint.url(publicApiResponseUrl));
+        }
+
         var publicApiController = new DataPlanePublicApiV2Controller(pipelineService, executorService, authorizationService);
         webService.registerResource(ApiContext.PUBLIC, publicApiController);
+
+        var monitor = context.getMonitor();
+
+        var httpRequestFactory = new HttpRequestFactory();
+
+        var sourceFactory = new ProxyHttpDataSourceFactory(httpClient, paramsProvider, monitor, httpRequestFactory);
+        pipelineService.registerFactory(sourceFactory);
     }
 
     @Settings

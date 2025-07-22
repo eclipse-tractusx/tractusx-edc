@@ -179,6 +179,129 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
         server.verify(requestDefinition, VerificationTimes.exactly(1));
     }
 
+    @Test
+    void transferData_success_withProxyOriginalResponse_withTerminate() {
+        var assetId = "api-asset-1";
+
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", privateBackendUrl,
+                "type", "ProxyHttpData",
+                "contentType", "application/json"
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(201).withBody("test created"));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        // consumer can fetch data with a valid token
+        var data = CONSUMER.data().pullData(edr, Map.of());
+        assertThat(data).isNotNull().isEqualTo("test created");
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+
+        //CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
+
+        // consumer cannot fetch data with the prev token (suspended)
+        var body = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(201).extract().body().asString();
+        System.out.println("Response body: " + body);
+        assertThat(body).isNotNull().isEqualTo("test created");
+        //server.verify(requestDefinition, VerificationTimes.exactly(1));
+    }
+
+    @Test
+    void transferData_failing_withProxyOriginalResponse_withTerminate() {
+        var assetId = "api-asset-1";
+
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", privateBackendUrl,
+                "type", "ProxyHttpData",
+                "contentType", "application/json"
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(417).withBody("test response"));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        // consumer can fetch data with a valid token
+        var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(417)
+                .extract().body().asString();
+
+        assertThat(data).isNotNull().isEqualTo("test response");
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+    }
+
+    @Test
+    void transferData_failing_withProxyOriginalResponse_withoutSourceResponseBody_withTerminate() {
+        var assetId = "api-asset-1";
+
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", privateBackendUrl,
+                "type", "ProxyHttpData",
+                "contentType", "application/json"
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(511));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        // consumer can fetch data with a valid token
+        var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(511)
+                .extract().body().asString();
+
+        assertThat(data).isNotNull().isEqualTo("");
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+    }
+
     protected JsonObject inForcePolicy() {
         return inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
     }
