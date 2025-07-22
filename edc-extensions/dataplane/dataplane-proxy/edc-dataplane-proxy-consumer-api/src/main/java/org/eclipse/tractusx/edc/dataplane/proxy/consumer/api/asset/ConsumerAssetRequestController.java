@@ -142,8 +142,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
     private Response failedResponse(StreamFailure failure, StreamResult result) {
         Response.Status httpStatus;
         String mediaType = APPLICATION_JSON;
-        if (result.getContent() != null &&
-                result.getContent() instanceof ProxyHttpPart part) {
+        if (result.getContent() != null && result.getContent() instanceof ProxyHttpPart part) {
             httpStatus = Response.Status.valueOf(part.statusCode());
             mediaType = part.mediaType();
 

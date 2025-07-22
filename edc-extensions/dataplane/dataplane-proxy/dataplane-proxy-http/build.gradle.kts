@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020, 2021 Microsoft Corporation
+ *  Copyright (c) 2025, 2021 Microsoft Corporation
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -20,7 +20,6 @@ dependencies {
     api(libs.edc.spi.http)
     api(libs.edc.spi.dataplane.dataplane)
     api(libs.edc.spi.dataplane.http)
-    //api(project(":spi:data-plane:data-plane-http-spi"))
     implementation(libs.edc.lib.util)
     implementation(libs.edc.dpf.http)
     //implementation(project(":edc-extensions:dataplane:dataplane-util"))

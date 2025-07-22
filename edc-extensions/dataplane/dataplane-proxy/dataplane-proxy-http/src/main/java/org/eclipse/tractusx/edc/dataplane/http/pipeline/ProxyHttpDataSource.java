@@ -50,7 +50,6 @@ public class ProxyHttpDataSource implements DataSource {
     private static final String NOT_FOUND = "404";
 
     private String name;
-    private boolean proxyOriginalResponse;
     private HttpRequestParams params;
     private String requestId;
     private Monitor monitor;
@@ -75,7 +74,7 @@ public class ProxyHttpDataSource implements DataSource {
 
     }
 
-    private StreamResult<Stream<Part>> handleResponse(Response response) {
+    private StreamResult<Stream<Part>> handleResponse(Response response, String statusCode) {
         var body = response.body();
         if (body == null) {
             throw new EdcException(format("Received empty response body transferring HTTP data for request %s: %s", requestId, response.code()));
@@ -83,8 +82,7 @@ public class ProxyHttpDataSource implements DataSource {
         var stream = body.byteStream();
         responseBodyStream.set(new ResponseBodyStream(body, stream));
         var mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
-        var statusCode = (String.valueOf(response.code()));
-        Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode, proxyOriginalResponse));
+        Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode));
         return success(content);
     }
 
@@ -172,11 +170,6 @@ public class ProxyHttpDataSource implements DataSource {
 
         public Builder name(String name) {
             dataSource.name = name;
-            return this;
-        }
-
-        public Builder proxyOriginalResponse(boolean proxyOriginalResponse) {
-            dataSource.proxyOriginalResponse = proxyOriginalResponse;
             return this;
         }
 

@@ -24,7 +24,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import java.io.InputStream;
 
 public record ProxyHttpPart(String name, InputStream content, String mediaType,
-                            String statusCode, boolean proxyOriginalResponse) implements DataSource.Part {
+                            String statusCode) implements DataSource.Part {
     @Override
     public long size() {
         return SIZE_UNKNOWN;

@@ -30,6 +30,9 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
+import static org.eclipse.edc.spi.result.Result.failure;
+import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PULL;
+
 /**
  * Instantiates {@link ProxyHttpDataSource}s for requests whose source data type is ProxyHttpData.
  */
@@ -55,9 +58,13 @@ public class ProxyHttpDataSourceFactory implements DataSourceFactory {
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         try {
-            createSource(request);
+            if (PULL.equals(request.getTransferType().flowType())) {
+                createSource(request);
+            } else {
+                return failure("Transfer type mismatch: ProxyHttpData data type is only allowed for PULL transfer types.");
+            }
         } catch (Exception e) {
-            return Result.failure("Failed to build HttpDataSource: " + e.getMessage());
+            return failure("Failed to build ProxyHttpDataSource: " + e.getMessage());
         }
         return Result.success();
     }

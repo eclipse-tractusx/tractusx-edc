@@ -76,7 +76,6 @@ include(":edc-extensions:agreements:retirement-evaluation-store-sql")
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")
-//include(":edc-extensions:dataplane:dataplane-http-spi")
 include(":edc-extensions:dataplane:dataplane-util")
 include(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http")
 include(":edc-extensions:dataplane:dataplane-selector-configuration")

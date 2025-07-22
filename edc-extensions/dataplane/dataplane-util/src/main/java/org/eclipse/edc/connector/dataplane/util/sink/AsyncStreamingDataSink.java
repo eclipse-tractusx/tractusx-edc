@@ -50,6 +50,7 @@ import static org.eclipse.edc.util.async.AsyncUtils.asyncAllOf;
 public class AsyncStreamingDataSink implements DataSink {
 
     public static final String TYPE = "AsyncStreaming";
+    private static final String DEFAULT_SUCCESSFUL_RESPONSE_STATUS_CODE = "200";
 
     private final AsyncResponseContext asyncContext;
     private final ExecutorService executorService;
@@ -67,7 +68,6 @@ public class AsyncStreamingDataSink implements DataSink {
         }
 
         try (var partStream = streamResult.getContent()) {
-
             return partStream
                     .map(part -> supplyAsync(() -> transferPart(part), executorService))
                     .collect(asyncAllOf())
@@ -85,21 +85,21 @@ public class AsyncStreamingDataSink implements DataSink {
 
     @NotNull
     private StatusResult<?> transferPart(DataSource.Part part) {
-        var statusCode = "200";
-
-        if (part instanceof ProxyHttpPart proxyHttpPart) {
-            statusCode = proxyHttpPart.statusCode();
-        }
-
         var result = asyncContext.register(new AsyncResponseCallback(outputStream -> {
             try {
                 part.openStream().transferTo(outputStream);
             } catch (IOException e) {
                 throw new EdcException(e);
             }
-        }, part.mediaType(), statusCode));
+        }, part.mediaType(), extractResponseCode(part)));
 
         return result ? StatusResult.success() : failure(FATAL_ERROR, "Could not resume output stream write");
+    }
+
+    private String extractResponseCode(DataSource.Part part) {
+        return (part instanceof ProxyHttpPart proxyHttpPart)
+                ? proxyHttpPart.statusCode()
+                : DEFAULT_SUCCESSFUL_RESPONSE_STATUS_CODE;
     }
 
     /**
@@ -115,7 +115,6 @@ public class AsyncStreamingDataSink implements DataSink {
          * @return true if the callback was successfully registered
          */
         boolean register(AsyncResponseCallback callback);
-
     }
 
     public record AsyncResponseCallback(Consumer<OutputStream> outputStreamConsumer, String mediaType,
