@@ -132,9 +132,13 @@ public class EdcCompatibilityEmbeddedTest {
             properties.put(TCK_LAUNCHER, DEFAULT_LAUNCHER);
         }
         properties.put("dataspacetck.dsp.jsonld.context.edc.path", resourceConfig("dspace-edc-context-v1.jsonld"));
+        properties.put("dataspacetck.dsp.jsonld.context.edc.uri", "https://w3id.org/edc/dspace/v0.0.1");
         properties.put("dataspacetck.dsp.jsonld.context.tractusx_edc.path", resourceConfig("tx-v1.jsonld"));
+        properties.put("dataspacetck.dsp.jsonld.context.tractusx_edc.uri", "https://w3id.org/tractusx/edc/v0.0.1");
         properties.put("dataspacetck.dsp.jsonld.context.tractusx_auth.path", resourceConfig("tx-auth-v1.jsonld"));
+        properties.put("dataspacetck.dsp.jsonld.context.tractusx_auth.uri", "https://w3id.org/tractusx/auth/v1.0.0");
         properties.put("dataspacetck.dsp.jsonld.context.tractusx_policy.path", resourceConfig("cx-policy-v1.jsonld"));
+        properties.put("dataspacetck.dsp.jsonld.context.tractusx_policy.uri", "https://w3id.org/tractusx/policy/v1.0.0");
         properties.put("dataspacetck.dsp.connector.http.url", PROTOCOL_URL + "/2025-1");
         properties.put("dataspacetck.dsp.connector.http.base.url", PROTOCOL_URL);
         properties.put("dataspacetck.dsp.connector.negotiation.initiate.url", WEBHOOK_URL + "/negotiations/requests");
