@@ -36,8 +36,8 @@ import static io.restassured.http.ContentType.JSON;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_PREFIX;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -52,7 +52,7 @@ public abstract class BaseBusinessPartnerGroupApiControllerTest extends RestCont
     @BeforeEach
     void setUp() {
         jsonLdService.registerNamespace("edc", EDC_NAMESPACE);
-        jsonLdService.registerNamespace("tx", TX_NAMESPACE);
+        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_NS);
     }
 
     @Test
@@ -171,8 +171,8 @@ public abstract class BaseBusinessPartnerGroupApiControllerTest extends RestCont
     private JsonObject createJsonObject() {
         return jsonLdService.expand(Json.createObjectBuilder()
                 .add(ID, "test-bpn")
-                .add(CONTEXT, Json.createObjectBuilder().add(TX_PREFIX, TX_NAMESPACE).build())
-                .add(TX_NAMESPACE + "groups", String.join(",", "group1", "group2", "group3"))
+                .add(CONTEXT, Json.createObjectBuilder().add(CX_POLICY_PREFIX, CX_POLICY_NS).build())
+                .add(CX_POLICY_NS + "groups", String.join(",", "group1", "group2", "group3"))
                 .build()).orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
     }
 

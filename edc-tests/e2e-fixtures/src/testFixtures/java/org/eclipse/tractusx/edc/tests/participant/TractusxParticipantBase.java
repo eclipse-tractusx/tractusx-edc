@@ -55,7 +55,7 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 
 /**
@@ -158,7 +158,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void storeBusinessPartner(String bpn, String... groups) {
         var body = createObjectBuilder()
                 .add(ID, bpn)
-                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
+                .add(CX_POLICY_NS + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
         baseManagementRequest()
                 .contentType(JSON)
@@ -175,7 +175,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void updateBusinessPartner(String bpn, String... groups) {
         var body = createObjectBuilder()
                 .add(ID, bpn)
-                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
+                .add(CX_POLICY_NS + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
         baseManagementRequest()
                 .contentType(JSON)
