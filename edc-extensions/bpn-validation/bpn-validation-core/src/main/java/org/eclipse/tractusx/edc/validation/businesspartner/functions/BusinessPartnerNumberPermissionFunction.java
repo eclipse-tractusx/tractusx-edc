@@ -30,13 +30,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import static org.eclipse.edc.policy.model.Operator.EQ;
-import static org.eclipse.edc.policy.model.Operator.HAS_PART;
 import static org.eclipse.edc.spi.result.Result.failure;
 import static org.eclipse.edc.spi.result.Result.success;
 
@@ -93,15 +90,22 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
 
     @Override
     public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
+
         if (!SUPPORTED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'."
                     .formatted(SUPPORTED_OPERATORS, operator));
         }
 
+        if (!(rightValue instanceof String s)){
+            return Result.failure("Invalid right-operand: right operand must be a string");
+        }
+
         var pattern = "^BPNL[0-9A-Z]{12}$";
         var compiledPattern = Pattern.compile(pattern);
-        return rightValue instanceof String s && compiledPattern.matcher(s).matches()
+        var matcher = compiledPattern.matcher(s);
+
+        return matcher.matches()
                 ? Result.success()
-                : Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(pattern));
+                : Result.failure("Invalid right-operand: right operand must match pattern '%s' but is '%s'".formatted(pattern, s));
     }
 }

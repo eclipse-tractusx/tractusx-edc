@@ -188,10 +188,8 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
                     .formatted(ALLOWED_OPERATORS, operator));
         }
 
-        var pattern = "[\\s\\S]+";
-        var compiledPattern = Pattern.compile(pattern);
-        return rightValue instanceof String s && compiledPattern.matcher(s).matches()
+        return rightValue instanceof String s
                 ? Result.success()
-                : Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(pattern));
+                : Result.failure("Invalid right-operand: right operand must be a string");
     }
 }

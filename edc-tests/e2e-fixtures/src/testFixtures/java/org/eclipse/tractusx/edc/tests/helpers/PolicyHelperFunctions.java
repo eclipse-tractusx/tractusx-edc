@@ -162,7 +162,7 @@ public class PolicyHelperFunctions {
     private static JsonObject permission(String... bpns) {
 
         var bpnConstraints = Stream.of(bpns)
-                .map(bpn -> atomicConstraint(TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY, "eq", bpn))
+                .map(bpn -> atomicConstraint(TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY, "isAnyOf", bpn))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()

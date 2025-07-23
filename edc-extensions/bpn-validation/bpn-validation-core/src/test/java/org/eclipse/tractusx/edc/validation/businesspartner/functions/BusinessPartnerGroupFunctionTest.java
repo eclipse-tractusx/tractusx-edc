@@ -38,18 +38,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.policy.model.Operator.EQ;
 import static org.eclipse.edc.policy.model.Operator.GEQ;
 import static org.eclipse.edc.policy.model.Operator.GT;
 import static org.eclipse.edc.policy.model.Operator.HAS_PART;
-import static org.eclipse.edc.policy.model.Operator.IN;
 import static org.eclipse.edc.policy.model.Operator.IS_A;
-import static org.eclipse.edc.policy.model.Operator.IS_ALL_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
 import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
-import static org.eclipse.edc.policy.model.Operator.NEQ;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
