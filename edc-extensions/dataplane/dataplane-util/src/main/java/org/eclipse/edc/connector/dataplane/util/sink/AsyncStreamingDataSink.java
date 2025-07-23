@@ -25,17 +25,16 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.result.AbstractResult;
-import org.eclipse.tractusx.edc.ProxyStreamResult;
 import org.eclipse.tractusx.edc.dataplane.http.pipeline.ProxyHttpPart;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
@@ -66,12 +65,7 @@ public class AsyncStreamingDataSink implements DataSink {
     public CompletableFuture<StreamResult<Object>> transfer(DataSource source) {
         var streamResult = source.openPartStream();
         if (streamResult.failed()) {
-            if (streamResult.getContent() == null) {
-                completedFuture(StreamResult.failure(streamResult.getFailure()));
-            }
-
-            handleProxyFailure(streamResult);
-            return completedFuture(ProxyStreamResult.failure(streamResult.getContent(), streamResult.getFailure()));
+            completedFuture(StreamResult.failure(streamResult.getFailure()));
         }
 
         try (var partStream = streamResult.getContent()) {
@@ -92,35 +86,22 @@ public class AsyncStreamingDataSink implements DataSink {
 
     @NotNull
     private StatusResult<?> transferPart(DataSource.Part part) {
+        Map<String, String> proxyHeaders = part instanceof ProxyHttpPart proxyHttpPart ? proxyHttpPart.headers() : Map.of();
         var result = asyncContext.register(new AsyncResponseCallback(outputStream -> {
             try {
-                part.openStream().transferTo(outputStream);
+                if (!proxyPartHasNoContent(part)) {
+                    part.openStream().transferTo(outputStream);
+                }
             } catch (IOException e) {
                 throw new EdcException(e);
             }
-        }, part.mediaType(), extractResponseCode(part)));
+        }, part.mediaType(), extractResponseCode(part), proxyHeaders));
 
         return result ? StatusResult.success() : failure(FATAL_ERROR, "Could not resume output stream write");
     }
 
-    private void handleProxyFailure(StreamResult<Stream<DataSource.Part>> streamResult) {
-        try (var partStream = streamResult.getContent()) {
-            var proxyHttpPart = partStream
-                    .filter(ProxyHttpPart.class::isInstance)
-                    .map(ProxyHttpPart.class::cast)
-                    .findFirst()
-                    .orElse(null);
-
-            var statusCode = proxyHttpPart != null ? proxyHttpPart.statusCode() : DEFAULT_UNSUCCESSFUL_RESPONSE_STATUS_CODE;
-
-            asyncContext.register(new AsyncResponseCallback(outputStream -> {
-                try (var content = proxyHttpPart.openStream()) {
-                    outputStream.write(content.readAllBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }, proxyHttpPart.mediaType(), statusCode));
-        }
+    private static boolean proxyPartHasNoContent(DataSource.Part part) {
+        return part instanceof ProxyHttpPart proxyHttpPart && proxyHttpPart.content() == null;
     }
 
     private String extractResponseCode(DataSource.Part part) {
@@ -145,7 +126,7 @@ public class AsyncStreamingDataSink implements DataSink {
     }
 
     public record AsyncResponseCallback(Consumer<OutputStream> outputStreamConsumer, String mediaType,
-                                        String statusCode) {
+                                        String statusCode, Map<String, String> proxyHeaders) {
 
     }
 

@@ -26,22 +26,20 @@ import okhttp3.ResponseBody;
 import org.eclipse.edc.connector.dataplane.http.params.HttpRequestFactory;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpRequestParams;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
-import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.ProxyStreamResult;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 import static org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress.OCTET_STREAM;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 
@@ -67,9 +65,7 @@ public class ProxyHttpDataSource implements DataSource {
             var response = httpClient.execute(request);
             var statusCode = (String.valueOf(response.code()));
 
-            return response.isSuccessful()
-                    ? handleResponse(response, statusCode)
-                    : handleFailureResponse(response, statusCode);
+            return handleResponse(response, statusCode);
         } catch (IOException e) {
             throw new EdcException(e);
         }
@@ -78,26 +74,22 @@ public class ProxyHttpDataSource implements DataSource {
 
     private StreamResult<Stream<Part>> handleResponse(Response response, String statusCode) {
         var body = response.body();
-        if (body == null) {
-            throw new EdcException(format("Received empty response body transferring HTTP data for request %s: %s", requestId, response.code()));
+        InputStream stream = null;
+        if (body != null) {
+            stream = body.byteStream();
+            responseBodyStream.set(new ResponseBodyStream(body, stream));
         }
-        var stream = body.byteStream();
-        responseBodyStream.set(new ResponseBodyStream(body, stream));
+
         var mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
-        Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode));
+
+        Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode, extractHeaders(response)));
         return success(content);
     }
 
-    private StreamResult<Stream<Part>> handleFailureResponse(Response response, String statusCode) {
-        var body = response.body();
-        Stream<Part> content = null;
-        if (body != null) {
-            var stream = body.byteStream();
-            var mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
-            content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode));
-        }
-
-        return ProxyStreamResult.failure(content, new StreamFailure(emptyList(), null));
+    private Map<String, String> extractHeaders(Response response) {
+        var proxyHeaders = new HashMap<String, String>();
+        response.headers().forEach(header -> proxyHeaders.put(header.getFirst(), header.getSecond()));
+        return proxyHeaders;
     }
 
     @Override

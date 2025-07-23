@@ -204,12 +204,15 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
-        server.when(requestDefinition).respond(response().withStatusCode(201).withBody("test response"));
+        server.when(requestDefinition).respond(response().withStatusCode(201).withBody("test response")
+                .withHeader("to-be-returned", "false"));
 
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-        var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(200)
-                .extract().body().asString();
+        var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(200);
+        var header = response.extract().headers().get("to-be-returned");
+        assertThat(header).isNull();
+        var data = response.extract().body().asString();
         assertThat(data).isNotNull().isEqualTo("test response");
 
         server.verify(requestDefinition, VerificationTimes.exactly(1));
@@ -275,14 +278,58 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
-        server.when(requestDefinition).respond(response().withStatusCode(201).withBody("test created"));
+        server.when(requestDefinition).respond(response().withStatusCode(201).withBody("test created")
+                .withHeader("to-be-returned", "true"));
 
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
         // consumer can fetch data with a valid token
-        var data = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(201)
-                .extract().body().asString();
+        var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(201);
+        var header = response.extract().headers().get("to-be-returned");
+        assertThat(header.getValue()).isNotNull().isEqualTo("true");
+        var data = response.extract().body().asString();
         assertThat(data).isNotNull().isEqualTo("test created");
+
+        server.verify(requestDefinition, VerificationTimes.exactly(1));
+    }
+
+    @Test
+    void transferData_success_withProxyOriginalResponse_withoutSourceResponseBody() {
+        var assetId = "api-asset-1";
+
+        var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
+
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", privateBackendUrl,
+                "type", "ProxyHttpData",
+                "contentType", "application/json"
+        );
+
+        PROVIDER.createAsset(assetId, Map.of(), dataAddress);
+
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
+        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+                .withTransferType("HttpData-PULL")
+                .withDestination(httpDataDestination())
+                .execute();
+
+        CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
+
+        // wait until EDC is available on the consumer side
+        server.when(requestDefinition).respond(response().withStatusCode(204)
+                .withHeader("to-be-returned", "true"));
+
+        var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
+
+        // consumer can fetch data with a valid token
+        var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(204);
+        var header = response.extract().headers().get("to-be-returned");
+        assertThat(header.getValue()).isNotNull().isEqualTo("true");
+        var data = response.extract().body().asString();
+        assertThat(data).isEmpty();
 
         server.verify(requestDefinition, VerificationTimes.exactly(1));
     }

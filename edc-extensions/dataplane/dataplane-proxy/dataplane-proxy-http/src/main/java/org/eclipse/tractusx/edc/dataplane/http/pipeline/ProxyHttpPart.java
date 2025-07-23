@@ -22,9 +22,10 @@ package org.eclipse.tractusx.edc.dataplane.http.pipeline;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 
 import java.io.InputStream;
+import java.util.Map;
 
 public record ProxyHttpPart(String name, InputStream content, String mediaType,
-                            String statusCode) implements DataSource.Part {
+                            String statusCode, Map<String, String> headers) implements DataSource.Part {
     @Override
     public long size() {
         return SIZE_UNKNOWN;
