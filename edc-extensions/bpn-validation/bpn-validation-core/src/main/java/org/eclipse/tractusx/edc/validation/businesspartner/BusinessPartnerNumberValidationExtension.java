@@ -37,7 +37,7 @@ import static org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogP
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension.NAME;
 
 /**
@@ -61,7 +61,7 @@ public class BusinessPartnerNumberValidationExtension implements ServiceExtensio
      * </pre>
      */
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = "BusinessPartnerNumber";
-    public static final String TX_BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + BUSINESS_PARTNER_CONSTRAINT_KEY;
+    public static final String CX_BUSINESS_PARTNER_CONSTRAINT_KEY = CX_POLICY_NS + BUSINESS_PARTNER_CONSTRAINT_KEY;
     protected static final String NAME = "Business Partner Validation Extension";
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;
@@ -85,10 +85,10 @@ public class BusinessPartnerNumberValidationExtension implements ServiceExtensio
         ruleBindingRegistry.bind("USE", scope);
         ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
         ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
-        ruleBindingRegistry.bind(TX_BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
+        ruleBindingRegistry.bind(CX_BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
 
         policyEngine.registerFunction(contextType, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, function);
-        policyEngine.registerFunction(contextType, Permission.class, TX_BUSINESS_PARTNER_CONSTRAINT_KEY, function);
+        policyEngine.registerFunction(contextType, Permission.class, CX_BUSINESS_PARTNER_CONSTRAINT_KEY, function);
     }
 
 }
