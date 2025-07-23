@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import static org.eclipse.edc.policy.model.Operator.EQ;
 import static org.eclipse.edc.policy.model.Operator.HAS_PART;
@@ -45,14 +46,8 @@ import static org.eclipse.edc.spi.result.Result.success;
 public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
 
     private static final List<Operator> SUPPORTED_OPERATORS = Arrays.asList(
-            EQ,
-            Operator.IN,
-            Operator.NEQ,
             Operator.IS_ANY_OF,
-            Operator.IS_A,
-            Operator.IS_NONE_OF,
-            Operator.IS_ALL_OF,
-            Operator.HAS_PART
+            Operator.IS_NONE_OF
     );
 
     @Override
@@ -72,14 +67,7 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
         }
 
         return switch (operator) {
-            case EQ, IS_ALL_OF -> checkEquality(identity, rightOperand, operator)
-                    .orElse(reportFailure(context));
-            case NEQ -> checkEquality(identity, rightOperand, operator)
-                    .map(b -> !b)
-                    .orElse(reportFailure(context));
-            case HAS_PART -> checkStringContains(identity, rightOperand)
-                    .orElse(reportFailure(context));
-            case IN, IS_A, IS_ANY_OF ->
+            case IS_ANY_OF ->
                     checkListContains(identity, rightOperand, operator).orElse(reportFailure(context));
             case IS_NONE_OF -> checkListContains(identity, rightOperand, operator)
                     .map(b -> !b)
@@ -103,22 +91,17 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
                 .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 
-    private Result<Boolean> checkStringContains(String identity, Object rightValue) {
-        if (rightValue instanceof String bpnString) {
-            return success(identity.contains(bpnString));
+    @Override
+    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
+        if (!SUPPORTED_OPERATORS.contains(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'."
+                    .formatted(SUPPORTED_OPERATORS, operator));
         }
-        return failure("Invalid right-value: operator '%s' requires a 'String' but got a '%s'"
-                .formatted(HAS_PART, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
-    }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Result<Boolean> checkEquality(String identity, Object rightValue, Operator operator) {
-        if (rightValue instanceof String bpnString) {
-            return success(Objects.equals(identity, bpnString));
-        } else if (rightValue instanceof List bpnList) {
-            return success(bpnList.stream().allMatch(bpn -> Objects.equals(identity, bpn)));
-        }
-        return failure("Invalid right-value: operator '%s' requires a 'String' or a 'List' but got a '%s'"
-                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
+        var pattern = "^BPNL[0-9A-Z]{12}$";
+        var compiledPattern = Pattern.compile(pattern);
+        return rightValue instanceof String s && compiledPattern.matcher(s).matches()
+                ? Result.success()
+                : Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(pattern));
     }
 }
