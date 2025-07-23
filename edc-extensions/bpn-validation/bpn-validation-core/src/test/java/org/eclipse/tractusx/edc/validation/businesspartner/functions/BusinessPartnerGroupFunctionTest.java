@@ -146,25 +146,6 @@ class BusinessPartnerGroupFunctionTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("Matching groups", EQ, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Disjoint groups", EQ, List.of("test-group", "different-group"), false),
-                    Arguments.of("Overlapping groups", EQ, List.of("different-group"), false),
-
-                    Arguments.of("Disjoint groups", NEQ, List.of("different-group", "another-different-group"), true),
-                    Arguments.of("Overlapping groups", NEQ, List.of(TEST_GROUP_1, "different-group"), true),
-                    Arguments.of("Matching groups", NEQ, List.of(TEST_GROUP_1, TEST_GROUP_2), false),
-                    Arguments.of("Empty groups", NEQ, List.of(), true),
-
-                    Arguments.of("Matching groups", IN, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Overlapping groups", IN, List.of(TEST_GROUP_1, "different-group"), true),
-                    Arguments.of("Disjoint groups", IN, List.of("different-group", "another-different-group"), false),
-
-                    Arguments.of("Disjoint groups", IS_ALL_OF, List.of("different-group", "another-different-group"), false),
-                    Arguments.of("Matching groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
-                    Arguments.of("Overlapping groups", IS_ALL_OF, List.of(TEST_GROUP_1, TEST_GROUP_2, "different-group", "another-different-group"), true),
-                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1, "different-group"), false),
-                    Arguments.of("Overlapping groups (1 overlap)", IS_ALL_OF, List.of(TEST_GROUP_1), false),
-
                     Arguments.of("Disjoint groups", IS_ANY_OF, List.of("different-group", "another-different-group"), false),
                     Arguments.of("Matching groups", IS_ANY_OF, List.of(TEST_GROUP_1, TEST_GROUP_2), true),
                     Arguments.of("Overlapping groups (1 overlap)", IS_ANY_OF, List.of(TEST_GROUP_1, "different-group", "another-different-group"), true),
@@ -184,14 +165,6 @@ class BusinessPartnerGroupFunctionTest {
             var assignedBpnGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
 
             return Stream.of(
-                    Arguments.of(EQ, assignedBpnGroups, false),
-                    Arguments.of(EQ, List.of(), true),
-                    Arguments.of(NEQ, assignedBpnGroups, true),
-                    Arguments.of(NEQ, List.of(), false),
-                    Arguments.of(IN, assignedBpnGroups, false),
-                    Arguments.of(IN, List.of(), true),
-                    Arguments.of(IS_ALL_OF, assignedBpnGroups, false),
-                    Arguments.of(IS_ALL_OF, List.of(), true),
                     Arguments.of(IS_ANY_OF, assignedBpnGroups, false),
                     Arguments.of(IS_ANY_OF, List.of(), true),
                     Arguments.of(IS_NONE_OF, assignedBpnGroups, true),
