@@ -29,10 +29,8 @@ dependencies {
     api(libs.edc.spi.web)
     api(libs.edc.spi.dataplane.dataplane)
     implementation(libs.edc.lib.util)
-    implementation(libs.edc.dpf.http)
 
     implementation(project(":edc-extensions:dataplane:dataplane-util"))
-    implementation(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http"))
     implementation(project(":spi:core-spi"))
     implementation(libs.jakarta.rsApi)
 
