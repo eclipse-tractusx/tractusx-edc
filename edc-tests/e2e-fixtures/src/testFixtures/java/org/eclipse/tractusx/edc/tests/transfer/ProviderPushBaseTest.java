@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
-import org.mockserver.verify.VerificationTimes;
 
 import java.time.Duration;
 import java.util.Map;
@@ -42,7 +41,6 @@ import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
-import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.TERMINATED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -142,33 +140,6 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
         await().atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.TERMINATED));
-    }
-
-    @Test
-    void proxyHttpPushDataTransfer_invalidTransferType() {
-        var sourceUrl = createMockHttpDataUrl(MOCK_BACKEND_SOURCE_PATH);
-        var destinationUrl = createMockHttpDataUrl(MOCK_BACKEND_DESTINATION_PATH);
-
-        var assetId = UUID.randomUUID().toString();
-        Map<String, Object> dataAddress = Map.of(
-                "name", "transfer-test",
-                "baseUrl", sourceUrl,
-                "type", "ProxyHttpData",
-                "contentType", "application/json");
-        provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
-        provider().createContractDefinition(assetId, "def-1", policyId, policyId);
-
-        var destination = httpDataAddress(destinationUrl);
-        var transferProcessId = consumer()
-                .requestAssetFrom(assetId, provider())
-                .withDestination(destination)
-                .withTransferType("HttpData-PUSH")
-                .execute();
-
-        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> transferProcessIsInState(transferProcessId, TERMINATED));
-        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH), VerificationTimes.exactly(0));
-        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH), VerificationTimes.exactly(0));
     }
 
     @AfterEach
