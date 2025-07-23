@@ -35,7 +35,7 @@ import java.util.List;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 
 public abstract class BaseBusinessPartnerGroupApiController {
@@ -52,7 +52,7 @@ public abstract class BaseBusinessPartnerGroupApiController {
         return businessPartnerService.resolveForBpn(bpn)
                 .map(result -> Json.createObjectBuilder()
                         .add(ID, bpn)
-                        .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(result))
+                        .add(CX_POLICY_NS + "groups", Json.createArrayBuilder(result))
                         .build())
                 .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
     }
@@ -96,7 +96,7 @@ public abstract class BaseBusinessPartnerGroupApiController {
     @NotNull
     private List<String> getGroups(JsonObject object) {
         try {
-            return object.getJsonArray(TX_NAMESPACE + "groups")
+            return object.getJsonArray(CX_POLICY_NS + "groups")
                     .stream()
                     .map(jv -> ((JsonString) jv.asJsonObject().get(VALUE)).getString())
                     .toList();

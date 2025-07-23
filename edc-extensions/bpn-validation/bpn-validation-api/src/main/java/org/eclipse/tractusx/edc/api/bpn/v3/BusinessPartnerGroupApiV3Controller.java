@@ -39,7 +39,7 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPar
 import java.util.List;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 
 @Consumes({ MediaType.APPLICATION_JSON })
@@ -65,7 +65,7 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
         return businessPartnerService.resolveForBpnGroup(group)
                 .map(result -> Json.createObjectBuilder()
                         .add(ID, group)
-                        .add(TX_NAMESPACE + "bpns", Json.createArrayBuilder(result))
+                        .add(CX_POLICY_NS + "bpns", Json.createArrayBuilder(result))
                         .build())
                 .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
     }
@@ -76,7 +76,7 @@ public class BusinessPartnerGroupApiV3Controller extends BaseBusinessPartnerGrou
     public JsonObject resolveGroupsV3() {
         return businessPartnerService.resolveForBpnGroups()
                 .map(result -> Json.createObjectBuilder()
-                        .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(result))
+                        .add(CX_POLICY_NS + "groups", Json.createArrayBuilder(result))
                         .build())
                 .orElseThrow(failure -> new ObjectNotFoundException(List.class, failure.getFailureDetail()));
     }
