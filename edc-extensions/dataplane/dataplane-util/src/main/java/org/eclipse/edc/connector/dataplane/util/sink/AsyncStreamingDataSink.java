@@ -51,7 +51,6 @@ public class AsyncStreamingDataSink implements DataSink {
 
     public static final String TYPE = "AsyncStreaming";
     private static final String DEFAULT_SUCCESSFUL_RESPONSE_STATUS_CODE = "200";
-    private static final String DEFAULT_UNSUCCESSFUL_RESPONSE_STATUS_CODE = "500";
 
     private final AsyncResponseContext asyncContext;
     private final ExecutorService executorService;

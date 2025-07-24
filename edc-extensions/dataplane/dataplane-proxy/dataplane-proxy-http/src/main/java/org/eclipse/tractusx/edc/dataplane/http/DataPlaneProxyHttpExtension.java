@@ -34,7 +34,7 @@ import org.eclipse.tractusx.edc.dataplane.http.pipeline.ProxyHttpDataSourceFacto
  */
 @Extension(value = DataPlaneProxyHttpExtension.NAME)
 public class DataPlaneProxyHttpExtension implements ServiceExtension {
-    public static final String NAME = "Data Plane Proxy Http API";
+    protected static final String NAME = "Data Plane Proxy Http API";
 
     @Inject
     private PipelineService pipelineService;
