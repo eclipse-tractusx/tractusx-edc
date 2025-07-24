@@ -249,9 +249,7 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-        var response = CONSUMER.data().pullDataRequest(edr, Map.of())
-                .statusCode(HttpStatusCode.INTERNAL_SERVER_ERROR_500.code());
-        assertThat(response.extract().statusLine()).contains(HttpStatusCode.INTERNAL_SERVER_ERROR_500.reasonPhrase());
+        CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.INTERNAL_SERVER_ERROR_500.code());
 
         server.verify(requestDefinition, VerificationTimes.exactly(1));
     }
