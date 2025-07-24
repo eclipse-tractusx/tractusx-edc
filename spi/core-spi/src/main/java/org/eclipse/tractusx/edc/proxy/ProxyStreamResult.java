@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  **/
 
-package org.eclipse.tractusx.edc;
+package org.eclipse.tractusx.edc.proxy;
 
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
