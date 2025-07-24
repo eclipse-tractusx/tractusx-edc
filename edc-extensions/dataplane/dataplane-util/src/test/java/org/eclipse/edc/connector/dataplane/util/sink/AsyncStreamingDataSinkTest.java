@@ -23,12 +23,14 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink.AsyncResponseContext;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.tractusx.edc.dataplane.http.pipeline.ProxyHttpPart;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
 
@@ -101,6 +103,94 @@ class AsyncStreamingDataSinkTest {
         var future = dataSink.transfer(dataSource);
 
         assertThat(future).failsWithin(2, SECONDS).withThrowableThat().havingCause().isEqualTo(testException);
+    }
+
+    @Test
+    void verify_customStatusCode() {
+        var part = mock(ProxyHttpPart.class);
+        when(part.statusCode()).thenReturn("201");
+        when(part.openStream()).thenReturn(new ByteArrayInputStream(TEST_CONTENT));
+
+        var dataSource = mock(DataSource.class);
+        when(dataSource.openPartStream()).thenReturn(success(Stream.of(part)));
+
+        when(asyncContext.register(isA(AsyncStreamingDataSink.AsyncResponseCallback.class))).thenAnswer((Answer<Boolean>) invocation -> {
+            var callback = (AsyncStreamingDataSink.AsyncResponseCallback) invocation.getArgument(0);
+            assertThat(callback.statusCode()).isEqualTo("201");
+            return true;
+        });
+
+        var future = dataSink.transfer(dataSource);
+
+        assertThat(future).succeedsWithin(2, SECONDS).satisfies(result -> assertThat(result).isSucceeded());
+    }
+
+    @Test
+    void verify_customMediaType() {
+        var part = mock(ProxyHttpPart.class);
+        when(part.mediaType()).thenReturn("application/json");
+        when(part.openStream()).thenReturn(new ByteArrayInputStream(TEST_CONTENT));
+
+        var dataSource = mock(DataSource.class);
+        when(dataSource.openPartStream()).thenReturn(success(Stream.of(part)));
+
+        when(asyncContext.register(isA(AsyncStreamingDataSink.AsyncResponseCallback.class))).thenAnswer((Answer<Boolean>) invocation -> {
+            var callback = (AsyncStreamingDataSink.AsyncResponseCallback) invocation.getArgument(0);
+            assertThat(callback.mediaType()).isEqualTo("application/json");
+            return true;
+        });
+
+        var future = dataSink.transfer(dataSource);
+
+        assertThat(future).succeedsWithin(2, SECONDS).satisfies(result -> assertThat(result).isSucceeded());
+    }
+
+    @Test
+    void verify_expectedHeaders() {
+        var headers = Map.of(
+                "some-header-test-1", "test1",
+                "some-header-test-2", "test2",
+                "some-header-test-3", "test3");
+        var part = mock(ProxyHttpPart.class);
+        when(part.headers()).thenReturn(headers);
+        when(part.openStream()).thenReturn(new ByteArrayInputStream(TEST_CONTENT));
+
+        var dataSource = mock(DataSource.class);
+        when(dataSource.openPartStream()).thenReturn(success(Stream.of(part)));
+
+        when(asyncContext.register(isA(AsyncStreamingDataSink.AsyncResponseCallback.class))).thenAnswer((Answer<Boolean>) invocation -> {
+            var callback = (AsyncStreamingDataSink.AsyncResponseCallback) invocation.getArgument(0);
+            assertThat(callback.proxyHeaders()).isEqualTo(headers);
+            return true;
+        });
+
+        var future = dataSink.transfer(dataSource);
+
+        assertThat(future).succeedsWithin(2, SECONDS).satisfies(result -> assertThat(result).isSucceeded());
+    }
+
+    @Test
+    void verify_proxyHttpPartWithoutContent() {
+        var part = mock(ProxyHttpPart.class);
+        when(part.content()).thenReturn(null);
+
+        var dataSource = mock(DataSource.class);
+        when(dataSource.openPartStream()).thenReturn(success(Stream.of(part)));
+
+        var outputStream = new ByteArrayOutputStream();
+
+        when(asyncContext.register(isA(AsyncStreamingDataSink.AsyncResponseCallback.class))).thenAnswer((Answer<Boolean>) invocation -> {
+            var callback = (AsyncStreamingDataSink.AsyncResponseCallback) invocation.getArgument(0);
+            callback.outputStreamConsumer().accept(outputStream);
+            return true;
+        });
+
+        var future = dataSink.transfer(dataSource);
+
+        assertThat(future).succeedsWithin(2, SECONDS).satisfies(result -> {
+            assertThat(result).isSucceeded();
+            assertThat(outputStream.size()).isZero();
+        });
     }
 
 }
