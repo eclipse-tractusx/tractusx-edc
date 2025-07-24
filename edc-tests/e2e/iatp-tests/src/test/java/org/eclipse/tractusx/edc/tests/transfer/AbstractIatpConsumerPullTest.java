@@ -277,7 +277,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), "access");
+        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access");
     }
 
     protected abstract RuntimeExtension consumerRuntime();
@@ -290,9 +290,9 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), "access"), "MembershipCredential"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "Pcf"), "access"), "PCF Use Case (new notation)"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:1.0.0"), "access"), "DataExchangeGovernance use case")
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access"), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "Pcf"), CX_POLICY_NS + "access"), "PCF Use Case (new notation)"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:1.0.0"), CX_POLICY_NS + "access"), "DataExchangeGovernance use case")
             );
         }
     }
@@ -301,7 +301,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "traceability"), "access"), "Traceability Use Case (new notation)")
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "traceability"), CX_POLICY_NS + "access"), "Traceability Use Case (new notation)")
             );
         }
     }

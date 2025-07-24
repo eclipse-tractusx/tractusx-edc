@@ -27,17 +27,16 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_SEQUENCE_
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_XONE_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public final class PolicyValidationConstants {
     private PolicyValidationConstants() {}
 
-    public static final String ACTION_ACCESS = EDC_NAMESPACE + "access";
+    public static final String ACTION_ACCESS = CX_POLICY_NS + "access";
     public static final String ACTION_USAGE = ODRL_SCHEMA + "use";
 
-    public static final String ACCESS_POLICY_TYPE = EDC_NAMESPACE + "access";
+    public static final String ACCESS_POLICY_TYPE = CX_POLICY_NS + "access";
     public static final String USAGE_POLICY_TYPE = ODRL_SCHEMA + "use";
 
     public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_NS + "FrameworkAgreement";

@@ -44,6 +44,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 public class PolicyHelperFunctions {
 
@@ -54,6 +55,8 @@ public class PolicyHelperFunctions {
     public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY;
 
     private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
+
+    public static final String ACTION_ACCESS = CX_POLICY_NS + "access";
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
@@ -148,7 +151,7 @@ public class PolicyHelperFunctions {
         var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups));
 
         var permission = Json.createObjectBuilder()
-                .add("action", "access")
+                .add("action", ACTION_ACCESS)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("and", groupConstraint)
@@ -178,7 +181,7 @@ public class PolicyHelperFunctions {
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "access")
+                .add("action", ACTION_ACCESS)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("and", bpnConstraints)

@@ -104,8 +104,8 @@ public class PolicyDefinitionEndToEndTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "Membership", "active"), "access"), "MembershipCredential"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "access"), "DataExchangeGovernance use case"),
+                    Arguments.of(frameworkPolicy(Map.of(namespace + "Membership", "active"), CX_POLICY_NS + "access"), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement", "DataExchangeGovernance:2.0"), CX_POLICY_NS + "access"), "DataExchangeGovernance use case"),
                     Arguments.of(frameworkPolicy(Map.of(namespace + "UsagePurpose", "cx.core.industrycore:1"), "use"), "Usage Purpose")
             );
         }
@@ -142,14 +142,14 @@ public class PolicyDefinitionEndToEndTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(policyFromRules("permission",
-                            frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), "access"),
+                            frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access"),
                             frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "use")), "Policy with different actions types"),
                     Arguments.of(policyFromRules("permission",
                             frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), "unknown-action")), "Policy with unknown actions types"),
                     Arguments.of(policyFromRules("prohibition",
-                            frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), "access")), "Access Policy with prohibition rule"),
+                            frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access")), "Access Policy with prohibition rule"),
                     Arguments.of(policyFromRules("permission",
-                            frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "access")), "Access policy permission with not allowed constraints"),
+                            frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), CX_POLICY_NS + "access")), "Access policy permission with not allowed constraints"),
                     Arguments.of(policyFromRules("permission",
                             frameworkPermission(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use")), "Usage policy permission with not allowed constraints"),
                     Arguments.of(policyFromRules("prohibition",

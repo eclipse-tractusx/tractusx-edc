@@ -42,7 +42,6 @@ import java.util.stream.Stream;
 
 import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_TYPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_SCOPE;
@@ -111,9 +110,9 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
 
         //TODO
-        registry.bind(EDC_NAMESPACE + "access", CATALOG_SCOPE);
-        registry.bind(EDC_NAMESPACE + "access", NEGOTIATION_SCOPE);
-        registry.bind(EDC_NAMESPACE + "access", TRANSFER_PROCESS_SCOPE);
+        registry.bind(CX_POLICY_NS + "access", CATALOG_SCOPE);
+        registry.bind(CX_POLICY_NS + "access", NEGOTIATION_SCOPE);
+        registry.bind(CX_POLICY_NS + "access", TRANSFER_PROCESS_SCOPE);
 
         registry.bind(CX_POLICY_NS + USAGE_PURPOSE, CATALOG_SCOPE);
         registry.bind(CX_POLICY_NS + USAGE_PURPOSE, NEGOTIATION_SCOPE);
