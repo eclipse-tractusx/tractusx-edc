@@ -27,7 +27,7 @@ A Contract Agreement looks like this:
       },
       "odrl:constraint": {
         "odrl:or": {
-          "odrl:leftOperand": "https://w3id.org/catenax/policy/FrameworkAgreement",
+          "odrl:leftOperand": "https://w3id.org/catenax/2025/9/policy/FrameworkAgreement",
           "odrl:operator": {
             "@id": "odrl:eq"
           },
@@ -51,7 +51,7 @@ A Contract Agreement looks like this:
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
     "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
     "tx-auth": "https://w3id.org/tractusx/auth/",
-    "cx-policy": "https://w3id.org/catenax/policy/",
+    "cx-policy": "https://w3id.org/catenax/2025/9/policy/",
     "odrl": "http://www.w3.org/ns/odrl/2/"
   }
 }

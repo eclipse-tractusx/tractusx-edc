@@ -32,11 +32,12 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_AT
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 
 class LogicalConstraintValidatorTest {
 
     private final JsonLdPath path = JsonLdPath.path();
-    private final String validAccessPolicyLeftOperand = "https://w3id.org/catenax/policy/FrameworkAgreement";
+    private final String validAccessPolicyLeftOperand = FRAMEWORK_AGREEMENT_LITERAL;
 
     @Test
     void shouldReturnSuccess_whenValidAndConstraint() {
