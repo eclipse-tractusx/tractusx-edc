@@ -39,7 +39,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.response.TransferErrorResponse;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.tractusx.edc.ProxyStreamResult;
+import org.eclipse.tractusx.edc.proxy.ProxyStreamResult;
 
 import java.util.HashMap;
 import java.util.List;

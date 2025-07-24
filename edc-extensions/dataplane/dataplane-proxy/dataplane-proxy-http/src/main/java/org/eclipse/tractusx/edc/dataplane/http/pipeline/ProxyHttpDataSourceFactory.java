@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.eclipse.edc.spi.result.Result.failure;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PULL;
+import static org.eclipse.tractusx.edc.proxy.ProxyHttpDataAddressSchema.PROXY_HTTP_DATA_TYPE;
 
 /**
  * Instantiates {@link ProxyHttpDataSource}s for requests whose source data type is ProxyHttpData.
@@ -52,7 +53,7 @@ public class ProxyHttpDataSourceFactory implements DataSourceFactory {
 
     @Override
     public String supportedType() {
-        return "ProxyHttpData";
+        return PROXY_HTTP_DATA_TYPE;
     }
 
     @Override
