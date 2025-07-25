@@ -73,7 +73,12 @@ class EventLoggingSubscriberTest {
 
     @Test
     void on_unsuccessfulHttpCall_logsWarningMessage() throws IOException {
-        var req = new Request(HttpUrl.parse("http://uri.com"), Headers.of(), "POST",  RequestBody.create(new byte[] {}));
+        var req = new Request.Builder()
+                .url(HttpUrl.parse("http://uri.com"))
+                .headers(Headers.of())
+                .method("POST", RequestBody.create(new byte[] {}))
+                .build();
+
         var body = ResponseBody.create("{}", MediaType.get("application/json"));
 
         when(mockedHttpClient.execute(any())).thenReturn(new Response.Builder().body(body).request(req).protocol(Protocol.HTTP_2).message("message").code(500).build());

@@ -59,13 +59,13 @@ public class EdcCompatibilityEmbeddedTest {
     private static final URI WEBHOOK_URL = URI.create("http://localhost:" + getFreePort() + "/tck");
     private static final String DEFAULT_LAUNCHER = "org.eclipse.dataspacetck.dsp.system.DspSystemLauncher";
     private static final String TEST_PACKAGE = "org.eclipse.dataspacetck.dsp.verification";
-    public static final String API_KEY = "password";
-    protected static final URI DATA_PLANE_PROXY = URI.create("http://localhost:" + getFreePort());
+    private static final String API_KEY = "password";
+    private static final URI DATA_PLANE_PROXY = URI.create("http://localhost:" + getFreePort());
     private static final URI DATA_PLANE_PUBLIC = URI.create("http://localhost:" + getFreePort() + "/public");
     private static final URI FEDERATED_CATALOG = URI.create("http://localhost:" + getFreePort() + "/api/catalog");
 
     @RegisterExtension
-    private static RuntimeExtension runtime = new RuntimePerClassExtension(new EmbeddedRuntime("CUT",
+    private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime("CUT",
             ":edc-tests:runtime:runtime-dsp")
             .registerServiceMock(BdrsClient.class, (s) -> s)
             .configurationProvider(EdcCompatibilityEmbeddedTest::runtimeConfiguration));

@@ -45,8 +45,6 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_CONTEXT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
 
-
-
 public class JsonLdExtension implements ServiceExtension {
 
     public static final String CREDENTIALS_V_1 = "https://www.w3.org/2018/credentials/v1";
