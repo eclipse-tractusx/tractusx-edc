@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@Deprecated(since = "0.11.0")
 public class TransferProcessServiceStub extends AbstractServiceStub implements TransferProcessService {
 
     public TransferProcessServiceStub(ResponseQueue responseQueue) {

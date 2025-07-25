@@ -32,6 +32,7 @@ import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.List;
 
+@Deprecated(since = "0.11.0")
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })
 @Path("/instrumentation")

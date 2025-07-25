@@ -34,6 +34,7 @@ import java.util.Queue;
 /**
  * Container object that maintains the queue of {@link RecordedRequest} objects and grants high-level access to it.
  */
+@Deprecated(since = "0.11.0")
 public class ResponseQueue {
     private final Queue<RecordedRequest<?, ?>> recordedRequests; // todo guard access with locks?
     private final Monitor monitor;

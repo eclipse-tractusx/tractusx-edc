@@ -31,6 +31,7 @@ import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.List;
 
+@Deprecated(since = "0.11.0")
 public class ContractNegotiationServiceStub extends AbstractServiceStub implements ContractNegotiationService {
     public ContractNegotiationServiceStub(ResponseQueue responseQueue) {
         super(responseQueue);

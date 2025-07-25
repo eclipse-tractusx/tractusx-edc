@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.result.ServiceFailure;
  * In addition, it can have a {@link ServiceFailure}, in which case the {@code output} object is disregarded and the failure is always returned.
  * This can be used to mock a failed API call.
  */
+@Deprecated(since = "0.11.0")
 @JsonDeserialize(using = RecordedResponseDeserializer.class)
 public final class RecordedRequest<I, O> {
     private final I input;

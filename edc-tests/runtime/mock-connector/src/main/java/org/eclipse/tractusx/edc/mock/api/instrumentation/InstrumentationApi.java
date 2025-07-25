@@ -32,6 +32,7 @@ import org.eclipse.tractusx.edc.mock.RecordedRequest;
 
 import java.util.List;
 
+@Deprecated(since = "0.11.0")
 @OpenAPIDefinition(info = @Info(description = "This API allows to insert ", title = "Business Partner Group API"))
 @Tag(name = "Business Partner Group")
 public interface InstrumentationApi {

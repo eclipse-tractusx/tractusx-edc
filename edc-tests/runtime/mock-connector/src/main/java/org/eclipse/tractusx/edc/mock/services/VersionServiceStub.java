@@ -30,6 +30,7 @@ import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.concurrent.CompletableFuture;
 
+@Deprecated(since = "0.11.0")
 public class VersionServiceStub extends AbstractServiceStub implements VersionService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
