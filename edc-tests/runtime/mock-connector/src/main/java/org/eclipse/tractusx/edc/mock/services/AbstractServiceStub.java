@@ -21,6 +21,11 @@ package org.eclipse.tractusx.edc.mock.services;
 
 import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
+/**
+ * For abstract service stubs.
+ *
+ * @deprecated since 0.11.0
+ */
 @Deprecated(since = "0.11.0")
 public abstract class AbstractServiceStub {
     protected final ResponseQueue responseQueue;

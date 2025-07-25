@@ -32,6 +32,11 @@ import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.List;
 
+/**
+ * Instrumentation controller for the mock connector.
+ *
+ * @deprecated since 0.11.0
+ */
 @Deprecated(since = "0.11.0")
 @Consumes({ MediaType.APPLICATION_JSON })
 @Produces({ MediaType.APPLICATION_JSON })

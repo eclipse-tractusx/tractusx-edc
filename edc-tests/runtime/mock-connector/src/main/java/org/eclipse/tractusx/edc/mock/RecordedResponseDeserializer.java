@@ -31,6 +31,8 @@ import java.util.Optional;
 /**
  * Custom deserializer for a {@link RecordedRequest} object, to be able to instantiate the input and output objects according
  * to their class description.
+ *
+ * @deprecated since 0.11.0
  */
 @Deprecated(since = "0.11.0")
 class RecordedResponseDeserializer extends StdDeserializer<RecordedRequest<?, ?>> {

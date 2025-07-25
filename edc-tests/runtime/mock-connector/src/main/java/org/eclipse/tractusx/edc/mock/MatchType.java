@@ -26,6 +26,8 @@ package org.eclipse.tractusx.edc.mock;
  *     <li>PARTIAL: only the specified properties must match, disregarding others</li>
  *     <li>PARTIAL: all properties must match, those that are not listed are expected to be null</li>
  * </ul>
+ *
+ *  @deprecated since 0.11.0
  */
 @Deprecated(since = "0.11.0")
 public enum MatchType {

@@ -33,6 +33,8 @@ import java.util.Queue;
 
 /**
  * Container object that maintains the queue of {@link RecordedRequest} objects and grants high-level access to it.
+ *
+ * @deprecated since 0.11.0
  */
 @Deprecated(since = "0.11.0")
 public class ResponseQueue {

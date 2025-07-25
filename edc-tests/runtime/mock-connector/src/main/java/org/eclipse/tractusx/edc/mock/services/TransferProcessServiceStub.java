@@ -37,6 +37,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * Stub implementation of the {@link TransferProcessService} for testing purposes.
+ *
+ * @deprecated since 0.11.0
+ */
 @Deprecated(since = "0.11.0")
 public class TransferProcessServiceStub extends AbstractServiceStub implements TransferProcessService {
 
