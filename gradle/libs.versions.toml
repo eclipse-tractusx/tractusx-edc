@@ -148,6 +148,8 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 
 # DSP libraries
+dsp-v08 = { module = "org.eclipse.edc:dsp-08", version.ref = "edc" }
+dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
 dsp-v2025 = { module = "org.eclipse.edc:dsp-2025", version.ref = "edc" }
 dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
 

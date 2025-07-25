@@ -65,8 +65,8 @@ public class EdcCompatibilityEmbeddedTest {
     private static final URI FEDERATED_CATALOG = URI.create("http://localhost:" + getFreePort() + "/api/catalog");
 
     @RegisterExtension
-    protected static RuntimeExtension runtime = new RuntimePerClassExtension(new EmbeddedRuntime("CUT",
-            ":edc-tests:dsp-compatibility-tests:connector-under-test")
+    private static RuntimeExtension runtime = new RuntimePerClassExtension(new EmbeddedRuntime("CUT",
+            ":edc-tests:runtime:runtime-dsp")
             .registerServiceMock(BdrsClient.class, (s) -> s)
             .configurationProvider(EdcCompatibilityEmbeddedTest::runtimeConfiguration));
 

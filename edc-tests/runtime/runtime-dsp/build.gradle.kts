@@ -31,6 +31,5 @@ dependencies {
         exclude("org.eclipse.edc", "data-plane-selector-client")
     }
 
-    runtimeOnly(libs.dsp.v2025)
     runtimeOnly(libs.tck.extension)
 }
