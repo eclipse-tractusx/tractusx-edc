@@ -30,7 +30,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
-import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -38,7 +37,6 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.tractusx.edc.dataplane.http.pipeline.ProxyHttpPart;
 import org.eclipse.tractusx.edc.dataplane.proxy.consumer.api.asset.model.AssetRequest;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
@@ -131,7 +129,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
                     response.resume(unexpectedFailure(throwable));
                 } else {
                     result.onSuccess(response::resume)
-                            .onFailure(failure -> response.resume(failedResponse(failure, result)));
+                            .onFailure(failure -> response.resume(failedResponse(failure)));
                 }
             });
         } catch (Exception e) {
@@ -139,21 +137,13 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         }
     }
 
-    private Response failedResponse(StreamFailure failure, StreamResult result) {
-        Response.Status httpStatus;
-        String mediaType = APPLICATION_JSON;
-        if (result.getContent() != null && result.getContent() instanceof ProxyHttpPart part) {
-            httpStatus = Response.Status.valueOf(part.statusCode());
-            mediaType = part.mediaType();
-
-        } else {
-            httpStatus = switch (failure.getReason()) {
-                case NOT_FOUND -> NOT_FOUND;
-                case NOT_AUTHORIZED -> UNAUTHORIZED;
-                case GENERAL_ERROR -> INTERNAL_SERVER_ERROR;
-            };
-        }
-        return status(httpStatus).type(mediaType).build();
+    private Response failedResponse(StreamFailure failure) {
+        var httpStatus = switch (failure.getReason()) {
+            case NOT_FOUND -> NOT_FOUND;
+            case NOT_AUTHORIZED -> UNAUTHORIZED;
+            case GENERAL_ERROR -> INTERNAL_SERVER_ERROR;
+        };
+        return status(httpStatus).type(APPLICATION_JSON).build();
     }
 
     private Map<String, String> dataPlaneProperties(AssetRequest request) {

@@ -33,7 +33,6 @@ dependencies {
     implementation(libs.edc.spi.dataplane.http)
     implementation(libs.edc.lib.util)
     implementation(project(":edc-extensions:dataplane:dataplane-util"))
-    implementation(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http"))
     implementation(libs.edc.ext.http)
     implementation(libs.edc.spi.auth)
     implementation(libs.edc.spi.edrstore)

@@ -197,7 +197,11 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
 
 
     private static Response.Status retrieveStatusCode(String statusCode) {
-        return Response.Status.fromStatusCode(Integer.parseInt(statusCode));
+        try {
+            return Response.Status.fromStatusCode(Integer.parseInt(statusCode));
+        } catch (NumberFormatException e) {
+            return Response.Status.INTERNAL_SERVER_ERROR;
+        }
     }
 
 }
