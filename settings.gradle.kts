@@ -105,6 +105,8 @@ include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:mock-connector")
 include(":edc-tests:runtime:runtime-postgresql")
+include(":edc-tests:runtime:runtime-dsp")
+include(":edc-tests:dsp-compatibility-tests:compatibility-test-runner")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")

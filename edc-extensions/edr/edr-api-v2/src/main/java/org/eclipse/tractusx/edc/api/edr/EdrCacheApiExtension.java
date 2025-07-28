@@ -38,9 +38,6 @@ import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
 import java.util.Map;
 
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
-
 public class EdrCacheApiExtension implements ServiceExtension {
 
     @Inject
@@ -68,7 +65,6 @@ public class EdrCacheApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
         mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer(Json.createBuilderFactory(Map.of())));
         webService.registerResource(ApiContext.MANAGEMENT, new EdrCacheApiV2Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
