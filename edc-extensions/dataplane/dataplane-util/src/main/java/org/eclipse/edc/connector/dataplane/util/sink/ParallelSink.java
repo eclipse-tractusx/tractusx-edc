@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2021, 2023 Microsoft Corporation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
