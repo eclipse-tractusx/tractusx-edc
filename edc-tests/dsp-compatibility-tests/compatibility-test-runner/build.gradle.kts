@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,14 +18,25 @@
  ********************************************************************************/
 
 plugins {
-    `java-library`
+    java
 }
 
 dependencies {
-    implementation(project(":spi:core-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.jsonld)
-    implementation(libs.dsp.spi.v2025)
-    implementation(libs.dsp.spi.v08)
-    testImplementation(testFixtures(libs.edc.junit))
+    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.awaitility)
+    testImplementation(libs.testcontainers.junit)
+    testImplementation(libs.dsp.tck.core)
+    testImplementation(libs.dsp.tck.runtime)
+    testImplementation(libs.dsp.tck.api)
+    testImplementation(libs.dsp.tck.system)
+    testRuntimeOnly(libs.dsp.tck.transferprocess)
+    testRuntimeOnly(libs.dsp.tck.contractnegotiation)
+    testImplementation(libs.junit.platform.launcher)
+    testImplementation(libs.edc.spi.identitytrust)
+    testImplementation(libs.nimbus.jwt)
+}
+
+edcBuild {
+    publish.set(false)
 }

@@ -21,6 +21,8 @@ package org.eclipse.tractusx.edc.agreements.retirement.service;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
+import org.eclipse.edc.spi.event.Event;
+import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
@@ -34,6 +36,7 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetire
 import org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -46,7 +49,6 @@ import static org.eclipse.edc.spi.result.ServiceFailure.Reason.CONFLICT;
 import static org.eclipse.edc.spi.result.ServiceFailure.Reason.NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -113,7 +115,7 @@ class AgreementsRetirementServiceImplTest {
             var result = service.retireAgreement(createAgreementsRetirementEntry());
 
             assertThat(result).isSucceeded();
-            verify(eventRouter).publish(argThat(envelope -> envelope.getPayload().getClass().equals(ContractAgreementRetired.class)));
+            verify(eventRouter).publish(ArgumentMatchers.<EventEnvelope<Event>>argThat(envelope -> envelope.getPayload().getClass().equals(ContractAgreementRetired.class)));
         }
 
         @Test
@@ -140,7 +142,7 @@ class AgreementsRetirementServiceImplTest {
             var result = service.reactivate(anyString());
 
             assertThat(result).isSucceeded();
-            verify(eventRouter).publish(argThat(envelope -> envelope.getPayload().getClass().equals(ContractAgreementReactivated.class)));
+            verify(eventRouter).publish(ArgumentMatchers.<EventEnvelope<Event>>argThat(envelope -> envelope.getPayload().getClass().equals(ContractAgreementReactivated.class)));
         }
 
         @Test

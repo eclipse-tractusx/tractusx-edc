@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,10 +22,14 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":spi:core-spi"))
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.jsonld)
-    implementation(libs.dsp.spi.v2025)
-    implementation(libs.dsp.spi.v08)
-    testImplementation(testFixtures(libs.edc.junit))
+    api(project(":edc-controlplane:edc-controlplane-base")) {
+        exclude(module = "tx-dcp")
+        exclude(module = "tx-dcp-sts-dim")
+    }
+
+    api(project(":edc-dataplane:edc-dataplane-base")) {
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+    }
+
+    runtimeOnly(libs.tck.extension)
 }
