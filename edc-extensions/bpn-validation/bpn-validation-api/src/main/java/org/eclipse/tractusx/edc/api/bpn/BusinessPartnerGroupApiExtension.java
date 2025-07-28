@@ -34,8 +34,8 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPar
 
 import java.time.Clock;
 
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_PREFIX;
 
 @Extension(value = "Registers the Business Partner Group API")
 public class BusinessPartnerGroupApiExtension implements ServiceExtension {
@@ -54,7 +54,7 @@ public class BusinessPartnerGroupApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE);
+        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_NS);
 
         var businessPartnerObservable = new BusinessPartnerObservableImpl();
         businessPartnerObservable.registerListener(new BusinessPartnerEventListener(clock, eventRouter));
