@@ -256,7 +256,7 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
     @Test
     void transferData_success_withProxyOriginalResponse() {
-        var assetId = "api-asset-1";
+        var assetId = "api-asset-proxy-1";
 
         var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
@@ -298,7 +298,7 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
     @Test
     void transferData_success_withProxyOriginalResponse_withoutSourceResponseBody() {
-        var assetId = "api-asset-1";
+        var assetId = "api-asset-proxy-2";
 
         var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
@@ -340,7 +340,7 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
     @Test
     void transferData_failing_withProxyOriginalResponse() {
-        var assetId = "api-asset-1";
+        var assetId = "api-asset-proxy-3";
 
         var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
@@ -378,7 +378,7 @@ public class TransferPullEndToEndTest extends ConsumerPullBaseTest {
 
     @Test
     void transferData_failing_withProxyOriginalResponse_withoutSourceResponseBody() {
-        var assetId = "api-asset-1";
+        var assetId = "api-asset-proxy-4";
 
         var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 

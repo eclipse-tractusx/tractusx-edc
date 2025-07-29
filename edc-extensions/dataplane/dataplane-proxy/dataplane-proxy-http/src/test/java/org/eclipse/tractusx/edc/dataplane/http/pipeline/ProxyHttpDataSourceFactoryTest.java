@@ -23,7 +23,6 @@ import org.eclipse.edc.connector.dataplane.http.params.HttpRequestFactory;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpRequestParams;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpRequestParamsProvider;
-import org.eclipse.edc.connector.dataplane.http.testfixtures.TestFunctions;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -32,6 +31,9 @@ import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,11 +107,25 @@ class ProxyHttpDataSourceFactoryTest {
     }
 
     private DataFlowStartMessage createRequest(DataAddress source, FlowType flowType) {
-        return TestFunctions.createRequest(
-                        emptyMap(),
-                        source,
-                        DataAddress.Builder.newInstance().type("Test type").build(),
-                        flowType)
+        return createRequest(
+                emptyMap(),
+                source,
+                DataAddress.Builder.newInstance().type("Test type").build(),
+                flowType)
                 .build();
+    }
+
+    private static DataFlowStartMessage.Builder createRequest(
+            Map<String, String> properties,
+            DataAddress source,
+            DataAddress destination,
+            FlowType flowType) {
+        return DataFlowStartMessage.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
+                .processId(UUID.randomUUID().toString())
+                .properties(properties)
+                .sourceDataAddress(source)
+                .flowType(flowType)
+                .destinationDataAddress(destination);
     }
 }
