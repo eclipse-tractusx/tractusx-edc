@@ -29,7 +29,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 
 /**
  * Validates access policy constraints according to the specification.
@@ -56,8 +56,8 @@ public class AccessPolicyValidator implements Validator<JsonObject> {
     private static final class AccessPermissionValidator {
         public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder) {
             return builder
-                    .verify(path -> ActionTypeIs.orAbsent(path, ACCESS_POLICY_TYPE))
-                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE));
+                    .verify(path -> ActionTypeIs.orAbsent(path, ACTION_ACCESS))
+                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE));
         }
     }
 }

@@ -47,7 +47,7 @@ public class ArrayIsEmpty implements Validator<JsonObject> {
 
         if (value.getValueType() != JsonValue.ValueType.ARRAY) {
             return ValidationResult.failure(
-                    violation("Array must be of type array", path.toString())
+                    violation("Must be an empty array", path.toString())
             );
         }
 

@@ -31,13 +31,11 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public final class PolicyValidationConstants {
-    private PolicyValidationConstants() {}
+    private PolicyValidationConstants() {
+    }
 
     public static final String ACTION_ACCESS = EDC_NAMESPACE + "access";
     public static final String ACTION_USAGE = ODRL_SCHEMA + "use";
-
-    public static final String ACCESS_POLICY_TYPE = EDC_NAMESPACE + "access";
-    public static final String USAGE_POLICY_TYPE = ODRL_SCHEMA + "use";
 
     public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_NS + "FrameworkAgreement";
     public static final String MEMBERSHIP_LITERAL = CX_POLICY_NS + "Membership";

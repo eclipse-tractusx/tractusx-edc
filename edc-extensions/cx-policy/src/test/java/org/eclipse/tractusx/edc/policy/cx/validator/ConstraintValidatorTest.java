@@ -35,7 +35,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_XONE_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
 
@@ -45,7 +45,7 @@ class ConstraintValidatorTest {
 
     @BeforeEach
     void setUp() {
-        accessPolicyValidator = ConstraintValidator.instance(JsonObjectValidator.newValidator(), ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE).build();
+        accessPolicyValidator = ConstraintValidator.instance(JsonObjectValidator.newValidator(), ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE).build();
     }
 
     @Test

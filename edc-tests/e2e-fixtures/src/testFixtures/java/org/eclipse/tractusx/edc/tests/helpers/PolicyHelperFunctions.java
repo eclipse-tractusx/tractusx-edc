@@ -81,6 +81,13 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject emptyPolicy() {
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .build();
+    }
+
     public static JsonObject policyFromRules(String ruleType, JsonObject... rules) {
         var rulesArrayBuilder = Json.createArrayBuilder();
         for (JsonObject rule : rules) {
@@ -104,7 +111,7 @@ public class PolicyHelperFunctions {
                 .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", constraint)
+                        .add("and", constraint)
                         .build())
                 .build();
 

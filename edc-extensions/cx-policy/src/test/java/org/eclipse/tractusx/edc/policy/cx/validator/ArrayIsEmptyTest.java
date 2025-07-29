@@ -88,7 +88,7 @@ class ArrayIsEmptyTest {
         ValidationResult result = validator.validate(input);
 
         assertThat(result.failed()).isTrue();
-        assertThat(result.getFailure().getMessages()).anyMatch(v -> v.contains("Array must be of type array"));
+        assertThat(result.getFailure().getMessages()).anyMatch(v -> v.contains("Must be an empty array"));
     }
 
     @Test

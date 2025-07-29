@@ -34,8 +34,8 @@ import java.util.function.Function;
 import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_POLICY;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_TYPE_SET;
 import static org.eclipse.edc.validator.spi.Violation.violation;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 
 /**
  * Validates Catena-X policy constraints according to the specification.
@@ -43,8 +43,8 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 public class CxPolicyDefinitionValidator {
 
     private static final Map<String, Function<JsonLdPath, Validator<JsonObject>>> POLICY_VALIDATORS = Map.of(
-            ACCESS_POLICY_TYPE, AccessPolicyValidator::new,
-            USAGE_POLICY_TYPE, UsagePolicyValidator::new
+            ACTION_ACCESS, AccessPolicyValidator::new,
+            ACTION_USAGE, UsagePolicyValidator::new
     );
 
     /**

@@ -35,8 +35,8 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_A
 import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
@@ -81,7 +81,7 @@ public class LeftOperandValidator implements Validator<JsonObject> {
 
     @SuppressWarnings("checkstyle:RightCurly")
     private Set<String> getAllowedLeftOperands() {
-        if (policyType.equals(ACCESS_POLICY_TYPE)) {
+        if (policyType.equals(ACTION_ACCESS)) {
             switch (ruleType) {
                 case ODRL_PERMISSION_ATTRIBUTE -> {
                     return ACCESS_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;

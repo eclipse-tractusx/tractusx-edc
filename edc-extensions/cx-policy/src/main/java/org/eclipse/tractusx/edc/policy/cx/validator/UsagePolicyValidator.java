@@ -29,7 +29,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 
 /**
  * Validates usage policy constraints according to the ODRL specification.
@@ -80,24 +80,24 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
     private static final class UsagePermissionValidator {
         public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder) {
             return builder
-                    .verify(path -> new ActionTypeIs(path, USAGE_POLICY_TYPE))
-                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE));
+                    .verify(path -> new ActionTypeIs(path, ACTION_USAGE))
+                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE));
         }
     }
 
     private static final class UsageProhibitionValidator {
         public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder) {
             return builder
-                    .verify(path -> new ActionTypeIs(path, USAGE_POLICY_TYPE))
-                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, USAGE_POLICY_TYPE, ODRL_PROHIBITION_ATTRIBUTE));
+                    .verify(path -> new ActionTypeIs(path, ACTION_USAGE))
+                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACTION_USAGE, ODRL_PROHIBITION_ATTRIBUTE));
         }
     }
 
     private static final class UsageObligationValidator {
         public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder) {
             return builder
-                    .verify(path -> new ActionTypeIs(path, USAGE_POLICY_TYPE))
-                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, USAGE_POLICY_TYPE, ODRL_OBLIGATION_ATTRIBUTE));
+                    .verify(path -> new ActionTypeIs(path, ACTION_USAGE))
+                    .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACTION_USAGE, ODRL_OBLIGATION_ATTRIBUTE));
         }
     }
 }

@@ -38,7 +38,6 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.AFFILIATES_REGION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 
 class UsagePolicyValidatorTest {
@@ -83,7 +82,7 @@ class UsagePolicyValidatorTest {
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages()).anyMatch(msg ->
-                msg.contains("Action was expected to be") && msg.contains(USAGE_POLICY_TYPE));
+                msg.contains("Action was expected to be") && msg.contains(ACTION_USAGE));
     }
 
     @Test

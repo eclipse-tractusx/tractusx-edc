@@ -37,13 +37,13 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OPERATOR_ATTR
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_RIGHT_OPERAND_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.AFFILIATES_REGION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_GROUP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_NUMBER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 
 class AtomicConstraintValidatorTest {
@@ -55,8 +55,8 @@ class AtomicConstraintValidatorTest {
     @BeforeEach
     void setUp() {
         path = JsonLdPath.path();
-        accessPolicyValidator = AtomicConstraintValidator.instance(path, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
-        usagePolicyValidator = AtomicConstraintValidator.instance(path, USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        accessPolicyValidator = AtomicConstraintValidator.instance(path, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
+        usagePolicyValidator = AtomicConstraintValidator.instance(path, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE);
     }
 
     @Test
