@@ -29,15 +29,18 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.validator.CxPolicyDefinitionValidator;
 
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_TYPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_REQUEST_SCOPE;
@@ -68,6 +71,9 @@ public class CxPolicyExtension implements ServiceExtension {
 
     @Inject
     private RuleBindingRegistry bindingRegistry;
+
+    @Inject
+    JsonObjectValidatorRegistry validatorRegistry;
 
     public static void registerFunctions(PolicyEngine engine) {
         engine.registerFunction(CatalogPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
@@ -102,7 +108,12 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", CATALOG_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
-        
+
+        //TODO
+        registry.bind(CX_POLICY_NS + "access", CATALOG_SCOPE);
+        registry.bind(CX_POLICY_NS + "access", NEGOTIATION_SCOPE);
+        registry.bind(CX_POLICY_NS + "access", TRANSFER_PROCESS_SCOPE);
+
         registry.bind(CX_POLICY_NS + USAGE_PURPOSE, CATALOG_SCOPE);
         registry.bind(CX_POLICY_NS + USAGE_PURPOSE, NEGOTIATION_SCOPE);
         registry.bind(CX_POLICY_NS + USAGE_PURPOSE, TRANSFER_PROCESS_SCOPE);
@@ -121,5 +132,6 @@ public class CxPolicyExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         registerFunctions(policyEngine);
         registerBindings(bindingRegistry);
+        validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, CxPolicyDefinitionValidator.instance());
     }
 }

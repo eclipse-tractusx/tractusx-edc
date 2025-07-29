@@ -32,7 +32,7 @@ public final class CoreConstants {
     public static final String TX_AUTH_NS = "https://w3id.org/tractusx/auth/";
     public static final String EDC_CONTEXT = "https://w3id.org/edc/v0.0.1";
     public static final String CX_CREDENTIAL_NS = "https://w3id.org/catenax/credentials/";
-    public static final String CX_POLICY_NS = "https://w3id.org/catenax/policy/";
+    public static final String CX_POLICY_NS = "https://w3id.org/catenax/2025/9/policy/";
 
     // constants related to token refresh/renewal
     public static final String EDR_PROPERTY_AUTHORIZATION = EDC_NAMESPACE + "authorization";
