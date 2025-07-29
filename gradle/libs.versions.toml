@@ -173,7 +173,6 @@ edc-spi-dataplane-selector = { module = "org.eclipse.edc:data-plane-selector-spi
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
-edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 
 # micrometer and other infra stuff

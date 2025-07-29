@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,36 +17,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    id(libs.plugins.swagger.get().pluginId)
-}
+package org.eclipse.tractusx.edc.dataplane.http.pipeline;
 
-dependencies {
+import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:edr-spi"))
+import java.io.InputStream;
+import java.util.Map;
 
-    implementation(libs.jakarta.rsApi)
+public record ProxyHttpPart(String name, InputStream content, String mediaType,
+                            String statusCode, Map<String, String> headers) implements DataSource.Part {
+    @Override
+    public long size() {
+        return SIZE_UNKNOWN;
+    }
 
-    implementation(libs.edc.spi.http)
-    implementation(libs.edc.spi.dataplane.http)
-    implementation(libs.edc.lib.util)
-    implementation(project(":edc-extensions:dataplane:dataplane-util"))
-    implementation(libs.edc.ext.http)
-    implementation(libs.edc.spi.auth)
-    implementation(libs.edc.spi.edrstore)
+    @Override
+    public InputStream openStream() {
+        return content;
+    }
 
-
-    testImplementation(libs.edc.junit)
-    testImplementation(testFixtures(libs.edc.core.jersey))
-    testImplementation(libs.restAssured)
-}
-
-edcBuild {
-    swagger {
-        apiGroup.set("data-plane")
+    @Override
+    public String mediaType() {
+        return mediaType;
     }
 }
-
-

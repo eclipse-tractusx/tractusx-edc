@@ -30,7 +30,8 @@ dependencies {
     api(libs.edc.spi.dataplane.dataplane)
     implementation(libs.edc.lib.util)
 
-    implementation(libs.edc.dpf.util)
+    implementation(project(":edc-extensions:dataplane:dataplane-util"))
+    implementation(project(":spi:core-spi"))
     implementation(libs.jakarta.rsApi)
 
     testImplementation(libs.edc.ext.http)

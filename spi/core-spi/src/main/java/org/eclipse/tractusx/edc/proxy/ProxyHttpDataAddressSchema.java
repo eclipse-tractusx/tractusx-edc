@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,36 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    id(libs.plugins.swagger.get().pluginId)
+package org.eclipse.tractusx.edc.proxy;
+
+public interface ProxyHttpDataAddressSchema {
+
+    /**
+     * DataAddress type
+     */
+    String PROXY_HTTP_DATA_TYPE = "ProxyHttpData";
 }
-
-dependencies {
-
-    implementation(project(":core:core-utils"))
-    implementation(project(":spi:edr-spi"))
-
-    implementation(libs.jakarta.rsApi)
-
-    implementation(libs.edc.spi.http)
-    implementation(libs.edc.spi.dataplane.http)
-    implementation(libs.edc.lib.util)
-    implementation(project(":edc-extensions:dataplane:dataplane-util"))
-    implementation(libs.edc.ext.http)
-    implementation(libs.edc.spi.auth)
-    implementation(libs.edc.spi.edrstore)
-
-
-    testImplementation(libs.edc.junit)
-    testImplementation(testFixtures(libs.edc.core.jersey))
-    testImplementation(libs.restAssured)
-}
-
-edcBuild {
-    swagger {
-        apiGroup.set("data-plane")
-    }
-}
-
-
