@@ -39,7 +39,6 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.response.TransferErrorResponse;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.tractusx.edc.proxy.ProxyStreamResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -181,7 +180,7 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
         pipelineService.transfer(dataFlowStartMessage, sink)
                 .whenComplete((result, throwable) -> {
                     if (throwable == null) {
-                        if (result.failed() && !(result instanceof ProxyStreamResult<?>)) {
+                        if (result.failed()) {
                             response.resume(error(INTERNAL_SERVER_ERROR, result.getFailureMessages()));
                         }
                     } else {
@@ -194,7 +193,6 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
     private void includeProxyHeaders(Response.ResponseBuilder resp, Map<String, String> proxyHeaders) {
         proxyHeaders.forEach((header, value) -> resp.header(header, value));
     }
-
 
     private static Response.Status retrieveStatusCode(String statusCode) {
         try {
