@@ -51,6 +51,12 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * Extension for the mock connector
+ *
+ * @deprecated since 0.11.0
+ */
+@Deprecated(since = "0.11.0")
 public class MockServiceExtension implements ServiceExtension {
     private final Queue<RecordedRequest<?, ?>> recordedRequests = new ConcurrentLinkedQueue<>();
     @Inject
