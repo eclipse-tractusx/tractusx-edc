@@ -75,14 +75,12 @@ public class ProxyHttpDataSource implements DataSource {
     private StreamResult<Stream<Part>> handleResponse(Response response, String statusCode) {
         var body = response.body();
         InputStream stream = null;
+        var mediaType = OCTET_STREAM;
         if (body != null) {
             stream = body.byteStream();
             responseBodyStream.set(new ResponseBodyStream(body, stream));
+            mediaType = Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM);
         }
-
-        var mediaType = stream != null
-                ? Optional.ofNullable(body.contentType()).map(MediaType::toString).orElse(OCTET_STREAM)
-                : OCTET_STREAM;
 
         Stream<Part> content = Stream.of(new ProxyHttpPart(name, stream, mediaType, statusCode, extractHeaders(response)));
         return success(content);

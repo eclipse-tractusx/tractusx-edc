@@ -88,7 +88,7 @@ public class AsyncStreamingDataSink implements DataSink {
         Map<String, String> proxyHeaders = part instanceof ProxyHttpPart proxyHttpPart ? proxyHttpPart.headers() : Map.of();
         var result = asyncContext.register(new AsyncResponseCallback(outputStream -> {
             try {
-                if (proxyPartHasContent(part)) {
+                if (partHasContent(part)) {
                     part.openStream().transferTo(outputStream);
                 }
             } catch (IOException e) {
@@ -99,7 +99,7 @@ public class AsyncStreamingDataSink implements DataSink {
         return result ? StatusResult.success() : failure(FATAL_ERROR, "Could not resume output stream write");
     }
 
-    private static boolean proxyPartHasContent(DataSource.Part part) {
+    private static boolean partHasContent(DataSource.Part part) {
         return !(part instanceof ProxyHttpPart proxyHttpPart) || proxyHttpPart.content() != null;
     }
 
