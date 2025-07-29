@@ -37,9 +37,7 @@ on:
     inputs:
       dated_snapshot:
         description: 'Dated snapshot version.'
-        default: false
         type: boolean
-        required: true
 
   # periodic build triggers are defined in run-all-tests.yml, which triggers this workflow
 
