@@ -30,10 +30,16 @@ on:
     workflows: [ "Run-All-Tests" ]
     branches:
       - main
-      - bugfix/*
+      - release/*
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      dated_snapshot:
+        description: 'Dated snapshot version.'
+        default: false
+        type: boolean
+        required: true
 
   # periodic build triggers are defined in run-all-tests.yml, which triggers this workflow
 
@@ -76,7 +82,7 @@ jobs:
           
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}')
           
-          if [[ ${{ github.event.workflow_run.event }} == "schedule" ]]; then
+          if [[ "${{ github.event.workflow_run.event }}" == "schedule" || "${{ inputs.dated_snapshot }}" == "true" ]]; then
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT" >> "$GITHUB_OUTPUT"
           else
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-SNAPSHOT" >> "$GITHUB_OUTPUT"
