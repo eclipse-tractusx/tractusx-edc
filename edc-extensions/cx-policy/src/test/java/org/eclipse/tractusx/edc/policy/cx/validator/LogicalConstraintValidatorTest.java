@@ -31,7 +31,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 
 class LogicalConstraintValidatorTest {
 
@@ -43,7 +43,7 @@ class LogicalConstraintValidatorTest {
         JsonObject constraint = atomicConstraint(validAccessPolicyLeftOperand);
         JsonObject input = logicalConstraint(ODRL_AND_CONSTRAINT_ATTRIBUTE, constraint);
 
-        ValidationResult result = validateLogicalConstraint(input, ACCESS_POLICY_TYPE);
+        ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
         assertThat(result.succeeded()).isTrue();
     }
@@ -53,7 +53,7 @@ class LogicalConstraintValidatorTest {
         JsonObject constraint = atomicConstraint(validAccessPolicyLeftOperand);
         JsonObject input = logicalConstraint(ODRL_OR_CONSTRAINT_ATTRIBUTE, constraint);
 
-        ValidationResult result = validateLogicalConstraint(input, ACCESS_POLICY_TYPE);
+        ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages())
@@ -66,7 +66,7 @@ class LogicalConstraintValidatorTest {
                 .add("someProperty", "someValue")
                 .build();
 
-        ValidationResult result = validateLogicalConstraint(input, ACCESS_POLICY_TYPE);
+        ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages())
@@ -79,7 +79,7 @@ class LogicalConstraintValidatorTest {
                 .add(ODRL_AND_CONSTRAINT_ATTRIBUTE, "not-an-array")
                 .build();
 
-        ValidationResult result = validateLogicalConstraint(input, ACCESS_POLICY_TYPE);
+        ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
         assertThat(result.failed()).isTrue();
     }
@@ -90,7 +90,7 @@ class LogicalConstraintValidatorTest {
                 .add(ODRL_AND_CONSTRAINT_ATTRIBUTE, Json.createArrayBuilder())
                 .build();
 
-        ValidationResult result = validateLogicalConstraint(input, ACCESS_POLICY_TYPE);
+        ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
         assertThat(result.succeeded()).isTrue();
     }
@@ -102,7 +102,7 @@ class LogicalConstraintValidatorTest {
                 .build();
         JsonObject input = logicalConstraint(ODRL_AND_CONSTRAINT_ATTRIBUTE, invalidConstraint);
 
-        ValidationResult result = validateLogicalConstraint(input, ACCESS_POLICY_TYPE);
+        ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
         assertThat(result.failed()).isTrue();
     }

@@ -27,7 +27,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIB
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 
 /**
  * Resolves the type of policy based on the action type of its rules.
@@ -58,7 +58,7 @@ public class PolicyTypeResolver {
             }
         }
 
-        return ACCESS_POLICY_TYPE;
+        return ACTION_ACCESS;
     }
 
     private static String getActionFromRule(JsonObject rule) {

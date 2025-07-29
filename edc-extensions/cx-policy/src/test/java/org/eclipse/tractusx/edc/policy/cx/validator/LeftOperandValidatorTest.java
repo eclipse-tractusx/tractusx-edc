@@ -33,11 +33,11 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_POLICY_TYPE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.AFFILIATES_REGION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_GROUP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 
 class LeftOperandValidatorTest {
@@ -50,7 +50,7 @@ class LeftOperandValidatorTest {
                 .add(ID, FRAMEWORK_AGREEMENT_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.succeeded()).isTrue();
     }
@@ -61,7 +61,7 @@ class LeftOperandValidatorTest {
                 .add(ID, USAGE_PURPOSE_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.succeeded()).isTrue();
     }
@@ -72,7 +72,7 @@ class LeftOperandValidatorTest {
                 .add(ID, USAGE_PURPOSE_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, USAGE_POLICY_TYPE, ODRL_PROHIBITION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PROHIBITION_ATTRIBUTE);
 
         assertThat(result.succeeded()).isTrue();
     }
@@ -83,7 +83,7 @@ class LeftOperandValidatorTest {
                 .add(ID, AFFILIATES_REGION_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, USAGE_POLICY_TYPE, ODRL_OBLIGATION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_OBLIGATION_ATTRIBUTE);
 
         assertThat(result.succeeded()).isTrue();
     }
@@ -92,7 +92,7 @@ class LeftOperandValidatorTest {
     void shouldReturnFailure_whenIdIsMissing() {
         JsonObject input = Json.createObjectBuilder().build();
 
-        ValidationResult result = validateLeftOperand(input, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
     }
@@ -103,7 +103,7 @@ class LeftOperandValidatorTest {
                 .add(ID, USAGE_PURPOSE_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages())
@@ -116,7 +116,7 @@ class LeftOperandValidatorTest {
                 .add(ID, BUSINESS_PARTNER_GROUP_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages())
@@ -129,7 +129,7 @@ class LeftOperandValidatorTest {
                 .add(ID, AFFILIATES_REGION_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, USAGE_POLICY_TYPE, ODRL_PROHIBITION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PROHIBITION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages())
@@ -142,7 +142,7 @@ class LeftOperandValidatorTest {
                 .add(ID, USAGE_PURPOSE_LITERAL)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, USAGE_POLICY_TYPE, ODRL_OBLIGATION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_OBLIGATION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages())
@@ -155,7 +155,7 @@ class LeftOperandValidatorTest {
                 .add(ID, "invalid-operand")
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
     }
@@ -167,7 +167,7 @@ class LeftOperandValidatorTest {
                 .add(ID, id)
                 .build();
 
-        ValidationResult result = validateLeftOperand(input, ACCESS_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE);
+        ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
         assertThat(result.failed()).isTrue();
     }
