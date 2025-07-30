@@ -88,6 +88,19 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject policyWithEmptyRule(String action) {
+        var rule = Json.createObjectBuilder()
+                .add("action", action)
+                .build();
+        var rulesArrayBuilder = Json.createArrayBuilder();
+        rulesArrayBuilder.add(rule);
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", rulesArrayBuilder)
+                .build();
+    }
+
     public static JsonObject policyFromRules(String ruleType, JsonObject... rules) {
         var rulesArrayBuilder = Json.createArrayBuilder();
         for (JsonObject rule : rules) {

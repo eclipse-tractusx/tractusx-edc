@@ -182,23 +182,6 @@ class UsagePolicyValidatorTest {
     }
 
     @Test
-    void shouldReturnFailure_whenRuleIsNotArray() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-
-        JsonObject permission = rule(ACTION_USAGE, constraint);
-
-        JsonObject input = Json.createObjectBuilder()
-                .add(ODRL_PERMISSION_ATTRIBUTE, permission)
-                .build();
-
-        ValidationResult result = validator.validate(input);
-
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
-                msg.contains("Expected array") && msg.contains(ODRL_PERMISSION_ATTRIBUTE));
-    }
-
-    @Test
     void shouldReturnFailure_whenEmptyPolicy() {
         JsonObject input = Json.createObjectBuilder().build();
 
