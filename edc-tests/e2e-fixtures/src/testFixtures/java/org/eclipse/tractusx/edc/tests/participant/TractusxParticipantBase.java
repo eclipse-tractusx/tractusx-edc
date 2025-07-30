@@ -168,6 +168,34 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .statusCode(204);
     }
 
+    /**
+     * Updates a BPN's groups
+     */
+    public void updateBusinessPartner(String bpn, String... groups) {
+        var body = createObjectBuilder()
+                .add(ID, bpn)
+                .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
+                .build();
+        baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .put("/v3/business-partner-groups")
+                .then()
+                .statusCode(204);
+    }
+
+    /**
+     * Delete a BPN
+     */
+    public void deleteBusinessPartner(String bpn) {
+        baseManagementRequest()
+                .when()
+                .delete("/v3/business-partner-groups/{bpn}", bpn)
+                .then()
+                .statusCode(204);
+    }
+
     public ValidatableResponse retireProviderAgreement(String agreementId) {
         var body = createObjectBuilder()
                 .add(TYPE, AR_ENTRY_TYPE)
@@ -241,6 +269,27 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .post("/v1alpha/catalog/query")
                 .then();
 
+    }
+
+    public String getTransferProcessField(String transferProcessId, String fieldName) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .then()
+                .statusCode(200)
+                .extract().body().jsonPath()
+                .getString(fieldName);
+    }
+
+    public void triggerDataTransfer(String dataFlowId) {
+        baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .post("/v4alpha/dataflows/{id}/trigger", dataFlowId)
+                .then()
+                .log().ifError()
+                .statusCode(204);
     }
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
