@@ -22,13 +22,10 @@ package org.eclipse.tractusx.edc.policy.cx;
 import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
-import org.eclipse.edc.policy.model.Rule;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -43,7 +40,6 @@ import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredential
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -83,23 +79,14 @@ public class CxPolicyExtension implements ServiceExtension {
     public static void registerFunctions(PolicyEngine engine) {
 
         // Usage Prohibition Validators
-        registerForContexts(
-                ContractNegotiationPolicyContext.class,
-                Prohibition.class,
-                engine,
-                Map.of(
-                        CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>(),
-                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>())
-        );
-
-        registerForContexts(
-                TransferProcessPolicyContext.class,
-                Prohibition.class,
-                engine,
-                Map.of(
-                        CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>(),
-                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>())
-        );
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
+                CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
+                CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
+                CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
+                CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>());
 
         // Access and Usage Permission Validators
         engine.registerFunction(CatalogPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
@@ -176,11 +163,5 @@ public class CxPolicyExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         registerFunctions(policyEngine);
         registerBindings(bindingRegistry);
-    }
-
-    private static <R extends Rule, C extends PolicyContext> void registerForContexts(Class<C> context, Class<R> type, PolicyEngine engine, Map<String, AtomicConstraintRuleFunction<R, C>> constraints) {
-        constraints.forEach((functionId, constraintFunction) ->
-                engine.registerFunction(context, type, functionId, constraintFunction)
-        );
     }
 }

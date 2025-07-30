@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class AffiliatesBpnlConstraintFunctionTest {
@@ -45,36 +46,33 @@ class AffiliatesBpnlConstraintFunctionTest {
     void validate_whenValidOperatorAndRightValueArePassed_thenSuccess() {
         var rightValue = List.of("BPNL00000000001A", "BPNL00000000002B");
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
         var rightValue = List.of("BPNL00000000001A");
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
         var rightValue = List.of("BPNL00000000001A");
         var result = function.validate(Operator.EQ, rightValue, null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid operator");
+        assertThat(result).isFailed().detail().contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidRightValueType_thenFailure() {
         var result = function.validate(Operator.IS_ANY_OF, "BPNL000000001A", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("list must contain only unique values matching pattern");
+        assertThat(result).isFailed().detail().contains("list must contain only unique values matching pattern");
     }
 
     @Test
     void validate_whenInvalidBpnlFormat_thenFailure() {
         var rightValue = List.of("invalid-bpnl");
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("matching pattern");
+        assertThat(result).isFailed().detail().contains("matching pattern");
     }
 }
