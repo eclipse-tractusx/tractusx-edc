@@ -49,6 +49,7 @@ import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.empty
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPermission;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyFromRules;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyWithEmptyRule;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 @EndToEndTest
@@ -153,7 +154,7 @@ public class PolicyDefinitionEndToEndTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.concat(super.provideArguments(extensionContext), Stream.of(
                     Arguments.of(emptyPolicy(), "Empty Policy"),
-                    Arguments.of(policyFromRules("permission"), "Policy with empty permission"),
+                    Arguments.of(policyWithEmptyRule("access"), "Access policy with empty permission"),
                     Arguments.of(inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s"), "In force date policy")
             ));
         }
@@ -175,6 +176,7 @@ public class PolicyDefinitionEndToEndTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
+                    Arguments.of(policyWithEmptyRule("use"), "Usage policy with empty permission"),
                     Arguments.of(policyFromRules("permission",
                             frameworkPermission(Map.of(CX_POLICY_NS + "Membership", "active"), "access"),
                             frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "use")), "Policy with different actions types"),

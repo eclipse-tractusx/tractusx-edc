@@ -19,12 +19,14 @@
 
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
@@ -63,8 +65,18 @@ public class AtLeastOneRuleExists implements Validator<JsonObject> {
     }
 
     private boolean hasNonEmptyArray(JsonObject input, String attribute) {
-        return input.containsKey(attribute) &&
-                input.get(attribute).getValueType() == JsonValue.ValueType.ARRAY &&
-                !input.get(attribute).asJsonArray().isEmpty();
+        if (!input.containsKey(attribute) ||
+                input.get(attribute).getValueType() != JsonValue.ValueType.ARRAY) {
+            return false;
+        }
+
+        JsonArray array = input.getJsonArray(attribute);
+        if (array.isEmpty()) {
+            return false;
+        }
+        return array.stream()
+                .filter(v -> v.getValueType() == JsonValue.ValueType.OBJECT)
+                .map(v -> (JsonObject) v)
+                .anyMatch(obj -> obj.containsKey(ODRL_CONSTRAINT_ATTRIBUTE));
     }
 }
