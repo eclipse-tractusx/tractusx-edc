@@ -112,7 +112,7 @@ public class DataspaceIssuer extends IdentityParticipant {
         var subject = Json.createObjectBuilder()
                 .add("type", credentialType)
                 .add("holderIdentifier", bpn)
-                .add("contractVersion", "1.0.0")
+                .add("contractVersion", "2.0")
                 .add("contractTemplate", "https://public.catena-x.org/contracts/traceabilty.v1.pdf")
                 .add("id", did)
                 .build();
