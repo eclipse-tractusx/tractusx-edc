@@ -167,6 +167,32 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject bpnPolicy(Operator operator, String... bpns) {
+        JsonArrayBuilder bpnArray = Json.createArrayBuilder();
+        Stream.of(bpns).forEach(bpnArray::add);
+
+        var bpnConstraint = Json.createObjectBuilder()
+                .add(TYPE, ODRL_CONSTRAINT_TYPE)
+                .add("leftOperand", TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY)
+                .add("operator", operator.getOdrlRepresentation())
+                .add("rightOperand", bpnArray)
+                .build();
+
+        var permission = Json.createObjectBuilder()
+                .add("action", "access")
+                .add("constraint", Json.createObjectBuilder()
+                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
+                        .add("and", bpnConstraint)
+                        .build())
+                .build();
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", Json.createArrayBuilder()
+                        .add(permission))
+                .build();
+    }
+
     private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
 
         var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups), false);

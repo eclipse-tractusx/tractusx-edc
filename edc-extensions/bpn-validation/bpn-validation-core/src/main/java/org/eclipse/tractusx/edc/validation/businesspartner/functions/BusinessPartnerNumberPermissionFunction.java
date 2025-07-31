@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -97,7 +98,14 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
 
     private Result<Boolean> checkListContains(String identity, Object rightValue, Operator operator) {
         if (rightValue instanceof List<?> numbers) {
-            return success(numbers.contains(identity));
+            boolean containsBpn = numbers.stream()
+                    .filter(entry -> entry instanceof Map<?, ?>)
+                    .map(entry -> ((Map<?, ?>) entry).get("@value"))
+                    .filter(value -> value instanceof Map<?, ?>)
+                    .map(value -> ((Map<?, ?>) value).get("string"))
+                    .anyMatch(bpn -> identity.equals(bpn));
+
+            return success(containsBpn);
         }
         return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
                 .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
