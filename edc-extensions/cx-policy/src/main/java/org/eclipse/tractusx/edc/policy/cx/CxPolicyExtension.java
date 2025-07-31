@@ -69,10 +69,6 @@ public class CxPolicyExtension implements ServiceExtension {
     public static final String NAME = "CX Policy";
     private static final Set<String> RULE_SCOPES = Set.of(CATALOG_REQUEST_SCOPE, NEGOTIATION_REQUEST_SCOPE,
             TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
-    private static final String AFFILIATES_BPNL_POLICY = withCxPolicyNsPrefix(AFFILIATES_BPNL);
-    private static final String AFFILIATES_REGION_POLICY = withCxPolicyNsPrefix(AFFILIATES_REGION);
-    private static final String CONTRACT_REFERENCE_POLICY = withCxPolicyNsPrefix(CONTRACT_REFERENCE);
-    private static final String USAGE_PURPOSE_POLICY = withCxPolicyNsPrefix(USAGE_PURPOSE);
 
     private static String withCxPolicyNsPrefix(String name) {
         return CX_POLICY_NS + name;
@@ -88,13 +84,13 @@ public class CxPolicyExtension implements ServiceExtension {
 
         // Usage Prohibition Validators
         engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
-                AFFILIATES_BPNL_POLICY, new AffiliatesBpnlProhibitionConstraintFunction<>());
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlProhibitionConstraintFunction<>());
         engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
-                AFFILIATES_REGION_POLICY, new AffiliatesRegionProhibitionConstraintFunction<>());
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionProhibitionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
-                AFFILIATES_BPNL_POLICY, new AffiliatesBpnlProhibitionConstraintFunction<>());
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlProhibitionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
-                AFFILIATES_REGION_POLICY, new AffiliatesRegionProhibitionConstraintFunction<>());
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionProhibitionConstraintFunction<>());
 
         // Access and Usage Permission Validators
         engine.registerFunction(CatalogPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
@@ -110,17 +106,25 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
 
         // Usage Permission Validators
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, AFFILIATES_BPNL_POLICY, new AffiliatesBpnlPermissionConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, AFFILIATES_BPNL_POLICY, new AffiliatesBpnlPermissionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlPermissionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlPermissionConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, AFFILIATES_REGION_POLICY, new AffiliatesRegionPermissionConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, AFFILIATES_REGION_POLICY, new AffiliatesRegionPermissionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionPermissionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionPermissionConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CONTRACT_REFERENCE_POLICY, new ContractReferenceConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CONTRACT_REFERENCE_POLICY, new ContractReferenceConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE), new ContractReferenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE), new ContractReferenceConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, USAGE_PURPOSE_POLICY, new UsagePurposeConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, USAGE_PURPOSE_POLICY, new UsagePurposeConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
@@ -137,22 +141,22 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
 
         var namesInCatalogScope = Set.of(
-                USAGE_PURPOSE_POLICY,
-                CONTRACT_REFERENCE_POLICY);
+                withCxPolicyNsPrefix(USAGE_PURPOSE),
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE));
         registerBindingSet(registry, namesInCatalogScope, CATALOG_SCOPE);
 
         var namesInNegotiationScope = Set.of(
-                USAGE_PURPOSE_POLICY,
-                CONTRACT_REFERENCE_POLICY,
-                AFFILIATES_BPNL_POLICY,
-                AFFILIATES_REGION_POLICY);
+                withCxPolicyNsPrefix(USAGE_PURPOSE),
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE),
+                withCxPolicyNsPrefix(AFFILIATES_BPNL),
+                withCxPolicyNsPrefix(AFFILIATES_REGION));
         registerBindingSet(registry, namesInNegotiationScope, NEGOTIATION_SCOPE);
 
         var namesInTransferProcessScope = Set.of(
-                USAGE_PURPOSE_POLICY,
-                CONTRACT_REFERENCE_POLICY,
-                AFFILIATES_BPNL_POLICY,
-                AFFILIATES_REGION_POLICY);
+                withCxPolicyNsPrefix(USAGE_PURPOSE),
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE),
+                withCxPolicyNsPrefix(AFFILIATES_BPNL),
+                withCxPolicyNsPrefix(AFFILIATES_REGION));
         registerBindingSet(registry, namesInTransferProcessScope, TRANSFER_PROCESS_SCOPE);
 
     }
