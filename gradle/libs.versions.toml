@@ -4,15 +4,19 @@ format.version = "1.1"
 [versions]
 edc = "0.14.0-20250719-SNAPSHOT"
 allure = "2.29.1"
+assertj = "3.27.3"
 awaitility = "4.3.0"
 aws = "2.32.9"
 azure-storage-blob = "12.30.1"
 bouncyCastle-jdk18on = "1.81"
+dcp-tck = "1.0.0-RC4"
 dsp-tck = "1.0.0-RC4"
 flyway = "11.10.4"
+httpMockServer = "5.15.0"
 jackson = "2.19.2"
 jakarta-json = "2.0.1"
 junit = "1.13.4"
+jupiter = "5.13.3"
 nimbus = "10.4"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.18.1"
@@ -137,6 +141,14 @@ edc-sts-core = { module = "org.eclipse.edc:sts-core", version.ref = "edc" }
 edc-sts-api = { module = "org.eclipse.edc:sts-api", version.ref = "edc" }
 edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
 
+# DCP-TCK libraries
+dcp-testcases = { module = "org.eclipse.dataspacetck.dcp:dcp-testcases", version.ref = "dcp-tck" }
+dcp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dcp-tck" }
+dcp-system = { module = "org.eclipse.dataspacetck.dcp:dcp-system", version.ref = "dcp-tck" }
+dsp-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dcp-tck" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
+mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "httpMockServer" }
+
 # DSP-TCK libraries
 dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }
 dsp-tck-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dsp-tck" }
@@ -181,6 +193,7 @@ edc-micrometer-jersey = { module = "org.eclipse.edc:jersey-micrometer", version.
 edc-micrometer-jetty = { module = "org.eclipse.edc:jetty-micrometer", version.ref = "edc" }
 
 # other deps
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
