@@ -37,8 +37,6 @@ dependencies {
     testImplementation(libs.edc.spi.identity.did )
     testImplementation(libs.nimbus.jwt)
     testImplementation(libs.restAssured)
-    testImplementation(libs.assertj)
-    testImplementation(libs.junit.jupiter.api)
 
     testImplementation(libs.dcp.tck.runtime)
     testImplementation(libs.dcp.system)
