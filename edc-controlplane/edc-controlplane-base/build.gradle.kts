@@ -55,6 +55,7 @@ dependencies {
     implementation(project(":edc-extensions:provision-additional-headers"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:validators:empty-asset-selector"))
+    implementation(project(":edc-extensions:connector-discovery"))
     runtimeOnly(project(":edc-extensions:event-subscriber"))
 
     runtimeOnly(libs.bundles.edc.monitoring)

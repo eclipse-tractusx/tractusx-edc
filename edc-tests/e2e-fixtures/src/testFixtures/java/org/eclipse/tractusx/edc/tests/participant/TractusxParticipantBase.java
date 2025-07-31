@@ -40,6 +40,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
+import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -290,6 +291,22 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .then()
                 .log().ifError()
                 .statusCode(204);
+    }
+
+    public ValidatableResponse discoverConnector(String bpn, String connectorUrl) {
+        var requestBody = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "ConnectorDiscoveryRequest")
+                .add("bpnl", bpn)
+                .add("knowns", createArrayBuilder().add(connectorUrl))
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(requestBody)
+                .when()
+                .post("/v4alpha/connectordiscovery")
+                .then();
     }
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
