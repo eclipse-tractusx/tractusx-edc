@@ -69,10 +69,14 @@ public class CxPolicyExtension implements ServiceExtension {
     public static final String NAME = "CX Policy";
     private static final Set<String> RULE_SCOPES = Set.of(CATALOG_REQUEST_SCOPE, NEGOTIATION_REQUEST_SCOPE,
             TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
-    private static final String AFFILIATES_BPNL_POLICY = CX_POLICY_NS + AFFILIATES_BPNL;
-    private static final String AFFILIATES_REGION_POLICY =  CX_POLICY_NS + AFFILIATES_REGION;
-    private static final String CONTRACT_REFERENCE_POLICY =  CX_POLICY_NS + CONTRACT_REFERENCE;
-    private static final String USAGE_PURPOSE_POLICY =  CX_POLICY_NS + USAGE_PURPOSE;
+    private static final String AFFILIATES_BPNL_POLICY = withCxPolicyNsPrefix(AFFILIATES_BPNL);
+    private static final String AFFILIATES_REGION_POLICY = withCxPolicyNsPrefix(AFFILIATES_REGION);
+    private static final String CONTRACT_REFERENCE_POLICY = withCxPolicyNsPrefix(CONTRACT_REFERENCE);
+    private static final String USAGE_PURPOSE_POLICY = withCxPolicyNsPrefix(USAGE_PURPOSE);
+
+    private static String withCxPolicyNsPrefix(String name) {
+        return CX_POLICY_NS + name;
+    }
 
     @Inject
     private PolicyEngine policyEngine;
@@ -132,14 +136,24 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
 
-        var usageAndContract = Set.of(USAGE_PURPOSE_POLICY, CONTRACT_REFERENCE_POLICY);
-        registerBindingSet(registry, usageAndContract, CATALOG_SCOPE);
-        registerBindingSet(registry, usageAndContract, NEGOTIATION_SCOPE);
-        registerBindingSet(registry, usageAndContract, TRANSFER_PROCESS_SCOPE);
+        var namesInCatalogScope = Set.of(
+                USAGE_PURPOSE_POLICY,
+                CONTRACT_REFERENCE_POLICY);
+        registerBindingSet(registry, namesInCatalogScope, CATALOG_SCOPE);
 
-        var bpnlAndRegionAffiliates = Set.of(AFFILIATES_BPNL_POLICY, AFFILIATES_REGION_POLICY);
-        registerBindingSet(registry, bpnlAndRegionAffiliates, NEGOTIATION_SCOPE);
-        registerBindingSet(registry, bpnlAndRegionAffiliates, TRANSFER_PROCESS_SCOPE);
+        var namesInNegotiationScope = Set.of(
+                USAGE_PURPOSE_POLICY,
+                CONTRACT_REFERENCE_POLICY,
+                AFFILIATES_BPNL_POLICY,
+                AFFILIATES_REGION_POLICY);
+        registerBindingSet(registry, namesInNegotiationScope, NEGOTIATION_SCOPE);
+
+        var namesInTransferProcessScope = Set.of(
+                USAGE_PURPOSE_POLICY,
+                CONTRACT_REFERENCE_POLICY,
+                AFFILIATES_BPNL_POLICY,
+                AFFILIATES_REGION_POLICY);
+        registerBindingSet(registry, namesInTransferProcessScope, TRANSFER_PROCESS_SCOPE);
 
     }
 
