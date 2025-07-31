@@ -71,6 +71,8 @@ public class CxPolicyExtension implements ServiceExtension {
             TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
     private static final String AFFILIATES_BPNL_POLICY = CX_POLICY_NS + AFFILIATES_BPNL;
     private static final String AFFILIATES_REGION_POLICY =  CX_POLICY_NS + AFFILIATES_REGION;
+    private static final String CONTRACT_REFERENCE_POLICY =  CX_POLICY_NS + CONTRACT_REFERENCE;
+    private static final String USAGE_PURPOSE_POLICY =  CX_POLICY_NS + USAGE_PURPOSE;
 
     @Inject
     private PolicyEngine policyEngine;
@@ -110,11 +112,11 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, AFFILIATES_REGION_POLICY, new AffiliatesRegionPermissionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, AFFILIATES_REGION_POLICY, new AffiliatesRegionPermissionConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CONTRACT_REFERENCE_POLICY, new ContractReferenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CONTRACT_REFERENCE_POLICY, new ContractReferenceConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, USAGE_PURPOSE_POLICY, new UsagePurposeConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, USAGE_PURPOSE_POLICY, new UsagePurposeConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
@@ -130,7 +132,7 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
 
-        var usageAndContract = Set.of(CX_POLICY_NS + USAGE_PURPOSE, CX_POLICY_NS + CONTRACT_REFERENCE);
+        var usageAndContract = Set.of(USAGE_PURPOSE_POLICY, CONTRACT_REFERENCE_POLICY);
         registerBindingSet(registry, usageAndContract, CATALOG_SCOPE);
         registerBindingSet(registry, usageAndContract, NEGOTIATION_SCOPE);
         registerBindingSet(registry, usageAndContract, TRANSFER_PROCESS_SCOPE);
