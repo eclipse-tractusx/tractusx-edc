@@ -75,4 +75,18 @@ class AffiliatesBpnlConstraintFunctionTest {
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isFailed().detail().contains("matching pattern");
     }
+
+    @Test
+    void validate_whenInvalidBpnlStringList_thenFailure() {
+        var rightValue = "[BPNL00000000001A]";
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
+        assertThat(result).isFailed().detail().contains("list must contain only unique values matching pattern");
+    }
+
+    @Test
+    void validate_whenInvalidListBpnlStringList_thenFailure() {
+        var rightValue = List.of("[BPNL00000000001A]");
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
+        assertThat(result).isFailed().detail().contains("list must contain only unique values matching pattern");
+    }
 }
