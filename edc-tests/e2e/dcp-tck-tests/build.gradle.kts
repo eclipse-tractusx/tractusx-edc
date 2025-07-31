@@ -41,7 +41,7 @@ dependencies {
     testImplementation(libs.dcp.tck.runtime)
     testImplementation(libs.dcp.system)
     testImplementation(libs.dsp.core)
-    testImplementation(libs.mockserver.netty)
+    testImplementation(libs.netty.mockserver)
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.testcontainers.junit)
 }

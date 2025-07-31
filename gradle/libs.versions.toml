@@ -11,7 +11,6 @@ bouncyCastle-jdk18on = "1.81"
 dcp-tck = "1.0.0-RC4"
 dsp-tck = "1.0.0-RC4"
 flyway = "11.10.4"
-httpMockServer = "5.15.0"
 jackson = "2.19.2"
 jakarta-json = "2.0.1"
 junit = "1.13.4"
@@ -144,7 +143,6 @@ dcp-testcases = { module = "org.eclipse.dataspacetck.dcp:dcp-testcases", version
 dcp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dcp-tck" }
 dcp-system = { module = "org.eclipse.dataspacetck.dcp:dcp-system", version.ref = "dcp-tck" }
 dsp-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dcp-tck" }
-mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "httpMockServer" }
 
 # DSP-TCK libraries
 dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }
