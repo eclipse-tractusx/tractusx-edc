@@ -27,7 +27,8 @@ import jakarta.ws.rs.PathParam;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ObjectConflictException;
 import org.eclipse.edc.web.spi.exception.ObjectNotFoundException;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.observe.BusinessPartnerObservable;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -40,9 +41,11 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public abstract class BaseBusinessPartnerGroupApiController {
 
     protected final BusinessPartnerStore businessPartnerService;
+    protected final BusinessPartnerObservable businessPartnerObservable;
 
-    public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService) {
+    public BaseBusinessPartnerGroupApiController(BusinessPartnerStore businessPartnerService, BusinessPartnerObservable businessPartnerObservable) {
         this.businessPartnerService = businessPartnerService;
+        this.businessPartnerObservable = businessPartnerObservable;
     }
 
     public JsonObject resolve(String bpn) {
@@ -56,6 +59,9 @@ public abstract class BaseBusinessPartnerGroupApiController {
 
     public void deleteEntry(@PathParam("bpn") String bpn) {
         businessPartnerService.delete(bpn)
+                .onSuccess(v -> businessPartnerObservable
+                        .invokeForEach(l -> l.deleted(bpn))
+                )
                 .orElseThrow(f -> new ObjectNotFoundException(List.class, f.getFailureDetail()));
     }
 
@@ -63,6 +69,9 @@ public abstract class BaseBusinessPartnerGroupApiController {
         var bpn = getBpn(object);
         var groups = getGroups(object);
         businessPartnerService.update(bpn, groups)
+                .onSuccess(v -> businessPartnerObservable
+                        .invokeForEach(l -> l.updated(bpn, groups))
+                )
                 .orElseThrow(f -> new ObjectNotFoundException(List.class, f.getFailureDetail()));
     }
 
@@ -70,6 +79,9 @@ public abstract class BaseBusinessPartnerGroupApiController {
         var bpn = getBpn(object);
         var groups = getGroups(object);
         businessPartnerService.save(bpn, groups)
+                .onSuccess(v -> businessPartnerObservable
+                        .invokeForEach(l -> l.created(bpn, groups))
+                )
                 .orElseThrow(f -> new ObjectConflictException(f.getFailureDetail()));
     }
 

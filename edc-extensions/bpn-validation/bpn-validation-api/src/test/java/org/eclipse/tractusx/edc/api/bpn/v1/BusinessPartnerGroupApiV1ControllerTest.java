@@ -31,7 +31,7 @@ class BusinessPartnerGroupApiV1ControllerTest extends BaseBusinessPartnerGroupAp
 
     @Override
     protected Object controller() {
-        return new BusinessPartnerGroupApiV1Controller(businessPartnerStore, mock());
+        return new BusinessPartnerGroupApiV1Controller(businessPartnerStore, mock(), mock());
     }
 
     @Override

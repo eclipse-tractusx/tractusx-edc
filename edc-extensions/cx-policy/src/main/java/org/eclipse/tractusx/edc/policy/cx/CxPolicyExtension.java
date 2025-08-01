@@ -27,7 +27,9 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Duty;
+import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.policy.model.Rule;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -45,11 +47,18 @@ import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDu
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 
+import java.util.Map;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -65,6 +74,12 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction.DATA_FREQUENCY;
+import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction.DATA_PROVISIONING_END_DATE;
+import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction.DATA_PROVISIONING_END_DURATION_DAYS;
+import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFunction.DATA_USAGE_END_DATE;
+import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction.DATA_USAGE_END_DEFINITION;
+import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction.DATA_USAGE_END_DURATION_DAYS;
 import static org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction.DATA_FREQUENCY;
 import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction.DATA_PROVISIONING_END_DATE;
 import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction.DATA_PROVISIONING_END_DURATION_DAYS;
@@ -87,6 +102,10 @@ public class CxPolicyExtension implements ServiceExtension {
     private static final Set<String> RULE_SCOPES = Set.of(CATALOG_REQUEST_SCOPE, NEGOTIATION_REQUEST_SCOPE,
             TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
 
+    private static String withCxPolicyNsPrefix(String name) {
+        return CX_POLICY_NS + name;
+    }
+
     @Inject
     private PolicyEngine policyEngine;
 
@@ -95,41 +114,32 @@ public class CxPolicyExtension implements ServiceExtension {
 
     public static void registerFunctions(PolicyEngine engine) {
 
-        // Usage Duty Validators
-        registerForContexts(
-                ContractNegotiationPolicyContext.class,
-                Duty.class,
-                engine,
-                Map.of(
-                        CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, new DataProvisioningEndDurationDaysConstraintFunction<>(),
-                        CX_POLICY_NS + DATA_PROVISIONING_END_DATE, new DataProvisioningEndDateConstraintFunction<>())
-        );
-        registerForContexts(
-                TransferProcessPolicyContext.class,
-                Duty.class,
-                engine,
-                Map.of(
-                        CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, new DataProvisioningEndDurationDaysConstraintFunction<>(),
-                        CX_POLICY_NS + DATA_PROVISIONING_END_DATE, new DataProvisioningEndDateConstraintFunction<>())
-        );
-
         // Usage Prohibition Validators
-        registerForContexts(
-                ContractNegotiationPolicyContext.class,
-                Prohibition.class,
-                engine,
-                Map.of(
-                        CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>(),
-                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>())
-        );
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlProhibitionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionProhibitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlProhibitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionProhibitionConstraintFunction<>());
+
 
         registerForContexts(
-                TransferProcessPolicyContext.class,
-                Prohibition.class,
+                ContractNegotiationPolicyContext.class,
+                Duty.class,
                 engine,
                 Map.of(
-                        CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlProhibitionConstraintFunction<>(),
-                        CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionProhibitionConstraintFunction<>())
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, new DataProvisioningEndDurationDaysConstraintFunction<>(),
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DATE, new DataProvisioningEndDateConstraintFunction<>())
+        );
+        registerForContexts(
+                TransferProcessPolicyContext.class,
+                Duty.class,
+                engine,
+                Map.of(
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, new DataProvisioningEndDurationDaysConstraintFunction<>(),
+                        CX_POLICY_NS + DATA_PROVISIONING_END_DATE, new DataProvisioningEndDateConstraintFunction<>())
         );
 
         // Access and Usage Permission Validators
@@ -146,14 +156,26 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
 
         // Usage Permission Validators
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlPermissionConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_BPNL, new AffiliatesBpnlPermissionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlPermissionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlPermissionConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionPermissionConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + AFFILIATES_REGION, new AffiliatesRegionPermissionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionPermissionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionPermissionConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + CONTRACT_REFERENCE, new ContractReferenceConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE), new ContractReferenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE), new ContractReferenceConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
+
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
@@ -166,14 +188,12 @@ public class CxPolicyExtension implements ServiceExtension {
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
-
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
         registry.dynamicBind(s -> {
-            if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL).anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
+            if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL)
+                    .anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
                 return RULE_SCOPES;
             }
             return Set.of();
@@ -183,24 +203,31 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
 
-        registerBindingSets(
-                registry,
-                Set.of(CX_POLICY_NS + USAGE_PURPOSE, CX_POLICY_NS + CONTRACT_REFERENCE),
-                Set.of(CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
+        var namesInCatalogScope = Set.of(
+                withCxPolicyNsPrefix(USAGE_PURPOSE),
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE));
+        registerBindingSet(registry, namesInCatalogScope, CATALOG_SCOPE);
 
-        // Usage Duty Validators
+        var namesInNegotiationScope = Set.of(
+                withCxPolicyNsPrefix(USAGE_PURPOSE),
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE),
+                withCxPolicyNsPrefix(AFFILIATES_BPNL),
+                withCxPolicyNsPrefix(AFFILIATES_REGION));
+        registerBindingSet(registry, namesInNegotiationScope, NEGOTIATION_SCOPE);
+
+        var namesInTransferProcessScope = Set.of(
+                withCxPolicyNsPrefix(USAGE_PURPOSE),
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE),
+                withCxPolicyNsPrefix(AFFILIATES_BPNL),
+                withCxPolicyNsPrefix(AFFILIATES_REGION));
+        registerBindingSet(registry, namesInTransferProcessScope, TRANSFER_PROCESS_SCOPE);
+
+
         registerBindingSets(
                 registry,
                 Set.of(CX_POLICY_NS + DATA_PROVISIONING_END_DURATION_DAYS, CX_POLICY_NS + DATA_PROVISIONING_END_DATE),
                 Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
 
-        // Usage Prohibition Validators
-        registerBindingSets(
-                registry,
-                Set.of(CX_POLICY_NS + AFFILIATES_BPNL, CX_POLICY_NS + AFFILIATES_REGION),
-                Set.of(NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE));
-
-        // Usage Permission Validators
         registerBindingSets(
                 registry,
                 Set.of(
@@ -216,8 +243,8 @@ public class CxPolicyExtension implements ServiceExtension {
 
     }
 
-    private static void registerBindingSets(RuleBindingRegistry registry, Set<String> names, Set<String> scopes) {
-        scopes.forEach(scope -> names.forEach(name -> registry.bind(name, scope)));
+    private static void registerBindingSet(RuleBindingRegistry registry, Set<String> names, String scope) {
+        names.forEach(name -> registry.bind(name, scope));
     }
 
     @Override
@@ -229,11 +256,5 @@ public class CxPolicyExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         registerFunctions(policyEngine);
         registerBindings(bindingRegistry);
-    }
-
-    private static <R extends Rule, C extends PolicyContext> void registerForContexts(Class<C> context, Class<R> type, PolicyEngine engine, Map<String, AtomicConstraintRuleFunction<R, C>> constraints) {
-        constraints.forEach((functionId, constraintFunction) ->
-                engine.registerFunction(context, type, functionId, constraintFunction)
-        );
     }
 }

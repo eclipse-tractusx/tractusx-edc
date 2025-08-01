@@ -1,4 +1,5 @@
 #################################################################################
+#  Copyright (c) 2025 Cofinity-X GmbH
 #  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
 #
@@ -28,12 +29,17 @@ on:
 
 
 jobs:
+  run-all-tests:
+    name: "Run All Tests"
+    uses: ./.github/workflows/run-all-tests.yml
   # Gate
   validation:
     name: "Workflow Validation"
+    needs: [ run-all-tests ]
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+      update_main_branch_version: ${{ steps.update-main.outputs.update_main_branch_version }}
     steps:
       - uses: actions/checkout@v4
       - name: Output release version
@@ -41,6 +47,16 @@ jobs:
         run: |
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
+      - name: Output update main branch version
+        id: update-main
+        run: |
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ steps.release-version.outputs.RELEASE_VERSION }}" 
+          if [[ $PATCH == '0' && -z $SNAPSHOT ]]; 
+          then
+            echo "update_main_branch_version=true" >> $GITHUB_OUTPUT
+          else 
+            echo "update_main_branch_version=false" >> $GITHUB_OUTPUT
+          fi
       - name: Validations
         run: |
           if [[ "${{ github.repository }}" != "eclipse-tractusx/tractusx-edc" ]]; then
@@ -48,8 +64,8 @@ jobs:
             exit 1
           fi
 
-          if [[ ! "${{ github.ref_name }}" =~ ^release/ && ! "${{ github.ref_name }}" =~ ^bugfix/ ]]; then
-            echo "This workflow can only be run on the branches starting with release/ or bugfix/."
+          if [[ ! "${{ github.ref_name }}" =~ ^release/ ]]; then
+            echo "This workflow can only be run on the branches starting with release/."
             exit 1
           fi
           
@@ -149,14 +165,8 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ github.ref_name == 'main' }}
+          makeLatest: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
           removeArtifacts: true
-
-  bump-snapshot-version:
-    needs: github-release
-    if: github.ref_name == 'main'
-    uses: ./.github/workflows/bump-version.yaml
-    secrets: inherit
 
   # Release: Publish specs to GitHub Pages
   publish-openapi-to-gh-pages:
@@ -201,3 +211,27 @@ jobs:
               release_id: release.id,
               body: newBody
             });
+
+  main-branch-update:
+    name: "Main Branch Update"
+    runs-on: ubuntu-latest
+    needs: [ validation, github-release ]
+    if: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
+    permissions:
+      contents: write
+      packages: write
+      pages: write
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+      - name: Version and Chart Updates
+        uses: ./.github/actions/update-version-and-charts
+        with:
+          version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+          bump_version: "true"
+      - name: Push main updates
+        run: |
+          git push origin main

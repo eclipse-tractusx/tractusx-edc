@@ -36,6 +36,7 @@ include(":spi:edr-spi")
 include(":spi:core-spi")
 include(":spi:tokenrefresh-spi")
 include(":spi:bdrs-client-spi")
+include(":spi:dataflow-spi")
 
 
 // core modules
@@ -56,6 +57,7 @@ include(":edc-extensions:tokenrefresh-handler")
 include(":edc-extensions:bdrs-client")
 include(":edc-extensions:provision-additional-headers")
 include(":edc-extensions:federated-catalog")
+include(":edc-extensions:event-subscriber")
 include(":edc-extensions:edr:edr-api-v2")
 include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:edr:edr-index-lock-sql")
@@ -64,6 +66,7 @@ include(":edc-extensions:dcp:tx-dcp")
 include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
 include(":edc-extensions:validators:empty-asset-selector")
+include(":edc-extensions:log4j2-monitor")
 
 include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
@@ -73,13 +76,21 @@ include(":edc-extensions:agreements:retirement-evaluation-store-sql")
 
 // extensions - data plane
 include(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api")
+include(":edc-extensions:dataplane:dataplane-util")
+include(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http")
 include(":edc-extensions:dataplane:dataplane-selector-configuration")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core")
 include(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api")
 include(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2")
+include(":edc-extensions:dataplane:dataflow:dataflow-api")
+include(":edc-extensions:dataplane:dataflow:dataflow-service")
+
+include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-spi")
+include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core")
 
 // test modules
 include(":edc-tests:e2e-fixtures")
+include(":edc-tests:e2e:bpn-event-tests")
 include(":edc-tests:e2e:catalog-tests")
 include(":edc-tests:e2e:cloud-transfer-tests")
 include(":edc-tests:e2e:edc-dataplane-tokenrefresh-tests")
@@ -96,6 +107,8 @@ include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:mock-connector")
 include(":edc-tests:runtime:runtime-postgresql")
+include(":edc-tests:runtime:runtime-dsp")
+include(":edc-tests:dsp-compatibility-tests:compatibility-test-runner")
 
 // modules for controlplane artifacts
 include(":edc-controlplane")
@@ -111,7 +124,7 @@ include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 include(":samples:testing-with-mocked-connector")
 
 plugins {
-    id("com.gradle.develocity") version "4.0.2"
+    id("com.gradle.develocity") version "4.1"
     id("com.gradle.common-custom-user-data-gradle-plugin") version "2.3"
 }
 
