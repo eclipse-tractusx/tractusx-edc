@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,27 +17,31 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.validation.businesspartner.spi;
+package org.eclipse.edc.tractusx.non.finite.provider.push.spi;
 
+import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
-import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
-import java.util.List;
-
+/**
+ * Determines the finiteness of a data transfer
+ */
 @ExtensionPoint
-public interface BusinessPartnerStore {
-    String NOT_FOUND_TEMPLATE = "BPN %s was not found";
-    String ALREADY_EXISTS_TEMPLATE = "BPN %s already exists in database";
+public interface FinitenessEvaluator {
 
-    StoreResult<List<String>> resolveForBpn(String businessPartnerNumber);
+    /**
+     * Evaluates if a {@link DataFlow} is non-finite
+     *
+     * @param dataflow dataflow to be evaluated
+     * @return true if it is non-finite, false otherwise
+     */
+    boolean isNonFinite(DataFlow dataflow);
 
-    StoreResult<List<String>> resolveForBpnGroup(String businessPartnerGroup);
-
-    StoreResult<List<String>> resolveForBpnGroups();
-
-    StoreResult<Void> save(String businessPartnerNumber, List<String> groups);
-
-    StoreResult<Void> delete(String businessPartnerNumber);
-
-    StoreResult<Void> update(String businessPartnerNumber, List<String> groups);
+    /**
+     * Evaluates if a {@link DataFlowStartMessage} represents a non-finite dataflow
+     *
+     * @param message dataflow start message to be evaluated
+     * @return true if it is non-finite, false otherwise
+     */
+    boolean isNonFinite(DataFlowStartMessage message);
 }

@@ -31,7 +31,10 @@ import java.util.Arrays;
 /**
  * Custom deserializer for {@link ServiceFailure}. We need this because there is no default
  * CTor, and the public constructor with args is not annotated with {@link com.fasterxml.jackson.annotation.JsonProperty}.
+ *
+ * @deprecated since 0.11.0
  */
+@Deprecated(since = "0.11.0")
 public class ServiceFailureDeserializer extends StdDeserializer<ServiceFailure> {
     public static final String REASON_FIELD = "reason";
     public static final String MESSAGES_FIELD = "messages";
