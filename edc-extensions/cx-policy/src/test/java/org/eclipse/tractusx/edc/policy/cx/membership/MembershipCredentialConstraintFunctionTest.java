@@ -117,4 +117,24 @@ class MembershipCredentialConstraintFunctionTest {
 
         assertThat(result).isFalse();
     }
+
+    @Test
+    void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
+        var result = function.validate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenInvalidOperator_thenFailure() {
+        var result = function.validate(CX_POLICY_NS + "Membership", Operator.IS_ANY_OF, "active", null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid operator");
+    }
+
+    @Test
+    void validate_whenInvalidValue_thenFailure() {
+        var result = function.validate(CX_POLICY_NS + "Membership", Operator.EQ, "invalid_value", null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    }
 }

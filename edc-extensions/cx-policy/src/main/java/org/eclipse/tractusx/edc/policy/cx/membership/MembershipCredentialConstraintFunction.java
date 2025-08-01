@@ -25,8 +25,11 @@ import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
+
+import java.util.Set;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
@@ -65,5 +68,19 @@ public class MembershipCredentialConstraintFunction<C extends ParticipantAgentPo
     @Override
     public boolean canHandle(Object leftOperand) {
         return leftOperand instanceof String && (CX_POLICY_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString());
+    }
+
+    @Override
+    public Result<Void> validate(Object leftValue, Operator operator, Object rightValue, Permission rule) {
+        var allowedOperators = Set.of(Operator.EQ);
+        if (!allowedOperators.contains(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'."
+                    .formatted(allowedOperators, operator));
+        }
+
+        return rightValue instanceof String && rightValue.toString().equalsIgnoreCase("active")
+                ? Result.success()
+                : Result.failure("Invalid right-operand: this constraint only allows the following right-operands: %s, but received '%s'."
+                .formatted("active", rightValue));
     }
 }
