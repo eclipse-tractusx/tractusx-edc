@@ -61,7 +61,7 @@ public class TransferParticipant extends TractusxParticipantBase {
         }
 
         return config.merge(ConfigFactory.fromMap(Map.of(
-                "edc.callback.default.events", "contract",
+                "edc.callback.default.events", "contract, bpn",
                 "edc.callback.default.uri", "http://localhost:" + eventSubscription.getPort(),
                 "edc.callback.default.transactional", "true"
         )));
@@ -95,7 +95,7 @@ public class TransferParticipant extends TractusxParticipantBase {
         private final BlockingQueue<JsonObject> events = new LinkedBlockingQueue<>();
         private final Duration timeout;
 
-        public EventSubscription(Duration timeout) {
+        EventSubscription(Duration timeout) {
             this.timeout = timeout;
             server.when(request()).respond(httpRequest -> {
                 var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
