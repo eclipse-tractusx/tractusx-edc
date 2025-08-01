@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.validator;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.junit.assertions.FailureAssert;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.spi.ValidationResult;
@@ -28,11 +29,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.AFFILIATES_REGION_LITERAL;
@@ -52,7 +53,7 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -63,7 +64,7 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -74,7 +75,7 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PROHIBITION_ATTRIBUTE);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -85,7 +86,7 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_OBLIGATION_ATTRIBUTE);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -94,7 +95,7 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -105,9 +106,8 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages())
-                .anyMatch(msg -> msg.contains("is not allowed"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("is not allowed"));
     }
 
     @Test
@@ -118,9 +118,8 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages())
-                .anyMatch(msg -> msg.contains("is not allowed"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("is not allowed"));
     }
 
     @Test
@@ -131,9 +130,8 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PROHIBITION_ATTRIBUTE);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages())
-                .anyMatch(msg -> msg.contains("is not allowed"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("is not allowed"));
     }
 
     @Test
@@ -144,9 +142,8 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_OBLIGATION_ATTRIBUTE);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages())
-                .anyMatch(msg -> msg.contains("is not allowed"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("is not allowed"));
     }
 
     @Test
@@ -157,7 +154,7 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @ParameterizedTest
@@ -169,7 +166,7 @@ class LeftOperandValidatorTest {
 
         ValidationResult result = validateLeftOperand(input, ACTION_ACCESS, ODRL_PERMISSION_ATTRIBUTE);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     private ValidationResult validateLeftOperand(JsonObject input, String policyType, String ruleType) {

@@ -22,12 +22,13 @@ package org.eclipse.tractusx.edc.policy.cx.validator;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.junit.assertions.FailureAssert;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 
 class ArrayIsEmptyTest {
 
@@ -49,7 +50,7 @@ class ArrayIsEmptyTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -61,7 +62,7 @@ class ArrayIsEmptyTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -75,8 +76,8 @@ class ArrayIsEmptyTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailure().getMessages()).anyMatch(v -> v.contains("Array must be empty"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(v -> v.contains("Array must be empty"));
     }
 
     @Test
@@ -87,8 +88,8 @@ class ArrayIsEmptyTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailure().getMessages()).anyMatch(v -> v.contains("Must be an empty array"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(v -> v.contains("Must be an empty array"));
     }
 
     @Test
@@ -99,6 +100,6 @@ class ArrayIsEmptyTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 }

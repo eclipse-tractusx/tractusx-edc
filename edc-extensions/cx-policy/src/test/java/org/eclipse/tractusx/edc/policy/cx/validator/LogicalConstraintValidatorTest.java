@@ -21,14 +21,15 @@ package org.eclipse.tractusx.edc.policy.cx.validator;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.junit.assertions.FailureAssert;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
@@ -45,7 +46,7 @@ class LogicalConstraintValidatorTest {
 
         ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -55,9 +56,8 @@ class LogicalConstraintValidatorTest {
 
         ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages())
-                .anyMatch(msg -> msg.contains("not allowed logical constraints"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("not allowed logical constraints"));
     }
 
     @Test
@@ -68,9 +68,8 @@ class LogicalConstraintValidatorTest {
 
         ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages())
-                .anyMatch(msg -> msg.contains("exactly one logical constraint"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("exactly one logical constraint"));
     }
 
     @Test
@@ -81,7 +80,7 @@ class LogicalConstraintValidatorTest {
 
         ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -92,7 +91,7 @@ class LogicalConstraintValidatorTest {
 
         ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -104,7 +103,7 @@ class LogicalConstraintValidatorTest {
 
         ValidationResult result = validateLogicalConstraint(input, ACTION_ACCESS);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
 

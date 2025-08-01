@@ -27,8 +27,8 @@ import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 
 class ActionTypeIsTest {
 
@@ -51,7 +51,7 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -62,7 +62,7 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -73,7 +73,7 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -87,7 +87,7 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -101,7 +101,7 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -116,7 +116,7 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -131,7 +131,7 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -140,6 +140,6 @@ class ActionTypeIsTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 }

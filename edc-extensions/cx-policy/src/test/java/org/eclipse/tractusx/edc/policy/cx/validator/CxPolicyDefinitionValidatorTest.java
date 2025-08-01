@@ -21,15 +21,16 @@ package org.eclipse.tractusx.edc.policy.cx.validator;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.junit.assertions.FailureAssert;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_TYPE_SET;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
@@ -53,7 +54,7 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -66,7 +67,7 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -78,7 +79,7 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -90,8 +91,8 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("Policy type is not recognized"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy type is not recognized"));
     }
 
     @Test
@@ -102,8 +103,8 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("mandatory object '" + EDC_NAMESPACE + "policy' is missing"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("mandatory object '" + EDC_NAMESPACE + "policy' is missing"));
     }
 
     @Test
@@ -115,8 +116,8 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("Policy type is not recognized"));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy type is not recognized"));
     }
 
     @Test
@@ -129,7 +130,7 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -143,7 +144,7 @@ class CxPolicyDefinitionValidatorTest {
 
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg -> msg.contains("Action was expected to be '%s' but was '%s'".formatted(ACTION_USAGE, ACTION_ACCESS)));
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Action was expected to be '%s' but was '%s'".formatted(ACTION_USAGE, ACTION_ACCESS)));
     }
 }

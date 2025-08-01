@@ -26,10 +26,10 @@ import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.emptyRule;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.policy;
@@ -59,7 +59,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -69,7 +69,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -80,7 +80,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -91,7 +91,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -101,7 +101,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -112,7 +112,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -123,7 +123,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -133,7 +133,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -150,7 +150,7 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -159,6 +159,6 @@ class AccessPolicyValidatorTest {
 
         ValidationResult result = validator.validate(input);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 }
