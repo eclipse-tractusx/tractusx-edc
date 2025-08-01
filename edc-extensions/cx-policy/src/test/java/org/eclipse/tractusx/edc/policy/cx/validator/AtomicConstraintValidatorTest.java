@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
 import jakarta.json.Json;
+import org.eclipse.edc.junit.assertions.FailureAssert;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
@@ -36,6 +36,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LEFT_OPERAND_
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OPERATOR_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_RIGHT_OPERAND_ATTRIBUTE;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
@@ -65,7 +66,7 @@ class AtomicConstraintValidatorTest {
         String jsonString = constraint.toString();
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -74,7 +75,7 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = usagePolicyValidator.validate(constraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -87,8 +88,8 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("leftOperand") && msg.contains("mandatory"));
     }
 
@@ -103,8 +104,8 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("operator") && msg.contains("mandatory"));
     }
 
@@ -119,8 +120,8 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("rightOperand") && msg.contains("mandatory"));
     }
 
@@ -136,7 +137,7 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @ParameterizedTest
@@ -150,7 +151,7 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = usagePolicyValidator.validate(constraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -159,8 +160,8 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("UsagePurpose") && msg.contains("not allowed"));
     }
 
@@ -170,8 +171,8 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = usagePolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("BusinessPartnerNumber") && msg.contains("not allowed"));
     }
 
@@ -181,8 +182,8 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("leftOperand") && msg.contains("empty"));
     }
 
@@ -197,8 +198,8 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).anyMatch(msg ->
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("leftOperand") && msg.contains("null"));
     }
 
@@ -214,7 +215,7 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
@@ -225,7 +226,7 @@ class AtomicConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
 

@@ -27,12 +27,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_SEQUENCE_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_XONE_CONSTRAINT_ATTRIBUTE;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
@@ -54,7 +54,7 @@ class ConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @ParameterizedTest
@@ -66,7 +66,7 @@ class ConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(logicalConstraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @ParameterizedTest
@@ -78,7 +78,7 @@ class ConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(logicalConstraint);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
     @Test
@@ -87,7 +87,7 @@ class ConstraintValidatorTest {
 
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.failed()).isTrue();
+        assertThat(result).isFailed();
     }
 
 }
