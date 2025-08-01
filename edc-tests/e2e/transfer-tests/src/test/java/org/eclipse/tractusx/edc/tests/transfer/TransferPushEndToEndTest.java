@@ -19,11 +19,14 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -34,35 +37,90 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 @EndToEndTest
-public class TransferPushEndToEndTest extends ProviderPushBaseTest {
+public class TransferPushEndToEndTest {
 
-    protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
-            .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
-            .build();
-    protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
-            .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
-            .build();
+    abstract static class Tests extends ProviderPushBaseTest {
+        protected static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
+                .name(CONSUMER_NAME)
+                .id(CONSUMER_BPN)
+                .build();
+        protected static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+                .name(PROVIDER_NAME)
+                .id(PROVIDER_BPN)
+                .build();
 
-    @RegisterExtension
-    @Order(0)
-    private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
+        @Override
+        public TractusxParticipantBase provider() {
+            return PROVIDER;
+        }
 
-    @RegisterExtension
-    protected static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
-
-    @RegisterExtension
-    protected static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
-
-    @Override
-    public TractusxParticipantBase provider() {
-        return PROVIDER;
+        @Override
+        public TractusxParticipantBase consumer() {
+            return CONSUMER;
+        }
     }
 
-    @Override
-    public TractusxParticipantBase consumer() {
-        return CONSUMER;
+    @Nested
+    @EndToEndTest
+    class Dsp08to08 extends Tests {
+
+        @RegisterExtension
+        @Order(0)
+        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
+
+        @RegisterExtension
+        static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
+
+        @RegisterExtension
+        private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
+
+        @Override
+        public RuntimeExtension providerRuntime() {
+            return PROVIDER_RUNTIME;
+        }
+
+        @Override
+        public RuntimeExtension consumerRuntime() {
+            return CONSUMER_RUNTIME;
+        }
+
+
+        @BeforeAll
+        static void beforeAll() {
+            CONSUMER.setProtocol("dataspace-protocol-http");
+            PROVIDER.setProtocol("dataspace-protocol-http");
+        }
     }
 
+    @Nested
+    @EndToEndTest
+    class Dsp2025to2025 extends Tests {
+
+        @RegisterExtension
+        @Order(0)
+        private static final PostgresExtension POSTGRES = new PostgresExtension(CONSUMER.getName(), PROVIDER.getName());
+
+        @RegisterExtension
+        static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
+
+        @RegisterExtension
+        private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
+
+        @Override
+        public RuntimeExtension providerRuntime() {
+            return PROVIDER_RUNTIME;
+        }
+
+        @Override
+        public RuntimeExtension consumerRuntime() {
+            return CONSUMER_RUNTIME;
+        }
+
+        @BeforeAll
+        static void beforeAll() {
+            CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
+            CONSUMER.setProtocol("dataspace-protocol-http:2025-1", "/2025-1");
+            PROVIDER.setProtocol("dataspace-protocol-http:2025-1", "/2025-1");
+        }
+    }
 }

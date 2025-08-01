@@ -31,6 +31,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Stub implementation of the PolicyDefinitionService.
+ *
+ * @deprecated since 0.11.0
+ */
+@Deprecated(since = "0.11.0")
 public class PolicyDefinitionServiceStub extends AbstractServiceStub implements PolicyDefinitionService {
 
     public PolicyDefinitionServiceStub(ResponseQueue responseQueue) {

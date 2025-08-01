@@ -53,7 +53,8 @@ import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.NOTIFIED;
+import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.COMPLETED;
+import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.FAILED;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFileFromResourceName;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage.EDC_DATA_FLOW_START_MESSAGE_TYPE;
@@ -159,7 +160,7 @@ public class S3ToS3Test {
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
             var dataFlow = DATAPLANE_RUNTIME.getService(DataPlaneStore.class).findById(processId);
-            assertThat(dataFlow.stateAsString()).isEqualTo(NOTIFIED.name());
+            assertThat(dataFlow.stateAsString()).isEqualTo(FAILED.name());
             assertThat(dataFlow.getErrorDetail()).contains("The specified bucket does not exist");
         });
     }
@@ -191,7 +192,7 @@ public class S3ToS3Test {
         assertThat(future).succeedsWithin(Duration.ofSeconds(10));
         await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
             var dataFlow = DATAPLANE_RUNTIME.getService(DataPlaneStore.class).findById(processId);
-            assertThat(dataFlow.stateAsString()).isEqualTo(NOTIFIED.name());
+            assertThat(dataFlow.stateAsString()).isEqualTo(COMPLETED.name());
             assertThat(dataFlow.getErrorDetail()).isNull();
 
             assertThat(CONSUMER_CONTAINER.listObjects(destinationBucketName))

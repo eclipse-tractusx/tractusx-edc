@@ -29,7 +29,7 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.BusinessPartnerGroupStatements;
 import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.PostgresBusinessPartnerGroupStatements;
 import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.SqlBusinessPartnerStore;

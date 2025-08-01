@@ -30,6 +30,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ApiTest
@@ -75,7 +76,7 @@ class BusinessPartnerGroupApiV3ControllerTest extends BaseBusinessPartnerGroupAp
 
     @Override
     protected Object controller() {
-        return new BusinessPartnerGroupApiV3Controller(businessPartnerStore);
+        return new BusinessPartnerGroupApiV3Controller(businessPartnerStore, mock());
     }
 
     @Override

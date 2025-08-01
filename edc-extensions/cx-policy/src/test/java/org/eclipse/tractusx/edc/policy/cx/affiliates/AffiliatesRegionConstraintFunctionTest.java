@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class AffiliatesRegionConstraintFunctionTest {
@@ -45,28 +46,26 @@ class AffiliatesRegionConstraintFunctionTest {
     void validate_whenValidOperatorAndRightValueArePassed_thenSuccess() {
         var rightValue = List.of("cx.region.europe:1", "cx.region.northAmerica:1");
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
         var rightValue = List.of("cx.region.all:1");
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
         var rightValue = List.of("cx.region.all:1");
         var result = function.validate(Operator.EQ, rightValue, null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid operator");
+        assertThat(result).isFailed().detail().contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidRightValueType_thenFailure() {
         var result = function.validate(Operator.IS_ANY_OF, "invalid_value", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("the following values are not allowed");
+        assertThat(result).isFailed().detail().contains("the following values are not allowed");
     }
 }

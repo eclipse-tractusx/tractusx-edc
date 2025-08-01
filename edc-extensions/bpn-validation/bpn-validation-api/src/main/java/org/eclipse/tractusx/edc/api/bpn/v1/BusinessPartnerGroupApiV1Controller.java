@@ -32,7 +32,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiController;
-import org.eclipse.tractusx.edc.validation.businesspartner.spi.BusinessPartnerStore;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.observe.BusinessPartnerObservable;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
 
@@ -45,8 +46,9 @@ public class BusinessPartnerGroupApiV1Controller extends BaseBusinessPartnerGrou
 
     private final Monitor monitor;
 
-    public BusinessPartnerGroupApiV1Controller(BusinessPartnerStore businessPartnerService, Monitor monitor) {
-        super(businessPartnerService);
+    public BusinessPartnerGroupApiV1Controller(BusinessPartnerStore businessPartnerService,
+                                               BusinessPartnerObservable businessPartnerObservable, Monitor monitor) {
+        super(businessPartnerService, businessPartnerObservable);
         this.monitor = monitor;
     }
 
