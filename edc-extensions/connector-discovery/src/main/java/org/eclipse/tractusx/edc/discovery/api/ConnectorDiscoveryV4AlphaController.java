@@ -19,19 +19,20 @@
 
 package org.eclipse.tractusx.edc.discovery.api;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
+import org.eclipse.edc.web.spi.exception.ValidationFailureException;
+import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.service.ConnectorDiscoveryServiceImpl;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
 
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
@@ -41,30 +42,25 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
     private final ConnectorDiscoveryServiceImpl connectorDiscoveryService;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonObjectValidatorRegistry validator;
-    private final Monitor monitor;
 
 
     public ConnectorDiscoveryV4AlphaController(ConnectorDiscoveryServiceImpl connectorDiscoveryService,
                                                TypeTransformerRegistry transformerRegistry,
-                                               JsonObjectValidatorRegistry validator,
-                                               Monitor monitor) {
+                                               JsonObjectValidatorRegistry validator) {
         this.connectorDiscoveryService = connectorDiscoveryService;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
-        this.monitor = monitor;
     }
 
     @POST
-    public JsonArray discoverConnectorV3(JsonObject querySpecJson) {
-        monitor.severe("Connector Discovery V4 Alpha API is not implemented yet. Please use the V3 API instead.");
-        return Json.createArrayBuilder().add(
-                Json.createObjectBuilder()
-                        .add("connectors", Json.createArrayBuilder().add(
-                                Json.createObjectBuilder()
-                                        .add("counterPartyId", "did:web:provider")
-                                        .add("protocol", "dataspace-protocol-http:2025-1")
-                        ))
-        ).build();
+    public JsonArray discoverConnectorV3(JsonObject inputJson) {
+        validator.validate(ConnectorDiscoveryRequest.TYPE, inputJson)
+                .orElseThrow(ValidationFailureException::new);
+
+        var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class);
+
+        return connectorDiscoveryService.discover(discoveryRequest.getContent())
+                .orElseThrow(exceptionMapper(ConnectorDiscoveryRequest.class, "discover"));
     }
 
 }

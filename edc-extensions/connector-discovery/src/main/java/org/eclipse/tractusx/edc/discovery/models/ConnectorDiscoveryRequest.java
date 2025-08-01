@@ -21,7 +21,12 @@ package org.eclipse.tractusx.edc.discovery.models;
 
 import java.util.List;
 
-public record ConnectorDiscoveryRequest(String bpnl, List<String> knowns) {
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+
+public record ConnectorDiscoveryRequest(String bpnl, List<String> knownAddresses) {
+
+    public static final String TYPE = TX_NAMESPACE +  "ConnectorDiscoveryRequest";
+
     public static final String EXAMPLE = """
             {
                 "@context": {

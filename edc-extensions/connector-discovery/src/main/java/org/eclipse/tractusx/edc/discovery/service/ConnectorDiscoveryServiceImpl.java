@@ -19,9 +19,29 @@
 
 package org.eclipse.tractusx.edc.discovery.service;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryRequest;
+
 public class ConnectorDiscoveryServiceImpl {
 
     public ConnectorDiscoveryServiceImpl() {
 
+    }
+
+    public ServiceResult<JsonArray> discover(ConnectorDiscoveryRequest request) {
+
+        var message = Json.createArrayBuilder().add(
+                Json.createObjectBuilder()
+                        .add("connectors", Json.createArrayBuilder().add(
+                                Json.createObjectBuilder()
+                                        .add("counterPartyId", "did:web:provider")
+                                        .add("protocol", "dataspace-protocol-http:2025-1")
+                                        .build()
+                        ).build()).build()
+        ).build();
+
+        return ServiceResult.success(message);
     }
 }

@@ -50,7 +50,7 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     @Inject
     private TypeTransformerRegistry transformerRegistry;
     @Inject
-    private JsonObjectValidatorRegistry validator;
+    private JsonObjectValidatorRegistry validatorRegistry;
     @Inject
     private Monitor monitor;
 
@@ -61,6 +61,6 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
         managementTypeTransformerRegistry.register(new JsonObjectFromConnectorDiscoveryResponse());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(), managementTypeTransformerRegistry, validator, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(), managementTypeTransformerRegistry, validatorRegistry));
     }
 }
