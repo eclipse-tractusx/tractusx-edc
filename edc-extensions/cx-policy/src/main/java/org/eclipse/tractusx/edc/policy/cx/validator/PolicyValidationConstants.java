@@ -43,6 +43,7 @@ public final class PolicyValidationConstants {
     public static final String BUSINESS_PARTNER_NUMBER_LITERAL = TX_NAMESPACE + "BusinessPartnerNumber";
     public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
     public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_NS + "AffiliatesRegion";
+    public static final String AFFILIATES_BPNL_LITERAL = CX_POLICY_NS + "AffiliatesBpnl";
 
     // old
     public static final String INFORCE_POLICY_LITERAL = "https://w3id.org/edc/v0.0.1/ns/inForceDate";
@@ -68,10 +69,12 @@ public final class PolicyValidationConstants {
             USAGE_PURPOSE_LITERAL,
             MEMBERSHIP_LITERAL,
             AFFILIATES_REGION_LITERAL,
+            AFFILIATES_BPNL_LITERAL,
             INFORCE_POLICY_LITERAL
     );
     public static final Set<String> USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            USAGE_PURPOSE_LITERAL
+            USAGE_PURPOSE_LITERAL,
+            AFFILIATES_BPNL_LITERAL
     );
     public static final Set<String> USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             AFFILIATES_REGION_LITERAL
