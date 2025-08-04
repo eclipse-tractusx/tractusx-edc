@@ -6,10 +6,13 @@ plugins {
 dependencies {
 
     api(project(":spi:core-spi"))
+    api(project(":spi:bdrs-client-spi"))
 
     api(libs.edc.spi.transform)
     api(libs.edc.spi.web)
     api(libs.edc.spi.jsonld)
+    api(libs.edc.spi.controlplane)
+    api(libs.edc.spi.protocolversion)
 
     implementation(libs.edc.lib.validator)
     implementation(libs.edc.boot)

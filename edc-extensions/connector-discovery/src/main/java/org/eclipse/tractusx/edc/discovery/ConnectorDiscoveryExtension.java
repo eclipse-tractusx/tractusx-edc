@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.discovery;
 
+import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -32,6 +33,7 @@ import org.eclipse.tractusx.edc.discovery.api.ConnectorDiscoveryV4AlphaControlle
 import org.eclipse.tractusx.edc.discovery.service.ConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.transformers.JsonObjectFromConnectorDiscoveryResponse;
 import org.eclipse.tractusx.edc.discovery.transformers.JsonObjectToConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import static org.eclipse.tractusx.edc.discovery.ConnectorDiscoveryExtension.NAME;
 
@@ -52,6 +54,10 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     @Inject
     private JsonObjectValidatorRegistry validatorRegistry;
     @Inject
+    private BdrsClient bdrsClient;
+    @Inject
+    private VersionService versionService;
+    @Inject
     private Monitor monitor;
 
     @Override
@@ -61,6 +67,6 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
         managementTypeTransformerRegistry.register(new JsonObjectFromConnectorDiscoveryResponse());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(), managementTypeTransformerRegistry, validatorRegistry));
+        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(bdrsClient, versionService), managementTypeTransformerRegistry, validatorRegistry));
     }
 }

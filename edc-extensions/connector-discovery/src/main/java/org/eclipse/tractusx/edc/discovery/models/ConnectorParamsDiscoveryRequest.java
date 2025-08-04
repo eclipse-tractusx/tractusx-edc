@@ -19,21 +19,20 @@
 
 package org.eclipse.tractusx.edc.discovery.models;
 
-import java.util.List;
-
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
-public record ConnectorDiscoveryRequest(String bpnl, List<String> knownAddresses) {
+public record ConnectorParamsDiscoveryRequest(String bpnl, String counterPartyAddress) {
 
-    public static final String TYPE = TX_NAMESPACE +  "ConnectorDiscoveryRequest";
+    public static final String TYPE = TX_NAMESPACE +  "ConnectorParamsDiscoveryRequest";
 
     public static final String EXAMPLE = """
             {
                 "@context": {
-                    "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+                    "edc": "https://w3id.org/edc/v0.0.1/ns/",
                 },
                 "tx:bpnl": "BPNL1234567890",
-                "tx:knownAddresses": [ "https://provider.domain.com/api/dsp" ]
+                "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
             }
             """;
 }

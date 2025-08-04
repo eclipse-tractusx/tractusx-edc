@@ -28,7 +28,7 @@ import jakarta.ws.rs.Produces;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.service.ConnectorDiscoveryServiceImpl;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -54,13 +54,13 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
 
     @POST
     public JsonArray discoverConnectorV3(JsonObject inputJson) {
-        validator.validate(ConnectorDiscoveryRequest.TYPE, inputJson)
+        validator.validate(ConnectorParamsDiscoveryRequest.TYPE, inputJson)
                 .orElseThrow(ValidationFailureException::new);
 
-        var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class);
+        var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class);
 
         return connectorDiscoveryService.discover(discoveryRequest.getContent())
-                .orElseThrow(exceptionMapper(ConnectorDiscoveryRequest.class, "discover"));
+                .orElseThrow(exceptionMapper(ConnectorParamsDiscoveryRequest.class, "discover"));
     }
 
 }

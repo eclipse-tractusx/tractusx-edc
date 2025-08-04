@@ -30,7 +30,7 @@ import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Violation;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.service.ConnectorDiscoveryServiceImpl;
 import org.junit.jupiter.api.Test;
 
@@ -69,11 +69,11 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
                         ).build()).build()
         ).build();
 
-        var discoveryRequest = new ConnectorDiscoveryRequest("test", List.of("test"));
+        var discoveryRequest = new ConnectorParamsDiscoveryRequest("test", "test");
 
-        when(validator.validate(ConnectorDiscoveryRequest.TYPE, input))
+        when(validator.validate(ConnectorParamsDiscoveryRequest.TYPE, input))
                 .thenReturn(ValidationResult.success());
-        when(transformerRegistry.transform(input, ConnectorDiscoveryRequest.class))
+        when(transformerRegistry.transform(input, ConnectorParamsDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
         when(connectorService.discover(discoveryRequest))
                 .thenReturn(ServiceResult.success(expectedArray));
@@ -96,11 +96,11 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
     void shouldReturnFailure_whenServiceFails() {
 
         var input = Json.createObjectBuilder().build();
-        var discoveryRequest = new ConnectorDiscoveryRequest("test", List.of("test"));
+        var discoveryRequest = new ConnectorParamsDiscoveryRequest("test", "test");
 
-        when(validator.validate(ConnectorDiscoveryRequest.TYPE, input))
+        when(validator.validate(ConnectorParamsDiscoveryRequest.TYPE, input))
                 .thenReturn(ValidationResult.success());
-        when(transformerRegistry.transform(input, ConnectorDiscoveryRequest.class))
+        when(transformerRegistry.transform(input, ConnectorParamsDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
         when(connectorService.discover(discoveryRequest))
                 .thenReturn(ServiceResult.unexpected("test error"));
@@ -117,7 +117,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
     @Test
     void shouldReturnValidationFailure_whenValidationFails() {
 
-        when(validator.validate(eq(ConnectorDiscoveryRequest.TYPE), any()))
+        when(validator.validate(eq(ConnectorParamsDiscoveryRequest.TYPE), any()))
                 .thenThrow(new ValidationFailureException(List.of(new Violation("invalidField", "invalidField", "Invalid field"))));
 
         baseRequest()

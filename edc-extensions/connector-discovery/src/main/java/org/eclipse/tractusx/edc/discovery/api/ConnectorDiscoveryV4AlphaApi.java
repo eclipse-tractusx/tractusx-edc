@@ -31,8 +31,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
-import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryResponse;
+import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest;
 
 
 @OpenAPIDefinition(info = @Info(description = "With this API clients discover EDC requesting parameters according to different DSP versions", title = "Connector Discovery API"))
@@ -40,7 +40,7 @@ import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryResponse;
 public interface ConnectorDiscoveryV4AlphaApi {
 
     @Operation(description = "Discover all known connector parameters.",
-            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Discovery Request", example = ConnectorDiscoveryRequest.EXAMPLE))),
+            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Discovery Request", example = ConnectorParamsDiscoveryRequest.EXAMPLE))),
             responses = {
                     @ApiResponse(responseCode = "200", description = "A list of connector parameters per DSP version",
                             content = @Content(array = @ArraySchema(schema = @Schema(name = "Connector Discovery Response", example = ConnectorDiscoveryResponse.EXAMPLE)))),
