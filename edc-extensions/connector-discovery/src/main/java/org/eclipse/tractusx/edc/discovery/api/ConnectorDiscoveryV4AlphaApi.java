@@ -30,8 +30,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
-import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryResponse;
 import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest;
+
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 
 
 @OpenAPIDefinition(info = @Info(description = "With this API clients discover EDC requesting parameters according to different DSP versions", title = "Connector Discovery API"))
@@ -39,15 +42,62 @@ import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest
 public interface ConnectorDiscoveryV4AlphaApi {
 
     @Operation(description = "Discover supported connector parameters.",
-            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Params Discovery Request", example = ConnectorParamsDiscoveryRequest.EXAMPLE))),
+            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Params Discovery Request", implementation = ConnectorParamsDiscoveryRequestSchema.class))),
             responses = {
                     @ApiResponse(responseCode = "200", description = "A list of connector parameters per DSP version",
-                            content = @Content(array = @ArraySchema(schema = @Schema(name = "Connector Discovery Response", example = ConnectorDiscoveryResponse.EXAMPLE)))),
+                            content = @Content(array = @ArraySchema(schema = @Schema(name = "Connector Discovery Response", implementation = ConnectorDiscoveryResponse.class)))),
                     @ApiResponse(responseCode = "500", description = "Discovery failed due to an error",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
     JsonObject discoverDspVersionParamsV3(JsonObject querySpecJson);
+
+
+    @Schema(name = "ConnectorParamsDiscoveryRequestSchema", example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
+    record ConnectorParamsDiscoveryRequestSchema(
+            @Schema(name = CONTEXT, requiredMode = REQUIRED)
+            Object context,
+            @Schema(name = TYPE, example = ConnectorParamsDiscoveryRequest.TYPE)
+            String type,
+            @Schema(requiredMode = REQUIRED)
+            String bpnl,
+            @Schema(requiredMode = REQUIRED)
+            String counterPartyAddress
+    ) {
+        public static final String EXAMPLE = """
+                {
+                    "@context": {
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                    },
+                    "@type": "tx:ConnectorParamsDiscoveryRequest",
+                    "tx:bpnl": "BPNL1234567890",
+                    "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
+                }
+                """;
+    }
+
+
+    @Schema(name = "ConnectorDiscoveryResponse", example = ConnectorDiscoveryResponse.EXAMPLE)
+    record ConnectorDiscoveryResponse(
+            Object context,
+            String counterPartyId,
+            String counterPartyAddress,
+            String protocol
+    ) {
+
+        public static final String EXAMPLE = """
+                {
+                    "@context": {
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                    },
+                    "edc:counterPartyId": "did:web:one-example.com",
+                    "edc:counterPartyAddress": "https://provider.domain.com/api/dsp/2025-1",
+                    "edc:protocol": "dataspace-protocol-http:2025-1"
+                }
+                """;
+    }
 
 }

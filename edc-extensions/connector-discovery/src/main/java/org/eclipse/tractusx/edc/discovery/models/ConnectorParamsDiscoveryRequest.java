@@ -19,11 +19,14 @@
 
 package org.eclipse.tractusx.edc.discovery.models;
 
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public record ConnectorParamsDiscoveryRequest(String bpnl, String counterPartyAddress) {
 
     public static final String TYPE = TX_NAMESPACE +  "ConnectorParamsDiscoveryRequest";
+    public static final String DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE = TX_NAMESPACE + "bpnl";
+    public static final String DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE = EDC_NAMESPACE + "counterPartyAddress";
 
     public static final String EXAMPLE = """
             {

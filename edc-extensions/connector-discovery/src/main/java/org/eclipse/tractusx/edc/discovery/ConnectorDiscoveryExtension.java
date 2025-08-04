@@ -31,9 +31,10 @@ import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.discovery.api.ConnectorDiscoveryV4AlphaController;
+import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.service.ConnectorDiscoveryServiceImpl;
-import org.eclipse.tractusx.edc.discovery.transformers.JsonObjectFromConnectorDiscoveryResponse;
 import org.eclipse.tractusx.edc.discovery.transformers.JsonObjectToConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.validators.ConnectorDiscoveryRequestValidator;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import static org.eclipse.tractusx.edc.discovery.ConnectorDiscoveryExtension.NAME;
@@ -68,7 +69,7 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         var managementTypeTransformerRegistry = transformerRegistry.forContext("management-api");
 
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
-        managementTypeTransformerRegistry.register(new JsonObjectFromConnectorDiscoveryResponse());
+        validatorRegistry.register(ConnectorParamsDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
 
         webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(bdrsClient, versionService, mapper), managementTypeTransformerRegistry, validatorRegistry));
     }
