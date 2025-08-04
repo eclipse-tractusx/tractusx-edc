@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.discovery;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -58,6 +59,8 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     @Inject
     private VersionService versionService;
     @Inject
+    private ObjectMapper mapper;
+    @Inject
     private Monitor monitor;
 
     @Override
@@ -67,6 +70,6 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
         managementTypeTransformerRegistry.register(new JsonObjectFromConnectorDiscoveryResponse());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(bdrsClient, versionService), managementTypeTransformerRegistry, validatorRegistry));
+        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(bdrsClient, versionService, mapper), managementTypeTransformerRegistry, validatorRegistry));
     }
 }

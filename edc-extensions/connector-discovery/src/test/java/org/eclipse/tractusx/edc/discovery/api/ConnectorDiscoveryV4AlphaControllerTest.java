@@ -59,15 +59,10 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
     @Test
     void shouldReturnSuccess() {
         var input = Json.createObjectBuilder().build();
-        var expectedArray = Json.createArrayBuilder().add(
-                Json.createObjectBuilder()
-                        .add("connectors", Json.createArrayBuilder().add(
-                                Json.createObjectBuilder()
-                                        .add("counterPartyId", "did:web:provider")
-                                        .add("protocol", "dataspace-protocol-http:2025-1")
-                                        .build()
-                        ).build()).build()
-        ).build();
+        var expectedJson = Json.createObjectBuilder()
+                .add("counterPartyId", "did:web:provider")
+                .add("protocol", "dataspace-protocol-http:2025-1")
+                .build();
 
         var discoveryRequest = new ConnectorParamsDiscoveryRequest("test", "test");
 
@@ -75,10 +70,10 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
                 .thenReturn(ValidationResult.success());
         when(transformerRegistry.transform(input, ConnectorParamsDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
-        when(connectorService.discover(discoveryRequest))
-                .thenReturn(ServiceResult.success(expectedArray));
+        when(connectorService.discoverVersionParams(discoveryRequest))
+                .thenReturn(ServiceResult.success(expectedJson));
 
-        var resultString = baseRequest()
+        var resultString = baseRequest("/dspversionparams")
                 .contentType(ContentType.JSON)
                 .body(input)
                 .post()
@@ -87,9 +82,9 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
                 .statusCode(200)
                 .extract().body().asString();
 
-        var resultJson = Json.createReader(new StringReader(resultString)).readArray();
+        var resultJson = Json.createReader(new StringReader(resultString)).readObject();
 
-        assertThat(resultJson).isEqualTo(expectedArray);
+        assertThat(resultJson).isEqualTo(expectedJson);
     }
 
     @Test
@@ -102,10 +97,10 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
                 .thenReturn(ValidationResult.success());
         when(transformerRegistry.transform(input, ConnectorParamsDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
-        when(connectorService.discover(discoveryRequest))
+        when(connectorService.discoverVersionParams(discoveryRequest))
                 .thenReturn(ServiceResult.unexpected("test error"));
 
-        baseRequest()
+        baseRequest("/dspversionparams")
                 .contentType(ContentType.JSON)
                 .body(input)
                 .post()
@@ -120,7 +115,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
         when(validator.validate(eq(ConnectorParamsDiscoveryRequest.TYPE), any()))
                 .thenThrow(new ValidationFailureException(List.of(new Violation("invalidField", "invalidField", "Invalid field"))));
 
-        baseRequest()
+        baseRequest("/dspversionparams")
                 .contentType(ContentType.JSON)
                 .body("")
                 .post()
@@ -129,10 +124,10 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
                 .statusCode(400);
     }
 
-    private RequestSpecification baseRequest() {
+    private RequestSpecification baseRequest(String path) {
         return given()
                 .baseUri("http://localhost:" + port)
-                .basePath("/v4alpha/connectordiscovery")
+                .basePath("/v4alpha/connectordiscovery" + path)
                 .when();
     }
 

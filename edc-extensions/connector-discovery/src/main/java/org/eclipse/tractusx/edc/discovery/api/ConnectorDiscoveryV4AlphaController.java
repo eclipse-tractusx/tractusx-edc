@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.discovery.api;
 
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -52,15 +51,16 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
         this.validator = validator;
     }
 
+    @Path("/dspversionparams")
     @POST
-    public JsonArray discoverConnectorV3(JsonObject inputJson) {
+    public JsonObject discoverDspVersionParamsV3(JsonObject inputJson) {
         validator.validate(ConnectorParamsDiscoveryRequest.TYPE, inputJson)
                 .orElseThrow(ValidationFailureException::new);
 
         var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class);
 
-        return connectorDiscoveryService.discover(discoveryRequest.getContent())
-                .orElseThrow(exceptionMapper(ConnectorParamsDiscoveryRequest.class, "discover"));
+        return connectorDiscoveryService.discoverVersionParams(discoveryRequest.getContent())
+                .orElseThrow(exceptionMapper(ConnectorParamsDiscoveryRequest.class, discoveryRequest.getContent().bpnl()));
     }
 
 }

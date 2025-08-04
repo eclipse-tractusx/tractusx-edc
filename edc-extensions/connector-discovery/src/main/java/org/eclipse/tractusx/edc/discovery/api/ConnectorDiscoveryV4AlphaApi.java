@@ -28,7 +28,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
 import org.eclipse.tractusx.edc.discovery.models.ConnectorDiscoveryResponse;
@@ -39,14 +38,16 @@ import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest
 @Tag(name = "Connector Discovery")
 public interface ConnectorDiscoveryV4AlphaApi {
 
-    @Operation(description = "Discover all known connector parameters.",
-            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Discovery Request", example = ConnectorParamsDiscoveryRequest.EXAMPLE))),
+    @Operation(description = "Discover supported connector parameters.",
+            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Params Discovery Request", example = ConnectorParamsDiscoveryRequest.EXAMPLE))),
             responses = {
                     @ApiResponse(responseCode = "200", description = "A list of connector parameters per DSP version",
                             content = @Content(array = @ArraySchema(schema = @Schema(name = "Connector Discovery Response", example = ConnectorDiscoveryResponse.EXAMPLE)))),
+                    @ApiResponse(responseCode = "500", description = "Discovery failed due to an error",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    JsonArray discoverConnectorV3(JsonObject querySpecJson);
+    JsonObject discoverDspVersionParamsV3(JsonObject querySpecJson);
 
 }

@@ -19,103 +19,96 @@
 
 package org.eclipse.tractusx.edc.discovery.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.connector.controlplane.protocolversion.spi.ProtocolVersionRequest;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
+import org.eclipse.edc.protocol.spi.ProtocolVersion;
+import org.eclipse.edc.protocol.spi.ProtocolVersions;
+import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.V_08_VERSION;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_VERSION;
+
 
 public class ConnectorDiscoveryServiceImpl {
 
     private final BdrsClient bdrsClient;
     private final VersionService versionService;
+    private final ObjectMapper mapper;
 
-    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, VersionService versionService) {
+    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, VersionService versionService, ObjectMapper mapper) {
         this.bdrsClient = bdrsClient;
         this.versionService = versionService;
+        this.mapper = mapper;
 
     }
 
-    public ServiceResult<JsonArray> discover(ConnectorParamsDiscoveryRequest request) {
+    public ServiceResult<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request) {
 
-        var versionParameters = Json.createObjectBuilder();
+        var discoveredParameters = Json.createObjectBuilder();
+
+        try {
+            var result = requestVersions(request);
+
+            if (result.failed()) {
+                return ServiceResult.unexpected("Counter party well-known endpoint has failed: " + result.getFailureDetail());
+            } else {
+                var protocolVersions = mapper.readValue(result.getContent(), ProtocolVersions.class);
+                var did = bdrsClient.resolve(request.bpnl());
+                var version20251 = findProtocolVersion(V_2025_1_VERSION, protocolVersions);
+                if (version20251 != null && did != null) {
+                    addDiscoveredParameters(V_2025_1_VERSION, did, request.counterPartyAddress() + version20251.path(), discoveredParameters);
+                    return ServiceResult.success(discoveredParameters.build());
+                } else {
+                    var version08 = findProtocolVersion(V_08_VERSION, protocolVersions);
+                    if (version08 != null) {
+                        addDiscoveredParameters(V_08_VERSION, request.bpnl(), request.counterPartyAddress() + version08.path(), discoveredParameters);
+                        return ServiceResult.success(discoveredParameters.build());
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            return ServiceResult.unexpected("Error while discovering dsp parameters: " + e.getMessage());
+        }
+        return ServiceResult.unexpected("No valid protocol version found for the counter party. " +
+                "The provided BPNL couldn't be resolved to a DID or the counter party does " +
+                "not support any of the expected protocol versions (" + V_08_VERSION + ", " + V_2025_1_VERSION + ")");
+    }
+
+    private StatusResult<byte[]> requestVersions(ConnectorParamsDiscoveryRequest request) throws Exception {
 
         var protocolVersionRequest = ProtocolVersionRequest.Builder.newInstance()
-                .protocol("dataspace-protocol-http")
+                .protocol(DATASPACE_PROTOCOL_HTTP)
                 .counterPartyId(request.bpnl())
                 .counterPartyAddress(request.counterPartyAddress())
                 .build();
 
-        try {
-            var result = versionService.requestVersions(protocolVersionRequest).get();
-
-            if (result.succeeded()) {
-                var content = result.getContent();
-                try (var reader = Json.createReader(new java.io.ByteArrayInputStream(content))) {
-                    var jsonObject = reader.readObject();
-                    var version = "0.8";
-                    var firstResult = jsonObject.get("protocolVersions").asJsonArray().get(0).asJsonObject();
-                    if (firstResult.containsKey("version")) {
-                        version = firstResult.getString("version");
-                    }
-                    if ("2025-1".equals(version)) {
-                        var did = bdrsClient.resolve(request.bpnl());
-                        if (did != null) {
-                            createDsp2025ResponseParameters(did, version, firstResult, request.counterPartyAddress(), versionParameters);
-                        } else {
-                            createDsp08ResponseParameters(request.bpnl(), version, firstResult, request.counterPartyAddress(), versionParameters);
-                        }
-                    } else if ("0.8".equals(version)) {
-                        createDsp08ResponseParameters(request.bpnl(), version, firstResult, request.counterPartyAddress(), versionParameters);
-                    }
-                }
-
-            }
-
-        } catch (ExecutionException | InterruptedException e) {
-            // TODO: handle specific exceptions
-        }
-
-        var message = Json.createArrayBuilder().add(
-                Json.createObjectBuilder()
-                        .add("connectors", Json.createArrayBuilder().add(versionParameters))
-        ).build();
-
-        return ServiceResult.success(message);
+        return versionService.requestVersions(protocolVersionRequest).get(10, TimeUnit.SECONDS);
     }
 
-    private void createDsp2025ResponseParameters(String did, String version, JsonObject firstResult, String counterPartyAddress, JsonObjectBuilder versionParameters) {
-
-        if (firstResult.containsKey("path")) {
-            versionParameters.add("counterPartyAddress", counterPartyAddress + firstResult.getString("path"));
-        }
-
-        if (version.equals("2025-1")) {
-            versionParameters.add("protocol", "dataspace-protocol-http:2025-1");
-        }
-
-        versionParameters.add("counterPartyId", did);
-
+    private ProtocolVersion findProtocolVersion(String targetVersion, ProtocolVersions protocolVersions) {
+        return protocolVersions.protocolVersions().stream()
+                .filter(v -> targetVersion.equals(v.version()))
+                .findFirst()
+                .orElse(null);
     }
 
-    private void createDsp08ResponseParameters(String bpnl, String version, JsonObject firstResult, String counterPartyAddress, JsonObjectBuilder versionParameters) {
-
-        if (firstResult.containsKey("path")) {
-            versionParameters.add("counterPartyAddress", counterPartyAddress + firstResult.getString("path"));
-        }
-
-        if (version.equals("0.8")) {
-            versionParameters.add("protocol", "dataspace-protocol-http");
-        }
-
-        versionParameters.add("counterPartyId", bpnl);
-
+    private void addDiscoveredParameters(String version, String counterPartyId, String address, JsonObjectBuilder versionParameters) {
+        var protocol = V_2025_1_VERSION.equals(version) ? DATASPACE_PROTOCOL_HTTP_V_2025_1 : DATASPACE_PROTOCOL_HTTP;
+        versionParameters.add("protocol", protocol);
+        versionParameters.add("counterPartyAddress", address);
+        versionParameters.add("counterPartyId", counterPartyId);
     }
 
 

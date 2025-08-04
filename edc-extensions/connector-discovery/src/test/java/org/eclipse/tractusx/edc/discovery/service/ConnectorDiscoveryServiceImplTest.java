@@ -19,8 +19,10 @@
 
 package org.eclipse.tractusx.edc.discovery.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
+import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
@@ -39,14 +41,12 @@ class ConnectorDiscoveryServiceImplTest {
 
     private final BdrsClient bdrsClient = mock();
     private final VersionService versionService = mock();
-    private final ConnectorDiscoveryServiceImpl service = new ConnectorDiscoveryServiceImpl(bdrsClient, versionService);
+    private final ObjectMapper mapper = new ObjectMapper().configure(
+            com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final ConnectorDiscoveryServiceImpl service = new ConnectorDiscoveryServiceImpl(bdrsClient, versionService, mapper);
 
     @Test
-    void discoverRequestParams_shouldReturnDsp2025_whenDsp2025AvailableAndDidResolvable() {
-        //given bpn available
-        //given did resolvable
-        //given dsp2025 available
-        //should return dsp2025
+    void discoverVersionParams_shouldReturnDsp2025_whenDsp2025AvailableAndDidResolvable() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "someAddress");
 
         var expectedDid = "did:web:providerdid";
@@ -54,45 +54,45 @@ class ConnectorDiscoveryServiceImplTest {
         var mockVersionResponseMock = Json.createObjectBuilder()
                 .add("protocolVersions", Json.createArrayBuilder()
                         .add(Json.createObjectBuilder()
+                                .add("version", "0.8")
+                                .add("path", "/")
+                                .add("binding", "someBinding"))
+                        .add(Json.createObjectBuilder()
                                 .add("version", "2025-1")
                                 .add("path", "/somePath")
                                 .add("binding", "someBinding"))).build();
 
-        var expectedJsonArray = Json.createArrayBuilder()
-                .add(Json.createObjectBuilder().add("connectors", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
-                                .add("counterPartyId", expectedDid)
-                                .add("protocol", "dataspace-protocol-http:2025-1")
-                                .add("counterPartyAddress", "someAddress/somePath")
-                                .build())
-                        .build())
-                ).build();
+        var expectedJson = Json.createObjectBuilder()
+                .add("counterPartyId", expectedDid)
+                .add("protocol", "dataspace-protocol-http:2025-1")
+                .add("counterPartyAddress", "someAddress/somePath")
+                .build();
 
         when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(expectedDid);
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
 
-        var response = service.discover(paramsDiscoveryRequest);
+        var response = service.discoverVersionParams(paramsDiscoveryRequest);
 
         assertThat(response).isSucceeded();
-        assertThat(response.getContent()).isEqualTo(expectedJsonArray);
+        assertThat(response.getContent()).isEqualTo(expectedJson);
 
     }
 
     @Test
-    void discoverRequestParams_shoudReturnDsp08_whenDidCantBeResolved() {
-        //given bpnl available
-        //given did not resolvable
-        //given dsp08 available
-        //should return dsp08
+    void discoverVersionParams_shoudReturnDsp08_whenDidCantBeResolvedAndDsp08Available() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "someAddress");
 
         var mockVersionResponseMock = Json.createObjectBuilder()
                 .add("protocolVersions", Json.createArrayBuilder()
                         .add(Json.createObjectBuilder()
-                                .add("version", "0.8")
+                                .add("version", "v0.8")
                                 .add("path", "/")
+                                .add("binding", "someBinding"))
+                        .add(Json.createObjectBuilder()
+                                .add("version", "2025-1")
+                                .add("path", "/somePath")
                                 .add("binding", "someBinding"))).build();
 
         when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
@@ -100,46 +100,125 @@ class ConnectorDiscoveryServiceImplTest {
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
 
-        var expectedJsonArray = Json.createArrayBuilder()
-                .add(Json.createObjectBuilder().add("connectors", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
-                                .add("counterPartyId", "someBpnl")
-                                .add("protocol", "dataspace-protocol-http")
-                                .add("counterPartyAddress", "someAddress/")
-                                .build())
-                        .build())
-                ).build();
+        var expectedJsonArray = Json.createObjectBuilder()
+                .add("counterPartyId", "someBpnl")
+                .add("protocol", "dataspace-protocol-http")
+                .add("counterPartyAddress", "someAddress/")
+                .build();
 
-        var response = service.discover(paramsDiscoveryRequest);
+        var response = service.discoverVersionParams(paramsDiscoveryRequest);
 
         assertThat(response).isSucceeded();
         assertThat(response.getContent()).isEqualTo(expectedJsonArray);
     }
 
     @Test
-    void discoverRequestParams_shouldReturnEmpty(){
-        //given bpn available
-        //given did not resolvable
-        //given dsp08 not available
-        //should return empty array
+    void discoverVersionParams_shouldReturnFailure_whenDidNotResolvableAndDsp08NotAvailable() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "someAddress");
+
+        var mockVersionResponseMock = Json.createObjectBuilder()
+                .add("protocolVersions", Json.createArrayBuilder()
+                        .add(Json.createObjectBuilder()
+                                .add("version", "2025-1")
+                                .add("path", "/2025-1")
+                                .add("binding", "someBinding"))).build();
+
+        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+                .thenReturn(null);
+        when(versionService.requestVersions(any()))
+                .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
+
+        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+
+        assertThat(response).isFailed();
 
     }
 
     @Test
-    void discoverRequestParams_shouldReturnDsp08_whenDsp2025NotAvailableAndDsp08AvailableAndBpnAvailable(){
-        //given bpn available
-        //given did resolvable
-        //given dsp2025 not available
-        //given dsp08 available
-        //should return dsp08
+    void discoverVersionParams_shouldReturnDsp08_whenDsp2025NotAvailableAndDsp08Available() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "someAddress");
+
+        var expectedDid = "did:web:providerdid";
+
+        var mockVersionResponseMock = Json.createObjectBuilder()
+                .add("protocolVersions", Json.createArrayBuilder()
+                        .add(Json.createObjectBuilder()
+                                .add("version", "v0.8")
+                                .add("path", "/")
+                                .add("binding", "someBinding"))).build();
+
+        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+                .thenReturn(expectedDid);
+        when(versionService.requestVersions(any()))
+                .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
+
+        var expectedJsonArray = Json.createObjectBuilder()
+                .add("counterPartyId", "someBpnl")
+                .add("protocol", "dataspace-protocol-http")
+                .add("counterPartyAddress", "someAddress/")
+                .build();
+
+        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+
+        assertThat(response).isSucceeded();
+        assertThat(response.getContent()).isEqualTo(expectedJsonArray);
     }
 
     @Test
-    void discoverRequestParams_shouldReturnDsp08_whenMetadataEndpointIsNotAvailableAndBpnlAvailable(){
-        //given bpn available
-        //given did resolvable
-        //given metadata endpoint not available
-        //should return dsp08 with bpn
+    void discoverVersionParams_shouldReturnFailure_whenMetadataEndpointHasError() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "someAddress");
+
+        var expectedDid = "did:web:providerdid";
+
+        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+                .thenReturn(expectedDid);
+        when(versionService.requestVersions(any()))
+                .thenReturn(CompletableFuture.completedFuture(StatusResult.failure(ResponseStatus.FATAL_ERROR, "Metadata endpoint error")));
+
+        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+
+        assertThat(response).isFailed();
+        assertThat(response.getFailureDetail()).contains("Counter party well-known endpoint has failed:");
+    }
+
+    @Test
+    void discoverVersionParams_shouldReturnFailure_whenMetadataEndpointIsNotAvailable() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "someAddress");
+
+        var expectedDid = "did:web:providerdid";
+
+        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+                .thenReturn(expectedDid);
+        when(versionService.requestVersions(any()))
+                .thenThrow(new RuntimeException("Metadata endpoint not available"));
+
+        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+
+        assertThat(response).isFailed();
+        assertThat(response.getFailureDetail()).contains("Metadata endpoint not available");
+    }
+
+    @Test
+    void discoverVersionParams_shouldReturnFailure_whenVersionRequestHasMissingProps() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "someAddress");
+
+        var expectedDid = "did:web:providerdid";
+
+        var mockVersionResponseMock = Json.createObjectBuilder()
+                .add("protocolVersions", Json.createArrayBuilder()
+                        .add(Json.createObjectBuilder()
+                                .add("path", "/")
+                                .add("binding", "someBinding"))).build();
+
+        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+                .thenReturn(expectedDid);
+        when(versionService.requestVersions(any()))
+                .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
+
+        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+
+        assertThat(response).isFailed();
+        assertThat(response.getFailureDetail()).contains("No valid protocol version found for the counter party.");
     }
 
 
