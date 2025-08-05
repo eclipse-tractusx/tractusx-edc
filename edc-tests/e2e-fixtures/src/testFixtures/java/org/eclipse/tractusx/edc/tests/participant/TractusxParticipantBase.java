@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.tests.participant;
 
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
@@ -40,7 +41,6 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -293,19 +293,12 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .statusCode(204);
     }
 
-    public ValidatableResponse discoverConnector(String bpn, String connectorUrl) {
-        var requestBody = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
-                .add(TYPE, "ConnectorDiscoveryRequest")
-                .add("bpnl", bpn)
-                .add("knowns", createArrayBuilder().add(connectorUrl))
-                .build();
-
+    public ValidatableResponse discoverDspParameters(JsonObject requestBody) {
         return baseManagementRequest()
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("/v4alpha/connectordiscovery")
+                .post("/v4alpha/connectordiscovery/dspversionparams")
                 .then();
     }
 

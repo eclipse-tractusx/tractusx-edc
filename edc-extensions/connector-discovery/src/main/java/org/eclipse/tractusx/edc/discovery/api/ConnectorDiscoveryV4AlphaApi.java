@@ -46,7 +46,9 @@ public interface ConnectorDiscoveryV4AlphaApi {
             responses = {
                     @ApiResponse(responseCode = "200", description = "A list of connector parameters per DSP version",
                             content = @Content(array = @ArraySchema(schema = @Schema(name = "Connector Discovery Response", implementation = ConnectorDiscoveryResponse.class)))),
-                    @ApiResponse(responseCode = "500", description = "Discovery failed due to an error",
+                    @ApiResponse(responseCode = "500", description = "Discovery failed due to an internal error",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
+                    @ApiResponse(responseCode = "502", description = "Discovery failed due to connection to counter party",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))

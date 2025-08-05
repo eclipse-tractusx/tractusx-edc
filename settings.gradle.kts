@@ -67,6 +67,7 @@ include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:data-flow-properties-provider")
 include(":edc-extensions:validators:empty-asset-selector")
 include(":edc-extensions:log4j2-monitor")
+include("edc-extensions:connector-discovery")
 
 include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
@@ -110,6 +111,9 @@ include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:mock-connector")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:runtime:runtime-dsp")
+include("edc-tests:runtime:runtime-discovery:runtime-discovery-base")
+include("edc-tests:runtime:runtime-discovery:runtime-discovery-no-protocols")
+include("edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08")
 include(":edc-tests:dsp-compatibility-tests:compatibility-test-runner")
 
 // modules for controlplane artifacts

@@ -19,13 +19,13 @@
 
 package org.eclipse.tractusx.edc.discovery;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
@@ -60,7 +60,7 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     @Inject
     private VersionService versionService;
     @Inject
-    private ObjectMapper mapper;
+    private TypeManager typeManager;
     @Inject
     private Monitor monitor;
 
@@ -71,6 +71,6 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
         validatorRegistry.register(ConnectorParamsDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(bdrsClient, versionService, mapper), managementTypeTransformerRegistry, validatorRegistry));
+        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(new ConnectorDiscoveryServiceImpl(bdrsClient, versionService, typeManager.getMapper()), managementTypeTransformerRegistry, validatorRegistry));
     }
 }

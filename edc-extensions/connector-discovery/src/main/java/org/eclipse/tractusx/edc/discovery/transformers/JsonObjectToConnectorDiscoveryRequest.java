@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.models.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
 
 public class JsonObjectToConnectorDiscoveryRequest extends AbstractJsonLdTransformer<JsonObject, ConnectorParamsDiscoveryRequest> {
 
@@ -39,8 +40,8 @@ public class JsonObjectToConnectorDiscoveryRequest extends AbstractJsonLdTransfo
     @Override
     public @Nullable ConnectorParamsDiscoveryRequest transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
 
-        var bpnl = jsonObject.getString(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, null);
-        var counterPartyAddress = jsonObject.getString(ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, null);
+        var bpnl = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE), transformerContext);
+        var counterPartyAddress = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE), transformerContext);
 
         if (bpnl == null || counterPartyAddress == null) {
             transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: tx:bpnl or edc:counterPartyAddress");
