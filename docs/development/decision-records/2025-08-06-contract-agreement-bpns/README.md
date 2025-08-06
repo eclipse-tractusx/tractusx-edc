@@ -6,8 +6,9 @@ Introduce an extension that stores provider and consumer BPNs for each contract 
 
 ## Rationale
 
-In EDCs aligned with DSP 2025-1 and DCP v1.0, contract agreements reference participants by their DIDs, but BPN remains 
-the legal identifier. To ensure compliance and traceability, we need to persist participant's BPNs alongside every agreement.
+In EDCs aligned with DSP 2025-1 and DCP v1.0, contract agreements reference participants by their DIDs. However, 
+the Business Partner Number (BPN) remains the legally recognized identifier. Persisting BPNs alongside every agreement 
+ensures compliance, auditability, and traceability across the data exchange lifecycle.
 
 ## Approach
 
