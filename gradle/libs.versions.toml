@@ -140,9 +140,7 @@ edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisione
 
 # DCP-TCK libraries
 dcp-testcases = { module = "org.eclipse.dataspacetck.dcp:dcp-testcases", version.ref = "dcp-tck" }
-dcp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dcp-tck" }
 dcp-system = { module = "org.eclipse.dataspacetck.dcp:dcp-system", version.ref = "dcp-tck" }
-dsp-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dcp-tck" }
 
 # DSP-TCK libraries
 dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }

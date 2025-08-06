@@ -38,9 +38,9 @@ dependencies {
     testImplementation(libs.nimbus.jwt)
     testImplementation(libs.restAssured)
 
-    testImplementation(libs.dcp.tck.runtime)
+    testImplementation(libs.dsp.tck.runtime)
     testImplementation(libs.dcp.system)
-    testImplementation(libs.dsp.core)
+    testImplementation(libs.dsp.tck.core)
     testImplementation(libs.netty.mockserver)
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.testcontainers.junit)
