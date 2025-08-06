@@ -64,7 +64,7 @@ public class AsyncStreamingDataSink implements DataSink {
     public CompletableFuture<StreamResult<Object>> transfer(DataSource source) {
         var streamResult = source.openPartStream();
         if (streamResult.failed()) {
-            completedFuture(StreamResult.failure(streamResult.getFailure()));
+            return completedFuture(StreamResult.failure(streamResult.getFailure()));
         }
 
         try (var partStream = streamResult.getContent()) {
