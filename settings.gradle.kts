@@ -88,6 +88,11 @@ include(":edc-extensions:dataplane:dataflow:dataflow-service")
 include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-spi")
 include(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core")
 
+include(":edc-extensions:agreements-bpns")
+include(":edc-extensions:agreements-bpns:bpns-evaluation-core")
+include(":edc-extensions:agreements-bpns:bpns-evaluation-store-sql")
+include(":edc-extensions:agreements-bpns:bpns-evaluation-spi")
+
 // test modules
 include(":edc-tests:e2e-fixtures")
 include(":edc-tests:e2e:bpn-event-tests")

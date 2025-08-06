@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Cofinity-X GmbH
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -108,7 +109,7 @@ class BdrsClientImplTest {
 
     @Test
     void getData_whenCacheCold_shouldHitServer() {
-        var did = client.resolve("bpn1");
+        var did = client.resolveDid("bpn1");
         assertThat(did).isEqualTo("did:web:did1");
 
         verifyBdrsRequest(1);
@@ -116,8 +117,8 @@ class BdrsClientImplTest {
 
     @Test
     void getData_whenCacheHot_shouldNotHitServer() {
-        var did1 = client.resolve("bpn1");
-        var did2 = client.resolve("bpn2");
+        var did1 = client.resolveDid("bpn1");
+        var did2 = client.resolveDid("bpn2");
         assertThat(did1).isEqualTo("did:web:did1");
         assertThat(did2).isEqualTo("did:web:did2");
 
@@ -126,13 +127,13 @@ class BdrsClientImplTest {
 
     @Test
     void getData_whenCacheExpired_shouldHitServer() {
-        var did1 = client.resolve("bpn1"); // hits server
+        var did1 = client.resolveDid("bpn1"); // hits server
         assertThat(did1).isEqualTo("did:web:did1");
 
         await().pollDelay(ofSeconds(2))
                 .atMost(ofSeconds(3)) //cache expires
                 .untilAsserted(() -> {
-                    var did2 = client.resolve("bpn2"); // hits server as well, b/c cache is expired
+                    var did2 = client.resolveDid("bpn2"); // hits server as well, b/c cache is expired
                     assertThat(did2).isEqualTo("did:web:did2");
 
                     verifyBdrsRequest(2);
@@ -142,7 +143,7 @@ class BdrsClientImplTest {
 
     @Test
     void getData_whenNotFound() {
-        var did = client.resolve("bpn-notexist");
+        var did = client.resolveDid("bpn-notexist");
         assertThat(did).isNull();
         verifyBdrsRequest(1);
     }
@@ -153,13 +154,13 @@ class BdrsClientImplTest {
         bdrsServer.reset();
         bdrsServer.when(request().withPath("/api/bpn-directory").withMethod("GET"))
                 .respond(HttpResponse.response().withStatusCode(code));
-        assertThatThrownBy(() -> client.resolve("bpn1")).isInstanceOf(EdcException.class);
+        assertThatThrownBy(() -> client.resolveDid("bpn1")).isInstanceOf(EdcException.class);
     }
 
     @Test
     void getData_whenStsFails() {
         when(stsMock.createToken(anyMap(), notNull())).thenReturn(Result.failure("test-failure"));
-        assertThatThrownBy(() -> client.resolve("bpn1"))
+        assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("test-failure");
         bdrsServer.verify(request(), never());
@@ -169,7 +170,7 @@ class BdrsClientImplTest {
     void getData_whenPresentationQueryFails() {
         when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.failure("test-failure"));
 
-        assertThatThrownBy(() -> client.resolve("bpn1"))
+        assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("test-failure");
         bdrsServer.verify(request(), never());
@@ -183,7 +184,7 @@ class BdrsClientImplTest {
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.success(presentations));
 
-        assertThatNoException().isThrownBy(() -> client.resolve("bpn1"));
+        assertThatNoException().isThrownBy(() -> client.resolveDid("bpn1"));
         verifyBdrsRequest(1);
         verify(monitor).warning("Expected exactly 1 VP, but found 2.");
     }
@@ -193,7 +194,7 @@ class BdrsClientImplTest {
 
         when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.success(Collections.emptyList()));
 
-        assertThatThrownBy(() -> client.resolve("bpn1"))
+        assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("Expected exactly 1 VP, but was empty");
         bdrsServer.verify(request(), never());
