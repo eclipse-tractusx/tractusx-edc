@@ -22,21 +22,28 @@ plugins {
 }
 
 dependencies {
+
+    constraints {
+        // netty's mockserver depends on an older version of the json schema validator, but TCK needs this:
+        implementation("com.networknt:json-schema-validator:1.5.8") {
+            because("This version is required by the TCK")
+        }
+    }
+
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+    testRuntimeOnly(libs.dcp.testcases)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
-    testImplementation(libs.testcontainers.junit)
-    testImplementation(libs.dsp.tck.core)
-    testImplementation(libs.dsp.tck.runtime)
-    testImplementation(libs.dsp.tck.api)
-    testImplementation(libs.dsp.tck.system)
-    testRuntimeOnly(libs.dsp.tck.metadata)
-    testRuntimeOnly(libs.dsp.tck.catalog)
-    testRuntimeOnly(libs.dsp.tck.transferprocess)
-    testRuntimeOnly(libs.dsp.tck.contractnegotiation)
-    testImplementation(libs.junit.platform.launcher)
-    testImplementation(libs.edc.spi.identitytrust)
+    testImplementation(libs.edc.spi.identity.trust )
+    testImplementation(libs.edc.spi.identity.did )
     testImplementation(libs.nimbus.jwt)
+    testImplementation(libs.restAssured)
+
+    testImplementation(libs.dsp.tck.runtime)
+    testImplementation(libs.dcp.system)
+    testImplementation(libs.dsp.tck.core)
+    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.junit.platform.launcher)
+    testImplementation(libs.testcontainers.junit)
 }
 
 edcBuild {
