@@ -55,6 +55,7 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
 
     }
 
+    @Override
     public ServiceResult<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request) {
 
         var discoveredParameters = Json.createObjectBuilder();

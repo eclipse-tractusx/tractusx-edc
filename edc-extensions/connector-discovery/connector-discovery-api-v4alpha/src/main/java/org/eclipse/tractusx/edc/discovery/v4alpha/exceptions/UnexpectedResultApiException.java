@@ -31,6 +31,7 @@ public class UnexpectedResultApiException extends EdcApiException {
         super(message);
     }
 
+    @Override
     public String getType() {
         return "Unexpected Result";
     }

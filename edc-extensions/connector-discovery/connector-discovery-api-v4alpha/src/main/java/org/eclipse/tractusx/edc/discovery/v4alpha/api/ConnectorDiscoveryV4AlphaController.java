@@ -53,6 +53,7 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
 
     @Path("/dspversionparams")
     @POST
+    @Override
     public JsonObject discoverDspVersionParamsV3(JsonObject inputJson) {
         validator.validate(ConnectorParamsDiscoveryRequest.TYPE, inputJson)
                 .orElseThrow(ValidationFailureException::new);
