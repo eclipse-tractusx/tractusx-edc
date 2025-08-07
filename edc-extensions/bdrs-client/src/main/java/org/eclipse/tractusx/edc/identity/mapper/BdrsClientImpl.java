@@ -159,8 +159,8 @@ class BdrsClientImpl implements BdrsClient {
                     cacheDidBpn = cacheBpnDid.entrySet()
                             .stream()
                             .collect(Collectors.toMap(
-                                    Map.Entry::getValue,    // new key = old value (DID)
-                                    Map.Entry::getKey       // new value = old key   (BPN)
+                                    Map.Entry::getValue,
+                                    Map.Entry::getKey
                             ));
                     lastCacheUpdate = Instant.now();
                     return Result.success();
