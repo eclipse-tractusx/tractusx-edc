@@ -39,7 +39,7 @@ public class SqlAgreementsBpnsStoreExtension implements ServiceExtension {
     protected static final String NAME = "SQL Agreement BPNs Store.";
 
     @Setting(description = "Datasource name for the SQL AgreementsBpns store", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
-    private static final String DATASOURCE_SETTING_NAME = "edc.sql.store.contractdefinition.datasource";
+    private static final String DATASOURCE_SETTING_NAME = "edc.sql.store.contractnegotiation.datasource";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
