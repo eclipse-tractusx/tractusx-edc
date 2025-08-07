@@ -8,6 +8,7 @@ awaitility = "4.3.0"
 aws = "2.32.14"
 azure-storage-blob = "12.31.1"
 bouncyCastle-jdk18on = "1.81"
+dcp-tck = "1.0.0-RC4"
 dsp-tck = "1.0.0-RC4"
 flyway = "11.10.5"
 jackson = "2.19.2"
@@ -136,6 +137,10 @@ edc-identity-trust-sts-remote-lib = { module = "org.eclipse.edc:identity-trust-s
 edc-sts-core = { module = "org.eclipse.edc:sts-core", version.ref = "edc" }
 edc-sts-api = { module = "org.eclipse.edc:sts-api", version.ref = "edc" }
 edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
+
+# DCP-TCK libraries
+dcp-testcases = { module = "org.eclipse.dataspacetck.dcp:dcp-testcases", version.ref = "dcp-tck" }
+dcp-system = { module = "org.eclipse.dataspacetck.dcp:dcp-system", version.ref = "dcp-tck" }
 
 # DSP-TCK libraries
 dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }
