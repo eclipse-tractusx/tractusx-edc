@@ -11,9 +11,6 @@
 --       Cofinity-X GmbH
 --
 
---
--- table: edc_contract_agreement_bpns
---
 CREATE TABLE IF NOT EXISTS edc_contract_agreement
 (
     id                VARCHAR      NOT NULL
