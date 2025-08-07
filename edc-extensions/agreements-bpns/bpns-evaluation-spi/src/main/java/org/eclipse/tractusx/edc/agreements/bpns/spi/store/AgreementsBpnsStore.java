@@ -25,7 +25,7 @@ import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 
 @ExtensionPoint
 public interface AgreementsBpnsStore {
-    String ALREADY_EXISTS_TEMPLATE = "Contract Agreement %s is already exists.";
+    String ALREADY_EXISTS_TEMPLATE = "Contract Agreement %s already exists.";
 
     StoreResult<Void> save(AgreementsBpnsEntry agreementsBpnsEntry);
 }

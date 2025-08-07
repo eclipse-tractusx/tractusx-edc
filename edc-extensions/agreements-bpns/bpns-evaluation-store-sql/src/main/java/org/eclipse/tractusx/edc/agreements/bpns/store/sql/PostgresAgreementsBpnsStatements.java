@@ -24,16 +24,12 @@ import static java.lang.String.format;
 public class PostgresAgreementsBpnsStatements implements SqlAgreementsBpnsStatements {
 
     @Override
-    public String insertTemplate() {
-        return executeStatement()
-                .column(getAgreementIdColumn())
-                .column(getProviderBpnColumn())
-                .column(getConsumerBpnColumn())
-                .insertInto(getTable());
-    }
-
-    @Override
-    public String countQuery() {
-        return format("SELECT COUNT (*) FROM %s WHERE %s = ?", getTable(), getAgreementIdColumn());
+    public String insertWithOnConflict() {
+        return format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?) ON CONFLICT (%s) DO NOTHING",
+                getTable(),
+                getAgreementIdColumn(),
+                getProviderBpnColumn(),
+                getConsumerBpnColumn(),
+                getAgreementIdColumn());
     }
 }

@@ -14,9 +14,29 @@
 --
 -- table: edc_contract_agreement_bpns
 --
+CREATE TABLE IF NOT EXISTS edc_contract_agreement
+(
+    id                VARCHAR      NOT NULL
+        CONSTRAINT contract_agreement_pk PRIMARY KEY,
+    provider_agent_id VARCHAR(255),
+    consumer_agent_id VARCHAR(255),
+    signing_date      BIGINT,
+    start_date        BIGINT,
+    end_date          INTEGER,
+    asset_id          VARCHAR(255) NOT NULL,
+    policy_id         VARCHAR(255),
+    serialized_policy TEXT
+);
+
+INSERT INTO edc_contract_agreement (id, provider_agent_id, consumer_agent_id, signing_date, start_date, end_date, asset_id, policy_id, serialized_policy)
+VALUES
+    ('test-agreement-id', 'default-provider-agent', 'default-consumer-agent', 0, 0, 0, 'default-asset', 'default-policy-id', '{}');
+
 CREATE TABLE IF NOT EXISTS edc_contract_agreement_bpns
 (
-    agreement_id VARCHAR,
-    provider_bpn VARCHAR(255),
-    consumer_bpn VARCHAR(255)
+    agreement_id VARCHAR
+        CONSTRAINT contract_agreement_bpns_contract_agreement_id_fk PRIMARY KEY
+            REFERENCES edc_contract_agreement,
+    provider_bpn VARCHAR(255) NOT NULL,
+    consumer_bpn VARCHAR(255) NOT NULL
 );

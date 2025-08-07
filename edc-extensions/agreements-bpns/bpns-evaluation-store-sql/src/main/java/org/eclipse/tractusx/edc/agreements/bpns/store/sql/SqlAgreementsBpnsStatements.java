@@ -42,7 +42,5 @@ public interface SqlAgreementsBpnsStatements extends SqlStatements {
         return "edc_contract_agreement_bpns";
     }
 
-    String insertTemplate();
-
-    String countQuery();
+    String insertWithOnConflict();
 }

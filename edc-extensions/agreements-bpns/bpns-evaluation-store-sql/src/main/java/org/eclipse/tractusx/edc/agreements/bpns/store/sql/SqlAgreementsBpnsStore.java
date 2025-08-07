@@ -29,7 +29,6 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -52,22 +51,19 @@ public class SqlAgreementsBpnsStore extends AbstractSqlStore implements Agreemen
 
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
-                if (exists(agreementsBpnsEntry.getAgreementId(), connection)) {
-                    return StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(agreementsBpnsEntry.getAgreementId()));
-                }
-                var sql = statements.insertTemplate();
-                queryExecutor.execute(connection, sql, agreementsBpnsEntry.getAgreementId(), agreementsBpnsEntry.getProviderBpn(), agreementsBpnsEntry.getConsumerBpn());
-                return StoreResult.success();
+                int inserted = queryExecutor.execute(
+                        connection,
+                        statements.insertWithOnConflict(),
+                        agreementsBpnsEntry.getAgreementId(),
+                        agreementsBpnsEntry.getProviderBpn(),
+                        agreementsBpnsEntry.getConsumerBpn());
+
+                return inserted == 0 ?
+                        StoreResult.alreadyExists(ALREADY_EXISTS_TEMPLATE.formatted(agreementsBpnsEntry.getAgreementId())) :
+                        StoreResult.success();
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }
         });
-    }
-
-    private boolean exists(String agreementId, Connection connection) {
-        var countQuery = statements.countQuery();
-        try (var stream = queryExecutor.query(connection, false, r -> r.getInt("COUNT"), countQuery, agreementId)) {
-            return stream.findFirst().orElse(0) > 0;
-        }
     }
 }
