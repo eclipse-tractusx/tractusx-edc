@@ -57,10 +57,10 @@ class EventContractNegotiationSubscriberTest {
     }
 
     @Test
-    void on_shouldSaveEntryWithResolvedBpn_whenProviderIdStartsWithDid() {
+    void on_shouldSaveEntryWithResolvedBpn_whenIdIsDid() {
         var agreementId = UUID.randomUUID().toString();
         var providerId = "did";
-        var consumerId = "consumerBpn";
+        var consumerId = "did";
         var resolvedBpn = "bpn";
 
         when(store.save(any())).thenReturn(StoreResult.success());
@@ -94,11 +94,11 @@ class EventContractNegotiationSubscriberTest {
         AgreementsBpnsEntry entry = captor.getValue();
         assert entry.getAgreementId().equals(agreementId);
         assert entry.getProviderBpn().equals(resolvedBpn);
-        assert entry.getConsumerBpn().equals(consumerId);
+        assert entry.getConsumerBpn().equals(resolvedBpn);
     }
 
     @Test
-    void on_shouldSaveEntryWithOriginalBpn_whenProviderIdDoesNotStartWithDid() {
+    void on_shouldSaveEntryWithOriginalBpn_whenIdNotDid() {
         var agreementId = UUID.randomUUID().toString();
         var providerId = "providerBpn";
         var consumerId = "consumerBpn";
