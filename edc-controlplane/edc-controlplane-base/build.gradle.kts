@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:log4j2-monitor"))
     implementation(project(":edc-extensions:agreements"))
+    implementation(project(":edc-extensions:agreements-bpns"))
     implementation(project(":edc-extensions:bdrs-client"))
     implementation(project(":edc-extensions:bpn-validation"))
     implementation(project(":edc-extensions:cx-policy"))
