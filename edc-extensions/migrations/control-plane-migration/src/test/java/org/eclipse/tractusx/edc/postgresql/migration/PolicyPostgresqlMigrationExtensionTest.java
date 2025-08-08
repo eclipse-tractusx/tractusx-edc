@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
 import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.schema.postgres.PostgresDialectStatements;
@@ -42,8 +43,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.numberOfConstraintsInRulesWithLeftExpression;
 
 //@PostgresqlIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
@@ -54,11 +57,12 @@ public class PolicyPostgresqlMigrationExtensionTest {
     private final String updatedBpnLeftOperand = "https://w3id.org/catenax/2025/9/policy/BusinessPartnerNumber";
 
     private SqlPolicyDefinitionStore store;
+    private ObjectMapper mapper;
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) {
         TypeManager typeManager = new JacksonTypeManager();
-        var mapper = typeManager.getMapper();
+        mapper = typeManager.getMapper();
         mapper.registerSubtypes(AtomicConstraint.class, LiteralExpression.class, AndConstraint.class, OrConstraint.class);
 
         store = new SqlPolicyDefinitionStore(
@@ -69,14 +73,6 @@ public class PolicyPostgresqlMigrationExtensionTest {
                 new PostgresDialectStatements(),
                 queryExecutor
         );
-    }
-
-
-    private Policy policyWithPermission() {
-        Permission permission = permission(andConstraint(atomicConstraint(oldBpgLeftOperand), atomicConstraint(oldBpnLeftOperand), atomicConstraint("otherExpression")));
-        return Policy.Builder.newInstance()
-                .permission(permission)
-                .build();
     }
 
     private Policy policyWithPermissionAndProhibition() {
@@ -102,14 +98,32 @@ public class PolicyPostgresqlMigrationExtensionTest {
 
         FlywayManager.migrate(dataSource, "policy", "public", MigrationVersion.fromVersion("0.0.5"));
 
-        var policy1 = policyWithPermission();
-        insert(policyDefinition("1", policy1));
+        var policy = policyWithPermissionAndProhibition();
+        insert(policyDefinition("1", policy));
 
         FlywayManager.migrate(dataSource, "policy", "public", MigrationVersion.fromVersion("0.0.7"));
+
+        int oldBpgExpressions = constraintsWithLeftExpressions(policy, Set.of(oldBpgLeftOperand));
+        int oldBpnExpressions = constraintsWithLeftExpressions(policy, Set.of(oldBpnLeftOperand));
 
         var result = store.findById("1");
 
         assertThat(result).isNotNull();
+
+        int updatedBpgExpressions = constraintsWithLeftExpressions(result.getPolicy(), Set.of(updatedBpgLeftOperand));
+        int updatedBpnExpressions = constraintsWithLeftExpressions(result.getPolicy(), Set.of(updatedBpnLeftOperand));
+
+        assertThat(constraintsWithLeftExpressions(result.getPolicy(), Set.of(oldBpgLeftOperand))).isEqualTo(0);
+        assertThat(constraintsWithLeftExpressions(result.getPolicy(), Set.of(oldBpnLeftOperand))).isEqualTo(0);
+
+        assertThat(updatedBpgExpressions).isEqualTo(oldBpgExpressions);
+        assertThat(updatedBpnExpressions).isEqualTo(oldBpnExpressions);
+    }
+
+    private int constraintsWithLeftExpressions(Policy policy, Set<String> leftExpressions) {
+        return numberOfConstraintsInRulesWithLeftExpression(policy.getPermissions(), leftExpressions) +
+                numberOfConstraintsInRulesWithLeftExpression(policy.getProhibitions(), leftExpressions) +
+                numberOfConstraintsInRulesWithLeftExpression(policy.getObligations(), leftExpressions);
     }
 
     private void insert(PolicyDefinition policyDefinition) {
