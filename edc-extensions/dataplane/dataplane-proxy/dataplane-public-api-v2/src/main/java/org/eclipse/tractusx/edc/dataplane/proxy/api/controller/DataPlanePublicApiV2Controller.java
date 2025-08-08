@@ -195,6 +195,7 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
             String contentType,
             Map<String, String> proxyHeaders) {
         proxyHeaders.forEach(responseBuilder::header);
+        // Replacing CONTENT_TYPE header for jakarta.ws.rs.core.Response requires setting to null first
         responseBuilder.header(HttpHeaders.CONTENT_TYPE, null);
         responseBuilder.header(HttpHeaders.CONTENT_TYPE, contentType);
     }
