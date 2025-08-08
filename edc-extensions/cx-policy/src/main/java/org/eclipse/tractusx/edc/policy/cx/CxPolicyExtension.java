@@ -37,6 +37,11 @@ import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibition
 import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 
@@ -56,9 +61,13 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PR
 import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
 import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction.JURISDICTION_LOCATION;
+import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction.JURISDICTION_LOCATION_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction.LIABILITY;
+import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction.MANAGED_LEGAL_ENTITY_BPNL_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction.MANAGED_LEGAL_ENTITY_REGION;
 import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
-
 
 /**
  * Provides implementations of standard CX usage policies.
@@ -125,6 +134,31 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION), new JurisdictionLocationConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION), new JurisdictionLocationConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE), new JurisdictionLocationReferenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE), new JurisdictionLocationReferenceConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(LIABILITY), new LiabilityConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(LIABILITY), new LiabilityConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL), new ManagedLegalEntityBpnlConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL), new ManagedLegalEntityBpnlConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
@@ -149,16 +183,27 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(USAGE_PURPOSE),
                 withCxPolicyNsPrefix(CONTRACT_REFERENCE),
                 withCxPolicyNsPrefix(AFFILIATES_BPNL),
-                withCxPolicyNsPrefix(AFFILIATES_REGION));
+                withCxPolicyNsPrefix(AFFILIATES_REGION),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
+                withCxPolicyNsPrefix(LIABILITY),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION)
+        );
         registerBindingSet(registry, namesInNegotiationScope, NEGOTIATION_SCOPE);
 
         var namesInTransferProcessScope = Set.of(
                 withCxPolicyNsPrefix(USAGE_PURPOSE),
                 withCxPolicyNsPrefix(CONTRACT_REFERENCE),
                 withCxPolicyNsPrefix(AFFILIATES_BPNL),
-                withCxPolicyNsPrefix(AFFILIATES_REGION));
+                withCxPolicyNsPrefix(AFFILIATES_REGION),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
+                withCxPolicyNsPrefix(LIABILITY),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION)
+        );
         registerBindingSet(registry, namesInTransferProcessScope, TRANSFER_PROCESS_SCOPE);
-
     }
 
     private static void registerBindingSet(RuleBindingRegistry registry, Set<String> names, String scope) {
