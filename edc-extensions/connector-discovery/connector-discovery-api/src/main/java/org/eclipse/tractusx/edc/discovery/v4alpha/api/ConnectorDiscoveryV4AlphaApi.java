@@ -53,7 +53,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    JsonObject discoverDspVersionParamsV3(JsonObject querySpecJson);
+    JsonObject discoverDspVersionParamsV4Alpha(JsonObject querySpecJson);
 
 
     @Schema(name = "ConnectorParamsDiscoveryRequestSchema", example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
