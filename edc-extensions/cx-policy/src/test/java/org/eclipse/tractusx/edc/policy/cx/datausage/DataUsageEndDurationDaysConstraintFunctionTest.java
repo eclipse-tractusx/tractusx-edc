@@ -47,6 +47,12 @@ class DataUsageEndDurationDaysConstraintFunctionTest {
     }
 
     @Test
+    void validate_whenOperatorAndRightOperandAreValidString_thenSuccess() {
+        var result = function.validate(Operator.EQ, "1", null);
+        assertThat(result).isSucceeded();
+    }
+
+    @Test
     void validate_whenInvalidOperator_thenFailure() {
         var result = function.validate(Operator.IS_ANY_OF, 1, null);
         assertThat(result.failed()).isTrue();
