@@ -98,9 +98,7 @@ public class PolicyDefinitionEndToEndTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(frameworkPolicy(Map.of(namespace + "Membership", "active")), "MembershipCredential"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement.pcf", "active")), "PCF Use Case (legacy notation)"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement", "Pcf")), "PCF Use Case (new notation)"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement", "DataExchangeGovernance:1.0.0")), "DataExchangeGovernance use case"),
+                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement", "DataExchangeGovernance:2.0")), "DataExchangeGovernance use case"),
                     Arguments.of(frameworkPolicy(Map.of(namespace + "Dismantler", "active")), "Dismantler Credential"),
                     Arguments.of(frameworkPolicy(Map.of(namespace + "Dismantler.activityType", "vehicleDismantle")), "Dismantler Cred (activity type)"),
                     Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IS_ANY_OF, List.of("Moskvich", "Tatra")), "Dismantler allowedBrands (IS_ANY_OF, one intersects)"),
