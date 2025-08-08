@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp.identity;
+package org.eclipse.tractusx.edc.protocol.identifier;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
@@ -38,14 +39,66 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.participant.spi.ParticipantAgent.PARTICIPANT_IDENTITY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 
-class IatpIdentityExtractorTest {
-
-    private static final String IDENTITY = "identity";
-    private final IatpIdentityExtractor extractor = new IatpIdentityExtractor();
-
+public abstract class MembershipCredentialIdExtractionFunctionTest {
+    
+    protected static final String bpn = "bpn";
+    protected static final String did = "did:web:example";
+    
+    @ParameterizedTest
+    @ArgumentsSource(VerifiableCredentialArgumentProvider.class)
+    void apply(VerifiableCredential credential) {
+        var id = extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", List.of(credential)).build());
+        assertThat(id).isEqualTo(expectedId());
+    }
+    
+    @Test
+    void apply_fails_WhenCredentialNotFound() {
+        assertThatThrownBy(() -> extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", List.of(vc("FooCredential", Map.of("foo", "bar")))).build()))
+                .isInstanceOf(EdcException.class)
+                .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property 'holderIdentifier'");
+    }
+    
+    @Test
+    void apply_fails_whenNoVcClaims() {
+        assertThatThrownBy(() -> extractionFunction().apply(ClaimToken.Builder.newInstance().build()))
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken did not contain a 'vc' claim");
+    }
+    
+    @Test
+    void apply_fails_whenNullVcClaims() {
+        
+        assertThatThrownBy(() -> extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", null).build()))
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken did not contain a 'vc' claim");
+    }
+    
+    @Test
+    void apply_fails_WhenVcClaimIsNotList() {
+        assertThatThrownBy(() -> extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", "wrong").build()))
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken contains a 'vc' claim, but the type is incorrect. Expected java.util.List, got java.lang.String.");
+    }
+    
+    @Test
+    void apply_fails_WhenVcClaimsIsEmptyList() {
+        assertThatThrownBy(() -> extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", List.of()).build()))
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken contains a 'vc' claim but it did not contain any VerifiableCredentials.");
+    }
+    
+    private static class VerifiableCredentialArgumentProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                    Arguments.of(vc("MembershipCredential", Map.of("id", did, "holderIdentifier", bpn))),
+                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", did, "holderIdentifier", bpn))),
+                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", did, CX_CREDENTIAL_NS + "holderIdentifier", bpn))));
+        }
+    }
+    
     private static VerifiableCredential vc(String type, Map<String, Object> claims) {
         return VerifiableCredential.Builder.newInstance().type(type)
                 .issuanceDate(Instant.now())
@@ -53,58 +106,8 @@ class IatpIdentityExtractorTest {
                 .credentialSubject(CredentialSubject.Builder.newInstance().claims(claims).build())
                 .build();
     }
-
-    @ParameterizedTest
-    @ArgumentsSource(VerifiableCredentialArgumentProvider.class)
-    void attributesFor(VerifiableCredential credential) {
-        var attributes = extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", List.of(credential)).build());
-        assertThat(attributes).containsEntry(PARTICIPANT_IDENTITY, IDENTITY);
-    }
-
-    @Test
-    void attributesFor_fails_WhenCredentialNotFound() {
-        assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", List.of(vc("FooCredential", Map.of("foo", "bar")))).build()))
-                .isInstanceOf(EdcException.class)
-                .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property 'holderIdentifier'");
-    }
-
-    @Test
-    void attributesFor_fails_whenNoVcClaims() {
-        assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().build()))
-                .isInstanceOf(EdcException.class)
-                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken did not contain a 'vc' claim");
-    }
-
-    @Test
-    void attributesFor_fails_whenNullVcClaims() {
-
-        assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", null).build()))
-                .isInstanceOf(EdcException.class)
-                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken did not contain a 'vc' claim");
-    }
-
-    @Test
-    void attributesFor_fails_WhenVcClaimIsNotList() {
-        assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", "wrong").build()))
-                .isInstanceOf(EdcException.class)
-                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken contains a 'vc' claim, but the type is incorrect. Expected java.util.List, got java.lang.String.");
-    }
-
-    @Test
-    void attributesFor_fails_WhenVcClaimsIsEmptyList() {
-        assertThatThrownBy(() -> extractor.attributesFor(ClaimToken.Builder.newInstance().claim("vc", List.of()).build()))
-                .isInstanceOf(EdcException.class)
-                .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken contains a 'vc' claim but it did not contain any VerifiableCredentials.");
-    }
-
-    private static class VerifiableCredentialArgumentProvider implements ArgumentsProvider {
-        @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                    Arguments.of(vc("MembershipCredential", Map.of("holderIdentifier", IDENTITY))),
-                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("holderIdentifier", IDENTITY))),
-                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of(CX_CREDENTIAL_NS + "holderIdentifier", IDENTITY))));
-        }
-
-    }
+    
+    protected abstract MembershipCredentialIdExtractionFunction extractionFunction();
+    
+    protected abstract String expectedId();
 }
