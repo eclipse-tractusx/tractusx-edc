@@ -171,7 +171,7 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
                     .status(retrieveStatusCode(callback.statusCode()))
                     .entity(output)
                     .type(callback.mediaType());
-            includeProxyHeaders(resp, callback.proxyHeaders());
+            enrichHeaders(resp, callback.mediaType(), callback.proxyHeaders());
             return response.resume(resp.build());
         };
 
@@ -190,8 +190,14 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
                 });
     }
 
-    private void includeProxyHeaders(Response.ResponseBuilder resp, Map<String, String> proxyHeaders) {
-        proxyHeaders.forEach((header, value) -> resp.header(header, value));
+    private void enrichHeaders(
+            Response.ResponseBuilder responseBuilder,
+            String contentType,
+            Map<String, String> proxyHeaders) {
+        proxyHeaders.forEach(responseBuilder::header);
+        // Replacing CONTENT_TYPE header for jakarta.ws.rs.core.Response requires setting to null first
+        responseBuilder.header(HttpHeaders.CONTENT_TYPE, null);
+        responseBuilder.header(HttpHeaders.CONTENT_TYPE, contentType);
     }
 
     private static Response.Status retrieveStatusCode(String statusCode) {

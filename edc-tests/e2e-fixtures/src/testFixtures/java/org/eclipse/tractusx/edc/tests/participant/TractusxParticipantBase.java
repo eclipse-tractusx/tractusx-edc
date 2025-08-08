@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.tests.participant;
 
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
@@ -290,6 +291,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .then()
                 .log().ifError()
                 .statusCode(204);
+    }
+
+    public ValidatableResponse discoverDspParameters(JsonObject requestBody) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(requestBody)
+                .when()
+                .post("/v4alpha/connectordiscovery/dspversionparams")
+                .then();
     }
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {

@@ -50,4 +50,25 @@ public interface Runtimes {
                         .registerServiceMock(BdrsClient.class, new MockBdrsClient(participant.getBpn(), participant.getDid()))
         );
     }
+
+    static RuntimeExtension discoveryRuntimeFullDsp(TractusxParticipantBase participant) {
+        return discoveryRuntime(participant, ":edc-tests:runtime:runtime-discovery:runtime-discovery-base");
+    }
+
+    static RuntimeExtension discoveryRuntimeDsp08(TractusxParticipantBase participant) {
+        return discoveryRuntime(participant, ":edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08");
+    }
+
+    static RuntimeExtension discoveryRuntimeNoProtocols(TractusxParticipantBase participant) {
+        return discoveryRuntime(participant, ":edc-tests:runtime:runtime-discovery:runtime-discovery-no-protocols");
+    }
+
+    static RuntimeExtension discoveryRuntime(TractusxParticipantBase participant, String module) {
+        return new ParticipantRuntimeExtension(new EmbeddedRuntime(participant.getName(), module)
+                .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
+                .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
+                .configurationProvider(participant::getConfig));
+    }
+
+
 }
