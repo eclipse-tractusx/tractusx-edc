@@ -37,7 +37,7 @@ public class DataUsageEndDefinitionConstraintFunction<C extends ParticipantAgent
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "cx.datausageend.unlimited:1"
+                        "cx.dataUsageEnd.unlimited:1"
                 )
         );
     }

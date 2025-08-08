@@ -26,6 +26,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class DataUsageEndDateConstraintFunctionTest {
@@ -42,7 +43,7 @@ class DataUsageEndDateConstraintFunctionTest {
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
         var result = function.validate(Operator.EQ, "2025-06-30T14:30:00Z", null);
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test

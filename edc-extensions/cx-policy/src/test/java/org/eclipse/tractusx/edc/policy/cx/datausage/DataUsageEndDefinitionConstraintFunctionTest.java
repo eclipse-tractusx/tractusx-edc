@@ -26,6 +26,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class DataUsageEndDefinitionConstraintFunctionTest {
@@ -42,7 +43,7 @@ class DataUsageEndDefinitionConstraintFunctionTest {
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
         var result = function.validate(Operator.EQ, "cx.dataUsageEnd.unlimited:1", null);
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test

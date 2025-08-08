@@ -26,6 +26,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class DataProvisioningEndDurationDaysConstraintFunctionTest {
@@ -42,20 +43,24 @@ class DataProvisioningEndDurationDaysConstraintFunctionTest {
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
         var result = function.validate(Operator.EQ, 1, null);
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
+    }
+
+    @Test
+    void validate_whenOperatorAndRightOperandAreValidString_thenSuccess() {
+        var result = function.validate(Operator.EQ, "1", null);
+        assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
         var result = function.validate(Operator.IS_ANY_OF, 1, null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid operator");
+        assertThat(result).isFailed().detail().contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidValue_thenFailure() {
         var result = function.validate(Operator.EQ, "invalid-test", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+        assertThat(result).isFailed().detail().contains("Invalid right-operand:");
     }
 }

@@ -37,8 +37,8 @@ public class DataFrequencyConstraintFunction<C extends ParticipantAgentPolicyCon
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "cx.datafrequency.once:1",
-                        "cx.datafrequency.unlimited:1"
+                        "cx.dataFrequency.once:1",
+                        "cx.dataFrequency.unlimited:1"
                 )
         );
     }

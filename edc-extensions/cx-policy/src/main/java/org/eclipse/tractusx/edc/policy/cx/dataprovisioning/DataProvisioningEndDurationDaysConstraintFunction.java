@@ -48,8 +48,19 @@ public class DataProvisioningEndDurationDaysConstraintFunction<C extends Partici
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
 
-        return rightValue instanceof Integer ?
-                Result.success() :
-                Result.failure("Invalid right-operand: right operand must be an integer value");
+        if (rightValue instanceof Integer) {
+            return Result.success();
+        }
+
+        if (rightValue instanceof String stringValue) {
+            try {
+                Integer.parseInt(stringValue);
+                return Result.success();
+            } catch (NumberFormatException e) {
+                return Result.failure("Invalid right-operand: String value must be a valid integer value, but got '%s'.".formatted(stringValue));
+            }
+        }
+
+        return Result.failure("Invalid right-operand: right operand must be an integer value");
     }
 }
