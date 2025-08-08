@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
@@ -50,7 +51,7 @@ import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
 /**
  * Holds a local cache of BPN-to-DID mapping entries.
  * <p>
- * The local cache expires after a configurable time, at which point {@link BdrsClientImpl#resolve(String)}} requests will hit the server again.
+ * The local cache expires after a configurable time, at which point {@link BdrsClientImpl#resolveDid(String)}} requests will hit the server again.
  */
 class BdrsClientImpl implements BdrsClient {
     private static final TypeReference<Map<String, String>> MAP_REF = new TypeReference<>() {
@@ -65,7 +66,8 @@ class BdrsClientImpl implements BdrsClient {
     private final String ownDid;
     private final Supplier<String> ownCredentialServiceUrl;
     private final CredentialServiceClient credentialServiceClient;
-    private Map<String, String> cache = new HashMap<>();
+    private Map<String, String> cacheBpnDid = new HashMap<>();
+    private Map<String, String> cacheDidBpn = new HashMap<>();
     private Instant lastCacheUpdate;
 
     BdrsClientImpl(String baseUrl,
@@ -89,11 +91,11 @@ class BdrsClientImpl implements BdrsClient {
     }
 
     @Override
-    public String resolve(String bpn) {
+    public String resolveDid(String bpn) {
         lock.readLock().lock();
         try {
             if (!isCacheExpired()) {
-                return cache.get(bpn);
+                return cacheBpnDid.get(bpn);
             }
         } finally {
             lock.readLock().unlock();
@@ -104,11 +106,32 @@ class BdrsClientImpl implements BdrsClient {
             if (isCacheExpired()) {
                 updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
             }
-            return cache.get(bpn);
+            return cacheBpnDid.get(bpn);
         } finally {
             lock.writeLock().unlock();
         }
+    }
 
+    @Override
+    public String resolveBpn(String did) {
+        lock.readLock().lock();
+        try {
+            if (!isCacheExpired()) {
+                return cacheDidBpn.get(did);
+            }
+        } finally {
+            lock.readLock().unlock();
+        }
+
+        lock.writeLock().lock();
+        try {
+            if (isCacheExpired()) {
+                updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
+            }
+            return cacheDidBpn.get(did);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     private boolean isCacheExpired() {
@@ -132,7 +155,13 @@ class BdrsClientImpl implements BdrsClient {
                 var body = response.body().byteStream();
                 try (var gz = new GZIPInputStream(body)) {
                     var bytes = gz.readAllBytes();
-                    cache = mapper.readValue(bytes, MAP_REF);
+                    cacheBpnDid = mapper.readValue(bytes, MAP_REF);
+                    cacheDidBpn = cacheBpnDid.entrySet()
+                            .stream()
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getValue,
+                                    Map.Entry::getKey
+                            ));
                     lastCacheUpdate = Instant.now();
                     return Result.success();
                 }

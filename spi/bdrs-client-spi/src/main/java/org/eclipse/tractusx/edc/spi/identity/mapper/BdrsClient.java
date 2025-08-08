@@ -1,4 +1,5 @@
 /********************************************************************************
+ * Copyright (c) 2025 Cofinity-X GmbH
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -33,5 +34,13 @@ public interface BdrsClient {
      * @param bpn The participantID (BPN)
      * @return The resolved DID if found, null otherwise
      */
-    String resolve(String bpn);
+    String resolveDid(String bpn);
+
+    /**
+     * Resolve the input DID to a BPN
+     *
+     * @param did The participantID (DID)
+     * @return The resolved BPN if found, null otherwise
+     */
+    String resolveBpn(String did);
 }

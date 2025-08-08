@@ -30,6 +30,7 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -67,7 +68,7 @@ public class EdcCompatibilityEmbeddedTest {
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime("CUT",
             ":edc-tests:runtime:runtime-dsp")
-            .registerServiceMock(BdrsClient.class, (s) -> s)
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient("bpn", "did"))
             .configurationProvider(EdcCompatibilityEmbeddedTest::runtimeConfiguration));
 
     private static Config runtimeConfiguration() {

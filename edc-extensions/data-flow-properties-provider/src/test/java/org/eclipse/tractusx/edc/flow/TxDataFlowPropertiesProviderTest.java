@@ -39,7 +39,7 @@ public class TxDataFlowPropertiesProviderTest {
     void shouldReturnProperties() {
         var bpn = "bpn";
         var did = "did";
-        when(bdrsClient.resolve(bpn)).thenReturn(did);
+        when(bdrsClient.resolveDid(bpn)).thenReturn(did);
 
         var result = provider.propertiesFor(createTransferProcess(), createPolicy(bpn));
 
@@ -51,7 +51,7 @@ public class TxDataFlowPropertiesProviderTest {
     @Test
     void shouldReturnFailure_whenResolutionFails() {
         var bpn = "bpn";
-        when(bdrsClient.resolve(bpn)).thenReturn(null);
+        when(bdrsClient.resolveDid(bpn)).thenReturn(null);
 
         var result = provider.propertiesFor(createTransferProcess(), createPolicy(bpn));
 
@@ -61,7 +61,7 @@ public class TxDataFlowPropertiesProviderTest {
     @Test
     void shouldReturnFailure_whenResolutionThrowsException() {
         var bpn = "bpn";
-        when(bdrsClient.resolve(bpn)).thenThrow(new RuntimeException("exception"));
+        when(bdrsClient.resolveDid(bpn)).thenThrow(new RuntimeException("exception"));
 
         var result = provider.propertiesFor(createTransferProcess(), createPolicy(bpn));
 

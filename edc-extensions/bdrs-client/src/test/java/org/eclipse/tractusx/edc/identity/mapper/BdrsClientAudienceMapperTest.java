@@ -1,4 +1,5 @@
 /********************************************************************************
+ * Copyright (c) 2025 Cofinity-X GmbH
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -34,7 +35,7 @@ class BdrsClientAudienceMapperTest {
 
     @Test
     void shouldReturnDid() {
-        when(bdrsClient.resolve("bpn1")).thenReturn("did:web:did1");
+        when(bdrsClient.resolveDid("bpn1")).thenReturn("did:web:did1");
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
@@ -43,7 +44,7 @@ class BdrsClientAudienceMapperTest {
 
     @Test
     void shouldFail_whenResolutionFails() {
-        when(bdrsClient.resolve("bpn1")).thenReturn(null);
+        when(bdrsClient.resolveDid("bpn1")).thenReturn(null);
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
@@ -52,7 +53,7 @@ class BdrsClientAudienceMapperTest {
 
     @Test
     void shouldFail_whenResolutionThrowsException() {
-        when(bdrsClient.resolve("bpn1")).thenThrow(new RuntimeException("exception"));
+        when(bdrsClient.resolveDid("bpn1")).thenThrow(new RuntimeException("exception"));
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
