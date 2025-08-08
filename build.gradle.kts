@@ -30,6 +30,7 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.docker)
     alias(libs.plugins.nexus)
+    alias(libs.plugins.edc.build)
 }
 
 val txScmConnection: String by project
@@ -42,7 +43,8 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath(libs.edc.build.plugin)
+        val edcVersion: String = libs.versions.edc.asProvider().get()
+        classpath("org.eclipse.edc.autodoc:org.eclipse.edc.autodoc.gradle.plugin:$edcVersion")
     }
 }
 
@@ -54,8 +56,11 @@ project.subprojects.forEach {
 
 }
 
+val edcBuildId = libs.plugins.edc.build.get().pluginId
+
 allprojects {
-    apply(plugin = "org.eclipse.edc.edc-build")
+    apply(plugin = edcBuildId)
+    apply(plugin = "org.eclipse.edc.autodoc")
 
     dependencies {
 
@@ -85,7 +90,7 @@ allprojects {
     }
 
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
-        processorVersion.set(edcVersion)
+        processorVersion.set(edcVersion.toString())
         outputDirectory.set(project.layout.buildDirectory.asFile.get())
     }
 
