@@ -111,7 +111,11 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(Map.of(namespace + "ContractReference", "contractReference")), "Contract reference"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1", "cx.region.northAmerica:1"), true), "Affiliates Region"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.europe:1"), true), "Affiliates Region (IS_ANY_OF, one element)"),
-                    Arguments.of(frameworkPolicy(namespace + "AffiliatesBpnl", Operator.IS_ANY_OF, "BPNL00000000001A", true), "Affiliates BPNL")
+                    Arguments.of(frameworkPolicy(namespace + "AffiliatesBpnl", Operator.IS_ANY_OF, "BPNL00000000001A", true), "Affiliates BPNL"),
+                    Arguments.of(frameworkPolicy(namespace + "DataFrequency", Operator.EQ, "cx.dataFrequency.once:1"), "Data Frequency"),
+                    Arguments.of(frameworkPolicy(namespace + "DataUsageEndDate", Operator.EQ, "2025-06-30T14:30:00Z"), "Data Usage End Date"),
+                    Arguments.of(frameworkPolicy(namespace + "DataUsageEndDefinition", Operator.EQ, "cx.dataUsageEnd.unlimited:1"), "Data Usage End Date Definition"),
+                    Arguments.of(frameworkPolicy(namespace + "DataUsageEndDurationDays", Operator.EQ, 3), "Data Usage End Duration Days")
             );
         }
     }

@@ -67,7 +67,7 @@ public abstract class ValueValidatingConstraintFunction<T extends Rule, C extend
 
     private Result<Void> validateSingleValue(Object rightValue) {
         if (allowedValues != null && !allowedValues.isEmpty()) {
-            return rightValue instanceof String && allowedValues.contains(rightValue.toString().toLowerCase())
+            return rightValue instanceof String && allowedValues.contains(rightValue.toString())
                     ? Result.success()
                     : Result.failure("Invalid right-operand: this constraint only allows the following right-operands: %s, but received '%s'."
                     .formatted(String.join(", ", allowedValues), rightValue));
