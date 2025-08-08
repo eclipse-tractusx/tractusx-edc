@@ -32,9 +32,17 @@ class BdrsClientAudienceMapperTest {
 
     private final BdrsClient bdrsClient = mock();
     private final BdrsClientAudienceMapper clientAudienceMapper = new BdrsClientAudienceMapper(bdrsClient);
+    
+    @Test
+    void shouldReturnDid_whenCounterPartyIdIsDid() {
+        var counterPartyId = "did:web:did1";
+        var did = clientAudienceMapper.resolveDid(new TestMessage(counterPartyId));
+        
+        assertThat(did).isSucceeded().isEqualTo(counterPartyId);
+    }
 
     @Test
-    void shouldReturnDid() {
+    void shouldReturnDid_whenCounterPartyIdIsBpn() {
         when(bdrsClient.resolveDid("bpn1")).thenReturn("did:web:did1");
 
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
@@ -60,7 +68,7 @@ class BdrsClientAudienceMapperTest {
         assertThat(did).isFailed().detail().contains("exception");
     }
 
-    private record TestMessage(String bpn) implements RemoteMessage {
+    private record TestMessage(String counterPartyId) implements RemoteMessage {
         @Override
         public String getProtocol() {
             return "test-proto";
@@ -73,7 +81,7 @@ class BdrsClientAudienceMapperTest {
 
         @Override
         public String getCounterPartyId() {
-            return bpn;
+            return counterPartyId;
         }
     }
 }

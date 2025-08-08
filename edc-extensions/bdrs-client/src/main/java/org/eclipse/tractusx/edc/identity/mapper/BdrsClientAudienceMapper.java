@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,6 +32,8 @@ import java.util.Optional;
  */
 class BdrsClientAudienceMapper implements AudienceResolver {
 
+    private static final String DID = "did";
+    
     private final BdrsClient client;
 
     BdrsClientAudienceMapper(BdrsClient client) {
@@ -40,7 +43,12 @@ class BdrsClientAudienceMapper implements AudienceResolver {
     @Override
     public Result<String> resolve(RemoteMessage remoteMessage) {
         try {
-            var resolve = client.resolveDid(remoteMessage.getCounterPartyId());
+            var counterPartyId = remoteMessage.getCounterPartyId();
+            if (counterPartyId.startsWith(DID)) {
+                return Result.success(counterPartyId);
+            }
+            
+            var resolve = client.resolveDid(counterPartyId);
             return Result.from(Optional.ofNullable(resolve));
         } catch (Exception e) {
             return Result.failure("Failure in DID resolution: " + e.getMessage());
