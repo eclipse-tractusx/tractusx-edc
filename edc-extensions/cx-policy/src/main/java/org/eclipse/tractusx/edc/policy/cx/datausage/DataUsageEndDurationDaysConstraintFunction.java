@@ -52,12 +52,12 @@ public class DataUsageEndDurationDaysConstraintFunction<C extends ParticipantAge
             return Result.success();
         }
 
-        if (rightValue instanceof String stringValue) {
+        if (rightValue instanceof String operand) {
             try {
-                Integer.parseInt(stringValue);
+                Integer.parseInt(operand);
                 return Result.success();
             } catch (NumberFormatException e) {
-                return Result.failure("Invalid right-operand: String value must be a valid integer, but got '%s'.".formatted(stringValue));
+                return Result.failure("Invalid right-operand: value must be a valid integer, but got '%s'.".formatted(operand));
             }
         }
 
