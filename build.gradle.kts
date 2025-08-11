@@ -69,7 +69,7 @@ allprojects {
             implementation("net.minidev:json-smart:2.6.0") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
-            implementation("com.azure:azure-core-http-netty:1.15.13") {
+            implementation("com.azure:azure-core-http-netty:1.16.0") {
                 because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
             implementation("software.amazon.awssdk:netty-nio-client:2.31.77") {
