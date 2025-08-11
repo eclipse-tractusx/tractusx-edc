@@ -37,8 +37,8 @@ public class JurisdictionLocationReferenceConstraintFunction<C extends Participa
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "cx.location.dataconsumer:1",
-                        "cx.location.contractreference:1"
+                        "cx.location.dataConsumer:1",
+                        "cx.location.contractReference:1"
                 )
         );
     }

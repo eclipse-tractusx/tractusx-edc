@@ -37,7 +37,7 @@ public class LiabilityConstraintFunction<C extends ParticipantAgentPolicyContext
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "cx.grossnegligence:1",
+                        "cx.grossNegligence:1",
                         "cx.slightnegligence:1"
                 )
         );
