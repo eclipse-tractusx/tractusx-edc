@@ -48,7 +48,7 @@ class EventContractNegotiationSubscriberTest {
 
     private final AgreementsBpnsStore store = mock();
     private final Monitor monitor = mock();
-    private final BdrsClient bdrsClient = new MockBdrsClient((s) -> "did", (s) -> "bpn");
+    private final BdrsClient bdrsClient = new MockBdrsClient((s) -> s, (s) -> "resolvedBpn");
     private EventContractNegotiationSubscriber subscriber;
 
     @BeforeEach
@@ -59,9 +59,9 @@ class EventContractNegotiationSubscriberTest {
     @Test
     void on_shouldSaveEntryWithResolvedBpn_whenIdIsDid() {
         var agreementId = UUID.randomUUID().toString();
-        var providerId = "did";
-        var consumerId = "did";
-        var resolvedBpn = "bpn";
+        var providerId = "did:provider";
+        var consumerId = "did:consumer";
+        var resolvedBpn = "resolvedBpn";
 
         when(store.save(any())).thenReturn(StoreResult.success());
 
@@ -133,6 +133,7 @@ class EventContractNegotiationSubscriberTest {
         verify(store).save(captor.capture());
         AgreementsBpnsEntry entry = captor.getValue();
         assert entry.getProviderBpn().equals(providerId);
+        assert entry.getConsumerBpn().equals(consumerId);
     }
 
     @Test
