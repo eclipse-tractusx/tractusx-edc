@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,26 +18,26 @@
  ********************************************************************************/
 
 plugins {
-    java
+    `java-library`
+    id("application")
 }
 
+
 dependencies {
-    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.awaitility)
-    testImplementation(libs.testcontainers.junit)
-    testImplementation(libs.dsp.tck.core)
-    testImplementation(libs.dsp.tck.runtime)
-    testImplementation(libs.dsp.tck.api)
-    testImplementation(libs.dsp.tck.system)
-    testRuntimeOnly(libs.dsp.tck.metadata)
-    testRuntimeOnly(libs.dsp.tck.catalog)
-    testRuntimeOnly(libs.dsp.tck.transferprocess)
-    testRuntimeOnly(libs.dsp.tck.contractnegotiation)
-    testImplementation(libs.junit.platform.launcher)
-    testImplementation(libs.edc.spi.identitytrust)
-    testImplementation(libs.nimbus.jwt)
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
+        exclude(module = "tx-dcp")
+        exclude(module = "tx-dcp-sts-dim")
+    }
+
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+    }
 }
+
+application {
+    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
+}
+
 
 edcBuild {
     publish.set(false)
