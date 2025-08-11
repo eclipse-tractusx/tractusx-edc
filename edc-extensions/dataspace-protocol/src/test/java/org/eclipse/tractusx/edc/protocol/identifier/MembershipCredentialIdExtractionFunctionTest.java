@@ -55,9 +55,10 @@ public abstract class MembershipCredentialIdExtractionFunctionTest {
     
     @Test
     void apply_fails_WhenCredentialNotFound() {
-        assertThatThrownBy(() -> extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", List.of(vc("FooCredential", Map.of("foo", "bar")))).build()))
+        var function = extractionFunction();
+        assertThatThrownBy(() -> function.apply(ClaimToken.Builder.newInstance().claim("vc", List.of(vc("FooCredential", Map.of("foo", "bar")))).build()))
                 .isInstanceOf(EdcException.class)
-                .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property 'holderIdentifier'");
+                .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property '%s'", function.identityProperty());
     }
     
     @Test
@@ -103,7 +104,10 @@ public abstract class MembershipCredentialIdExtractionFunctionTest {
         return VerifiableCredential.Builder.newInstance().type(type)
                 .issuanceDate(Instant.now())
                 .issuer(new Issuer("issuer", Map.of()))
-                .credentialSubject(CredentialSubject.Builder.newInstance().claims(claims).build())
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id(claims.containsKey("id") ? claims.get("id").toString() : null)
+                        .claims(claims)
+                        .build())
                 .build();
     }
     

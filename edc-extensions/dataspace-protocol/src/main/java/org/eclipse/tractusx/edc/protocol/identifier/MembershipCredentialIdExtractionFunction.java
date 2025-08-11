@@ -68,7 +68,7 @@ public abstract class MembershipCredentialIdExtractionFunction implements Partic
         return Result.success(vcList);
     }
     
-    protected abstract String identityProperty();
+    abstract String identityProperty();
     
     protected abstract Optional<String> getIdentifier(VerifiableCredential vc);
     

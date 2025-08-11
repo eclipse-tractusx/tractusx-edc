@@ -29,7 +29,7 @@ public class DidExtractionFunction extends MembershipCredentialIdExtractionFunct
     private static final String IDENTITY_PROPERTY = "id";
     
     @Override
-    protected String identityProperty() {
+    String identityProperty() {
         return IDENTITY_PROPERTY;
     }
     

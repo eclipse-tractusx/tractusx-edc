@@ -29,7 +29,7 @@ public class BpnExtractionFunction extends MembershipCredentialIdExtractionFunct
     private static final String IDENTITY_PROPERTY = "holderIdentifier";
     
     @Override
-    protected String identityProperty() {
+    String identityProperty() {
         return IDENTITY_PROPERTY;
     }
     
