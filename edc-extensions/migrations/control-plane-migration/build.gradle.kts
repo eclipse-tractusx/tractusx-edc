@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.sql.assetindex)
     implementation(libs.edc.sql.policy.definition)
+    implementation(libs.edc.sql.contract.negotiation)
     implementation(libs.edc.lib.sql)
     runtimeOnly(libs.postgres)
 
