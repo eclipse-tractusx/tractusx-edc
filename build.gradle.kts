@@ -90,7 +90,7 @@ allprojects {
     }
 
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
-        processorVersion.set(edcVersion.toString())
+        processorVersion.set(edcVersion.asProvider())
         outputDirectory.set(project.layout.buildDirectory.asFile.get())
     }
 
