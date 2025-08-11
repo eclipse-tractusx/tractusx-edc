@@ -1,4 +1,4 @@
-/*
+/********************************************************************************
  * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,7 +15,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- */
+ ********************************************************************************/
 
 package org.eclipse.tractusx.edc.protocol.identifier;
 
@@ -24,6 +24,10 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Extracts the BPN (= holderIdentifier property) from the MembershipCredential as the participant id.
+ * Used to handle id extraction for DSP 0.8.
+ */
 public class BpnExtractionFunction extends MembershipCredentialIdExtractionFunction {
     
     private static final String IDENTITY_PROPERTY = "holderIdentifier";

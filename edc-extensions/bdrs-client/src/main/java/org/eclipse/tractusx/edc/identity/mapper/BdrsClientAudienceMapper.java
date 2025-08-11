@@ -28,7 +28,9 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import java.util.Optional;
 
 /**
- * An incoming {@link RemoteMessage} is mapped to a DID by calling {@link BdrsClient#resolveDid(String)} with the {@link RemoteMessage#getCounterPartyId()}
+ * Extracts the audience from a {@link RemoteMessage} using {@link RemoteMessage#getCounterPartyId()}.
+ * If the counter-party id is a DID, returns it as-is. If it is a BPN, calls {@link BdrsClient#resolveDid(String)}
+ * to resolve the corresponding DID.
  */
 class BdrsClientAudienceMapper implements AudienceResolver {
 

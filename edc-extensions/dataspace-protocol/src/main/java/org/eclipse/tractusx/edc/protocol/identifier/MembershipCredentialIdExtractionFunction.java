@@ -32,6 +32,9 @@ import java.util.Optional;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 
+/**
+ * Base class for participant id extraction from a {@link ClaimToken} based on the MembershipCredential.
+ */
 public abstract class MembershipCredentialIdExtractionFunction implements ParticipantIdExtractionFunction {
     
     private static final String VC_CLAIM = "vc";
