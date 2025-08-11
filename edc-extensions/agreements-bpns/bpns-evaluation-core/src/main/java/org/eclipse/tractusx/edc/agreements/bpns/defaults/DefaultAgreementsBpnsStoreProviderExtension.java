@@ -28,7 +28,7 @@ import static org.eclipse.tractusx.edc.agreements.bpns.AgreementsBpnsExtension.N
 
 
 @Extension(NAME)
-public class DefaultStoreProviderExtension implements ServiceExtension {
+public class DefaultAgreementsBpnsStoreProviderExtension implements ServiceExtension {
 
     private static final String NAME = "Default Agreements BPNs Store Provider Extension";
 

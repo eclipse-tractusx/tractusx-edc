@@ -66,7 +66,7 @@ public class DiscoveryTest {
 
     @RegisterExtension
     static final RuntimeExtension CONSUMER_RUNTIME = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
-            .registerServiceMock(BdrsClient.class, new MockBdrsClient("unresolvableBpnl", PROVIDER_FULL_DSP.getDid()));
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient(DiscoveryTest::resolveProviderDid, (s) -> s));
 
 
     @RegisterExtension

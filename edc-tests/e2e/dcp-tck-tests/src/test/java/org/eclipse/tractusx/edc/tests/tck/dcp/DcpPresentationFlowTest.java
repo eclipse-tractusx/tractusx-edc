@@ -88,7 +88,7 @@ public class DcpPresentationFlowTest {
             new EmbeddedRuntime("Connector-under-test", ":edc-controlplane:edc-controlplane-base")
                     .registerServiceMock(SecureTokenService.class, STS_MOCK)
                     .registerServiceMock(DcpParticipantAgentServiceExtension.class, EXTRACTOR_MOCK)
-                    .registerServiceMock(BdrsClient.class, new MockBdrsClient("bpn", "did"))
+                    .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
                     .configurationProvider(DcpPresentationFlowTest::runtimeConfiguration));
     private ClientAndServer didServer;
     private ECKey verifierKey;

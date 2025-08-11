@@ -48,7 +48,7 @@ class EventContractNegotiationSubscriberTest {
 
     private final AgreementsBpnsStore store = mock();
     private final Monitor monitor = mock();
-    private final BdrsClient bdrsClient = new MockBdrsClient("bpn", "did");
+    private final BdrsClient bdrsClient = new MockBdrsClient((s) -> "did", (s) -> "bpn");
     private EventContractNegotiationSubscriber subscriber;
 
     @BeforeEach

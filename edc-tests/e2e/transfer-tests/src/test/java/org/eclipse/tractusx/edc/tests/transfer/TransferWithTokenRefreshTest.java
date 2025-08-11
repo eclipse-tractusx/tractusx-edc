@@ -91,7 +91,7 @@ public class TransferWithTokenRefreshTest {
                     "edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY),
                     "edc.dataplane.token.expiry.tolerance", "0"
             ))))
-            .registerServiceMock(BdrsClient.class, new MockBdrsClient(CONSUMER.getBpn(), CONSUMER.getDid()));
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient((c) -> CONSUMER.getDid(), (c) -> CONSUMER.getBpn()));
 
     private ClientAndServer server;
     private String privateBackendUrl;

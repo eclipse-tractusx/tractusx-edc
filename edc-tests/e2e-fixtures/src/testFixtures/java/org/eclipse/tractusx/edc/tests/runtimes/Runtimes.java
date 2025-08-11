@@ -47,7 +47,7 @@ public interface Runtimes {
                         .configurationProvider(configurationProvider)
                         .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
                         .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
-                        .registerServiceMock(BdrsClient.class, new MockBdrsClient(participant.getBpn(), participant.getDid()))
+                        .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
         );
     }
 

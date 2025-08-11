@@ -24,6 +24,5 @@ plugins {
 
 dependencies {
     api(project(":edc-extensions:agreements-bpns:bpns-evaluation-core"))
-    api(project(":edc-extensions:agreements-bpns:bpns-evaluation-store-sql"))
     api(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
 }

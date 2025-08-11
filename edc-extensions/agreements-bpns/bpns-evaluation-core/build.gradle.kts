@@ -28,7 +28,6 @@ dependencies {
     api(project(":spi:bdrs-client-spi"))
     implementation(libs.edc.runtime.metamodel)
     implementation(libs.edc.spi.boot)
-    implementation(libs.edc.spi.policyengine)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.core.policy.monitor)

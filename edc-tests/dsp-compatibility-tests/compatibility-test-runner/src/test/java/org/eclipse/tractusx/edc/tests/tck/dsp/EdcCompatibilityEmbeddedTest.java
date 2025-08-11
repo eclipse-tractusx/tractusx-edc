@@ -68,7 +68,7 @@ public class EdcCompatibilityEmbeddedTest {
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime("CUT",
             ":edc-tests:runtime:runtime-dsp")
-            .registerServiceMock(BdrsClient.class, new MockBdrsClient("bpn", "did"))
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
             .configurationProvider(EdcCompatibilityEmbeddedTest::runtimeConfiguration));
 
     private static Config runtimeConfiguration() {

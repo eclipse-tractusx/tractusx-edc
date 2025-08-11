@@ -21,26 +21,30 @@ package org.eclipse.tractusx.edc.tests;
 
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
-/**
- * Mock implementation of {@link BdrsClient} that simply returns the input as output.
- * This is useful for testing purposes where actual DID resolution is not required.
- */
-public class MockBdrsClient implements BdrsClient {
-    private final String bpn;
-    private final String did;
+import java.util.Objects;
+import java.util.function.Function;
 
-    public MockBdrsClient(String bpn, String did) {
-        this.bpn = bpn;
-        this.did = did;
+/**
+ * Mock implementation of {@link BdrsClient} backed by two lambdas.
+ * The lambdas decide how DIDs and BPNs are resolved.
+ */
+public final class MockBdrsClient implements BdrsClient {
+    private final Function<String, String> didResolver; // input: BPN -> output: DID
+    private final Function<String, String> bpnResolver; // input: DID -> output: BPN
+
+    public MockBdrsClient(Function<String, String> didResolver,
+                          Function<String, String> bpnResolver) {
+        this.didResolver = Objects.requireNonNull(didResolver, "didResolver");
+        this.bpnResolver = Objects.requireNonNull(bpnResolver, "bpnResolver");
     }
 
     @Override
     public String resolveDid(String bpn) {
-        return did;
+        return didResolver.apply(bpn);
     }
 
     @Override
     public String resolveBpn(String did) {
-        return bpn;
+        return bpnResolver.apply(did);
     }
 }

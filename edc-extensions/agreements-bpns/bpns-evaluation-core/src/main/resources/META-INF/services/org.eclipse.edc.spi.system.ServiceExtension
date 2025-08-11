@@ -18,3 +18,4 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.agreements.bpns.AgreementsBpnsExtension
+org.eclipse.tractusx.edc.agreements.bpns.defaults.DefaultAgreementsBpnsStoreProviderExtension
