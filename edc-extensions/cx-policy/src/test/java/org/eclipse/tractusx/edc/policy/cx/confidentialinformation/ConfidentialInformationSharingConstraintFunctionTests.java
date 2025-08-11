@@ -36,25 +36,25 @@ class ConfidentialInformationSharingConstraintFunctionTests {
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "cx.sharing.affiliates:1", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.IS_ANY_OF, "cx.sharing.affiliates:1", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.EQ, "cx.sharing.affiliates:1", null);
+        var result = function.validate(Operator.IS_ANY_OF, "cx.sharing.affiliates:1", null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "cx.sharing.affiliates:1", null);
+        var result = function.validate(Operator.EQ, "cx.sharing.affiliates:1", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidRightValueType_thenFailure() {
-        var result = function.validate(Operator.EQ, "invalid_value", null);
+        var result = function.validate(Operator.IS_ANY_OF, "invalid_value", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
     }

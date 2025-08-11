@@ -115,7 +115,7 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "ContractReference", Operator.IS_ALL_OF, "contractReference"), "Contract reference"),
                     Arguments.of(frameworkPolicy(namespace + "ContractTermination", Operator.EQ, "cx.data.deletion:1"), "ContractTermination"),
                     Arguments.of(frameworkPolicy(namespace + "ConfidentialInformationMeasures", Operator.EQ, "cx.confidentiality.measures:1"), "Confidential Information Measures"),
-                    Arguments.of(frameworkPolicy(namespace + "ConfidentialInformationSharing", Operator.EQ, "cx.sharing.affiliates:1"), "Confidential Information Sharing")
+                    Arguments.of(frameworkPolicy(namespace + "ConfidentialInformationSharing", Operator.IS_ANY_OF, List.of("cx.sharing.affiliates:1"), true), "Confidential Information Sharing")
             );
         }
     }

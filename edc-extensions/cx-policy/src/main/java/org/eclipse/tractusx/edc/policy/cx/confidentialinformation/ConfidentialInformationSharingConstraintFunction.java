@@ -35,7 +35,7 @@ public class ConfidentialInformationSharingConstraintFunction<C extends Particip
 
     public ConfidentialInformationSharingConstraintFunction() {
         super(
-                Set.of(Operator.EQ),
+                Set.of(Operator.IS_ANY_OF),
                 Set.of(
                         "cx.sharing.affiliates:1",
                         "cx.sharing.managedLegalEntity:1"
