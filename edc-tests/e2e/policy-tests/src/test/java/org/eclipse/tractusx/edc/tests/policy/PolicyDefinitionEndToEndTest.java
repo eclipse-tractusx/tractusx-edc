@@ -119,6 +119,7 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "JurisdictionLocation", Operator.EQ, "test location"), "Jurisdiction Location"),
                     Arguments.of(frameworkPolicy(namespace + "JurisdictionLocationReference", Operator.EQ, "cx.location.dataConsumer:1"), "Jurisdiction Location Reference"),
                     Arguments.of(frameworkPolicy(namespace + "Liability", Operator.EQ, "cx.grossNegligence:1"), "Liability"),
+                    Arguments.of(frameworkPolicy(namespace + "Liability", Operator.EQ, "cx.slightNegligence:1"), "Liability"),
                     Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1"), true), "Managed Legal Entity Region"),
                     Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityBpnl", Operator.IS_ANY_OF, "BPNL00000000001A", true), "Managed Legal Entity BPNL")
             );
