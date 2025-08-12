@@ -4,26 +4,26 @@ import org.eclipse.edc.connector.controlplane.contract.spi.ContractOfferId;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.entity.ProtocolMessages;
 
 import java.time.Instant;
-import java.util.UUID;
+import java.util.Arrays;
 
 public class ContractNegotiationMigrationUtil {
-    private ContractNegotiationMigrationUtil() {}
+    private ContractNegotiationMigrationUtil() {
+    }
 
-    public static ContractNegotiation createNegotiation(String id, Policy policy) {
-        return createNegotiationBuilder(id)
-                .contractAgreement(createContract(ContractOfferId.create("test-cd1", "test-as1"), policy))
+    public static ContractNegotiation negotiation(String id, Policy policy) {
+        ContractOfferId contractOfferId = ContractOfferId.create("test-co1", policy.getTarget());
+        return negotiationBuilder(id)
+                .contractAgreement(contractAgreement(contractOfferId.toString(), policy))
+                .contractOffers(Arrays.asList(contractOffer(contractOfferId.toString(), policy)))
                 .build();
     }
 
-    public static ContractAgreement createContract(ContractOfferId contractOfferId, Policy policy) {
-        return createContractBuilder(contractOfferId.toString(), policy)
-                .build();
-    }
-    private static ContractNegotiation.Builder createNegotiationBuilder(String id) {
+    private static ContractNegotiation.Builder negotiationBuilder(String id) {
         return ContractNegotiation.Builder.newInstance()
                 .type(ContractNegotiation.Type.CONSUMER)
                 .id(id)
@@ -36,13 +36,23 @@ public class ContractNegotiationMigrationUtil {
                 .protocolMessages(new ProtocolMessages());
     }
 
-    private static ContractAgreement.Builder createContractBuilder(String id, Policy policy) {
+    public static ContractAgreement contractAgreement(String id, Policy policy) {
         return ContractAgreement.Builder.newInstance()
                 .id(id)
                 .providerId("provider")
                 .consumerId("consumer")
-                .assetId(UUID.randomUUID().toString())
+                .assetId(policy.getTarget())
                 .policy(policy)
-                .contractSigningDate(Instant.now().getEpochSecond());
+                .contractSigningDate(Instant.now().getEpochSecond())
+                .build();
     }
+
+    public static ContractOffer contractOffer(String id, Policy policy) {
+        return ContractOffer.Builder.newInstance()
+                .id(id)
+                .policy(policy)
+                .assetId(policy.getTarget())
+                .build();
+    }
+
 }

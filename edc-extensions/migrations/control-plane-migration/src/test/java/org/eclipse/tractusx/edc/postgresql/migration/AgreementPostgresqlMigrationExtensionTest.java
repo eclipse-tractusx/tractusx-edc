@@ -24,7 +24,7 @@ import java.time.Clock;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.postgresql.migration.util.ContractNegotiationMigrationUtil.createNegotiation;
+import static org.eclipse.tractusx.edc.postgresql.migration.util.ContractNegotiationMigrationUtil.negotiation;
 import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.andConstraint;
 import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.atomicConstraint;
 import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.constraintsWithLeftExpressions;
@@ -59,15 +59,14 @@ public class AgreementPostgresqlMigrationExtensionTest {
         );
     }
 
-
     @Test
-    void version007Test(PostgresqlStoreSetupExtension extension) {
+    void version010shouldUpdateBusinessPartnerNamespace(PostgresqlStoreSetupExtension extension) {
         var dataSource = extension.getDataSourceRegistry().resolve(extension.getDatasourceName());
 
         FlywayManager.migrate(dataSource, "contractnegotiation", "public", MigrationVersion.fromVersion("0.0.9"));
 
         Policy policy = policyWithPermissionAndProhibition();
-        insert(createNegotiation("1", policy));
+        insert(negotiation("1", policy));
 
         int oldBpgExpressions = constraintsWithLeftExpressions(policy, Set.of(oldBpgLeftOperand));
         int oldBpnExpressions = constraintsWithLeftExpressions(policy, Set.of(oldBpnLeftOperand));
@@ -77,14 +76,17 @@ public class AgreementPostgresqlMigrationExtensionTest {
 
         assertThat(result).isNotNull();
 
-        int updatedBpgExpressions = constraintsWithLeftExpressions(result.getContractAgreement().getPolicy(), Set.of(updatedBpgLeftOperand));
-        int updatedBpnExpressions = constraintsWithLeftExpressions(result.getContractAgreement().getPolicy(), Set.of(updatedBpnLeftOperand));
-
         assertThat(constraintsWithLeftExpressions(result.getContractAgreement().getPolicy(), Set.of(oldBpgLeftOperand))).isEqualTo(0);
         assertThat(constraintsWithLeftExpressions(result.getContractAgreement().getPolicy(), Set.of(oldBpnLeftOperand))).isEqualTo(0);
 
-        assertThat(updatedBpgExpressions).isEqualTo(oldBpgExpressions);
-        assertThat(updatedBpnExpressions).isEqualTo(oldBpnExpressions);
+        assertThat(constraintsWithLeftExpressions(result.getContractOffers().get(0).getPolicy(), Set.of(oldBpgLeftOperand))).isEqualTo(0);
+        assertThat(constraintsWithLeftExpressions(result.getContractOffers().get(0).getPolicy(), Set.of(oldBpnLeftOperand))).isEqualTo(0);
+
+        assertThat(constraintsWithLeftExpressions(result.getContractAgreement().getPolicy(), Set.of(updatedBpgLeftOperand))).isEqualTo(oldBpgExpressions);
+        assertThat(constraintsWithLeftExpressions(result.getContractAgreement().getPolicy(), Set.of(updatedBpnLeftOperand))).isEqualTo(oldBpnExpressions);
+
+        assertThat(constraintsWithLeftExpressions(result.getContractOffers().get(0).getPolicy(), Set.of(updatedBpgLeftOperand))).isEqualTo(oldBpgExpressions);
+        assertThat(constraintsWithLeftExpressions(result.getContractOffers().get(0).getPolicy(), Set.of(updatedBpnLeftOperand))).isEqualTo(oldBpnExpressions);
     }
 
     private void insert(ContractNegotiation contractNegotiation) {
@@ -97,6 +99,7 @@ public class AgreementPostgresqlMigrationExtensionTest {
         return Policy.Builder.newInstance()
                 .permission(permission)
                 .prohibition(prohibition)
+                .target("test-asset-id")
                 .build();
     }
 }

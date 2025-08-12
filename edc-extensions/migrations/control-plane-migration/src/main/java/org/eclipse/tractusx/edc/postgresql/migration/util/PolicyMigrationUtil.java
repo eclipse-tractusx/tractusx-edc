@@ -1,8 +1,6 @@
 package org.eclipse.tractusx.edc.postgresql.migration.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.policy.model.Action;
 import org.eclipse.edc.policy.model.AndConstraint;
 import org.eclipse.edc.policy.model.AtomicConstraint;
@@ -21,30 +19,41 @@ import java.util.Map;
 import java.util.Set;
 
 public final class PolicyMigrationUtil {
+    private static final Set<String> oldBpnLeftExpressions = Set.of(
+            "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
+            "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerNumber"
+    );
+
+    private static final Map<String, String> updatedLeftExpressions = Map.of(
+            "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup", "https://w3id.org/catenax/2025/9/policy/BusinessPartnerGroup",
+            "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerNumber", "https://w3id.org/catenax/2025/9/policy/BusinessPartnerNumber"
+    );
 
     private PolicyMigrationUtil() {
     }
 
-    public static Policy policyDeserializer(ObjectMapper mapper, String policyJson) throws JsonProcessingException {
-        return mapper.readValue(policyJson, new TypeReference<Policy>() {
-        });
-    }
-
-    public static List<Rule> ruleDeserializer(ObjectMapper mapper, String ruleJson) throws JsonProcessingException {
-        return mapper.readValue(ruleJson, new TypeReference<List<Rule>>() {
-        });
-    }
-
-    public static String policySerializer(ObjectMapper mapper, Policy policy) throws JsonProcessingException {
-        return mapper.writeValueAsString(policy);
-    }
-
-    public static <T> String ruleSerializer(ObjectMapper mapper, List<? extends Rule> rules, TypeReference<T> typeReference) throws JsonProcessingException {
-        return mapper.writerFor(typeReference).writeValueAsString(rules);
-    }
-
     public static boolean rulesContainsLeftExpression(List<? extends Rule> rules, Set<String> leftExpressions) {
         return numberOfConstraintsInRulesWithLeftExpression(rules, leftExpressions) > 0;
+    }
+
+    public static boolean updatePolicy(Policy policy) throws JsonProcessingException {
+        return updateRules(policy.getPermissions(), policy.getProhibitions(), policy.getObligations());
+    }
+
+    public static boolean updateRules(List<? extends Rule> permissions, List<? extends Rule> prohibitions, List<? extends Rule> duties) throws JsonProcessingException {
+        boolean permissionsUpdated = updateRules(permissions);
+        boolean prohibitionsUpdated = updateRules(prohibitions);
+        boolean dutiesUpdated = updateRules(duties);
+
+        return permissionsUpdated || prohibitionsUpdated || dutiesUpdated;
+    }
+
+    private static boolean updateRules(List<? extends Rule> rules) {
+        if (rulesContainsLeftExpression(rules, oldBpnLeftExpressions)) {
+            updateBusinessPartnerRules(rules, updatedLeftExpressions);
+            return true;
+        }
+        return false;
     }
 
     public static int numberOfConstraintsInRulesWithLeftExpression(List<? extends Rule> rules, Set<String> leftExpressions) {
@@ -58,8 +67,7 @@ public final class PolicyMigrationUtil {
 
     private static int numberOfConstraintsWithLeftExpression(List<Constraint> constraints, Set<String> leftExpressions) {
         int constraintsWithLeftExpression = 0;
-        for (int i = 0; i < constraints.size(); i++) {
-            var constraint = constraints.get(i);
+        for (Constraint constraint : constraints) {
             if (constraint instanceof AtomicConstraint) {
                 if (containsBusinessPartnerOperand((AtomicConstraint) constraint, leftExpressions)) {
                     constraintsWithLeftExpression++;

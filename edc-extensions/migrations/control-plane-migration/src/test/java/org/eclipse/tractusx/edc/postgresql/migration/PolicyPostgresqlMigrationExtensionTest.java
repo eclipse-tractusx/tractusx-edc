@@ -74,10 +74,10 @@ public class PolicyPostgresqlMigrationExtensionTest {
     }
 
     @Test
-    void version007Test(PostgresqlStoreSetupExtension extension) {
+    void version007shouldUpdateBusinessPartnerNamespace(PostgresqlStoreSetupExtension extension) {
         var dataSource = extension.getDataSourceRegistry().resolve(extension.getDatasourceName());
 
-        FlywayManager.migrate(dataSource, "policy", "public", MigrationVersion.fromVersion("0.0.5"));
+        FlywayManager.migrate(dataSource, "policy", "public", MigrationVersion.fromVersion("0.0.6"));
 
         var policy = policy();
         insert(policyDefinition("1", policy));
