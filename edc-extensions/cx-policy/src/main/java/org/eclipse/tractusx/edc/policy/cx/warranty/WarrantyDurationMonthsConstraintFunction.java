@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.warrenty;
+package org.eclipse.tractusx.edc.policy.cx.warranty;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
@@ -28,7 +28,7 @@ import org.eclipse.edc.spi.result.Result;
 import java.util.Set;
 
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for WarrantyDurationMonths. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
 public class WarrantyDurationMonthsConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {

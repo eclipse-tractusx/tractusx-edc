@@ -37,11 +37,11 @@ public class UsageRestrictionConstraintFunction<C extends ParticipantAgentPolicy
         super(
                 Set.of(Operator.IS_ALL_OF),
                 Set.of(
-                        "cx.thirdparty.forbidden:1",
+                        "cx.thirdParty.forbidden:1",
                         "cx.manipulation.forbidden:1",
                         "cx.derivations.forbidden:1",
-                        "cx.extraordinaryanalytics.forbidden:1",
-                        "cx.dataProviderremoval.forbidden:1"
+                        "cx.extraordinaryAnalytics.forbidden:1",
+                        "cx.dataProviderRemoval.forbidden:1"
                 ),
                 true
         );

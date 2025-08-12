@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.warrenty;
+package org.eclipse.tractusx.edc.policy.cx.warranty;
 
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
@@ -28,26 +28,26 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class WarrantyDurationMonthsConstraintFunctionTest {
+class WarrantyDefinitionConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final WarrantyDurationMonthsConstraintFunction<ParticipantAgentPolicyContext> function = new WarrantyDurationMonthsConstraintFunction<>();
+    private final WarrantyDefinitionConstraintFunction<ParticipantAgentPolicyContext> function = new WarrantyDefinitionConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ,  1, null, context)).isTrue();
+        assertThat(function.evaluate(Operator.EQ,  "cx.warranty.contractEndDate:1", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.EQ,  1, null);
+        var result = function.validate(Operator.EQ,  "cx.warranty.contractEndDate:1", null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, 1, null);
+        var result = function.validate(Operator.IS_ANY_OF, "cx.warranty.contractEndDate:1", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }

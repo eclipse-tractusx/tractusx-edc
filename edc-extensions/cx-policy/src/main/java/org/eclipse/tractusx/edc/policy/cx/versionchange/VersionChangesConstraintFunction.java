@@ -37,8 +37,8 @@ public class VersionChangesConstraintFunction<C extends ParticipantAgentPolicyCo
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "cx.versionchanges.minor:1",
-                        "cx.versionchanges.major:1"
+                        "cx.versionChanges.minor:1",
+                        "cx.versionChanges.major:1"
                 )
         );
     }

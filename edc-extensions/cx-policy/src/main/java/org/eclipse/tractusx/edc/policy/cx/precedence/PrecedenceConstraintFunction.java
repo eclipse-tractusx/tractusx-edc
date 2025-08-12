@@ -37,8 +37,8 @@ public class PrecedenceConstraintFunction<C extends ParticipantAgentPolicyContex
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "cx.precedence.contractreference:1",
-                        "cx.precedence.rcagreement:1"
+                        "cx.precedence.contractReference:1",
+                        "cx.precedence.rcAgreement:1"
                 )
         );
     }

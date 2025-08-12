@@ -121,12 +121,13 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "Liability", Operator.EQ, "cx.slightNegligence:1"), "Liability"),
                     Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1"), true), "Managed Legal Entity Region"),
                     Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityBpnl", Operator.IS_ANY_OF, "BPNL00000000001A", true), "Managed Legal Entity BPNL"),
-                    Arguments.of(frameworkPolicy(namespace + "Precedence", Operator.EQ,  "cx.precedence.contractreference:1"), "Precedence"),
+                    Arguments.of(frameworkPolicy(namespace + "Precedence", Operator.EQ,  "cx.precedence.contractReference:1"), "Precedence"),
                     Arguments.of(frameworkPolicy(namespace + "UsagePurpose", Operator.IS_ALL_OF,  List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), true), "Usage Purpose"),
-                    Arguments.of(frameworkPolicy(namespace + "VersionChanges", Operator.EQ,  "cx.versionchanges.minor:1"), "Version Changes"),
+                    Arguments.of(frameworkPolicy(namespace + "VersionChanges", Operator.EQ,  "cx.versionChanges.minor:1"), "Version Changes"),
                     Arguments.of(frameworkPolicy(namespace + "Warranty", Operator.EQ,  "cx.warranty.none:1"), "Warranty"),
-                    Arguments.of(frameworkPolicy(namespace + "WarrantyDefinition", Operator.EQ,  "cx.warranty.contractenddate:1"), "Warranty Definition"),
-                    Arguments.of(frameworkPolicy(namespace + "WarrantyDurationMonths", Operator.EQ,  3), "Warranty Duration Months")
+                    Arguments.of(frameworkPolicy(namespace + "WarrantyDefinition", Operator.EQ,  "cx.warranty.contractEndDate:1"), "Warranty Definition"),
+                    Arguments.of(frameworkPolicy(namespace + "WarrantyDurationMonths", Operator.EQ,  3), "Warranty Duration Months"),
+                    Arguments.of(frameworkPolicy(namespace + "ExclusiveUsage", Operator.EQ,  "cx.exclusiveUsage.dataConsumer:1"), "Exclusive Usage")
             );
         }
     }

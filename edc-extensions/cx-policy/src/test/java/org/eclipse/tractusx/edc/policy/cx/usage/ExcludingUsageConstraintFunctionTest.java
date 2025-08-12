@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 class ExcludingUsageConstraintFunctionTest {
@@ -38,26 +39,24 @@ class ExcludingUsageConstraintFunctionTest {
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "x.exclusiveUsage.dataConsumer:1", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.EQ, "cx.exclusiveUsage.dataConsumer:1", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.EQ, "x.exclusiveUsage.dataConsumer:1", null);
-        assertThat(result.succeeded()).isTrue();
+        var result = function.validate(Operator.EQ, "cx.exclusiveUsage.dataConsumer:1", null);
+        assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
         var result = function.validate(Operator.IS_ANY_OF, "x.exclusiveUsage.dataConsumer:1", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid operator");
+        assertThat(result).isFailed().detail().contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidValue_thenFailure() {
         var result = function.validate(Operator.EQ, List.of("BPNL00000000001A"), null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+        assertThat(result).isFailed().detail().contains("Invalid right-operand: ");
     }
 }

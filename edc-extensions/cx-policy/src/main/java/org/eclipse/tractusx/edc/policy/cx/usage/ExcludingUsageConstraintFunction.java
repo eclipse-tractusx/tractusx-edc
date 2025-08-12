@@ -37,7 +37,7 @@ public class ExcludingUsageConstraintFunction<C extends ParticipantAgentPolicyCo
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "x.exclusiveusage.dataconsumer:1"
+                        "cx.exclusiveUsage.dataConsumer:1"
                 )
         );
     }

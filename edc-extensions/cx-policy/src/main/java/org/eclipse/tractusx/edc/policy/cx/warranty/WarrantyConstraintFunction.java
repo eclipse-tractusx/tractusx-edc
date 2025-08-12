@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.warrenty;
+package org.eclipse.tractusx.edc.policy.cx.warranty;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -27,17 +27,19 @@ import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFuncti
 import java.util.Set;
 
 /**
- * This is a placeholder constraint function for ContractReference. It always returns true but allows
+ * This is a placeholder constraint function for Warranty. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class WarrantyDefinitionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
-    public static final String WARRANTY_DEFINITION = "WarrantyDefinition";
+public class WarrantyConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
+    public static final String WARRANTY = "Warranty";
 
-    public WarrantyDefinitionConstraintFunction() {
+    public WarrantyConstraintFunction() {
         super(
                 Set.of(Operator.EQ),
                 Set.of(
-                        "cx.warranty.contractenddate:1"
+                        "cx.warranty.none:1",
+                        "cx.warranty.contractReference:1",
+                        "cx.warranty.dataQualityIssues:1"
                 )
         );
     }

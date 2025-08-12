@@ -55,9 +55,9 @@ import org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDefinitionConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDurationMonthsConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDurationMonthsConstraintFunction;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -92,9 +92,9 @@ import static org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintF
 import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
 import static org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction.USAGE_RESTRICTION;
 import static org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction.VERSION_CHANGES;
-import static org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyConstraintFunction.WARRANTY;
-import static org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDefinitionConstraintFunction.WARRANTY_DEFINITION;
-import static org.eclipse.tractusx.edc.policy.cx.warrenty.WarrantyDurationMonthsConstraintFunction.WARRANTY_DURATION_MONTHS;
+import static org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction.WARRANTY;
+import static org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction.WARRANTY_DEFINITION;
+import static org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDurationMonthsConstraintFunction.WARRANTY_DURATION_MONTHS;
 
 /**
  * Provides implementations of standard CX usage policies.
