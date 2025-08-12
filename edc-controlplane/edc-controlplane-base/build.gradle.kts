@@ -16,7 +16,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 plugins {
     `java-library`
@@ -55,6 +55,7 @@ dependencies {
     implementation(project(":edc-extensions:provision-additional-headers"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:validators:empty-asset-selector"))
+    implementation(project(":edc-extensions:connector-discovery:connector-discovery-api"))
     runtimeOnly(project(":edc-extensions:event-subscriber"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
