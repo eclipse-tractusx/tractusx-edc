@@ -44,6 +44,11 @@ import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstr
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 
@@ -69,9 +74,13 @@ import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitio
 import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction.DATA_USAGE_END_DURATION_DAYS;
 import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction.JURISDICTION_LOCATION;
+import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction.JURISDICTION_LOCATION_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction.LIABILITY;
+import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction.MANAGED_LEGAL_ENTITY_BPNL_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction.MANAGED_LEGAL_ENTITY_REGION;
 import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
-
 
 /**
  * Provides implementations of standard CX usage policies.
@@ -149,7 +158,6 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
 
-
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
 
@@ -161,6 +169,31 @@ public class CxPolicyExtension implements ServiceExtension {
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION), new JurisdictionLocationConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION), new JurisdictionLocationConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE), new JurisdictionLocationReferenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE), new JurisdictionLocationReferenceConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(LIABILITY), new LiabilityConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(LIABILITY), new LiabilityConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL), new ManagedLegalEntityBpnlConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL), new ManagedLegalEntityBpnlConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
@@ -191,7 +224,12 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(DATA_USAGE_END_DEFINITION),
                 withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS),
                 withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS),
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE)
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
+                withCxPolicyNsPrefix(LIABILITY),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION)
         );
         registerBindingSet(registry, namesInNegotiationScope, NEGOTIATION_SCOPE);
 
@@ -205,7 +243,12 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(DATA_USAGE_END_DEFINITION),
                 withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS),
                 withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS),
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE)
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION),
+                withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
+                withCxPolicyNsPrefix(LIABILITY),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION)
         );
         registerBindingSet(registry, namesInTransferProcessScope, TRANSFER_PROCESS_SCOPE);
     }
