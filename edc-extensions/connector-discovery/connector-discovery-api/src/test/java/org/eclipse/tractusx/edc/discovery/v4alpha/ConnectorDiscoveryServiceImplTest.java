@@ -74,7 +74,7 @@ class ConnectorDiscoveryServiceImplTest {
                 .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "someAddress/somePath")
                 .build();
 
-        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(expectedDid);
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
@@ -101,7 +101,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("path", "/somePath")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(null);
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
@@ -129,7 +129,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("path", "/2025-1")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(null);
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
@@ -153,7 +153,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("path", "/")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(expectedDid);
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));
@@ -176,7 +176,7 @@ class ConnectorDiscoveryServiceImplTest {
 
         var expectedDid = "did:web:providerdid";
 
-        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(expectedDid);
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.failure(ResponseStatus.FATAL_ERROR, "Metadata endpoint error")));
@@ -192,7 +192,7 @@ class ConnectorDiscoveryServiceImplTest {
 
         var expectedDid = "did:web:providerdid";
 
-        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(expectedDid);
         when(versionService.requestVersions(any()))
                 .thenThrow(new BadGatewayException("Metadata endpoint not available"));
@@ -214,7 +214,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("version", "2025-1")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolve(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
                 .thenReturn(expectedDid);
         when(versionService.requestVersions(any()))
                 .thenReturn(CompletableFuture.completedFuture(StatusResult.success(mockVersionResponseMock.toString().getBytes())));

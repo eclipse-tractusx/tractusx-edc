@@ -67,7 +67,7 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
                 throw new BadGatewayException("Counter party well-known endpoint has failed: " + result.getFailureMessages());
             } else {
                 var protocolVersions = mapper.readValue(result.getContent(), ProtocolVersions.class);
-                var did = bdrsClient.resolve(request.bpnl());
+                var did = bdrsClient.resolveDid(request.bpnl());
                 var version20251 = findProtocolVersion(Dsp2025Constants.V_2025_1_VERSION, protocolVersions);
                 if (version20251 != null && did != null) {
                     addDiscoveredParameters(Dsp2025Constants.V_2025_1_VERSION, did, request.counterPartyAddress() + version20251.path(), discoveredParameters);
