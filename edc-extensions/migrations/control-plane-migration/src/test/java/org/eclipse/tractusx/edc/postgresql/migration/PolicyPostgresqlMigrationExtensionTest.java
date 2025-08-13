@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
 import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.json.JacksonTypeManager;
+import org.eclipse.edc.junit.annotations.PostgresqlIntegrationTest;
 import org.eclipse.edc.policy.model.AndConstraint;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.LiteralExpression;
@@ -46,7 +47,7 @@ import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigration
 import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.constraintsWithLeftExpressions;
 import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.permission;
 
-//@PostgresqlIntegrationTest
+@PostgresqlIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)
 public class PolicyPostgresqlMigrationExtensionTest {
     private final String oldBpgLeftOperand = "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup";

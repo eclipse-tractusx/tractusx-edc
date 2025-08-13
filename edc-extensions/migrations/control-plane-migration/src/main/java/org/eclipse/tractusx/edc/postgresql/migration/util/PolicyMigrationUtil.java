@@ -1,3 +1,22 @@
+/********************************************************************************
+ * Copyright (c) 2025 Fraunhofer Institute for Software and Systems Engineering - initial API and implementation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package org.eclipse.tractusx.edc.postgresql.migration.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,12 +38,12 @@ import java.util.Map;
 import java.util.Set;
 
 public final class PolicyMigrationUtil {
-    private static final Set<String> oldBpnLeftExpressions = Set.of(
+    private static final Set<String> OLD_BPN_LEFT_EXPRESSIONS = Set.of(
             "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
             "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerNumber"
     );
 
-    private static final Map<String, String> updatedLeftExpressions = Map.of(
+    private static final Map<String, String> UPDATED_BPN_LEFT_EXPRESSIONS = Map.of(
             "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup", "https://w3id.org/catenax/2025/9/policy/BusinessPartnerGroup",
             "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerNumber", "https://w3id.org/catenax/2025/9/policy/BusinessPartnerNumber"
     );
@@ -49,8 +68,8 @@ public final class PolicyMigrationUtil {
     }
 
     private static boolean updateRules(List<? extends Rule> rules) {
-        if (rulesContainsLeftExpression(rules, oldBpnLeftExpressions)) {
-            updateBusinessPartnerRules(rules, updatedLeftExpressions);
+        if (rulesContainsLeftExpression(rules, OLD_BPN_LEFT_EXPRESSIONS)) {
+            updateBusinessPartnerRules(rules, UPDATED_BPN_LEFT_EXPRESSIONS);
             return true;
         }
         return false;

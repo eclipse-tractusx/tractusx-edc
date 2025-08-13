@@ -1,3 +1,22 @@
+/********************************************************************************
+ * Copyright (c) 2025 Fraunhofer Institute for Software and Systems Engineering - initial API and implementation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
 package org.eclipse.tractusx.edc.postgresql.migration.contractnegotiation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +40,7 @@ import java.util.List;
 
 import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.updatePolicy;
 
+@SuppressWarnings("checkstyle:TypeName")
 public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
 
     private final String updateAgreementStatement = "UPDATE edc_contract_agreement SET policy = ?::json WHERE agr_id = ?";
@@ -34,8 +54,7 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
 
         mapper.registerSubtypes(Permission.class, Prohibition.class, AtomicConstraint.class, AndConstraint.class, OrConstraint.class, XoneConstraint.class, LiteralExpression.class);
 
-        try (var stmt = context.getConnection().createStatement();
-             var rs = stmt.executeQuery(selectAllAgreementStatement)) {
+        try (var stmt = context.getConnection().createStatement(); var rs = stmt.executeQuery(selectAllAgreementStatement)) {
             while (rs.next()) {
                 String id = rs.getString("agr_id");
                 String policyJson = rs.getString("policy");
@@ -43,13 +62,12 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
                 });
 
                 if (updatePolicy(policy)) {
-                    updateAgreementInDB(context, id, mapper.writeValueAsString(policy));
+                    updateAgreementInDb(context, id, mapper.writeValueAsString(policy));
                 }
             }
         }
 
-        try (var stmt = context.getConnection().createStatement();
-             var rs = stmt.executeQuery(selectAllNegotiationStatement)) {
+        try (var stmt = context.getConnection().createStatement(); var rs = stmt.executeQuery(selectAllNegotiationStatement)) {
             while (rs.next()) {
                 String id = rs.getString("id");
                 String contractOffersJson = rs.getString("contract_offers");
@@ -57,7 +75,7 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
                 });
 
                 if (updateContractOffers(context, mapper, id, contractOffers)) {
-                    updateNegotiationInDB(context, id, mapper.writeValueAsString(contractOffers));
+                    updateNegotiationInDb(context, id, mapper.writeValueAsString(contractOffers));
                 }
             }
         }
@@ -74,7 +92,7 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
     }
 
 
-    private void updateAgreementInDB(Context context, String id, String policy) {
+    private void updateAgreementInDb(Context context, String id, String policy) {
         try (PreparedStatement ps = context.getConnection().prepareStatement(updateAgreementStatement)) {
             ps.setString(1, policy);
             ps.setString(2, id);
@@ -84,7 +102,7 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
         }
     }
 
-    private void updateNegotiationInDB(Context context, String id, String contractOffers) {
+    private void updateNegotiationInDb(Context context, String id, String contractOffers) {
         try (PreparedStatement ps = context.getConnection().prepareStatement(updateNegotiationStatement)) {
             ps.setString(1, contractOffers);
             ps.setString(2, id);

@@ -57,8 +57,7 @@ public class V0_0_7__Bpn_Namespace_Migration extends BaseJavaMigration {
 
         mapper.registerSubtypes(Permission.class, Prohibition.class, AtomicConstraint.class, AndConstraint.class, OrConstraint.class, XoneConstraint.class, LiteralExpression.class);
 
-        try (var stmt = context.getConnection().createStatement();
-             var rs = stmt.executeQuery(selectAllStatement)) {
+        try (var stmt = context.getConnection().createStatement(); var rs = stmt.executeQuery(selectAllStatement)) {
             while (rs.next()) {
                 String id = rs.getString("policy_id");
                 List<Rule> permissions = mapper.readValue(rs.getString("permissions"), new TypeReference<List<Rule>>() {
@@ -69,7 +68,7 @@ public class V0_0_7__Bpn_Namespace_Migration extends BaseJavaMigration {
                 });
 
                 if (updateRules(permissions, prohibitions, duties)) {
-                    updatePolicyInDB(context, id,
+                    updatePolicyInDb(context, id,
                             mapper.writerFor(permissionListType).writeValueAsString(permissions),
                             mapper.writerFor(prohibitionListType).writeValueAsString(prohibitions),
                             mapper.writerFor(dutyListType).writeValueAsString(duties));
@@ -78,7 +77,7 @@ public class V0_0_7__Bpn_Namespace_Migration extends BaseJavaMigration {
         }
     }
 
-    private void updatePolicyInDB(Context context, String id, String permissionsJson, String prohibitionsJson, String dutiesJson) {
+    private void updatePolicyInDb(Context context, String id, String permissionsJson, String prohibitionsJson, String dutiesJson) {
         try (PreparedStatement ps = context.getConnection().prepareStatement(updateStatement)) {
             ps.setString(1, permissionsJson);
             ps.setString(2, prohibitionsJson);
