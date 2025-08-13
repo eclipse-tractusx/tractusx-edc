@@ -16,8 +16,9 @@ and transfer non-finite data with the PUSH flow type. The following diagrams des
 # Identifying Non Finite Data
 
 Assets can identify data sources that produce non-finite data by setting the `isNonFinite` property. This is an optional 
-data address property that represents the finiteness of the data address. Any value other than `true` will be ignored. 
-As an example, the following request registers an `HttpData` Asset that represents an API that produces non-finite data:
+data address property that represents the finiteness of the data address. A value of `true` is required to set the transfer 
+to non-finite. As an example, the following request registers an `HttpData` Asset that represents an API that produces 
+non-finite data:
 
 ```http request
 POST /v3/assets HTTP/1.1
@@ -72,11 +73,11 @@ To close the communications channel, either the Consumer or the Provider must ma
 
 # Credential Rotation
 
-The data destination credentials should be managed by an Identity Provider capable of granting and revoking acesses to the 
-data destination.
+The Data Consumer manages the data destination credentials through a business application. This includes granting and 
+revoking accesses to the data destination by defining a validity period for the credentials, as for security reasons, 
+these credentials should be rotated periodically. The validity period depends on the specific use case and should be a 
+good compromise between security and allowing an adequate number of data transfers.
 
-For security, these credentials should be rotated periodically. The validity period depends on the specific use case and is 
-determined by the Data Consumer. Ideally, it should be the shortest period that allows N data transfers.
-
-When the validity period expires, the old credentials should be revoked and new ones generated in the Identity Provider. The 
-Data Consumer must also terminate the existing Transfer Process and initiate a new one with the updated credentials.
+When the validity period expires, the Data Consumer must revoke the old credentials and generate new ones using its 
+business application. This can be a manual or automated process. Additionally, the Data Consumer must also terminate 
+the existing Transfer Process and initiate a new one with the updated credentials.
