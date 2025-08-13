@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,32 +31,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-class UsagePurposeConstraintFunctionTest {
+class ExcludingUsageConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final UsagePurposeConstraintFunction<ParticipantAgentPolicyContext> function = new UsagePurposeConstraintFunction<>();
+    private final ExcludingUsageConstraintFunction<ParticipantAgentPolicyContext> function = new ExcludingUsageConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.IS_ANY_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null, context)).isTrue();
+        assertThat(function.evaluate(Operator.EQ, "cx.exclusiveUsage.dataConsumer:1", null, context)).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ANY_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null);
+        var result = function.validate(Operator.EQ, "cx.exclusiveUsage.dataConsumer:1", null);
         assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.EQ, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null);
+        var result = function.validate(Operator.IS_ANY_OF, "x.exclusiveUsage.dataConsumer:1", null);
         assertThat(result).isFailed().detail().contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidValue_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, List.of("BPNL00000000001A"), null);
+        var result = function.validate(Operator.EQ, List.of("BPNL00000000001A"), null);
         assertThat(result).isFailed().detail().contains("Invalid right-operand: ");
     }
 }

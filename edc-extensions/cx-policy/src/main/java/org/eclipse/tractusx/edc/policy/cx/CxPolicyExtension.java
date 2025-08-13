@@ -50,7 +50,14 @@ import org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.precedence.PrecedenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDurationMonthsConstraintFunction;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -80,7 +87,14 @@ import static org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFu
 import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction.MANAGED_LEGAL_ENTITY_BPNL_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction.MANAGED_LEGAL_ENTITY_REGION;
 import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.precedence.PrecedenceConstraintFunction.PRECEDENCE;
+import static org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction.EXCLUSIVE_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
+import static org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction.USAGE_RESTRICTION;
+import static org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction.VERSION_CHANGES;
+import static org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction.WARRANTY;
+import static org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction.WARRANTY_DEFINITION;
+import static org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDurationMonthsConstraintFunction.WARRANTY_DURATION_MONTHS;
 
 /**
  * Provides implementations of standard CX usage policies.
@@ -109,10 +123,14 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlProhibitionConstraintFunction<>());
         engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
                 withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionProhibitionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
+                withCxPolicyNsPrefix(USAGE_RESTRICTION), new UsageRestrictionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
                 withCxPolicyNsPrefix(AFFILIATES_BPNL), new AffiliatesBpnlProhibitionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
                 withCxPolicyNsPrefix(AFFILIATES_REGION), new AffiliatesRegionProhibitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Prohibition.class,
+                withCxPolicyNsPrefix(USAGE_RESTRICTION), new UsageRestrictionConstraintFunction<>());
 
         // Usage Duty Validators
         engine.registerFunction(ContractNegotiationPolicyContext.class, Duty.class,
@@ -194,6 +212,36 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(EXCLUSIVE_USAGE), new ExcludingUsageConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(EXCLUSIVE_USAGE), new ExcludingUsageConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(PRECEDENCE), new PrecedenceConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(PRECEDENCE), new PrecedenceConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(VERSION_CHANGES), new VersionChangesConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(VERSION_CHANGES), new VersionChangesConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(WARRANTY), new WarrantyConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(WARRANTY), new WarrantyConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(WARRANTY_DEFINITION), new WarrantyDefinitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(WARRANTY_DEFINITION), new WarrantyDefinitionConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS), new WarrantyDurationMonthsConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS), new WarrantyDurationMonthsConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
@@ -229,7 +277,14 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
                 withCxPolicyNsPrefix(LIABILITY),
                 withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION)
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION),
+                withCxPolicyNsPrefix(EXCLUSIVE_USAGE),
+                withCxPolicyNsPrefix(PRECEDENCE),
+                withCxPolicyNsPrefix(VERSION_CHANGES),
+                withCxPolicyNsPrefix(WARRANTY),
+                withCxPolicyNsPrefix(WARRANTY_DEFINITION),
+                withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS),
+                withCxPolicyNsPrefix(USAGE_RESTRICTION)
         );
         registerBindingSet(registry, namesInNegotiationScope, NEGOTIATION_SCOPE);
 
@@ -248,7 +303,14 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
                 withCxPolicyNsPrefix(LIABILITY),
                 withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION)
+                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION),
+                withCxPolicyNsPrefix(EXCLUSIVE_USAGE),
+                withCxPolicyNsPrefix(PRECEDENCE),
+                withCxPolicyNsPrefix(VERSION_CHANGES),
+                withCxPolicyNsPrefix(WARRANTY),
+                withCxPolicyNsPrefix(WARRANTY_DEFINITION),
+                withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS),
+                withCxPolicyNsPrefix(USAGE_RESTRICTION)
         );
         registerBindingSet(registry, namesInTransferProcessScope, TRANSFER_PROCESS_SCOPE);
     }
