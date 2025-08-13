@@ -52,7 +52,7 @@ import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.polic
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyWithEmptyRule;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
-//@EndToEndTest
+@EndToEndTest
 public class PolicyDefinitionEndToEndTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
