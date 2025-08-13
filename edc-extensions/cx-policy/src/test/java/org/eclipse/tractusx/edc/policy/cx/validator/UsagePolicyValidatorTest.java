@@ -37,9 +37,10 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.rule;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.AFFILIATES_REGION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_RESTRICTION_LITERAL;
 
 class UsagePolicyValidatorTest {
 
@@ -88,7 +89,7 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsageProhibitionWithConstraints() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
+        JsonObject constraint = atomicConstraint(USAGE_RESTRICTION_LITERAL);
         JsonObject prohibition = rule(ACTION_USAGE, constraint);
         JsonObject input = policy(ODRL_PROHIBITION_ATTRIBUTE, prohibition);
 
@@ -120,7 +121,7 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsageObligationWithConstraints() {
-        JsonObject constraint = atomicConstraint(AFFILIATES_REGION_LITERAL);
+        JsonObject constraint = atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL);
         JsonObject obligation = rule(ACTION_USAGE, constraint);
         JsonObject input = policy(ODRL_OBLIGATION_ATTRIBUTE, obligation);
 
@@ -168,8 +169,8 @@ class UsagePolicyValidatorTest {
     @Test
     void shouldReturnSuccess_whenCompleteValidUsagePolicy() {
         JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL));
-        JsonObject prohibition = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL));
-        JsonObject obligation = rule(ACTION_USAGE, atomicConstraint(AFFILIATES_REGION_LITERAL));
+        JsonObject prohibition = rule(ACTION_USAGE, atomicConstraint(USAGE_RESTRICTION_LITERAL));
+        JsonObject obligation = rule(ACTION_USAGE, atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL));
 
         JsonObject input = Json.createObjectBuilder()
                 .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))

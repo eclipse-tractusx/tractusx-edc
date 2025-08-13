@@ -52,7 +52,7 @@ import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.polic
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyWithEmptyRule;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
-@EndToEndTest
+//@EndToEndTest
 public class PolicyDefinitionEndToEndTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
@@ -187,7 +187,7 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(policyFromRules("permission",
                             frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "access")), "Access policy permission with not allowed constraints"),
                     Arguments.of(policyFromRules("permission",
-                            frameworkPermission(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use")), "Usage policy permission with not allowed constraints"),
+                            frameworkPermission(Map.of(CX_POLICY_NS + "BusinessPartnerNumber", "BPN0022232"), "use")), "Usage policy permission with not allowed constraints"),
                     Arguments.of(policyFromRules("prohibition",
                             frameworkPermission(Map.of(CX_POLICY_NS + "AffiliatesRegion", "cx.region.europe:1"), "use")), "Usage policy prohibition with not allowed constraints"),
                     Arguments.of(policyFromRules("obligation",

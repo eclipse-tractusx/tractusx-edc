@@ -45,6 +45,33 @@ public final class PolicyValidationConstants {
     public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_NS + "AffiliatesRegion";
     public static final String AFFILIATES_BPNL_LITERAL = CX_POLICY_NS + "AffiliatesBpnl";
 
+    public static final String CONFIDENTIAL_INFORMATION_MEASURE_LITERAL = CX_POLICY_NS + "ConfidentialInformationMeasures";
+    public static final String CONFIDENTIAL_INFORMATION_SHARING_LITERAL = CX_POLICY_NS + "ConfidentialInformationSharing";
+    public static final String CONTRACT_REFERENCE_LITERAL = CX_POLICY_NS + "ContractReference";
+    public static final String CONTRACT_TERMINATION_LITERAL = CX_POLICY_NS + "ContractTermination";
+
+    public static final String DATA_FREQUENCY_LITERAL = CX_POLICY_NS + "DataFrequency";
+    public static final String DATA_PROVISIONING_END_DATE_LITERAL = CX_POLICY_NS + "DataProvisioningEndDate";
+    public static final String DATA_PROVISIONING_END_DURATION_LITERAL = CX_POLICY_NS + "DataProvisioningEndDurationDays";
+    public static final String DATA_USAGE_END_DATE_LITERAL = CX_POLICY_NS + "DataUsageEndDate";
+    public static final String DATA_USAGE_END_DEFINITION_LITERAL = CX_POLICY_NS + "DataUsageEndDefinition";
+    public static final String DATA_USAGE_END_DURATION_LITERAL = CX_POLICY_NS + "DataUsageEndDurationDays";
+
+    public static final String EXCLUSIVE_USAGE_LITERAL = CX_POLICY_NS + "ExclusiveUsage";
+    public static final String JURISDICTION_LOCATION_LITERAL = CX_POLICY_NS + "JurisdictionLocation";
+    public static final String JURISDICTION_LOCATION_REFERENCE_LITERAL = CX_POLICY_NS + "JurisdictionLocationReference";
+    public static final String LIABILITY_LITERAL = CX_POLICY_NS + "Liability";
+    public static final String MANAGED_LEGAL_ENTITY_BPNL_LITERAL = CX_POLICY_NS + "ManagedLegalEntityBpnl";
+    public static final String MANAGED_LEGAL_ENTITY_REGION_LITERAL = CX_POLICY_NS + "ManagedLegalEntityRegion";
+
+    public static final String PRECEDENCE_LITERAL = CX_POLICY_NS + "Precedence";
+    public static final String USAGE_RESTRICTION_LITERAL = CX_POLICY_NS + "UsageRestriction";
+    public static final String VERSION_CHANGES_LITERAL = CX_POLICY_NS + "VersionChanges";
+    public static final String WARRANTY_LITERAL = CX_POLICY_NS + "Warranty";
+    public static final String WARRANTY_DEFINITION_LITERAL = CX_POLICY_NS + "WarrantyDefinition";
+    public static final String WARRANTY_DURATION_MONTHS_LITERAL = CX_POLICY_NS + "WarrantyDurationMonths";
+
+
     // old
     public static final String INFORCE_POLICY_LITERAL = "https://w3id.org/edc/v0.0.1/ns/inForceDate";
 
@@ -66,17 +93,39 @@ public final class PolicyValidationConstants {
     public static final Set<String> ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of();
     public static final Set<String> ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of();
     public static final Set<String> USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
+            FRAMEWORK_AGREEMENT_LITERAL,
             USAGE_PURPOSE_LITERAL,
             MEMBERSHIP_LITERAL,
+            CONTRACT_REFERENCE_LITERAL,
             AFFILIATES_REGION_LITERAL,
             AFFILIATES_BPNL_LITERAL,
+            MANAGED_LEGAL_ENTITY_BPNL_LITERAL,
+            MANAGED_LEGAL_ENTITY_REGION_LITERAL,
+            DATA_FREQUENCY_LITERAL,
+            VERSION_CHANGES_LITERAL,
+            CONTRACT_TERMINATION_LITERAL,
+            CONFIDENTIAL_INFORMATION_MEASURE_LITERAL,
+            CONFIDENTIAL_INFORMATION_SHARING_LITERAL,
+            EXCLUSIVE_USAGE_LITERAL,
+            WARRANTY_LITERAL,
+            WARRANTY_DEFINITION_LITERAL,
+            WARRANTY_DURATION_MONTHS_LITERAL,
+            LIABILITY_LITERAL,
+            JURISDICTION_LOCATION_LITERAL,
+            JURISDICTION_LOCATION_REFERENCE_LITERAL,
+            PRECEDENCE_LITERAL,
+            DATA_USAGE_END_DURATION_LITERAL,
+            DATA_USAGE_END_DATE_LITERAL,
+            DATA_USAGE_END_DEFINITION_LITERAL,
             INFORCE_POLICY_LITERAL
     );
     public static final Set<String> USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            USAGE_PURPOSE_LITERAL,
-            AFFILIATES_BPNL_LITERAL
+            AFFILIATES_REGION_LITERAL,
+            AFFILIATES_BPNL_LITERAL,
+            USAGE_RESTRICTION_LITERAL
     );
     public static final Set<String> USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
-            AFFILIATES_REGION_LITERAL
+            DATA_PROVISIONING_END_DURATION_LITERAL,
+            DATA_PROVISIONING_END_DATE_LITERAL
     );
 }
