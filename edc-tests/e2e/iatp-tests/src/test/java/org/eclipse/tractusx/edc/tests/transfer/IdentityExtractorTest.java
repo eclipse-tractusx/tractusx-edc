@@ -54,11 +54,11 @@ public class IdentityExtractorTest {
     private static final LazySupplier<URI> STS_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
     private static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id("did:example:" + CONSUMER_NAME)
             .stsUri(STS_URI)
             .stsClientId(CONSUMER_BPN)
             .trustedIssuer("did:example:issuer")
-            .did("did:example:" + CONSUMER_NAME)
+            .bpn(CONSUMER_BPN)
             .build();
 
     @RegisterExtension

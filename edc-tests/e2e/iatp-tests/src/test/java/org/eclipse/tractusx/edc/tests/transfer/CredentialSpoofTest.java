@@ -105,7 +105,7 @@ public class CredentialSpoofTest {
                 .stsClientId(bpn)
                 .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
                 .dimUri(DIM_URI)
-                .did(DID_SERVER.didFor(name))
+                .id(DID_SERVER.didFor(name))
                 .build();
     }
 

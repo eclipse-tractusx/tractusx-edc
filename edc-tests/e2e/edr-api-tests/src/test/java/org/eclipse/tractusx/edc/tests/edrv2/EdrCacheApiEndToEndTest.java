@@ -67,6 +67,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRES
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.hamcrest.Matchers.anyOf;
@@ -87,7 +88,8 @@ public class EdrCacheApiEndToEndTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(CONSUMER_DID)
+            .bpn(CONSUMER_BPN)
             .build();
 
     @RegisterExtension

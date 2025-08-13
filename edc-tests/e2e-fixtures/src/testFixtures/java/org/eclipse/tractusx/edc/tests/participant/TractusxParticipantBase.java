@@ -56,6 +56,7 @@ import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.Agreement
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
 
 
 /**
@@ -74,21 +75,37 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
     protected ParticipantConsumerDataPlaneApi dataPlane;
+    protected String bpn;
     protected String did;
 
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
     }
-
+    
+    @NotNull
     public String getBpn() {
-        return getId();
+        return bpn;
+    }
+    
+    @NotNull
+    public String getDid() {
+        return did;
+    }
+    
+    /**
+     * Allows overriding the participant id, as for DSP 0.8 tests the provider's BPN has to be used.
+     *
+     * @param id the id
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Config getConfig() {
         var settings = new HashMap<String, String>() {
             {
                 put("edc.runtime.id", name);
-                put("edc.participant.id", id);
+                put("edc.participant.id", getDid());
                 put("web.http.port", String.valueOf(getFreePort()));
                 put("web.http.path", "/api");
                 put("web.http.protocol.port", String.valueOf(controlPlaneProtocol.get().getPort()));
@@ -124,6 +141,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.catalog.cache.execution.delay.seconds", "2");
                 put("edc.catalog.cache.execution.period.seconds", "2");
                 put("edc.policy.validation.enabled", "true");
+                put("tractusx.edc.participant.bpn", getBpn());
             }
         };
 
@@ -232,11 +250,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return getDid() + "#" + getKeyId();
     }
 
-    @NotNull
-    public String getDid() {
-        return did;
-    }
-
     public ValidatableResponse getCatalog(TractusxParticipantBase provider) {
         var requestBodyBuilder = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
@@ -306,16 +319,18 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         protected Builder(P participant) {
             super(participant);
         }
-
-        public B did(String did) {
-            this.participant.did = did;
+        
+        public B bpn(String bpn) {
+            this.participant.bpn = bpn;
             return self();
         }
 
         @Override
         public P build() {
-            if (participant.did == null) {
-                participant.did = "did:web:" + participant.name.toLowerCase();
+            participant.did = participant.id;
+            
+            if (participant.bpn == null) {
+                participant.bpn = participant.name.toLowerCase() + BPN_SUFFIX;
             }
 
             participant.enrichManagementRequest = requestSpecification -> requestSpecification.headers(Map.of(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY));

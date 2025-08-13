@@ -42,8 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
@@ -54,12 +56,14 @@ public class RetireAgreementTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(CONSUMER_DID)
+            .bpn(CONSUMER_BPN)
             .build();
 
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(PROVIDER_DID)
+            .bpn(PROVIDER_BPN)
             .enableEventSubscription()
             .build();
 

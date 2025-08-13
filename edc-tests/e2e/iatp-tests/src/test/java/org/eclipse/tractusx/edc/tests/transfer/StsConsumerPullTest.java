@@ -51,19 +51,19 @@ public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     private static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(DID_SERVER.didFor(CONSUMER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(CONSUMER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .did(DID_SERVER.didFor(CONSUMER_NAME))
+            .bpn(CONSUMER_BPN)
             .build();
     private static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(DID_SERVER.didFor(PROVIDER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(PROVIDER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .did(DID_SERVER.didFor(PROVIDER_NAME))
+            .bpn(PROVIDER_BPN)
             .build();
 
     @RegisterExtension
