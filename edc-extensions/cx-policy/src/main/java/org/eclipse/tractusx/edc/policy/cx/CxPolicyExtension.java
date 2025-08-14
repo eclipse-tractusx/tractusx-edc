@@ -40,13 +40,13 @@ import org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerNumberC
 import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationSharingConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.contracttermination.ContractTerminationConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.contracttermination.ContractTerminationConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction;
@@ -82,13 +82,13 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PR
 import static org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction.CONFIDENTIAL_INFORMATION_MEASURES;
 import static org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationSharingConstraintFunction.CONFIDENTIAL_INFORMATION_SHARING;
 import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.contracttermination.ContractTerminationConstraintFunction.CONTRACT_TERMINATION;
 import static org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction.DATA_FREQUENCY;
 import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction.DATA_PROVISIONING_END_DATE;
 import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction.DATA_PROVISIONING_END_DURATION_DAYS;
 import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFunction.DATA_USAGE_END_DATE;
 import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction.DATA_USAGE_END_DEFINITION;
 import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction.DATA_USAGE_END_DURATION_DAYS;
-import static org.eclipse.tractusx.edc.policy.cx.contracttermination.ContractTerminationConstraintFunction.CONTRACT_TERMINATION;
 import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction.JURISDICTION_LOCATION;
@@ -318,9 +318,6 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(WARRANTY_DEFINITION),
                 withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS),
                 withCxPolicyNsPrefix(USAGE_RESTRICTION),
-                withCxPolicyNsPrefix(CONTRACT_TERMINATION),
-                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_MEASURES),
-                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_SHARING),
                 withCxPolicyNsPrefix(CONTRACT_TERMINATION),
                 withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_MEASURES),
                 withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_SHARING)
