@@ -35,8 +35,6 @@ import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlPermissionCon
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionPermissionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibitionConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerGroupConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerNumberConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationSharingConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
@@ -71,8 +69,6 @@ import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionConstraintFunction.AFFILIATES_BPNL;
 import static org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibitionConstraintFunction.AFFILIATES_REGION;
-import static org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerGroupConstraintFunction.BUSINESS_PARTNER_GROUP;
-import static org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerNumberConstraintFunction.BUSINESS_PARTNER_NUMBER;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_REQUEST_SCOPE;
@@ -164,11 +160,6 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(CatalogPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
-
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_GROUP), new BusinessPartnerGroupConstraintFunction<>());
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER), new BusinessPartnerNumberConstraintFunction<>());
 
         // Usage Permission Validators
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
@@ -289,9 +280,7 @@ public class CxPolicyExtension implements ServiceExtension {
 
         var namesInCatalogScope = Set.of(
                 withCxPolicyNsPrefix(USAGE_PURPOSE),
-                withCxPolicyNsPrefix(CONTRACT_REFERENCE),
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_GROUP),
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER)
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE)
         );
         registerBindingSet(registry, namesInCatalogScope, CATALOG_SCOPE);
 
