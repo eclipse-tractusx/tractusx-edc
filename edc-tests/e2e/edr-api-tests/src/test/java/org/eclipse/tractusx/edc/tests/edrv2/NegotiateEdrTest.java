@@ -129,7 +129,7 @@ public class NegotiateEdrTest {
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1", "test-group2");
         var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_NONE_OF, "forbidden-policy"));
-        var contractPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1", "test-group2"));
+        var contractPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1", "test-group2"));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
 

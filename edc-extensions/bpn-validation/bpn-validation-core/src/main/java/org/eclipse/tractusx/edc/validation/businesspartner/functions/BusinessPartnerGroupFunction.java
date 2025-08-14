@@ -26,6 +26,7 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import java.util.Collection;
@@ -80,7 +81,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  */
 public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
-    private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
+    private static final List<Operator> ALLOWED_OPERATORS = List.of(IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
     private final Monitor monitor;
@@ -179,4 +180,15 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     private record BpnGroupHolder(Set<String> assignedGroups, Set<String> allowedGroups) {
     }
 
+    @Override
+    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
+        if (!ALLOWED_OPERATORS.contains(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'."
+                    .formatted(ALLOWED_OPERATORS, operator));
+        }
+
+        return rightValue instanceof String s
+                ? Result.success()
+                : Result.failure("Invalid right-operand: right operand must be a string");
+    }
 }

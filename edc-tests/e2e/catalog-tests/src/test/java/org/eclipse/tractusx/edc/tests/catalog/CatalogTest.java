@@ -29,8 +29,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Map;
-
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
@@ -40,10 +38,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.BUSINESS_PARTNER_LEGACY_EVALUATION_KEY;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.QueryHelperFunctions.createQuery;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -95,8 +91,8 @@ public class CatalogTest {
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_shouldReject() {
-        var onlyConsumerPolicy = bpnPolicy("BPN1", "BPN2", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = bpnPolicy("ARISTOTELES-BPN");
+        var onlyConsumerPolicy = bpnPolicy("BPNLAAAAAAAAAAAA", "BPNLAAAAAAAAAAAA", CONSUMER.getBpn());
+        var onlyDiogenesPolicy = bpnPolicy("BPNL0ARISTOTELES");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
@@ -113,7 +109,7 @@ public class CatalogTest {
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
-        assertThat(catalog).hasSize(2);
+        assertThat(catalog).hasSize(1);
     }
 
 
@@ -121,25 +117,20 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
-        var onlyConsumerPolicy = bpnPolicy("BPN1", "BPN2", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = frameworkPolicy(Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"));
+        var onlyConsumerPolicy = bpnPolicy("BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
-        var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
         var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
-        PROVIDER.createAsset("test-asset3");
 
         PROVIDER.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
-        PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
-
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
-        assertThat(catalog).hasSize(2);
+        assertThat(catalog).hasSize(1);
     }
 
     @Test
@@ -147,22 +138,17 @@ public class CatalogTest {
     void requestCatalog_filteredByBpn_shouldReject() {
 
         var mustBeGreekPhilosopher = bpnGroupPolicy(Operator.IS_ANY_OF, "greek_customer", "philosopher");
-        var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_ALL_OF, "greek_customer", "mathematician");
 
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
         var philosopherId = PROVIDER.createPolicyDefinition(mustBeGreekPhilosopher);
-        var mathId = PROVIDER.createPolicyDefinition(mustBeGreekMathematician);
         var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
-        PROVIDER.createAsset("test-asset3");
 
         PROVIDER.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset2", "def2", philosopherId, noConstraintPolicyId);
-        PROVIDER.createContractDefinition("test-asset3", "def3", mathId, noConstraintPolicyId);
-
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
