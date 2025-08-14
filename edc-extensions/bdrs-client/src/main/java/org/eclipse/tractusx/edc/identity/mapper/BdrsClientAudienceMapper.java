@@ -27,14 +27,14 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.Optional;
 
+import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
+
 /**
  * Extracts the audience from a {@link RemoteMessage} using {@link RemoteMessage#getCounterPartyId()}.
  * If the counter-party id is a DID, returns it as-is. If it is a BPN, calls {@link BdrsClient#resolveDid(String)}
  * to resolve the corresponding DID.
  */
 class BdrsClientAudienceMapper implements AudienceResolver {
-
-    private static final String DID = "did";
     
     private final BdrsClient client;
 
@@ -46,7 +46,7 @@ class BdrsClientAudienceMapper implements AudienceResolver {
     public Result<String> resolve(RemoteMessage remoteMessage) {
         try {
             var counterPartyId = remoteMessage.getCounterPartyId();
-            if (counterPartyId.startsWith(DID)) {
+            if (counterPartyId.startsWith(DID_PREFIX)) {
                 return Result.success(counterPartyId);
             }
             

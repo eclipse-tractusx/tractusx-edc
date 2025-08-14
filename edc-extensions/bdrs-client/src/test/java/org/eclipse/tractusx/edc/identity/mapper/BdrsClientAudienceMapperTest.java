@@ -36,7 +36,7 @@ class BdrsClientAudienceMapperTest {
     @Test
     void shouldReturnDid_whenCounterPartyIdIsDid() {
         var counterPartyId = "did:web:did1";
-        var did = clientAudienceMapper.resolveDid(new TestMessage(counterPartyId));
+        var did = clientAudienceMapper.resolve(new TestMessage(counterPartyId));
         
         assertThat(did).isSucceeded().isEqualTo(counterPartyId);
     }
