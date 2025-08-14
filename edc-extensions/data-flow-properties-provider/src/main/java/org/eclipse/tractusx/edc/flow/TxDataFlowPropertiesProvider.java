@@ -1,4 +1,5 @@
 /********************************************************************************
+ * Copyright (c) 2025 Cofinity-X GmbH
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -46,7 +47,7 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
     @Override
     public StatusResult<Map<String, String>> propertiesFor(TransferProcess transferProcess, Policy policy) {
         try {
-            var did = bdrsClient.resolve(policy.getAssignee());
+            var did = bdrsClient.resolveDid(policy.getAssignee());
             if (did == null) {
                 return StatusResult.failure(FATAL_ERROR, "Failed to fetch did for BPN %s".formatted(policy.getAssignee()));
             }

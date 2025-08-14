@@ -40,6 +40,8 @@ import org.eclipse.tractusx.edc.dataplane.proxy.api.controller.DataPlanePublicAp
 
 import java.util.concurrent.Executors;
 
+import static org.eclipse.tractusx.edc.proxy.ProxyHttpDataAddressSchema.PROXY_HTTP_DATA_TYPE;
+
 /**
  * This extension provides generic endpoints which are open to public participants of the Dataspace to execute
  * requests on the actual data source.
@@ -99,6 +101,12 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
             generatorService.addGeneratorFunction("HttpData", () -> Endpoint.url(publicApiResponseUrl));
         }
 
+        generatorService.addGeneratorFunction(PROXY_HTTP_DATA_TYPE, dataAddress -> endpoint);
+
+        if (publicApiResponseUrl != null) {
+            generatorService.addGeneratorFunction(PROXY_HTTP_DATA_TYPE, () -> Endpoint.url(publicApiResponseUrl));
+        }
+        
         var publicApiController = new DataPlanePublicApiV2Controller(pipelineService, executorService, authorizationService);
         webService.registerResource(ApiContext.PUBLIC, publicApiController);
     }

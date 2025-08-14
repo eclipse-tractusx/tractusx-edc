@@ -25,5 +25,7 @@ dependencies {
     implementation(project(":spi:core-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.jsonld)
+    implementation(libs.dsp.spi.v2025)
+    implementation(libs.dsp.spi.v08)
     testImplementation(testFixtures(libs.edc.junit))
 }

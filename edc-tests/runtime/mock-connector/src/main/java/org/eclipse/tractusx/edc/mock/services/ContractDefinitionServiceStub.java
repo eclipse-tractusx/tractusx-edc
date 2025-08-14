@@ -28,6 +28,12 @@ import org.eclipse.tractusx.edc.mock.ResponseQueue;
 
 import java.util.List;
 
+/**
+ * Stub implementation of the {@link ContractDefinitionService}.
+ *
+ * @deprecated since 0.11.0
+ */
+@Deprecated(since = "0.11.0")
 public class ContractDefinitionServiceStub extends AbstractServiceStub implements ContractDefinitionService {
 
 

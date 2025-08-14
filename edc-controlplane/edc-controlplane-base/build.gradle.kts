@@ -16,7 +16,7 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
 plugins {
     `java-library`
@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:log4j2-monitor"))
     implementation(project(":edc-extensions:agreements"))
+    implementation(project(":edc-extensions:agreements-bpns"))
     implementation(project(":edc-extensions:bdrs-client"))
     implementation(project(":edc-extensions:bpn-validation"))
     implementation(project(":edc-extensions:cx-policy"))
@@ -55,6 +56,7 @@ dependencies {
     implementation(project(":edc-extensions:provision-additional-headers"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:validators:empty-asset-selector"))
+    implementation(project(":edc-extensions:connector-discovery:connector-discovery-api"))
     runtimeOnly(project(":edc-extensions:event-subscriber"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
@@ -65,5 +67,4 @@ dependencies {
     runtimeOnly(libs.edc.validator.data.address.http.data)
     runtimeOnly(libs.log4j2.core)
     runtimeOnly(libs.log4j2.json.template)
-
 }

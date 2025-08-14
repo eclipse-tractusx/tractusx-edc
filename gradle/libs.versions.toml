@@ -2,26 +2,29 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.14.0-20250626-SNAPSHOT"
+edc = "0.14.0-20250719-SNAPSHOT"
 allure = "2.29.1"
 awaitility = "4.3.0"
-aws = "2.32.4"
-azure-storage-blob = "12.30.1"
+aws = "2.32.19"
+azure-storage-blob = "12.31.1"
 bouncyCastle-jdk18on = "1.81"
-flyway = "11.10.2"
+dcp-tck = "1.0.0-RC4"
+dsp-tck = "1.0.0-RC4"
+flyway = "11.11.0"
 jackson = "2.19.2"
 jakarta-json = "2.0.1"
-nimbus = "10.4"
+junit = "1.13.4"
+nimbus = "10.4.1"
 netty-mockserver = "5.15.0"
-opentelemetry = "2.18.0"
-opentelemetry-instrumentation = "2.16.0"
+opentelemetry = "2.18.1"
+opentelemetry-instrumentation = "2.18.1"
 postgres = "42.7.7"
 restAssured = "5.5.5"
 rsApi = "4.0.0"
 testcontainers = "1.21.3"
 testcontainers-keycloak = "3.8.0"
 titanium = "1.6.0"
-log4j2 = "2.24.3"
+log4j2 = "2.25.1"
 
 
 [libraries]
@@ -47,6 +50,7 @@ edc-spi-request-policy-context = { module = "org.eclipse.edc:request-policy-cont
 edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
+edc-spi-protocolversion = { module = "org.eclipse.edc:protocol-version-spi", version.ref = "edc" }
 edc-spi-boot = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
@@ -130,11 +134,30 @@ edc-identity-trust-service = { module = "org.eclipse.edc:identity-trust-service"
 edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
 
 # DCP for Testing
-edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }
 edc-identity-trust-sts-remote-lib = { module = "org.eclipse.edc:identity-trust-sts-remote-lib", version.ref = "edc" }
 edc-sts-core = { module = "org.eclipse.edc:sts-core", version.ref = "edc" }
 edc-sts-api = { module = "org.eclipse.edc:sts-api", version.ref = "edc" }
 edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
+
+# DCP-TCK libraries
+dcp-testcases = { module = "org.eclipse.dataspacetck.dcp:dcp-testcases", version.ref = "dcp-tck" }
+dcp-system = { module = "org.eclipse.dataspacetck.dcp:dcp-system", version.ref = "dcp-tck" }
+
+# DSP-TCK libraries
+dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }
+dsp-tck-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dsp-tck" }
+dsp-tck-api = { module = "org.eclipse.dataspacetck.dsp:dsp-api", version.ref = "dsp-tck" }
+dsp-tck-system = { module = "org.eclipse.dataspacetck.dsp:dsp-system", version.ref = "dsp-tck" }
+dsp-tck-metadata = { module = "org.eclipse.dataspacetck.dsp:dsp-metadata", version.ref = "dsp-tck" }
+dsp-tck-catalog = { module = "org.eclipse.dataspacetck.dsp:dsp-catalog", version.ref = "dsp-tck" }
+dsp-tck-contractnegotiation = { module = "org.eclipse.dataspacetck.dsp:dsp-contract-negotiation", version.ref = "dsp-tck" }
+dsp-tck-transferprocess = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer-process", version.ref = "dsp-tck" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
+tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
+
+# DSP libraries
+dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
+dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
 
 # Federated Catalog modules
 edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }
@@ -158,7 +181,6 @@ edc-spi-dataplane-selector = { module = "org.eclipse.edc:data-plane-selector-spi
 edc-spi-dataplane-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-http = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
 edc-dpf-core = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
-edc-dpf-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 edc-dpf-http = { module = "org.eclipse.edc:data-plane-http", version.ref = "edc" }
 
 # micrometer and other infra stuff
@@ -207,4 +229,4 @@ edc-sts = [
 docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0" }
 nexus = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.8" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.34" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.35" }

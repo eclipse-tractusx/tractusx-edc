@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "cred": "https://www.w3.org/2018/credentials#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "cx-policy": "https://w3id.org/tractusx/policy/v1.0.0/",
+    "Dismantler": "cx-policy:Dismantler",
+    "Dismantler.activityType": "cx-policy:Dismantler.activityType",
+    "Dismantler.allowedBrands": "cx-policy:Dismantler.allowedBrands",
+    "Membership": "cx-policy:Membership",
+    "UsagePurpose": "cx-policy:UsagePurpose",
+    "ContractReference": "cx-policy:ContractReference",
+    "FrameworkAgreement": "cx-policy:FrameworkAgreement",
+    "FrameworkAgreement.behavioraltwin": "cx-policy:FrameworkAgreement.behavioraltwin",
+    "FrameworkAgreement.pcf": "cx-policy:FrameworkAgreement.pcf",
+    "FrameworkAgreement.quality": "cx-policy:FrameworkAgreement.quality",
+    "FrameworkAgreement.resiliency": "cx-policy:FrameworkAgreement.resiliency",
+    "FrameworkAgreement.sustainability": "cx-policy:FrameworkAgreement.sustainability",
+    "FrameworkAgreement.traceability": "cx-policy:FrameworkAgreement.traceability"
+  }
+}

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Cofinity-X GmbH
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -159,7 +160,7 @@ class BdrsClientImplComponentTest {
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(token, CredentialFormat.VC1_0_JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
 
-        assertThatThrownBy(() -> client.resolve("BPN1")).isInstanceOf(EdcException.class)
+        assertThatThrownBy(() -> client.resolveDid("BPN1")).isInstanceOf(EdcException.class)
                 .hasMessageContaining("code: 401, message: Unauthorized");
     }
 
@@ -176,7 +177,7 @@ class BdrsClientImplComponentTest {
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
-        assertThatThrownBy(() -> client.resolve("BPN1"))
+        assertThatThrownBy(() -> client.resolveDid("BPN1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessageContaining("code: 401, message: Unauthorized");
     }
@@ -194,7 +195,7 @@ class BdrsClientImplComponentTest {
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
-        assertThatThrownBy(() -> client.resolve("BPN1"))
+        assertThatThrownBy(() -> client.resolveDid("BPN1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessageContaining("code: 401, message: Unauthorized");
     }
@@ -212,7 +213,7 @@ class BdrsClientImplComponentTest {
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
         assertThatNoException().describedAs(BDRS_SERVER_CONTAINER::getLogs)
-                .isThrownBy(() -> client.resolve("BPN1"));
+                .isThrownBy(() -> client.resolveDid("BPN1"));
     }
 
     @Test
@@ -227,7 +228,7 @@ class BdrsClientImplComponentTest {
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(presentation, CredentialFormat.VC1_0_JWT, null))));
 
-        assertThatThrownBy(() -> client.resolve("BPN1"))
+        assertThatThrownBy(() -> client.resolveDid("BPN1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessageContaining("code: 401, message: Unauthorized");
     }

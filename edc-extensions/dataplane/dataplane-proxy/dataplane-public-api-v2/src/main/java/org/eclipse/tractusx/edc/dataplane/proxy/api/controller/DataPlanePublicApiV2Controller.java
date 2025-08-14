@@ -167,8 +167,12 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
 
         AsyncStreamingDataSink.AsyncResponseContext asyncResponseContext = callback -> {
             StreamingOutput output = t -> callback.outputStreamConsumer().accept(t);
-            var resp = Response.ok(output).type(callback.mediaType()).build();
-            return response.resume(resp);
+            var resp = Response
+                    .status(retrieveStatusCode(callback.statusCode()))
+                    .entity(output)
+                    .type(callback.mediaType());
+            enrichHeaders(resp, callback.mediaType(), callback.proxyHeaders());
+            return response.resume(resp.build());
         };
 
         var sink = new AsyncStreamingDataSink(asyncResponseContext, executorService);
@@ -184,6 +188,24 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
                         response.resume(error(INTERNAL_SERVER_ERROR, List.of(error)));
                     }
                 });
+    }
+
+    private void enrichHeaders(
+            Response.ResponseBuilder responseBuilder,
+            String contentType,
+            Map<String, String> proxyHeaders) {
+        proxyHeaders.forEach(responseBuilder::header);
+        // Replacing CONTENT_TYPE header for jakarta.ws.rs.core.Response requires setting to null first
+        responseBuilder.header(HttpHeaders.CONTENT_TYPE, null);
+        responseBuilder.header(HttpHeaders.CONTENT_TYPE, contentType);
+    }
+
+    private static Response.Status retrieveStatusCode(String statusCode) {
+        try {
+            return Response.Status.fromStatusCode(Integer.parseInt(statusCode));
+        } catch (NumberFormatException e) {
+            return Response.Status.INTERNAL_SERVER_ERROR;
+        }
     }
 
 }

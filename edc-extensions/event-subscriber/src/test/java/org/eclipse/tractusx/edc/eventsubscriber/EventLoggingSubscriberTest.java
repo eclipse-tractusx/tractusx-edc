@@ -49,7 +49,6 @@ import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +73,12 @@ class EventLoggingSubscriberTest {
 
     @Test
     void on_unsuccessfulHttpCall_logsWarningMessage() throws IOException {
-        var req = new Request(HttpUrl.parse("http://uri.com"), "POST", Headers.of(), RequestBody.create(new byte[] {}), Map.of());
+        var req = new Request.Builder()
+                .url(HttpUrl.parse("http://uri.com"))
+                .headers(Headers.of())
+                .method("POST", RequestBody.create(new byte[] {}))
+                .build();
+
         var body = ResponseBody.create("{}", MediaType.get("application/json"));
 
         when(mockedHttpClient.execute(any())).thenReturn(new Response.Builder().body(body).request(req).protocol(Protocol.HTTP_2).message("message").code(500).build());

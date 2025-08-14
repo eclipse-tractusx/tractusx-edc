@@ -1,4 +1,5 @@
 /********************************************************************************
+ * Copyright (c) 2025 Cofinity-X GmbH
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -27,6 +28,7 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
@@ -45,7 +47,28 @@ public interface Runtimes {
                         .configurationProvider(configurationProvider)
                         .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
                         .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
-                        .registerServiceMock(BdrsClient.class, (s) -> s)
+                        .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
         );
     }
+
+    static RuntimeExtension discoveryRuntimeFullDsp(TractusxParticipantBase participant) {
+        return discoveryRuntime(participant, ":edc-tests:runtime:runtime-discovery:runtime-discovery-base");
+    }
+
+    static RuntimeExtension discoveryRuntimeDsp08(TractusxParticipantBase participant) {
+        return discoveryRuntime(participant, ":edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08");
+    }
+
+    static RuntimeExtension discoveryRuntimeNoProtocols(TractusxParticipantBase participant) {
+        return discoveryRuntime(participant, ":edc-tests:runtime:runtime-discovery:runtime-discovery-no-protocols");
+    }
+
+    static RuntimeExtension discoveryRuntime(TractusxParticipantBase participant, String module) {
+        return new ParticipantRuntimeExtension(new EmbeddedRuntime(participant.getName(), module)
+                .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
+                .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
+                .configurationProvider(participant::getConfig));
+    }
+
+
 }

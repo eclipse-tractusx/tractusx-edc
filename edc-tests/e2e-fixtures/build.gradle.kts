@@ -27,6 +27,7 @@ dependencies {
     testFixturesApi(project(":spi:core-spi"))
     testFixturesApi(project(":spi:edr-spi"))
     testFixturesApi(project(":edc-extensions:agreements:retirement-evaluation-spi"))
+    testFixturesApi(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
     testFixturesApi(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
 
 

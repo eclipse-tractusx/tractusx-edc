@@ -25,6 +25,7 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.AfterEach;
@@ -90,7 +91,7 @@ public class TransferWithTokenRefreshTest {
                     "edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY),
                     "edc.dataplane.token.expiry.tolerance", "0"
             ))))
-            .registerServiceMock(BdrsClient.class, (c) -> CONSUMER.getDid());
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient((c) -> CONSUMER.getDid(), (c) -> CONSUMER.getBpn()));
 
     private ClientAndServer server;
     private String privateBackendUrl;
