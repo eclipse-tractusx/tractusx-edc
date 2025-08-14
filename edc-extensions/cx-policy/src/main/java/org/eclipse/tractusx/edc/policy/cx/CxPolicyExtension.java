@@ -35,7 +35,10 @@ import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlPermissionCon
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionPermissionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibitionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationSharingConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.contracttermination.ContractTerminationConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction;
@@ -72,7 +75,10 @@ import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
 import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction.CONFIDENTIAL_INFORMATION_MEASURES;
+import static org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationSharingConstraintFunction.CONFIDENTIAL_INFORMATION_SHARING;
 import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.contracttermination.ContractTerminationConstraintFunction.CONTRACT_TERMINATION;
 import static org.eclipse.tractusx.edc.policy.cx.datafrequency.DataFrequencyConstraintFunction.DATA_FREQUENCY;
 import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDateConstraintFunction.DATA_PROVISIONING_END_DATE;
 import static org.eclipse.tractusx.edc.policy.cx.dataprovisioning.DataProvisioningEndDurationDaysConstraintFunction.DATA_PROVISIONING_END_DURATION_DAYS;
@@ -242,6 +248,21 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS), new WarrantyDurationMonthsConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS), new WarrantyDurationMonthsConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONTRACT_TERMINATION), new ContractTerminationConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONTRACT_TERMINATION), new ContractTerminationConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_MEASURES), new ConfidentialInformationMeasuresConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_MEASURES), new ConfidentialInformationMeasuresConstraintFunction<>());
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_SHARING), new ConfidentialInformationSharingConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
+                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_SHARING), new ConfidentialInformationSharingConstraintFunction<>());
     }
 
     public static void registerBindings(RuleBindingRegistry registry) {
@@ -259,7 +280,8 @@ public class CxPolicyExtension implements ServiceExtension {
 
         var namesInCatalogScope = Set.of(
                 withCxPolicyNsPrefix(USAGE_PURPOSE),
-                withCxPolicyNsPrefix(CONTRACT_REFERENCE));
+                withCxPolicyNsPrefix(CONTRACT_REFERENCE)
+        );
         registerBindingSet(registry, namesInCatalogScope, CATALOG_SCOPE);
 
         var namesInNegotiationScope = Set.of(
@@ -284,7 +306,10 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(WARRANTY),
                 withCxPolicyNsPrefix(WARRANTY_DEFINITION),
                 withCxPolicyNsPrefix(WARRANTY_DURATION_MONTHS),
-                withCxPolicyNsPrefix(USAGE_RESTRICTION)
+                withCxPolicyNsPrefix(USAGE_RESTRICTION),
+                withCxPolicyNsPrefix(CONTRACT_TERMINATION),
+                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_MEASURES),
+                withCxPolicyNsPrefix(CONFIDENTIAL_INFORMATION_SHARING)
         );
         registerBindingSet(registry, namesInNegotiationScope, NEGOTIATION_SCOPE);
 
