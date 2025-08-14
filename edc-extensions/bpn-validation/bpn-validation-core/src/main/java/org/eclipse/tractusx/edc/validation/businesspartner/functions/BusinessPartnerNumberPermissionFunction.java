@@ -64,8 +64,7 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
         }
 
         return switch (operator) {
-            case IS_ANY_OF ->
-                    checkListContains(identity, rightOperand, operator).orElse(reportFailure(context));
+            case IS_ANY_OF -> checkListContains(identity, rightOperand, operator).orElse(reportFailure(context));
             case IS_NONE_OF -> checkListContains(identity, rightOperand, operator)
                     .map(b -> !b)
                     .orElse(reportFailure(context));
@@ -96,7 +95,7 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
                     .formatted(SUPPORTED_OPERATORS, operator));
         }
 
-        if (!(rightValue instanceof String s)){
+        if (!(rightValue instanceof String s)) {
             return Result.failure("Invalid right-operand: right operand must be a string");
         }
 
