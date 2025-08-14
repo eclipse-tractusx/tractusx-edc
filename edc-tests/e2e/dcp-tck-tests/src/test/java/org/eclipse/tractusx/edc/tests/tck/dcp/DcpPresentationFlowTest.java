@@ -47,6 +47,7 @@ import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +88,7 @@ public class DcpPresentationFlowTest {
             new EmbeddedRuntime("Connector-under-test", ":edc-controlplane:edc-controlplane-base")
                     .registerServiceMock(SecureTokenService.class, STS_MOCK)
                     .registerServiceMock(DcpParticipantAgentServiceExtension.class, EXTRACTOR_MOCK)
-                    .registerServiceMock(BdrsClient.class, (s) -> s)
+                    .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
                     .configurationProvider(DcpPresentationFlowTest::runtimeConfiguration));
     private ClientAndServer didServer;
     private ECKey verifierKey;

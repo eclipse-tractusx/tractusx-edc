@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.discovery.e2e;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.Runtimes;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ public class DiscoveryTest {
 
     @RegisterExtension
     static final RuntimeExtension CONSUMER_RUNTIME = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
-            .registerServiceMock(BdrsClient.class, DiscoveryTest::resolveProviderDid);
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient(DiscoveryTest::resolveProviderDid, (s) -> s));
 
 
     @RegisterExtension
