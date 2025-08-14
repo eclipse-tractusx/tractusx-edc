@@ -20,19 +20,13 @@
 package org.eclipse.tractusx.edc.postgresql.migration.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.eclipse.edc.policy.model.Action;
-import org.eclipse.edc.policy.model.AndConstraint;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.Constraint;
 import org.eclipse.edc.policy.model.LiteralExpression;
 import org.eclipse.edc.policy.model.MultiplicityConstraint;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.policy.model.Rule;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,40 +133,6 @@ public final class PolicyMigrationUtil {
                 .leftExpression(new LiteralExpression(namespaceMapping.get(leftExpressionValue)))
                 .operator(atomicConstraint.getOperator())
                 .rightExpression(atomicConstraint.getRightExpression())
-                .build();
-    }
-
-    public static int constraintsWithLeftExpressions(Policy policy, Set<String> leftExpressions) {
-        return numberOfConstraintsInRulesWithLeftExpression(policy.getPermissions(), leftExpressions) +
-                numberOfConstraintsInRulesWithLeftExpression(policy.getProhibitions(), leftExpressions) +
-                numberOfConstraintsInRulesWithLeftExpression(policy.getObligations(), leftExpressions);
-    }
-
-    public static Constraint andConstraint(Constraint... constraints) {
-        return AndConstraint.Builder.newInstance()
-                .constraints(Arrays.asList(constraints))
-                .build();
-    }
-
-    public static Constraint atomicConstraint(String leftExpression) {
-        return AtomicConstraint.Builder.newInstance()
-                .leftExpression(new LiteralExpression(leftExpression))
-                .rightExpression(new LiteralExpression("right-value"))
-                .operator(Operator.EQ)
-                .build();
-    }
-
-    public static Permission permission(Constraint... constraints) {
-        return Permission.Builder.newInstance()
-                .action(Action.Builder.newInstance().type("use").build())
-                .constraints(Arrays.asList(constraints))
-                .build();
-    }
-
-    public static Prohibition prohibition(Constraint... constraints) {
-        return Prohibition.Builder.newInstance()
-                .action(Action.Builder.newInstance().type("use").build())
-                .constraints(Arrays.asList(constraints))
                 .build();
     }
 }

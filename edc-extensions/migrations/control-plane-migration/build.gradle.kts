@@ -20,6 +20,7 @@
 plugins {
     `maven-publish`
     `java-library`
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -40,4 +41,6 @@ dependencies {
 
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
+
+    testFixturesImplementation(libs.edc.sql.policy.definition)
 }

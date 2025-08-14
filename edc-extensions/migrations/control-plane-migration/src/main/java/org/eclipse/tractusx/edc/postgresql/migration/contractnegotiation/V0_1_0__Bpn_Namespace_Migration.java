@@ -54,34 +54,40 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
 
         mapper.registerSubtypes(Permission.class, Prohibition.class, AtomicConstraint.class, AndConstraint.class, OrConstraint.class, XoneConstraint.class, LiteralExpression.class);
 
-        try (var stmt = context.getConnection().createStatement(); var rs = stmt.executeQuery(selectAllAgreementStatement)) {
-            while (rs.next()) {
-                String id = rs.getString("agr_id");
-                String policyJson = rs.getString("policy");
-                Policy policy = mapper.readValue(policyJson, new TypeReference<Policy>() {
-                });
+        var connection = context.getConnection();
+        try (var selectAgreements = connection.createStatement();
+             var selectNegotiations = connection.createStatement();
+             var updateAgreement = connection.prepareStatement(updateAgreementStatement);
+             var updateNegotiation = connection.prepareStatement(updateNegotiationStatement)) {
 
-                if (updatePolicy(policy)) {
-                    updateAgreementInDb(context, id, mapper.writeValueAsString(policy));
+            try (var rs = selectAgreements.executeQuery(selectAllAgreementStatement)) {
+                while (rs.next()) {
+                    String id = rs.getString("agr_id");
+                    String policyJson = rs.getString("policy");
+                    Policy policy = mapper.readValue(policyJson, new TypeReference<Policy>() {
+                    });
+
+                    if (updatePolicy(policy)) {
+                        updateAgreementInDb(updateAgreement, id, mapper.writeValueAsString(policy));
+                    }
                 }
             }
-        }
+            try (var rs = selectNegotiations.executeQuery(selectAllNegotiationStatement)) {
+                while (rs.next()) {
+                    String id = rs.getString("id");
+                    String contractOffersJson = rs.getString("contract_offers");
+                    List<ContractOffer> contractOffers = mapper.readValue(contractOffersJson, new TypeReference<List<ContractOffer>>() {
+                    });
 
-        try (var stmt = context.getConnection().createStatement(); var rs = stmt.executeQuery(selectAllNegotiationStatement)) {
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String contractOffersJson = rs.getString("contract_offers");
-                List<ContractOffer> contractOffers = mapper.readValue(contractOffersJson, new TypeReference<List<ContractOffer>>() {
-                });
-
-                if (updateContractOffers(context, mapper, id, contractOffers)) {
-                    updateNegotiationInDb(context, id, mapper.writeValueAsString(contractOffers));
+                    if (updateContractOffers(contractOffers)) {
+                        updateNegotiationInDb(updateNegotiation, id, mapper.writeValueAsString(contractOffers));
+                    }
                 }
             }
         }
     }
 
-    private boolean updateContractOffers(Context context, ObjectMapper mapper, String id, List<ContractOffer> contractOffers) throws JsonProcessingException {
+    private boolean updateContractOffers(List<ContractOffer> contractOffers) throws JsonProcessingException {
         boolean isOfferUpdated = false;
         for (ContractOffer offer : contractOffers) {
             if (updatePolicy(offer.getPolicy())) {
@@ -92,8 +98,8 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
     }
 
 
-    private void updateAgreementInDb(Context context, String id, String policy) {
-        try (PreparedStatement ps = context.getConnection().prepareStatement(updateAgreementStatement)) {
+    private void updateAgreementInDb(PreparedStatement ps, String id, String policy) {
+        try {
             ps.setString(1, policy);
             ps.setString(2, id);
             ps.executeUpdate();
@@ -102,8 +108,8 @@ public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
         }
     }
 
-    private void updateNegotiationInDb(Context context, String id, String contractOffers) {
-        try (PreparedStatement ps = context.getConnection().prepareStatement(updateNegotiationStatement)) {
+    private void updateNegotiationInDb(PreparedStatement ps, String id, String contractOffers) {
+        try {
             ps.setString(1, contractOffers);
             ps.setString(2, id);
             ps.executeUpdate();

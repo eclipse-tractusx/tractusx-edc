@@ -44,12 +44,12 @@ import java.time.Clock;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.postgresql.migration.util.ContractNegotiationMigrationUtil.negotiation;
-import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.andConstraint;
-import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.atomicConstraint;
-import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.constraintsWithLeftExpressions;
-import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.permission;
-import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.prohibition;
+import static org.eclipse.tractusx.edc.postgresql.migration.PolicyMigrationTestFixture.andConstraint;
+import static org.eclipse.tractusx.edc.postgresql.migration.PolicyMigrationTestFixture.atomicConstraint;
+import static org.eclipse.tractusx.edc.postgresql.migration.PolicyMigrationTestFixture.constraintsWithLeftExpressions;
+import static org.eclipse.tractusx.edc.postgresql.migration.PolicyMigrationTestFixture.negotiation;
+import static org.eclipse.tractusx.edc.postgresql.migration.PolicyMigrationTestFixture.permission;
+import static org.eclipse.tractusx.edc.postgresql.migration.PolicyMigrationTestFixture.prohibition;
 
 @PostgresqlIntegrationTest
 @ExtendWith(PostgresqlStoreSetupExtension.class)

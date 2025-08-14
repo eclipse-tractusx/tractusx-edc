@@ -1,37 +1,61 @@
-/********************************************************************************
- * Copyright (c) 2025 Fraunhofer Institute for Software and Systems Engineering - initial API and implementation
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+package org.eclipse.tractusx.edc.postgresql.migration;
 
-package org.eclipse.tractusx.edc.postgresql.migration.util;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.ContractOfferId;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
+import org.eclipse.edc.policy.model.Action;
+import org.eclipse.edc.policy.model.AndConstraint;
+import org.eclipse.edc.policy.model.AtomicConstraint;
+import org.eclipse.edc.policy.model.Constraint;
+import org.eclipse.edc.policy.model.LiteralExpression;
+import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.spi.entity.ProtocolMessages;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Set;
 
-public class ContractNegotiationMigrationUtil {
-    private ContractNegotiationMigrationUtil() {
+import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.numberOfConstraintsInRulesWithLeftExpression;
+
+public final class PolicyMigrationTestFixture {
+    public static int constraintsWithLeftExpressions(Policy policy, Set<String> leftExpressions) {
+        return numberOfConstraintsInRulesWithLeftExpression(policy.getPermissions(), leftExpressions) +
+                numberOfConstraintsInRulesWithLeftExpression(policy.getProhibitions(), leftExpressions) +
+                numberOfConstraintsInRulesWithLeftExpression(policy.getObligations(), leftExpressions);
+    }
+
+    public static Constraint andConstraint(Constraint... constraints) {
+        return AndConstraint.Builder.newInstance()
+                .constraints(Arrays.asList(constraints))
+                .build();
+    }
+
+    public static Constraint atomicConstraint(String leftExpression) {
+        return AtomicConstraint.Builder.newInstance()
+                .leftExpression(new LiteralExpression(leftExpression))
+                .rightExpression(new LiteralExpression("right-value"))
+                .operator(Operator.EQ)
+                .build();
+    }
+
+    public static Permission permission(Constraint... constraints) {
+        return Permission.Builder.newInstance()
+                .action(Action.Builder.newInstance().type("use").build())
+                .constraints(Arrays.asList(constraints))
+                .build();
+    }
+
+    public static Prohibition prohibition(Constraint... constraints) {
+        return Prohibition.Builder.newInstance()
+                .action(Action.Builder.newInstance().type("use").build())
+                .constraints(Arrays.asList(constraints))
+                .build();
     }
 
     public static ContractNegotiation negotiation(String id, Policy policy) {
@@ -73,5 +97,4 @@ public class ContractNegotiationMigrationUtil {
                 .assetId(policy.getTarget())
                 .build();
     }
-
 }
