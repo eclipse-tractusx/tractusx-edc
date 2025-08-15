@@ -37,8 +37,8 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACCESS_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MUTUALLY_EXCLUSIVE_CONSTRAINTS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MUTUALLY_EXCLUSIVE_CONSTRAINTS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_OBLIGATION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PERMISSION_POLICY_ALLOWED_LEFT_OPERANDS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS;
@@ -132,7 +132,7 @@ public class LeftOperandValidator implements Validator<JsonObject> {
             this.path = path;
             this.allowedValues = allowedValues;
             this.id = path.last();
-            this.encounteredConstraints  = encounteredConstraints;
+            this.encounteredConstraints = encounteredConstraints;
         }
 
         @Override
@@ -152,7 +152,7 @@ public class LeftOperandValidator implements Validator<JsonObject> {
             if (hasMutualExclusionConflict.failed()) {
                 return hasMutualExclusionConflict;
             }
-            if (encounteredConstraints  != null)encounteredConstraints.add(value);
+            if (encounteredConstraints != null) encounteredConstraints.add(value);
             return ValidationResult.success();
         }
 

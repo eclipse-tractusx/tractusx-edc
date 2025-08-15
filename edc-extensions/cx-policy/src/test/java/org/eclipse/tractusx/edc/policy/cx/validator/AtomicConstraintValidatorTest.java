@@ -66,7 +66,7 @@ class AtomicConstraintValidatorTest {
         String jsonString = constraint.toString();
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
-        assertThat(result.succeeded()).isTrue();
+        assertThat(result).isSucceeded();
     }
 
     @Test

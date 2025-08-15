@@ -45,7 +45,6 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.INFORCE_POLICY_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_POLICY_TYPE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_RESTRICTION_LITERAL;
 
@@ -184,7 +183,7 @@ class LeftOperandValidatorTest {
                 .build();
 
         ValidationResult result = LeftOperandValidator
-                .instance(JsonObjectValidator.newValidator(), USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(MEMBERSHIP_LITERAL)))
+                .instance(JsonObjectValidator.newValidator(), ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(MEMBERSHIP_LITERAL)))
                 .build()
                 .validate(input);
 
@@ -198,7 +197,7 @@ class LeftOperandValidatorTest {
                 .build();
 
         ValidationResult result = LeftOperandValidator
-                .instance(JsonObjectValidator.newValidator(), USAGE_POLICY_TYPE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(USAGE_PURPOSE_LITERAL)))
+                .instance(JsonObjectValidator.newValidator(), ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(USAGE_PURPOSE_LITERAL)))
                 .build()
                 .validate(input);
 
