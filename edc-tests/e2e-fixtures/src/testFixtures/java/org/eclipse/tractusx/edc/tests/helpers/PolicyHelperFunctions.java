@@ -44,7 +44,6 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 public class PolicyHelperFunctions {
 
@@ -174,7 +173,7 @@ public class PolicyHelperFunctions {
 
         var bpnConstraint = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
-                .add("leftOperand", TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY)
+                .add("leftOperand", CX_POLICY_NS + BUSINESS_PARTNER_EVALUATION_KEY)
                 .add("operator", operator.getOdrlRepresentation())
                 .add("rightOperand", bpnArray)
                 .build();
