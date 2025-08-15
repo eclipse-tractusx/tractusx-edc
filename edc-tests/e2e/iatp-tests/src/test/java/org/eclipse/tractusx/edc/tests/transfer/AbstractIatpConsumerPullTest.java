@@ -124,6 +124,8 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
                 .withMethod("GET"), VerificationTimes.exactly(1));
     }
 
+    // TODO: Add test for transfer process with a contract policy that is not fulfilled
+
     @DisplayName("Expect the Catalog request to fail if a credential is expired")
     @Test
     void catalogRequest_whenCredentialExpired() {
@@ -240,7 +242,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), "access");
+        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access");
     }
 
     protected abstract RuntimeExtension consumerRuntime();
@@ -253,7 +255,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), "access"), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access"), "MembershipCredential"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use"), "DataExchangeGovernance use case")
             );
         }

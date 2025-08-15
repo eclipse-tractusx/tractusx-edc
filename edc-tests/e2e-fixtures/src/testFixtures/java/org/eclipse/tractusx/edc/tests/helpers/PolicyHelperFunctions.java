@@ -44,6 +44,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 public class PolicyHelperFunctions {
 
@@ -179,7 +180,7 @@ public class PolicyHelperFunctions {
                 .build();
 
         var permission = Json.createObjectBuilder()
-                .add("action", "access")
+                .add("action", CX_POLICY_NS + "access")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("and", bpnConstraint)
@@ -198,7 +199,7 @@ public class PolicyHelperFunctions {
         var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups), false);
 
         var permission = Json.createObjectBuilder()
-                .add("action", "access")
+                .add("action", CX_POLICY_NS + "access")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("and", groupConstraint)
@@ -228,7 +229,7 @@ public class PolicyHelperFunctions {
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "access")
+                .add("action", CX_POLICY_NS + "access")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
                         .add("and", bpnConstraints)
