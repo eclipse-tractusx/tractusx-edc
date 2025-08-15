@@ -228,6 +228,4 @@ class AtomicConstraintValidatorTest {
 
         assertThat(result).isFailed();
     }
-
-
 }

@@ -89,5 +89,4 @@ class ConstraintValidatorTest {
 
         assertThat(result).isFailed();
     }
-
 }

@@ -106,7 +106,6 @@ class LogicalConstraintValidatorTest {
         assertThat(result).isFailed();
     }
 
-
     private ValidationResult validateLogicalConstraint(JsonObject input, String policyType) {
         return LogicalConstraintValidator.instance(path, policyType, ODRL_PERMISSION_ATTRIBUTE).validate(input);
     }
