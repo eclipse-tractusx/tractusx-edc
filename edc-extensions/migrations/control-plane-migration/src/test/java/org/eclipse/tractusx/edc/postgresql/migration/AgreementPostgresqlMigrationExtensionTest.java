@@ -81,7 +81,7 @@ public class AgreementPostgresqlMigrationExtensionTest {
     }
 
     @Test
-    void version010shouldUpdateBusinessPartnerNamespace(PostgresqlStoreSetupExtension extension) {
+    void version0010shouldUpdateBusinessPartnerNamespace(PostgresqlStoreSetupExtension extension) {
         var dataSource = extension.getDataSourceRegistry().resolve(extension.getDatasourceName());
 
         FlywayManager.migrate(dataSource, "contractnegotiation", "public", MigrationVersion.fromVersion("0.0.9"));
@@ -92,7 +92,7 @@ public class AgreementPostgresqlMigrationExtensionTest {
         int oldBpgExpressions = constraintsWithLeftExpressions(policy, Set.of(oldBpgLeftOperand));
         int oldBpnExpressions = constraintsWithLeftExpressions(policy, Set.of(oldBpnLeftOperand));
 
-        FlywayManager.migrate(dataSource, "contractnegotiation", "public", MigrationVersion.fromVersion("0.1.0"));
+        FlywayManager.migrate(dataSource, "contractnegotiation", "public", MigrationVersion.fromVersion("0.0.10"));
         var result = store.findById("1");
 
         assertThat(result).isNotNull();

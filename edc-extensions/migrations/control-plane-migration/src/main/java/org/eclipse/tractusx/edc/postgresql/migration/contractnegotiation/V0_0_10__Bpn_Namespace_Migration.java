@@ -41,7 +41,7 @@ import java.util.List;
 import static org.eclipse.tractusx.edc.postgresql.migration.util.PolicyMigrationUtil.updatePolicy;
 
 @SuppressWarnings("checkstyle:TypeName")
-public class V0_1_0__Bpn_Namespace_Migration extends BaseJavaMigration {
+public class V0_0_10__Bpn_Namespace_Migration extends BaseJavaMigration {
 
     private final String updateAgreementStatement = "UPDATE edc_contract_agreement SET policy = ?::json WHERE agr_id = ?";
     private final String updateNegotiationStatement = "UPDATE edc_contract_negotiation SET contract_offers = ?::json WHERE id = ?";
