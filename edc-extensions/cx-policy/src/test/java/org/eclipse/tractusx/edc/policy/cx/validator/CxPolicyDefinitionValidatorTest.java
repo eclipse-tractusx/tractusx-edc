@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_TYPE_SET;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
@@ -40,8 +42,13 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.ruleWithoutActionType;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DATE_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.WARRANTY_DEFINITION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.WARRANTY_DURATION_MONTHS_LITERAL;
 
 class CxPolicyDefinitionValidatorTest {
 
@@ -146,5 +153,62 @@ class CxPolicyDefinitionValidatorTest {
 
         assertThat(result).isFailed();
         FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy contains inconsistent policy types"));
+    }
+
+    @Test
+    void shouldReturnFailure_whenPermissionContainsMutuallyExclusiveConstraints() {
+        JsonObject usagePermission = rule(ACTION_USAGE,
+                atomicConstraint(WARRANTY_DURATION_MONTHS_LITERAL),
+                atomicConstraint(WARRANTY_DEFINITION_LITERAL)
+        );
+        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, usagePermission);
+        JsonObject input = policyDefinition(policy, "some-id");
+
+        ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
+                msg.contains(WARRANTY_DURATION_MONTHS_LITERAL) && msg.contains(WARRANTY_DEFINITION_LITERAL) && msg.contains("is mutually exclusive"));
+    }
+
+    @Test
+    void shouldReturnFailure_whenObligationContainsMutuallyExclusiveConstraints() {
+        JsonObject usagePermission = rule(ACTION_USAGE,
+                atomicConstraint(WARRANTY_DURATION_MONTHS_LITERAL)
+        );
+
+        JsonObject usageObligation = rule(ACTION_USAGE,
+                atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL),
+                atomicConstraint(DATA_PROVISIONING_END_DATE_LITERAL)
+        );
+        JsonObject policy = Json.createObjectBuilder()
+                .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
+                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(usagePermission))
+                .add(ODRL_OBLIGATION_ATTRIBUTE, Json.createArrayBuilder().add(usageObligation))
+                .build();
+
+        JsonObject input = policyDefinition(policy, "some-id");
+
+        ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
+                msg.contains(DATA_PROVISIONING_END_DURATION_LITERAL) && msg.contains(DATA_PROVISIONING_END_DATE_LITERAL) && msg.contains("is mutually exclusive"));
+    }
+
+    @Test
+    void shouldReturnFailure_whenInvalidLogicalConstraint() {
+        JsonObject logicalConstraint = logicalConstraint(ODRL_OR_CONSTRAINT_ATTRIBUTE,
+                atomicConstraint(MEMBERSHIP_LITERAL),
+                atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL)
+        );
+        JsonObject permission = rule(ACTION_ACCESS, logicalConstraint);
+        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        JsonObject input = policyDefinition(policy, "some-id");
+
+        ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy includes not allowed logical constraints"));
     }
 }

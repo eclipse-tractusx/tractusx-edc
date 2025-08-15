@@ -38,8 +38,9 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DATE_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.INFORCE_POLICY_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_RESTRICTION_LITERAL;
 
@@ -209,9 +210,9 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnFailure_whenMutuallyExclusiveConstraintsInPolicy() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject constraint2 = atomicConstraint(INFORCE_POLICY_LITERAL);
-        JsonObject permission = rule(ACTION_USAGE, constraint, constraint2);
+        JsonObject permission = rule(ACTION_USAGE,
+                atomicConstraint(DATA_USAGE_END_DURATION_LITERAL),
+                atomicConstraint(DATA_USAGE_END_DATE_LITERAL));
         JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
 
         ValidationResult result = validator.validate(input);

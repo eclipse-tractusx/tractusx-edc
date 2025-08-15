@@ -43,10 +43,11 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_GROUP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.INFORCE_POLICY_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_RESTRICTION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.WARRANTY_DEFINITION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.WARRANTY_DURATION_MONTHS_LITERAL;
 
 class LeftOperandValidatorTest {
 
@@ -179,7 +180,7 @@ class LeftOperandValidatorTest {
     @Test
     void shouldReturnSuccess_whenNotMutuallyExclusiveConstraintsPresent() {
         JsonObject input = Json.createObjectBuilder()
-                .add(ID, INFORCE_POLICY_LITERAL)
+                .add(ID, FRAMEWORK_AGREEMENT_LITERAL)
                 .build();
 
         ValidationResult result = LeftOperandValidator
@@ -193,11 +194,11 @@ class LeftOperandValidatorTest {
     @Test
     void shouldReturnFailure_whenMutuallyExclusiveConstraintsPresent() {
         JsonObject input = Json.createObjectBuilder()
-                .add(ID, INFORCE_POLICY_LITERAL)
+                .add(ID, WARRANTY_DURATION_MONTHS_LITERAL)
                 .build();
 
         ValidationResult result = LeftOperandValidator
-                .instance(JsonObjectValidator.newValidator(), ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(USAGE_PURPOSE_LITERAL)))
+                .instance(JsonObjectValidator.newValidator(), ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE, new HashSet<>(Set.of(WARRANTY_DEFINITION_LITERAL)))
                 .build()
                 .validate(input);
 

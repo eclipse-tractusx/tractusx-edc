@@ -152,12 +152,31 @@ public class LeftOperandValidator implements Validator<JsonObject> {
             if (hasMutualExclusionConflict.failed()) {
                 return hasMutualExclusionConflict;
             }
-            if (encounteredConstraints != null) encounteredConstraints.add(value);
+            if (encounteredConstraints != null) {
+                encounteredConstraints.add(value);
+            }
+
             return ValidationResult.success();
         }
 
         private ValidationResult hasMutualExclusionConflict(String leftOperand) {
-            Set<String> mutuallyExclusiveWithCurrent = MUTUALLY_EXCLUSIVE_CONSTRAINTS.getOrDefault(leftOperand, Set.of());
+            Set<String> mutuallyExclusiveWithCurrent = MUTUALLY_EXCLUSIVE_CONSTRAINTS.stream()
+                    .filter(mutuallyExclusive -> mutuallyExclusive.contains(leftOperand))
+                    .findFirst()
+                    .map(mutuallyExclusive -> {
+                        Set<String> exclusiveSet = new HashSet<>(mutuallyExclusive);
+                        exclusiveSet.remove(leftOperand);
+                        return exclusiveSet;
+                    })
+                    .orElse(new HashSet<>());
+
+            for (Set<String> mutuallyExclusive : MUTUALLY_EXCLUSIVE_CONSTRAINTS) {
+                if (mutuallyExclusive.contains(leftOperand)) {
+                    mutuallyExclusiveWithCurrent = new HashSet<>(mutuallyExclusive);
+                    mutuallyExclusiveWithCurrent.remove(leftOperand);
+                    break;
+                }
+            }
 
             return encounteredConstraints.stream()
                     .filter(mutuallyExclusiveWithCurrent::contains)
@@ -168,6 +187,5 @@ public class LeftOperandValidator implements Validator<JsonObject> {
                     })
                     .orElse(ValidationResult.success());
         }
-
     }
 }

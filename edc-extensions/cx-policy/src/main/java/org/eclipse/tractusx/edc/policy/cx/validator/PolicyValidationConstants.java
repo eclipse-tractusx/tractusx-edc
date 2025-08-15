@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
@@ -129,9 +129,9 @@ public final class PolicyValidationConstants {
             DATA_PROVISIONING_END_DATE_LITERAL
     );
 
-    public static final Map<String, Set<String>> MUTUALLY_EXCLUSIVE_CONSTRAINTS = Map.of(
-            USAGE_PURPOSE_LITERAL, Set.of(INFORCE_POLICY_LITERAL, MEMBERSHIP_LITERAL),
-            INFORCE_POLICY_LITERAL, Set.of(USAGE_PURPOSE_LITERAL)
+    public static final List<Set<String>> MUTUALLY_EXCLUSIVE_CONSTRAINTS = List.of(
+            Set.of(WARRANTY_DURATION_MONTHS_LITERAL, WARRANTY_DEFINITION_LITERAL),
+            Set.of(DATA_USAGE_END_DURATION_LITERAL, DATA_USAGE_END_DATE_LITERAL, DATA_USAGE_END_DEFINITION_LITERAL),
+            Set.of(DATA_PROVISIONING_END_DURATION_LITERAL, DATA_PROVISIONING_END_DATE_LITERAL)
     );
-
 }
