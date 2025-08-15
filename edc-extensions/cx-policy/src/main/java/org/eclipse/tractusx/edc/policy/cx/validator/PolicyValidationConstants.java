@@ -27,7 +27,6 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_XONE_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public final class PolicyValidationConstants {
     private PolicyValidationConstants() {
@@ -38,8 +37,8 @@ public final class PolicyValidationConstants {
 
     public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_NS + "FrameworkAgreement";
     public static final String MEMBERSHIP_LITERAL = CX_POLICY_NS + "Membership";
-    public static final String BUSINESS_PARTNER_GROUP_LITERAL = TX_NAMESPACE + "BusinessPartnerGroup";
-    public static final String BUSINESS_PARTNER_NUMBER_LITERAL = TX_NAMESPACE + "BusinessPartnerNumber";
+    public static final String BUSINESS_PARTNER_GROUP_LITERAL = CX_POLICY_NS + "BusinessPartnerGroup";
+    public static final String BUSINESS_PARTNER_NUMBER_LITERAL = CX_POLICY_NS + "BusinessPartnerNumber";
     public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
     public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_NS + "AffiliatesRegion";
     public static final String AFFILIATES_BPNL_LITERAL = CX_POLICY_NS + "AffiliatesBpnl";

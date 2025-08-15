@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension.BUSINESS_PARTNER_CONSTRAINT_KEY;
-import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension.TX_BUSINESS_PARTNER_CONSTRAINT_KEY;
+import static org.eclipse.tractusx.edc.validation.businesspartner.BusinessPartnerNumberValidationExtension.CX_BUSINESS_PARTNER_CONSTRAINT_KEY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,7 +64,7 @@ class BusinessPartnerNumberValidationExtensionTest {
                 .registerFunction(
                         isA(Class.class),
                         eq(Permission.class),
-                        eq(TX_BUSINESS_PARTNER_CONSTRAINT_KEY),
+                        eq(CX_BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
 
         verify(ruleBindingRegistry, times(3))
@@ -72,7 +72,7 @@ class BusinessPartnerNumberValidationExtensionTest {
                         anyString());
 
         verify(ruleBindingRegistry, times(3))
-                .bind(eq(TX_BUSINESS_PARTNER_CONSTRAINT_KEY),
+                .bind(eq(CX_BUSINESS_PARTNER_CONSTRAINT_KEY),
                         anyString());
     }
 

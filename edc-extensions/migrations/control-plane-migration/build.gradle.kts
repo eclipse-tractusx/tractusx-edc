@@ -20,6 +20,7 @@
 plugins {
     `maven-publish`
     `java-library`
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -27,6 +28,8 @@ dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transaction.datasource)
     implementation(libs.edc.sql.assetindex)
+    implementation(libs.edc.sql.policy.definition)
+    implementation(libs.edc.sql.contract.negotiation)
     implementation(libs.edc.lib.sql)
     runtimeOnly(libs.postgres)
 
@@ -38,4 +41,6 @@ dependencies {
 
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
+
+    testFixturesImplementation(libs.edc.sql.policy.definition)
 }
