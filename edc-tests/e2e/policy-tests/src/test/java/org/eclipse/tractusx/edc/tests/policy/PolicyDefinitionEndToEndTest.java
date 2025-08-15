@@ -185,10 +185,11 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(policyFromRules("prohibition",
                             frameworkPermission(Map.of(CX_POLICY_NS + "AffiliatesRegion", "cx.region.europe:1"), "use")), "Usage policy prohibition with not allowed constraints"),
                     Arguments.of(policyFromRules("obligation",
-                            frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "use")), "Usage policy obligation with not allowed constraints")
-
+                            frameworkPermission(Map.of(CX_POLICY_NS + "UsagePurpose", "cx.core.industrycore:1"), "use")), "Usage policy obligation with not allowed constraints"),
+                    Arguments.of(policyFromRules("permission",
+                            frameworkPolicy(CX_POLICY_NS + "WarrantyDurationMonths", Operator.EQ, 3, "use"),
+                            frameworkPolicy(CX_POLICY_NS + "WarrantyDefinition", Operator.EQ, "cx.warranty.contractEndDate:1", "use")), "Policy with mutually exclusive constraints")
             );
         }
     }
-
 }

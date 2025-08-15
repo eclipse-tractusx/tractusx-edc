@@ -20,11 +20,13 @@
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
@@ -211,5 +213,24 @@ class PolicyTypeResolverTest {
 
         Exception ex = assertThrows(IllegalArgumentException.class, () -> PolicyTypeResolver.resolve(policy));
         assertThat(ex.getMessage()).contains("Policy contains inconsistent policy types");
+    }
+
+    @Test
+    void shouldThrowException_whenRuleHasMultipleActions() {
+        JsonArray action = Json.createArrayBuilder()
+                .add(Json.createObjectBuilder().add(ID, ACTION_ACCESS))
+                .add(Json.createObjectBuilder().add(ID, ACTION_USAGE))
+                .build();
+
+        JsonObject permission = Json.createObjectBuilder()
+                .add(ODRL_ACTION_ATTRIBUTE, action)
+                .build();
+
+        JsonObject policy = Json.createObjectBuilder()
+                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
+                .build();
+
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> PolicyTypeResolver.resolve(policy));
+        assertThat(ex.getMessage()).contains("Action array should contain only one action object");
     }
 }
