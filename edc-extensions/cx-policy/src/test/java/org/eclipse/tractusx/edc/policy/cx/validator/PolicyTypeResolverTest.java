@@ -30,6 +30,8 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PolicyTypeResolverTest {
 
@@ -45,7 +47,7 @@ class PolicyTypeResolverTest {
     @Test
     void shouldReturnActionFromPermission_whenPermissionHasStringAction() {
         JsonObject permission = Json.createObjectBuilder()
-                .add(ODRL_ACTION_ATTRIBUTE, "odrl:use")
+                .add(ODRL_ACTION_ATTRIBUTE, ACTION_USAGE)
                 .build();
         JsonObject policy = Json.createObjectBuilder()
                 .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
@@ -53,13 +55,13 @@ class PolicyTypeResolverTest {
 
         String result = PolicyTypeResolver.resolve(policy);
 
-        assertThat(result).isEqualTo("odrl:use");
+        assertThat(result).isEqualTo(ACTION_USAGE);
     }
 
     @Test
     void shouldReturnActionFromPermission_whenPermissionHasObjectAction() {
         JsonObject actionObj = Json.createObjectBuilder()
-                .add("@id", "odrl:use")
+                .add("@id", ACTION_USAGE)
                 .build();
         JsonObject permission = Json.createObjectBuilder()
                 .add(ODRL_ACTION_ATTRIBUTE, actionObj)
@@ -70,13 +72,13 @@ class PolicyTypeResolverTest {
 
         String result = PolicyTypeResolver.resolve(policy);
 
-        assertThat(result).isEqualTo("odrl:use");
+        assertThat(result).isEqualTo(ACTION_USAGE);
     }
 
     @Test
     void shouldReturnActionFromPermission_whenPermissionHasArrayAction() {
         JsonObject actionObj = Json.createObjectBuilder()
-                .add("@id", "odrl:use")
+                .add("@id", ACTION_USAGE)
                 .build();
         JsonArrayBuilder actionArray = Json.createArrayBuilder().add(actionObj);
         JsonObject permission = Json.createObjectBuilder()
@@ -88,13 +90,13 @@ class PolicyTypeResolverTest {
 
         String result = PolicyTypeResolver.resolve(policy);
 
-        assertThat(result).isEqualTo("odrl:use");
+        assertThat(result).isEqualTo(ACTION_USAGE);
     }
 
     @Test
     void shouldReturnActionFromObligation_whenNoPermissionsButObligationsPresent() {
         JsonObject obligation = Json.createObjectBuilder()
-                .add(ODRL_ACTION_ATTRIBUTE, "odrl:compensate")
+                .add(ODRL_ACTION_ATTRIBUTE, ACTION_USAGE)
                 .build();
         JsonObject policy = Json.createObjectBuilder()
                 .add(ODRL_OBLIGATION_ATTRIBUTE, Json.createArrayBuilder().add(obligation))
@@ -102,13 +104,13 @@ class PolicyTypeResolverTest {
 
         String result = PolicyTypeResolver.resolve(policy);
 
-        assertThat(result).isEqualTo("odrl:compensate");
+        assertThat(result).isEqualTo(ACTION_USAGE);
     }
 
     @Test
     void shouldReturnActionFromProhibition_whenNoPermissionsOrObligationsPresent() {
         JsonObject prohibition = Json.createObjectBuilder()
-                .add(ODRL_ACTION_ATTRIBUTE, "odrl:distribute")
+                .add(ODRL_ACTION_ATTRIBUTE, ACTION_USAGE)
                 .build();
         JsonObject policy = Json.createObjectBuilder()
                 .add(ODRL_PROHIBITION_ATTRIBUTE, Json.createArrayBuilder().add(prohibition))
@@ -116,11 +118,11 @@ class PolicyTypeResolverTest {
 
         String result = PolicyTypeResolver.resolve(policy);
 
-        assertThat(result).isEqualTo("odrl:distribute");
+        assertThat(result).isEqualTo(ACTION_USAGE);
     }
 
     @Test
-    void shouldReturnEmptyString_whenRuleHasNoAction() {
+    void shouldThrowException_whenRuleHasNoAction() {
         JsonObject permission = Json.createObjectBuilder()
                 .add("other", "value")
                 .build();
@@ -128,9 +130,8 @@ class PolicyTypeResolverTest {
                 .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
                 .build();
 
-        String result = PolicyTypeResolver.resolve(policy);
-
-        assertThat(result).isEmpty();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> PolicyTypeResolver.resolve(policy));
+        assertThat(ex.getMessage()).contains("Rule does not contain any action field");
     }
 
     @Test
@@ -178,8 +179,37 @@ class PolicyTypeResolverTest {
                 .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
                 .build();
 
-        String result = PolicyTypeResolver.resolve(policy);
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> PolicyTypeResolver.resolve(policy));
+        assertThat(ex.getMessage()).contains("Rule does not contain any action field");
+    }
 
-        assertThat(result).isEmpty();
+    @Test
+    void shouldThrowException_whenRuleHasInvalidAction() {
+        JsonObject permission = Json.createObjectBuilder()
+                .add(ODRL_ACTION_ATTRIBUTE, "invalid-action")
+                .build();
+        JsonObject policy = Json.createObjectBuilder()
+                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
+                .build();
+
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> PolicyTypeResolver.resolve(policy));
+        assertThat(ex.getMessage()).contains("Rule does not contain a valid policy type");
+    }
+
+    @Test
+    void shouldThrowException_whenRuleHasInconsistentActions() {
+        JsonObject permission = Json.createObjectBuilder()
+                .add(ODRL_ACTION_ATTRIBUTE, ACTION_ACCESS)
+                .build();
+        JsonObject prohibition = Json.createObjectBuilder()
+                .add(ODRL_ACTION_ATTRIBUTE, ACTION_USAGE)
+                .build();
+        JsonObject policy = Json.createObjectBuilder()
+                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
+                .add(ODRL_PROHIBITION_ATTRIBUTE, Json.createArrayBuilder().add(prohibition))
+                .build();
+
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> PolicyTypeResolver.resolve(policy));
+        assertThat(ex.getMessage()).contains("Policy contains inconsistent policy types");
     }
 }

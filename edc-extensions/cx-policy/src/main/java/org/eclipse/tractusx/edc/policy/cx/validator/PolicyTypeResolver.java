@@ -23,11 +23,16 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 
 /**
  * Resolves the type of policy based on the action type of its rules.
@@ -36,29 +41,46 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
  * If all of these are empty, it defaults to the access policy type.
  */
 public class PolicyTypeResolver {
+    private static final String EMPTY_ACTION = "";
+
     public static String resolve(JsonObject policy) {
-        if (policy.containsKey(ODRL_PERMISSION_ATTRIBUTE)) {
-            JsonValue permissions = policy.get(ODRL_PERMISSION_ATTRIBUTE);
-            if (!permissions.asJsonArray().isEmpty()) {
-                return getActionFromRule(permissions.asJsonArray().get(0).asJsonObject());
-            }
+        Set<String> actionSet = Stream.of(ODRL_PERMISSION_ATTRIBUTE, ODRL_OBLIGATION_ATTRIBUTE, ODRL_PROHIBITION_ATTRIBUTE)
+                .map(attribute -> getRuleArray(policy, attribute))
+                .filter(rules -> !rules.isEmpty())
+                .flatMap(rules -> rules.stream())
+                .filter(rule -> rule.getValueType() == JsonValue.ValueType.OBJECT)
+                .map(rule -> getActionFromRule(rule.asJsonObject()))
+                .peek(action -> {
+                    if (action.equals(EMPTY_ACTION)) {
+                        throw new IllegalArgumentException("Rule does not contain any action field. Expected one of: " + ODRL_ACTION_ATTRIBUTE);
+                    }
+                    if (!isActionValid(action)) {
+                        throw new IllegalArgumentException("Rule does not contain a valid policy type. Expected one of: " + ACTION_ACCESS + ", " + ACTION_USAGE);
+                    }
+                })
+                .collect(Collectors.toSet());
+
+        if (actionSet.isEmpty()) {
+            // actionSet is empty when all rules are empty. Default to access policy type
+            return ACTION_ACCESS;
         }
 
-        if (policy.containsKey(ODRL_OBLIGATION_ATTRIBUTE)) {
-            JsonValue obligations = policy.get(ODRL_OBLIGATION_ATTRIBUTE);
-            if (!obligations.asJsonArray().isEmpty()) {
-                return getActionFromRule(obligations.asJsonArray().get(0).asJsonObject());
-            }
+        if (actionSet.size() > 1) {
+            throw new IllegalArgumentException("Policy contains inconsistent policy types: " + actionSet + ". Expected only one of: " + ACTION_ACCESS + ", " + ACTION_USAGE);
         }
 
-        if (policy.containsKey(ODRL_PROHIBITION_ATTRIBUTE)) {
-            JsonValue prohibitions = policy.get(ODRL_PROHIBITION_ATTRIBUTE);
-            if (!prohibitions.asJsonArray().isEmpty()) {
-                return getActionFromRule(prohibitions.asJsonArray().get(0).asJsonObject());
-            }
-        }
+        return actionSet.iterator().next();
+    }
 
-        return ACTION_ACCESS;
+    private static boolean isActionValid(String action) {
+        return action.equals(ACTION_ACCESS) || action.equals(ACTION_USAGE);
+    }
+
+    private static JsonArray getRuleArray(JsonObject policy, String attribute) {
+        if (policy.containsKey(attribute)) {
+            return policy.get(attribute).asJsonArray();
+        }
+        return JsonArray.EMPTY_JSON_ARRAY;
     }
 
     private static String getActionFromRule(JsonObject rule) {
@@ -81,6 +103,6 @@ public class PolicyTypeResolver {
 
             return action.toString();
         }
-        return "";
+        return EMPTY_ACTION;
     }
 }

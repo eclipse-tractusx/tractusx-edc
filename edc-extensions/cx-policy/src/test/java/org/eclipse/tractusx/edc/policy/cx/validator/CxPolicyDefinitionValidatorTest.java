@@ -92,7 +92,7 @@ class CxPolicyDefinitionValidatorTest {
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
         assertThat(result).isFailed();
-        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy type is not recognized"));
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Rule does not contain a valid policy type"));
     }
 
     @Test
@@ -117,7 +117,7 @@ class CxPolicyDefinitionValidatorTest {
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
         assertThat(result).isFailed();
-        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy type is not recognized"));
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Rule does not contain any action field"));
     }
 
     @Test
@@ -145,6 +145,6 @@ class CxPolicyDefinitionValidatorTest {
         ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
 
         assertThat(result).isFailed();
-        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Action was expected to be '%s' but was '%s'".formatted(ACTION_USAGE, ACTION_ACCESS)));
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy contains inconsistent policy types"));
     }
 }

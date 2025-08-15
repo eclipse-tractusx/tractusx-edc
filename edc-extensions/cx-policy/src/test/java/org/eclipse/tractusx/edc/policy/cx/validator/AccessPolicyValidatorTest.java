@@ -36,6 +36,7 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.rule;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_NUMBER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
@@ -56,6 +57,18 @@ class AccessPolicyValidatorTest {
         JsonObject constraint = atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL);
         JsonObject permission = rule(ACTION_ACCESS, constraint);
         JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+
+        ValidationResult result = validator.validate(input);
+
+        assertThat(result).isSucceeded();
+    }
+
+    @Test
+    void shouldReturnSuccess_whenMultipleValidAccessPermissionWithConstraints() {
+        JsonObject permission1 = rule(ACTION_ACCESS, atomicConstraint(MEMBERSHIP_LITERAL));
+        JsonObject permission2 = rule(ACTION_ACCESS, atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
+        JsonObject permission3 = rule(ACTION_ACCESS, atomicConstraint(BUSINESS_PARTNER_NUMBER_LITERAL));
+        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission1, permission2, permission3);
 
         ValidationResult result = validator.validate(input);
 
@@ -151,6 +164,17 @@ class AccessPolicyValidatorTest {
         ValidationResult result = validator.validate(input);
 
         assertThat(result).isSucceeded();
+    }
+
+    @Test
+    void shouldReturnFailure_whenAccessPermissionWithInvalidAction() {
+        JsonObject constraint = atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL);
+        JsonObject permission = rule("invalid-action", constraint);
+        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+
+        ValidationResult result = validator.validate(input);
+
+        assertThat(result).isFailed();
     }
 
     @Test
