@@ -98,13 +98,13 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
         generatorService.addGeneratorFunction("HttpData", dataAddress -> endpoint);
 
         if (publicApiResponseUrl != null) {
-            generatorService.addGeneratorFunction("HttpData", () -> Endpoint.url(publicApiResponseUrl));
+            generatorService.addResponseGeneratorFunction("HttpData", () -> Endpoint.url(publicApiResponseUrl));
         }
 
         generatorService.addGeneratorFunction(PROXY_HTTP_DATA_TYPE, dataAddress -> endpoint);
 
         if (publicApiResponseUrl != null) {
-            generatorService.addGeneratorFunction(PROXY_HTTP_DATA_TYPE, () -> Endpoint.url(publicApiResponseUrl));
+            generatorService.addResponseGeneratorFunction(PROXY_HTTP_DATA_TYPE, () -> Endpoint.url(publicApiResponseUrl));
         }
         
         var publicApiController = new DataPlanePublicApiV2Controller(pipelineService, executorService, authorizationService);
