@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.assertions.FailureAssert;
 import org.eclipse.edc.validator.spi.ValidationResult;
@@ -27,7 +28,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
@@ -210,5 +213,29 @@ class CxPolicyDefinitionValidatorTest {
 
         assertThat(result).isFailed();
         FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Policy includes not allowed logical constraints"));
+    }
+
+    @Test
+    void shouldThrowException_whenRuleHasMultipleActions() {
+        JsonArray action = Json.createArrayBuilder()
+                .add(Json.createObjectBuilder().add(ID, ACTION_ACCESS))
+                .add(Json.createObjectBuilder().add(ID, ACTION_USAGE))
+                .build();
+
+        JsonObject permission = Json.createObjectBuilder()
+                .add(ODRL_ACTION_ATTRIBUTE, action)
+                .add(ODRL_CONSTRAINT_ATTRIBUTE, Json.createArrayBuilder().add(atomicConstraint(MEMBERSHIP_LITERAL)))
+                .build();
+
+        JsonObject policy = Json.createObjectBuilder()
+                .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
+                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
+                .build();
+        JsonObject input = policyDefinition(policy, "some-id");
+
+        ValidationResult result = CxPolicyDefinitionValidator.instance().validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Action array should contain only one action object"));
     }
 }

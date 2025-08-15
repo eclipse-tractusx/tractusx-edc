@@ -55,7 +55,7 @@ public class PolicyTypeResolver {
                         throw new IllegalArgumentException("Rule does not contain any action field. Expected one of: " + ODRL_ACTION_ATTRIBUTE);
                     }
                     if (!isActionValid(action)) {
-                        throw new IllegalArgumentException("Rule does not contain a valid policy type. Expected one of: " + ACTION_ACCESS + ", " + ACTION_USAGE);
+                        throw new IllegalArgumentException("Rule does not contain a valid policy type. Expected one of: " + ACTION_ACCESS + ", " + ACTION_USAGE + ". Found: " + action);
                     }
                 })
                 .collect(Collectors.toSet());
@@ -83,7 +83,7 @@ public class PolicyTypeResolver {
         return JsonArray.EMPTY_JSON_ARRAY;
     }
 
-    private static String getActionFromRule(JsonObject rule) {
+    public static String getActionFromRule(JsonObject rule) {
         if (rule.containsKey(ODRL_ACTION_ATTRIBUTE)) {
             JsonValue action = rule.get(ODRL_ACTION_ATTRIBUTE);
             switch (action.getValueType()) {
@@ -93,7 +93,10 @@ public class PolicyTypeResolver {
                     return action.asJsonObject().getString("@id", "");
                 case ARRAY:
                     JsonArray actionArray = action.asJsonArray();
-                    if (!actionArray.isEmpty() && actionArray.get(0).getValueType() == JsonValue.ValueType.OBJECT) {
+                    if (actionArray.size() > 1) {
+                        throw new IllegalArgumentException("Action array should contain only one action object. Found: " + actionArray.size());
+                    }
+                    if (actionArray.size() == 1 && actionArray.get(0).getValueType() == JsonValue.ValueType.OBJECT) {
                         return actionArray.getJsonObject(0).getString("@id", "");
                     }
                     break;

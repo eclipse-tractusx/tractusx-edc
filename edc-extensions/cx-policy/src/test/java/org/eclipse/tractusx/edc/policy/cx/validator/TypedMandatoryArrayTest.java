@@ -90,8 +90,12 @@ class TypedMandatoryArrayTest {
         FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Array '%s' should at least contains '%s' elements".formatted(path, 2)));
     }
 
+    /**
+     * Tests that validation succeeds when the validator is configured with orAbsent
+     * and the array field is missing from the JSON object.
+     */
     @Test
-    void validate_shouldReturnSuccess_whenOrAbsentAndMissing() {
+    void shouldReturnSuccess_whenConfiguredWithOrAbsentAndArrayMissing() {
         JsonObject obj = Json.createObjectBuilder().build();
 
         TypedMandatoryArray validator = new TypedMandatoryArray(path, null, true);

@@ -19,15 +19,14 @@
 
 package org.eclipse.tractusx.edc.policy.cx.validator;
 
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
 import static org.eclipse.edc.validator.spi.Violation.violation;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyTypeResolver.getActionFromRule;
 
 /**
  * Validator that ensures an action property matches a specific expected value.
@@ -65,33 +64,21 @@ public class ActionTypeIs implements Validator<JsonObject> {
             );
         }
 
-        var action = input.get(ODRL_ACTION_ATTRIBUTE);
-        String actionValue = "";
+        try {
+            String actionValue = getActionFromRule(input);
 
-        switch (action.getValueType()) {
-            case STRING:
-                actionValue = action.toString().replaceAll("\"", "");
-                break;
-            case OBJECT:
-                actionValue = action.asJsonObject().getString("@id", "");
-                break;
-            case ARRAY:
-                JsonArray actionArray = action.asJsonArray();
-                if (!actionArray.isEmpty() && actionArray.get(0).getValueType() == JsonValue.ValueType.OBJECT) {
-                    actionValue = actionArray.getJsonObject(0).getString("@id", "");
-                }
-                break;
-            default:
-                break;
+            if (actionValue.equalsIgnoreCase(expectedAction)) {
+                return ValidationResult.success();
+            }
+            return ValidationResult.failure(
+                    violation("Action was expected to be '%s' but was '%s'".formatted(expectedAction, actionValue),
+                            path.append(ODRL_ACTION_ATTRIBUTE).toString())
+            );
+        } catch (Exception e) {
+            return ValidationResult.failure(
+                    violation("Invalid action format: " + e.getMessage(),
+                            path.append(ODRL_ACTION_ATTRIBUTE).toString())
+            );
         }
-        if (actionValue.equalsIgnoreCase(expectedAction)) {
-            return ValidationResult.success();
-        }
-
-        return ValidationResult.failure(
-                violation("Action was expected to be '%s' but was '%s'".formatted(expectedAction, actionValue),
-                        path.append(ODRL_ACTION_ATTRIBUTE).toString())
-        );
-
     }
 }
