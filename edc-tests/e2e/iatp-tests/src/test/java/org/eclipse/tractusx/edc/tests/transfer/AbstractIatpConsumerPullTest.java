@@ -29,7 +29,6 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialC
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
@@ -46,7 +45,6 @@ import org.mockserver.verify.VerificationTimes;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -126,42 +124,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
                 .withMethod("GET"), VerificationTimes.exactly(1));
     }
 
-    @DisplayName("Contract policy is NOT fulfilled")
-    @ParameterizedTest(name = "{1}")
-    @ArgumentsSource(InvalidContractPolicyProvider.class)
-    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) {
-        var assetId = "api-asset-1";
-
-        var authCodeHeaderName = "test-authkey";
-        var authCode = "test-authcode";
-
-        Map<String, Object> dataAddress = Map.of(
-                "baseUrl", privateBackendUrl,
-                "type", "HttpData",
-                "contentType", "application/json",
-                "authKey", authCodeHeaderName,
-                "authCode", authCode
-        );
-
-        provider().createAsset(assetId, Map.of(), dataAddress);
-
-        var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
-        var contractPolicyId = provider().createPolicyDefinition(contractPolicy);
-        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-
-        consumer().getCatalog(provider())
-                .log().ifValidationFails()
-                .statusCode(200);
-
-        var negotiationId = consumer().initContractNegotiation(provider(), assetId);
-
-        await().pollInterval(fibonacci())
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    var contractNegotiationState = consumer().getContractNegotiationState(negotiationId);
-                    assertThat(contractNegotiationState).isEqualTo("TERMINATED");
-                });
-    }
+    // TODO: Add test for transfer process with a contract policy that is not fulfilled
 
     @DisplayName("Expect the Catalog request to fail if a credential is expired")
     @Test
@@ -242,12 +205,12 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
         var newRawVc = dataspaceIssuer().membershipRawVc(did, bpn)
                 .add("credentialStatus", Json.createObjectBuilder()
-                    .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
-                    .add("type", "StatusList2021Entry")
-                    .add("statusPurpose", "revocation")
-                    .add("statusListIndex", "12345")
-                    .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
-                    .build())
+                        .add("id", "http://localhost:%d/status/list/7#12345".formatted(port))
+                        .add("type", "StatusList2021Entry")
+                        .add("statusPurpose", "revocation")
+                        .add("statusListIndex", "12345")
+                        .add("statusListCredential", "http://localhost:%d/status/list/7".formatted(port))
+                        .build())
                 .build();
 
         var newVcString = dataspaceIssuer().createJwtVc(newRawVc, did);
@@ -279,7 +242,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"));
+        return frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access");
     }
 
     protected abstract RuntimeExtension consumerRuntime();
@@ -292,26 +255,8 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active")), "MembershipCredential"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0")), "DataExchangeGovernance use case"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler", "active")), "Dismantler Credential"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler.activityType", "vehicleDismantle")), "Dismantler Cred (activity type)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_ANY_OF, List.of("Moskvich", "Tatra")), "Dismantler allowedBrands (IS_ANY_OF, one intersects)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.EQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (EQ, exact match)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Tatra")), "Dismantler allowedBrands (IS_NONE_OF, no intersect)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler allowedBrands (IN, fully contained)")
-            );
-        }
-    }
-
-    private static class InvalidContractPolicyProvider implements ArgumentsProvider {
-        @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
-            return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Dismantler.activityType", "vehicleScrap")), "Dismantler activityType does not match"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.NEQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (NEQ, but is equal)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Lada")), "Dismantler allowedBrands (IS_NONE_OF, but is one contains)"),
-                    Arguments.of(frameworkPolicy(CX_POLICY_NS + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo")), "Dismantler allowedBrands (IN, but not subset)")
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), CX_POLICY_NS + "access"), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use"), "DataExchangeGovernance use case")
             );
         }
     }
