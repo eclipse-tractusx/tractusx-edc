@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.runtimes;
 
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.protocol.spi.DefaultParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.result.Result;
@@ -29,10 +30,14 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
-import org.eclipse.tractusx.edc.tests.MockBpnIdentityService;
+import org.eclipse.tractusx.edc.tests.MockMembershipCredentialIdentityService;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DID_PREFIX;
 
 public interface Runtimes {
 
@@ -41,13 +46,16 @@ public interface Runtimes {
     }
 
     static RuntimeExtension pgRuntime(TractusxParticipantBase participant, PostgresExtension postgres, Supplier<Config> configurationProvider) {
+        Function<String, String> bpnToDid = bpn -> DID_PREFIX + bpn.replace(BPN_SUFFIX, "");
+        Function<String, String> didToBpn = did -> did.replace(DID_PREFIX, "") + BPN_SUFFIX;
         return new ParticipantRuntimeExtension(
                 new EmbeddedRuntime(participant.getName(), ":edc-tests:runtime:runtime-postgresql")
                         .configurationProvider(() -> participant.getConfig().merge(postgres.getConfig(participant.getName())))
                         .configurationProvider(configurationProvider)
-                        .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
+                        .registerServiceMock(IdentityService.class, new MockMembershipCredentialIdentityService(participant.getBpn(), participant.getDid()))
                         .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
-                        .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
+                        .registerServiceMock(BdrsClient.class, new MockBdrsClient(bpnToDid, didToBpn))
+                        .registerServiceMock(DefaultParticipantIdExtractionFunction.class, ct -> "id")
         );
     }
 
@@ -65,7 +73,7 @@ public interface Runtimes {
 
     static RuntimeExtension discoveryRuntime(TractusxParticipantBase participant, String module) {
         return new ParticipantRuntimeExtension(new EmbeddedRuntime(participant.getName(), module)
-                .registerServiceMock(IdentityService.class, new MockBpnIdentityService(participant.getBpn()))
+                .registerServiceMock(IdentityService.class, new MockMembershipCredentialIdentityService(participant.getBpn(), participant.getDid()))
                 .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
                 .configurationProvider(participant::getConfig));
     }
