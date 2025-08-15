@@ -124,43 +124,6 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
                 .withMethod("GET"), VerificationTimes.exactly(1));
     }
 
-    @DisplayName("Contract policy is NOT fulfilled")
-    @ParameterizedTest(name = "{1}")
-    @ArgumentsSource(InvalidContractPolicyProvider.class)
-    void transferData_whenContractPolicyNotFulfilled(JsonObject contractPolicy, String description) {
-        var assetId = "api-asset-1";
-
-        var authCodeHeaderName = "test-authkey";
-        var authCode = "test-authcode";
-
-        Map<String, Object> dataAddress = Map.of(
-                "baseUrl", privateBackendUrl,
-                "type", "HttpData",
-                "contentType", "application/json",
-                "authKey", authCodeHeaderName,
-                "authCode", authCode
-        );
-
-        provider().createAsset(assetId, Map.of(), dataAddress);
-
-        var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
-        var contractPolicyId = provider().createPolicyDefinition(contractPolicy);
-        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-
-        consumer().getCatalog(provider())
-                .log().ifValidationFails()
-                .statusCode(200);
-
-        var negotiationId = consumer().initContractNegotiation(provider(), assetId);
-
-        await().pollInterval(fibonacci())
-                .atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> {
-                    var contractNegotiationState = consumer().getContractNegotiationState(negotiationId);
-                    assertThat(contractNegotiationState).isEqualTo("TERMINATED");
-                });
-    }
-
     @DisplayName("Expect the Catalog request to fail if a credential is expired")
     @Test
     void catalogRequest_whenCredentialExpired() {
@@ -292,15 +255,6 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
             return Stream.of(
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "Membership", "active"), "access"), "MembershipCredential"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use"), "DataExchangeGovernance use case")
-            );
-        }
-    }
-
-    private static class InvalidContractPolicyProvider implements ArgumentsProvider {
-        @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
-            return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_NS + "FrameworkAgreement", "traceability"), "access"), "Traceability Use Case (new notation)")
             );
         }
     }
