@@ -28,6 +28,7 @@ import org.eclipse.edc.validator.spi.Validator;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
@@ -161,14 +162,10 @@ public class LeftOperandValidator implements Validator<JsonObject> {
 
         private ValidationResult hasMutualExclusionConflict(String leftOperand) {
             Set<String> mutuallyExclusiveWithCurrent = MUTUALLY_EXCLUSIVE_CONSTRAINTS.stream()
-                    .filter(mutuallyExclusive -> mutuallyExclusive.contains(leftOperand))
-                    .findFirst()
-                    .map(mutuallyExclusive -> {
-                        Set<String> exclusiveSet = new HashSet<>(mutuallyExclusive);
-                        exclusiveSet.remove(leftOperand);
-                        return exclusiveSet;
-                    })
-                    .orElse(new HashSet<>());
+                    .filter(set -> set.contains(leftOperand))
+                    .flatMap(Set::stream)
+                    .filter(exclusive -> !exclusive.equals(leftOperand))
+                    .collect(Collectors.toSet());
 
             return encounteredConstraints.stream()
                     .filter(mutuallyExclusiveWithCurrent::contains)
