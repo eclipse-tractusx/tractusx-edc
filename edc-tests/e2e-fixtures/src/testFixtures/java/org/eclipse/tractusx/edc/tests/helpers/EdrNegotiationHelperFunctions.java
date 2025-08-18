@@ -33,6 +33,7 @@ import java.util.Set;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
 
 public class EdrNegotiationHelperFunctions {
 
@@ -42,7 +43,7 @@ public class EdrNegotiationHelperFunctions {
         return Json.createObjectBuilder()
                 .add(TYPE, ContractRequest.CONTRACT_REQUEST_TYPE)
                 .add(EDC_NAMESPACE + "counterPartyAddress", connectorAddress)
-                .add(EDC_NAMESPACE + "protocol", "dataspace-protocol-http")
+                .add(EDC_NAMESPACE + "protocol", DSP_2025)
                 .add(EDC_NAMESPACE + "policy", policy)
                 .add(EDC_NAMESPACE + "callbackAddresses", callbacks)
                 .build();

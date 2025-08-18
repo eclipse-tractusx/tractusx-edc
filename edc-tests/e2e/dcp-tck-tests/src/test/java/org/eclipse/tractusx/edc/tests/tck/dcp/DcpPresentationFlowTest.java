@@ -33,16 +33,18 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.dataspacetck.core.system.ConsoleMonitor;
 import org.eclipse.dataspacetck.runtime.TckRuntime;
+import org.eclipse.edc.connector.controlplane.profile.DataspaceProfileContextRegistryImpl;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
-import org.eclipse.edc.iam.identitytrust.spi.DcpParticipantAgentServiceExtension;
 import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.validation.TrustedIssuerRegistry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
+import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
+import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -63,13 +65,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.eclipse.edc.iam.verifiablecredentials.spi.validation.TrustedIssuerRegistry.WILDCARD;
-import static org.eclipse.edc.participant.spi.ParticipantAgent.PARTICIPANT_IDENTITY;
 import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -82,12 +85,13 @@ public class DcpPresentationFlowTest {
     private static final String PROTOCOL_API_PATH = "/protocol";
     private static final String VERIFIER_DID = formatDid(DID_SERVER_PORT, "verifier");
     private static final SecureTokenService STS_MOCK = mock();
-    private static final DcpParticipantAgentServiceExtension EXTRACTOR_MOCK = mock(DcpParticipantAgentServiceExtension.class);
+    private static final DataspaceProfileContextRegistry DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY = spy(DataspaceProfileContextRegistryImpl.class);
+    
     @RegisterExtension
     static final RuntimePerClassExtension RUNTIME = new RuntimePerClassExtension(
             new EmbeddedRuntime("Connector-under-test", ":edc-controlplane:edc-controlplane-base")
                     .registerServiceMock(SecureTokenService.class, STS_MOCK)
-                    .registerServiceMock(DcpParticipantAgentServiceExtension.class, EXTRACTOR_MOCK)
+                    .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
                     .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
                     .configurationProvider(DcpPresentationFlowTest::runtimeConfiguration));
     private ClientAndServer didServer;
@@ -99,7 +103,7 @@ public class DcpPresentationFlowTest {
         trustedIssuerRegistry.register(new Issuer(formatDid(CALLBACK_PORT, "issuer"), Map.of()),  WILDCARD);
         startDidServer();
         configureStsMock();
-        configureExtractorMock();
+        configureIdExtractionMock();
     }
 
     @AfterEach
@@ -119,18 +123,18 @@ public class DcpPresentationFlowTest {
         var thirdPartyDid = formatDid(CALLBACK_PORT, "thirdparty");
         var baseCallbackUrl = "http://localhost:%s".formatted(CALLBACK_PORT);
         var result = TckRuntime.Builder.newInstance()
-                         .properties(Map.of(
-                                 "dataspacetck.callback.address", baseCallbackUrl,
-                                 "dataspacetck.launcher", "org.eclipse.dataspacetck.dcp.system.DcpSystemLauncher",
-                                 "dataspacetck.did.verifier", VERIFIER_DID,
-                                 "dataspacetck.did.holder", holderDid,
-                                 "dataspacetck.did.thirdparty", thirdPartyDid,
-                                 "dataspacetck.vpp.trigger.endpoint", "http://localhost:%s%s".formatted(PROTOCOL_API_PORT, triggerPath)
-                         ))
-                         .monitor(monitor)
-                         .addPackage("org.eclipse.dataspacetck.dcp.verification.presentation.verifier")
-                         .build()
-                         .execute();
+                .properties(Map.of(
+                        "dataspacetck.callback.address", baseCallbackUrl,
+                        "dataspacetck.launcher", "org.eclipse.dataspacetck.dcp.system.DcpSystemLauncher",
+                        "dataspacetck.did.verifier", VERIFIER_DID,
+                        "dataspacetck.did.holder", holderDid,
+                        "dataspacetck.did.thirdparty", thirdPartyDid,
+                        "dataspacetck.vpp.trigger.endpoint", "http://localhost:%s%s".formatted(PROTOCOL_API_PORT, triggerPath)
+                ))
+                .monitor(monitor)
+                .addPackage("org.eclipse.dataspacetck.dcp.verification.presentation.verifier")
+                .build()
+                .execute();
 
         monitor.enableBold().message("DCP Tests done: %s succeeded, %s failed".formatted(
                 result.getTestsSucceededCount(), result.getTotalFailureCount()
@@ -138,8 +142,8 @@ public class DcpPresentationFlowTest {
 
         if (!result.getFailures().isEmpty()) {
             var failures = result.getFailures().stream()
-                                   .map(f -> "- " + f.getTestIdentifier().getDisplayName() + " (" + f.getException() + ")")
-                                   .collect(Collectors.joining("\n"));
+                    .map(f -> "- " + f.getTestIdentifier().getDisplayName() + " (" + f.getException() + ")")
+                    .collect(Collectors.joining("\n"));
             Assertions.fail(result.getTotalFailureCount() + " TCK test cases failed:\n" + failures);
         }
     }
@@ -177,11 +181,10 @@ public class DcpPresentationFlowTest {
                 });
     }
 
-    private void configureExtractorMock() {
-        when(EXTRACTOR_MOCK.attributesFor(any()))
-                .thenAnswer(i -> Map.of(PARTICIPANT_IDENTITY, formatDid(CALLBACK_PORT, "holder")));
+    private void configureIdExtractionMock() {
+        ParticipantIdExtractionFunction function = ct -> formatDid(CALLBACK_PORT, "holder");
+        doReturn(function).when(DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY).getIdExtractionFunction(any());
     }
-
 
     private String createDidDocumentJson() {
         var doc = DidDocument.Builder.newInstance()
@@ -234,6 +237,7 @@ public class DcpPresentationFlowTest {
                 put("tx.edc.iam.iatp.default-scopes.holderIdentifier.alias", "org.eclipse.dspace.dcp.vc.type");
                 put("tx.edc.iam.iatp.default-scopes.holderIdentifier.type", "MembershipCredential");
                 put("tx.edc.iam.iatp.default-scopes.holderIdentifier.operation", "read");
+                put("tractusx.edc.participant.bpn", "bpn");
             }
         });
     }

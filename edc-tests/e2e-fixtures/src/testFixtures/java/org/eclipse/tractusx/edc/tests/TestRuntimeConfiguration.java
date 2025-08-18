@@ -29,5 +29,8 @@ public class TestRuntimeConfiguration {
     public static final String PROVIDER_NAME = "PROVIDER";
     public static final String PROVIDER_BPN = PROVIDER_NAME + BPN_SUFFIX;
     public static final String PROVIDER_DID = DID_PREFIX + PROVIDER_NAME;
+    public static final String DSP_08 = "dataspace-protocol-http";
+    public static final String DSP_2025 = "dataspace-protocol-http:2025-1";
+    public static final String DSP_2025_PATH = "/2025-1";
 
 }

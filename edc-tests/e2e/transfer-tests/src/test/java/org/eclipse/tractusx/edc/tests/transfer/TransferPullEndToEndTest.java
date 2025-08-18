@@ -44,6 +44,9 @@ import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFix
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
@@ -435,8 +438,8 @@ public class TransferPullEndToEndTest {
 
         @BeforeAll
         static void beforeAll() {
-            CONSUMER.setProtocol("dataspace-protocol-http");
-            PROVIDER.setProtocol("dataspace-protocol-http");
+            CONSUMER.setProtocol(DSP_08);
+            PROVIDER.setProtocol(DSP_08);
             PROVIDER.setId(PROVIDER.getBpn());
         }
         
@@ -463,8 +466,8 @@ public class TransferPullEndToEndTest {
         @BeforeAll
         static void beforeAll() {
             CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
-            CONSUMER.setProtocol("dataspace-protocol-http:2025-1", "/2025-1");
-            PROVIDER.setProtocol("dataspace-protocol-http:2025-1", "/2025-1");
+            CONSUMER.setProtocol(DSP_2025, DSP_2025_PATH);
+            PROVIDER.setProtocol(DSP_2025, DSP_2025_PATH);
         }
     }
 }

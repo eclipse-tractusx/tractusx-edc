@@ -324,6 +324,11 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             this.participant.bpn = bpn;
             return self();
         }
+        
+        public B protocolVersionPath(String path) {
+            this.participant.protocolVersionPath = path;
+            return self();
+        }
 
         @Override
         public P build() {
