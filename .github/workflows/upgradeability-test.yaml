@@ -43,7 +43,7 @@ jobs:
     needs: [ test-prepare ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: ./.github/actions/setup-helm
       - uses: ./.github/actions/setup-kubectl

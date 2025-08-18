@@ -32,7 +32,7 @@ jobs:
   verify-helm-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: |
           docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
           
@@ -47,7 +47,7 @@ jobs:
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
@@ -59,7 +59,7 @@ jobs:
   verify-javadoc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
 
       - name: Run Javadoc
@@ -70,7 +70,7 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ./.github/actions/setup-java
 
@@ -82,7 +82,7 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ./.github/actions/setup-java
 
@@ -96,7 +96,7 @@ jobs:
   api-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ./.github/actions/setup-java
 
@@ -110,7 +110,7 @@ jobs:
     outputs:
       matrix: ${{ steps.outputStep.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: get api groups and create matrix for next job
         id: outputStep
         run: |
@@ -124,7 +124,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare-end-to-end-tests.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests (${{ matrix.dir }})
@@ -148,7 +148,7 @@ jobs:
   postgres-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
@@ -162,7 +162,7 @@ jobs:
     if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Output report version
         id: release-version
