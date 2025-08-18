@@ -170,14 +170,6 @@ public class LeftOperandValidator implements Validator<JsonObject> {
                     })
                     .orElse(new HashSet<>());
 
-            for (Set<String> mutuallyExclusive : MUTUALLY_EXCLUSIVE_CONSTRAINTS) {
-                if (mutuallyExclusive.contains(leftOperand)) {
-                    mutuallyExclusiveWithCurrent = new HashSet<>(mutuallyExclusive);
-                    mutuallyExclusiveWithCurrent.remove(leftOperand);
-                    break;
-                }
-            }
-
             return encounteredConstraints.stream()
                     .filter(mutuallyExclusiveWithCurrent::contains)
                     .findFirst()
