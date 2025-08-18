@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.policy.cx.validator;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.junit.assertions.FailureAssert;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,7 +106,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void shouldReturnSuccess_whenActionIsArrayAndFirstObjectMatches() {
+    void shouldReturnSuccess_whenActionIsArrayOfSizeOne() {
         JsonObject actionObj = Json.createObjectBuilder()
                 .add("@id", EXPECTED_ACTION)
                 .build();
@@ -120,7 +121,7 @@ class ActionTypeIsTest {
     }
 
     @Test
-    void shouldReturnFailure_whenActionIsArrayAndFirstObjectDoesNotMatch() {
+    void shouldReturnFailure_whenActionIsArrayAndDoesNotMatch() {
         JsonObject actionObj = Json.createObjectBuilder()
                 .add("@id", "READ")
                 .build();
@@ -141,5 +142,21 @@ class ActionTypeIsTest {
         ValidationResult result = validator.validate(input);
 
         assertThat(result).isFailed();
+    }
+
+    @Test
+    void shouldReturnSuccess_whenActionIsArrayOfSizeTwo() {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder()
+                .add(Json.createObjectBuilder().add("@id", EXPECTED_ACTION))
+                .add(Json.createObjectBuilder().add("@id", "unkownAction"));
+
+        JsonObject input = Json.createObjectBuilder()
+                .add(ACTION_ATTR, arrayBuilder)
+                .build();
+
+        ValidationResult result = validator.validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg -> msg.contains("Action array should contain only one action object"));
     }
 }

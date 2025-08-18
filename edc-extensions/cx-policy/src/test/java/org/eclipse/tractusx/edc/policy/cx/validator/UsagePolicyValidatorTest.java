@@ -38,6 +38,8 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DATE_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_RESTRICTION_LITERAL;
@@ -204,5 +206,19 @@ class UsagePolicyValidatorTest {
         assertThat(result).isFailed();
         FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
                 msg.contains("Action property is missing"));
+    }
+
+    @Test
+    void shouldReturnFailure_whenMutuallyExclusiveConstraintsInPolicy() {
+        JsonObject permission = rule(ACTION_USAGE,
+                atomicConstraint(DATA_USAGE_END_DURATION_LITERAL),
+                atomicConstraint(DATA_USAGE_END_DATE_LITERAL));
+        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+
+        ValidationResult result = validator.validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
+                msg.contains("is mutually exclusive"));
     }
 }

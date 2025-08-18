@@ -25,6 +25,9 @@ import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ALLOWED_LOGICAL_CONSTRAINTS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.NOT_ALLOWED_LOGICAL_CONSTRAINTS;
@@ -48,15 +51,21 @@ public class LogicalConstraintValidator implements Validator<JsonObject> {
     private final JsonLdPath path;
     private final String policyType;
     private final String ruleType;
+    private final Set<String> encounteredConstraints;
 
-    private LogicalConstraintValidator(JsonLdPath path, String policyType, String ruleType) {
+    private LogicalConstraintValidator(JsonLdPath path, String policyType, String ruleType, Set<String> encounteredConstraints) {
         this.path = path;
         this.policyType = policyType;
         this.ruleType = ruleType;
+        this.encounteredConstraints = encounteredConstraints;
     }
 
     public static LogicalConstraintValidator instance(JsonLdPath path, String policyType, String ruleType) {
-        return new LogicalConstraintValidator(path, policyType, ruleType);
+        return new LogicalConstraintValidator(path, policyType, ruleType, new HashSet<>());
+    }
+
+    public static LogicalConstraintValidator instance(JsonLdPath path, String policyType, String ruleType, Set<String> encounteredConstraints) {
+        return new LogicalConstraintValidator(path, policyType, ruleType, encounteredConstraints);
     }
 
     @Override
@@ -84,7 +93,7 @@ public class LogicalConstraintValidator implements Validator<JsonObject> {
             return arrayValidationResult;
         }
         return JsonObjectValidator.newValidator()
-                .verifyArrayItem(logicalConstraint, b -> ConstraintValidator.instance(b, policyType, ruleType))
+                .verifyArrayItem(logicalConstraint, b -> ConstraintValidator.instance(b, policyType, ruleType, encounteredConstraints))
                 .build()
                 .validate(input);
     }
