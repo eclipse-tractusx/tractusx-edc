@@ -24,6 +24,7 @@ plugins {
 dependencies {
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.core.controlplane)
     testImplementation(libs.awaitility)
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.dsp.tck.core)

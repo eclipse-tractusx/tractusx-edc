@@ -22,15 +22,19 @@ package org.eclipse.tractusx.edc.tests.tck.dsp;
 import org.assertj.core.api.Assertions;
 import org.eclipse.dataspacetck.core.system.ConsoleMonitor;
 import org.eclipse.dataspacetck.runtime.TckRuntime;
+import org.eclipse.edc.connector.controlplane.profile.DataspaceProfileContextRegistryImpl;
 import org.eclipse.edc.junit.annotations.NightlyTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
+import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -49,6 +53,9 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.dataspacetck.core.api.system.SystemsConstants.TCK_LAUNCHER;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 @NightlyTest
 public class EdcCompatibilityEmbeddedTest {
@@ -64,12 +71,21 @@ public class EdcCompatibilityEmbeddedTest {
     private static final URI DATA_PLANE_PROXY = URI.create("http://localhost:" + getFreePort());
     private static final URI DATA_PLANE_PUBLIC = URI.create("http://localhost:" + getFreePort() + "/public");
     private static final URI FEDERATED_CATALOG = URI.create("http://localhost:" + getFreePort() + "/api/catalog");
+    
+    private static final DataspaceProfileContextRegistry DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY = spy(DataspaceProfileContextRegistryImpl.class);
 
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime("CUT",
             ":edc-tests:runtime:runtime-dsp")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
+            .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(EdcCompatibilityEmbeddedTest::runtimeConfiguration));
+    
+    @BeforeEach
+    void setUp() {
+        ParticipantIdExtractionFunction function = ct -> ct.getStringClaim("client_id");
+        doReturn(function).when(DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY).getIdExtractionFunction(any());
+    }
 
     private static Config runtimeConfiguration() {
         return ConfigFactory.fromMap(new HashMap<>() {
@@ -115,6 +131,7 @@ public class EdcCompatibilityEmbeddedTest {
                 put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(DATA_PLANE_PUBLIC));
                 put("edc.catalog.cache.execution.delay.seconds", "2");
                 put("edc.catalog.cache.execution.period.seconds", "2");
+                put("tractusx.edc.participant.bpn", "CONNECTOR_UNDER_TEST");
             }
         });
     }
