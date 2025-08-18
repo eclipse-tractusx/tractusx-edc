@@ -32,15 +32,8 @@ configurations.all {
 }
 
 dependencies {
-    runtimeOnly(libs.edc.bom.controlplane.base) {
-        exclude(group = "org.eclipse.edc", module = "dsp")
-    }
-    runtimeOnly(libs.edc.bom.controlplane.dcp) {
-        exclude(group = "org.eclipse.edc", module = "dsp")
-    }
-
-    runtimeOnly(libs.edc.dsp.v08)
-    runtimeOnly(libs.edc.dsp.v2025)
+    runtimeOnly(libs.edc.bom.controlplane.base)
+    runtimeOnly(libs.edc.bom.controlplane.dcp)
 
     runtimeOnly(libs.edc.bom.federatedcatalog.base)
     runtimeOnly(libs.edc.bom.federatedcatalog.dcp)

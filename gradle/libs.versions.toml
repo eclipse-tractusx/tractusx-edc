@@ -159,9 +159,8 @@ tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" 
 # DSP libraries
 dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
 dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
+dsp-spi-v2024 = { module = "org.eclipse.edc:dsp-spi-2024", version.ref = "edc" }
 dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
-edc-dsp-v08 = { module = "org.eclipse.edc:dsp-08", version.ref = "edc" }
-edc-dsp-v2025 = { module = "org.eclipse.edc:dsp-2025", version.ref = "edc" }
 
 # Federated Catalog modules
 edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }
