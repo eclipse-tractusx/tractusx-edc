@@ -55,12 +55,9 @@ public class V0_0_10__Bpn_Namespace_Migration extends BaseJavaMigration {
         mapper.registerSubtypes(Permission.class, Prohibition.class, AtomicConstraint.class, AndConstraint.class, OrConstraint.class, XoneConstraint.class, LiteralExpression.class);
 
         var connection = context.getConnection();
-        try (var selectAgreements = connection.createStatement();
-             var selectNegotiations = connection.createStatement();
-             var updateAgreement = connection.prepareStatement(updateAgreementStatement);
-             var updateNegotiation = connection.prepareStatement(updateNegotiationStatement)) {
+        try (var selectAgreements = connection.createStatement(); var selectNegotiations = connection.createStatement()) {
 
-            try (var rs = selectAgreements.executeQuery(selectAllAgreementStatement)) {
+            try (var rs = selectAgreements.executeQuery(selectAllAgreementStatement); var updateAgreement = connection.prepareStatement(updateAgreementStatement)) {
                 while (rs.next()) {
                     String id = rs.getString("agr_id");
                     String policyJson = rs.getString("policy");
@@ -72,7 +69,7 @@ public class V0_0_10__Bpn_Namespace_Migration extends BaseJavaMigration {
                     }
                 }
             }
-            try (var rs = selectNegotiations.executeQuery(selectAllNegotiationStatement)) {
+            try (var rs = selectNegotiations.executeQuery(selectAllNegotiationStatement); var updateNegotiation = connection.prepareStatement(updateNegotiationStatement)) {
                 while (rs.next()) {
                     String id = rs.getString("id");
                     String contractOffersJson = rs.getString("contract_offers");
