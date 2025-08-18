@@ -4,7 +4,7 @@
     "@protected": true,
     "cred": "https://www.w3.org/2018/credentials#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "cx-policy": "https://w3id.org/catenax/policy/",
+    "cx-policy": "https://w3id.org/catenax/2025/9/policy/",
     "Dismantler": "cx-policy:Dismantler",
     "Dismantler.activityType": "cx-policy:Dismantler.activityType",
     "Dismantler.allowedBrands": "cx-policy:Dismantler.allowedBrands",
