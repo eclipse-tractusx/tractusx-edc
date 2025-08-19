@@ -44,6 +44,8 @@ public final class PolicyValidationConstants {
     public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
     public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_NS + "AffiliatesRegion";
     public static final String AFFILIATES_BPNL_LITERAL = CX_POLICY_NS + "AffiliatesBpnl";
+    public static final String BUSINESS_PARTNER_GROUP = CX_POLICY_NS + "BusinessPartnerGroup";
+    public static final String BUSINESS_PARTNER_NUMBER = CX_POLICY_NS + "BusinessPartnerNumber";
 
     public static final String CONFIDENTIAL_INFORMATION_MEASURE_LITERAL = CX_POLICY_NS + "ConfidentialInformationMeasures";
     public static final String CONFIDENTIAL_INFORMATION_SHARING_LITERAL = CX_POLICY_NS + "ConfidentialInformationSharing";
@@ -117,7 +119,9 @@ public final class PolicyValidationConstants {
             DATA_USAGE_END_DURATION_LITERAL,
             DATA_USAGE_END_DATE_LITERAL,
             DATA_USAGE_END_DEFINITION_LITERAL,
-            INFORCE_POLICY_LITERAL
+            INFORCE_POLICY_LITERAL,
+            BUSINESS_PARTNER_GROUP,
+            BUSINESS_PARTNER_NUMBER
     );
     public static final Set<String> USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             AFFILIATES_REGION_LITERAL,

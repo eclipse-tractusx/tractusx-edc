@@ -36,8 +36,6 @@ import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlPermissionCon
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionPermissionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibitionConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationSharingConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerGroupConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerNumberConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction;

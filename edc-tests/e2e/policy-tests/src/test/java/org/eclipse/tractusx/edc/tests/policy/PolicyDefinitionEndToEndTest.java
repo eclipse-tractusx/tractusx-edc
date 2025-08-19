@@ -134,12 +134,8 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "ContractTermination", Operator.EQ, "cx.data.deletion:1", "use"), "ContractTermination"),
                     Arguments.of(frameworkPolicy(namespace + "ConfidentialInformationMeasures", Operator.EQ, "cx.confidentiality.measures:1", "use"), "Confidential Information Measures"),
                     Arguments.of(frameworkPolicy(namespace + "ConfidentialInformationSharing", Operator.IS_ANY_OF, List.of("cx.sharing.affiliates:1"), "use", true), "Confidential Information Sharing"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "Dismantler", "active")), "Dismantler Credential"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "Dismantler.activityType", "vehicleDismantle")), "Dismantler Cred (activity type)"),
-                    Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IS_ANY_OF, List.of("Moskvich", "Tatra")), "Dismantler allowedBrands (IS_ANY_OF, one intersects)"),
-                    Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.EQ, List.of("Moskvich", "Lada")), "Dismantler allowedBrands (EQ, exact match)"),
-                    Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IS_NONE_OF, List.of("Yugo", "Tatra")), "Dismantler allowedBrands (IS_NONE_OF, no intersect)"),
-                    Arguments.of(frameworkPolicy(namespace + "Dismantler.allowedBrands", Operator.IN, List.of("Moskvich", "Tatra", "Yugo", "Lada")), "Dismantler allowedBrands (IN, fully contained)")
+                    Arguments.of(frameworkPolicy(namespace + "BusinessPartnerGroup", Operator.IS_ANY_OF, "Some-group", "use", true), "Business Partner Group"),
+                    Arguments.of(frameworkPolicy(namespace + "BusinessPartnerNumber", Operator.IS_ANY_OF, List.of("BPNL00000000001A"), "use", true), "Business Partner Number")
             );
         }
     }

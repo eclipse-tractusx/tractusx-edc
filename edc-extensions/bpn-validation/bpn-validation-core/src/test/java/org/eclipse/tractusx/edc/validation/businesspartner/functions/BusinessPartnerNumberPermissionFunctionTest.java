@@ -80,9 +80,9 @@ class BusinessPartnerNumberPermissionFunctionTest {
     @Test
     void evaluate_isAnyOf() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("foo", "bar"), unusedPermission, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("foo"), unusedPermission, policyContext)).isTrue();
-        assertThat(validation.evaluate(Operator.IS_ANY_OF, List.of("bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ANY_OF, bpnList("foo", "bar"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_ANY_OF, bpnList("foo"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_ANY_OF, bpnList("bar"), unusedPermission, policyContext)).isFalse();
         assertThat(validation.evaluate(Operator.IS_ANY_OF, "bar", unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IS_ANY_OF' requires a 'List' but got a 'java.lang.String'");
 
