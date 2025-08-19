@@ -52,7 +52,7 @@ public class JsonLdExtension implements ServiceExtension {
     public static final String SECURITY_JWS_V1 = "https://w3id.org/security/suites/jws-2020/v1";
     public static final String SECURITY_ED25519_V1 = "https://w3id.org/security/suites/ed25519-2020/v1";
 
-    public static final String CX_POLICY_CONTEXT = "https://w3id.org/tractusx/policy/v1.0.0";
+    public static final String CX_POLICY_CONTEXT = "https://w3id.org/catenax/2025/9/policy/";
     public static final String TX_AUTH_CONTEXT = "https://w3id.org/tractusx/auth/v1.0.0";
 
     private static final String PREFIX = "document" + File.separator;
