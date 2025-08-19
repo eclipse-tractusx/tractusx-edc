@@ -187,7 +187,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
                     .formatted(ALLOWED_OPERATORS, operator));
         }
 
-        return rightValue instanceof String s
+        return rightValue instanceof String
                 ? Result.success()
                 : Result.failure("Invalid right-operand: right operand must be a string");
     }
