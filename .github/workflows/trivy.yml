@@ -56,7 +56,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.32.0
         with:
@@ -88,7 +88,7 @@ jobs:
           - edc-controlplane-postgresql-hashicorp-vault
           - edc-dataplane-hashicorp-vault
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
         ## This step will fail if the docker images is not found
       - name: "Check if image exists"

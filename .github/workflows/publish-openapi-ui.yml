@@ -40,7 +40,7 @@ jobs:
   generate-openapi-spec:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
 
       - name: Generate openapi spec
@@ -62,7 +62,7 @@ jobs:
           { name: "data-plane", folder: "edc-dataplane/edc-dataplane-base" }
         ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - uses: actions/download-artifact@v5
         with:

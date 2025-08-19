@@ -30,7 +30,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,9 +91,9 @@ class BusinessPartnerNumberPermissionFunctionTest {
     @Test
     void evaluate_isNoneOf() {
         when(participantAgent.getIdentity()).thenReturn("foo");
-        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("foo", "bar"), unusedPermission, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("foo"), unusedPermission, policyContext)).isFalse();
-        assertThat(validation.evaluate(Operator.IS_NONE_OF, List.of("bar"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_NONE_OF, bpnList("foo", "bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_NONE_OF, bpnList("foo"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_NONE_OF, bpnList("bar"), unusedPermission, policyContext)).isTrue();
         assertThat(validation.evaluate(Operator.IS_NONE_OF, "bar", unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IS_NONE_OF' requires a 'List' but got a 'java.lang.String'");
     }
@@ -106,4 +110,20 @@ class BusinessPartnerNumberPermissionFunctionTest {
         }
     }
 
+    private List<LinkedHashMap<String, LinkedHashMap<String, String>>> bpnList(String... bpns) {
+        if (bpns == null || bpns.length == 0) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.stream(bpns)
+                .map(bpn -> {
+                    LinkedHashMap<String, String> valueMap = new LinkedHashMap<>();
+                    valueMap.put("string", bpn);
+
+                    LinkedHashMap<String, LinkedHashMap<String, String>> bpnMap = new LinkedHashMap<>();
+                    bpnMap.put("@value", valueMap);
+                    return bpnMap;
+                })
+                .collect(Collectors.toList());
+    }
 }

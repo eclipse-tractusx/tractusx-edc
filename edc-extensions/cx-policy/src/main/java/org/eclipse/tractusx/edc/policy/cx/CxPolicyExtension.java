@@ -31,10 +31,13 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlPermissionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionPermissionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibitionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationSharingConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerGroupConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerNumberConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.confidentialinformation.ConfidentialInformationMeasuresConstraintFunction;
@@ -59,6 +62,7 @@ import org.eclipse.tractusx.edc.policy.cx.precedence.PrecedenceConstraintFunctio
 import org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.validator.CxPolicyDefinitionValidator;
 import org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction;
@@ -67,6 +71,7 @@ import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDurationMonthsConstra
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_TYPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionConstraintFunction.AFFILIATES_BPNL;
@@ -125,6 +130,9 @@ public class CxPolicyExtension implements ServiceExtension {
 
     @Inject
     private RuleBindingRegistry bindingRegistry;
+
+    @Inject
+    JsonObjectValidatorRegistry validatorRegistry;
 
     public static void registerFunctions(PolicyEngine engine) {
 
@@ -287,6 +295,14 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
 
+        registry.bind(CX_POLICY_NS + "access", CATALOG_SCOPE);
+        registry.bind(CX_POLICY_NS + "access", NEGOTIATION_SCOPE);
+        registry.bind(CX_POLICY_NS + "access", TRANSFER_PROCESS_SCOPE);
+
+        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, CATALOG_SCOPE);
+        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, NEGOTIATION_SCOPE);
+        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, TRANSFER_PROCESS_SCOPE);
+
         var namesInCatalogScope = Set.of(
                 withCxPolicyNsPrefix(USAGE_PURPOSE),
                 withCxPolicyNsPrefix(CONTRACT_REFERENCE),
@@ -358,6 +374,11 @@ public class CxPolicyExtension implements ServiceExtension {
     @Override
     public String name() {
         return NAME;
+    }
+
+    @Override
+    public void prepare() {
+        validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, CxPolicyDefinitionValidator.instance());
     }
 
     @Override

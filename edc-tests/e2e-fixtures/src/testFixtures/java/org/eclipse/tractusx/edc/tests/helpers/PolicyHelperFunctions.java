@@ -44,6 +44,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 public class PolicyHelperFunctions {
 
@@ -65,33 +66,66 @@ public class PolicyHelperFunctions {
      * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
      * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
      */
-    public static JsonObject frameworkPolicy(String id, Map<String, String> permissions) {
-        return policyDefinitionBuilder(frameworkPolicy(permissions))
+
+    public static JsonObject frameworkPolicy(String id, Map<String, String> permissions, String action) {
+        return policyDefinitionBuilder(frameworkPolicy(permissions, action))
                 .add(ID, id)
                 .build();
     }
 
-    public static JsonObject frameworkPolicy(Map<String, String> permissions) {
+    public static JsonObject frameworkPolicy(Map<String, String> permissions, String action) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
-                        .add(frameworkPermission(permissions)))
+                        .add(frameworkPermission(permissions, action)))
                 .build();
     }
 
-    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand) {
-        return frameworkPolicy(leftOperand, operator, rightOperand, false);
+    public static JsonObject emptyPolicy() {
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .build();
     }
 
-    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, boolean createRightOperandsAsArray) {
+    public static JsonObject policyWithEmptyRule(String action) {
+        var rule = Json.createObjectBuilder()
+                .add("action", action)
+                .build();
+        var rulesArrayBuilder = Json.createArrayBuilder();
+        rulesArrayBuilder.add(rule);
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", rulesArrayBuilder)
+                .build();
+    }
+
+    public static JsonObject policyFromRules(String ruleType, JsonObject... rules) {
+        var rulesArrayBuilder = Json.createArrayBuilder();
+        for (JsonObject rule : rules) {
+            rulesArrayBuilder.add(rule);
+        }
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add(ruleType, rulesArrayBuilder)
+                .build();
+    }
+
+    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, String action) {
+        return frameworkPolicy(leftOperand, operator, rightOperand, action, false);
+    }
+
+    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, String action, boolean createRightOperandsAsArray) {
         var constraint = atomicConstraint(leftOperand, operator.getOdrlRepresentation(), rightOperand, createRightOperandsAsArray);
 
         var permission = Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", constraint)
+                        .add("and", constraint)
                         .build())
                 .build();
 
@@ -134,16 +168,41 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject bpnPolicy(Operator operator, String... bpns) {
+        JsonArrayBuilder bpnArray = Json.createArrayBuilder();
+        Stream.of(bpns).forEach(bpnArray::add);
+
+        var bpnConstraint = Json.createObjectBuilder()
+                .add(TYPE, ODRL_CONSTRAINT_TYPE)
+                .add("leftOperand", TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY)
+                .add("operator", operator.getOdrlRepresentation())
+                .add("rightOperand", bpnArray)
+                .build();
+
+        var permission = Json.createObjectBuilder()
+                .add("action", CX_POLICY_NS + "access")
+                .add("constraint", Json.createObjectBuilder()
+                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
+                        .add("and", bpnConstraint)
+                        .build())
+                .build();
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", Json.createArrayBuilder()
+                        .add(permission))
+                .build();
+    }
 
     private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
 
         var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups), false);
 
         var permission = Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", CX_POLICY_NS + "access")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", groupConstraint)
+                        .add("and", groupConstraint)
                         .build())
                 .build();
 
@@ -170,25 +229,25 @@ public class PolicyHelperFunctions {
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", CX_POLICY_NS + "access")
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", bpnConstraints)
+                        .add("and", bpnConstraints)
                         .build())
                 .build();
     }
 
-    private static JsonObject frameworkPermission(Map<String, String> permissions) {
+    public static JsonObject frameworkPermission(Map<String, String> permissions, String action) {
 
         var constraints = permissions.entrySet().stream()
                 .map(permission -> atomicConstraint(permission.getKey(), "eq", permission.getValue(), false))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()
-                .add("action", "use")
+                .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("or", constraints)
+                        .add("and", constraints)
                         .build())
                 .build();
     }
