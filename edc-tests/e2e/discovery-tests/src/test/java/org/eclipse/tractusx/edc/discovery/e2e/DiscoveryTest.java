@@ -37,31 +37,41 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 
 public class DiscoveryTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(CONSUMER_DID)
+            .bpn(CONSUMER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
 
 
     private static final TransferParticipant PROVIDER_FULL_DSP = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(PROVIDER_DID)
+            .bpn(PROVIDER_BPN)
             .build();
 
     private static final TransferParticipant PROVIDER_DSP_V08 = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME + "_V08")
-            .id(PROVIDER_BPN)
+            .id(PROVIDER_DID)
+            .bpn(PROVIDER_BPN)
             .build();
 
     private static final TransferParticipant PROVIDER_NO_PROTOCOLS = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME + "_NO_PROTOCOLS")
-            .id(PROVIDER_BPN)
+            .id(PROVIDER_DID)
+            .bpn(PROVIDER_BPN)
             .build();
 
     @RegisterExtension
