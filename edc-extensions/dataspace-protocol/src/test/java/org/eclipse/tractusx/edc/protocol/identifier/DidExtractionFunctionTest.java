@@ -27,6 +27,6 @@ public class DidExtractionFunctionTest extends MembershipCredentialIdExtractionF
     
     @Override
     protected String expectedId() {
-        return did;
+        return DID;
     }
 }

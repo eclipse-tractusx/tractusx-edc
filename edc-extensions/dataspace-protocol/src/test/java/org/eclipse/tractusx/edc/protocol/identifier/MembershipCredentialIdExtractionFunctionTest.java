@@ -43,8 +43,8 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 
 public abstract class MembershipCredentialIdExtractionFunctionTest {
     
-    protected static final String bpn = "bpn";
-    protected static final String did = "did:web:example";
+    protected static final String BPN = "bpn";
+    protected static final String DID = "did:web:example";
     
     @ParameterizedTest
     @ArgumentsSource(VerifiableCredentialArgumentProvider.class)
@@ -94,9 +94,9 @@ public abstract class MembershipCredentialIdExtractionFunctionTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(vc("MembershipCredential", Map.of("id", did, "holderIdentifier", bpn))),
-                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", did, "holderIdentifier", bpn))),
-                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", did, CX_CREDENTIAL_NS + "holderIdentifier", bpn))));
+                    Arguments.of(vc("MembershipCredential", Map.of("id", DID, "holderIdentifier", BPN))),
+                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", DID, "holderIdentifier", BPN))),
+                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", DID, CX_CREDENTIAL_NS + "holderIdentifier", BPN))));
         }
     }
     

@@ -27,6 +27,6 @@ public class BpnExtractionFunctionTest extends MembershipCredentialIdExtractionF
     
     @Override
     protected String expectedId() {
-        return bpn;
+        return BPN;
     }
 }
