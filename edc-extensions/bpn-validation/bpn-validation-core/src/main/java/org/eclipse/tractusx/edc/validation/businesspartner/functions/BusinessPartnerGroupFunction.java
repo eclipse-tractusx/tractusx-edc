@@ -27,8 +27,8 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import java.util.Collection;

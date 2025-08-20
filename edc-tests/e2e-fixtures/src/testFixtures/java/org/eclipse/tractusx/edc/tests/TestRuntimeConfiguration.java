@@ -25,7 +25,7 @@ public class TestRuntimeConfiguration {
     public static final String DID_PREFIX = "did:web:";
     public static final String CONSUMER_NAME = "CONSUMER";
     public static final String CONSUMER_BPN = "BPNL0000CONSUMER";
-    public static final String CONSUMER_DID = DID_PREFIX + CONSUMER_NAME ;
+    public static final String CONSUMER_DID = DID_PREFIX + CONSUMER_NAME;
     public static final String PROVIDER_NAME = "PROVIDER";
     public static final String PROVIDER_BPN = "BPNL0000PROVIDER";
     public static final String PROVIDER_DID = DID_PREFIX + PROVIDER_NAME;

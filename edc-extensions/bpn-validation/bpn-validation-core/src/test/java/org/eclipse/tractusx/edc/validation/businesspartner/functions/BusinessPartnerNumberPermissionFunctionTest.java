@@ -69,7 +69,7 @@ class BusinessPartnerNumberPermissionFunctionTest {
         when(participantAgent.getIdentity()).thenReturn(did);
         when(bdrsClient.resolveBpn(did)).thenReturn(bpn);
 
-        var result = validation.evaluate(Operator.EQ, "foo", unusedPermission, policyContext);
+        var result = validation.evaluate(Operator.IS_ANY_OF, bpnList("foo"), unusedPermission, policyContext);
 
         assertThat(result).isTrue();
         verify(bdrsClient).resolveBpn(did);
