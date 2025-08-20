@@ -1,6 +1,6 @@
 # Using transfer process response channels
 
-In certain cases, a dataspace consumer might need to send feedback messages to a transfer process counterpart.
+In certain cases, a dataspace consumer might need to send feedback messages to the transfer process counterpart.
 This bidirectional exchange of information requires two separate channels: one forward channel where data flows from the
 provider to the consumer, and a response channel (back channel) where data flows in the reverse
 direction.
@@ -17,20 +17,45 @@ The HTTP wire protocol is the only supported protocol for response data communic
 below-mentioned considerations, and by following the demonstrated process, a dataspace consumer can send response
 messages to a provider.
 
-## Requirements
+## Configuration requirements
 
-- Considering the connector operator has enabled the HTTP response channel for a certain connector installation, by
-  setting the following configuration:
+For a provider to be able to effectively define and distribute response channels, a connector operator has to enable the 
+generation of HTTP response channel endpoints for a certain connector installation, by setting the following configuration:
 
 ```
 edc.dataplane.api.public.response.baseurl
 # A common practice is to use <DATAPLANE_PUBLIC_ENDPOINT>/responseChannel
 ```
 
-- A `HttpData` type asset is offered by the provider, exposing the base url of the backend application. This asset
-  should enable the proxying of at least the request method, path, and body.
-- The backend application exposes an `/responseChannel` endpoint, where messages will be wired to by the dataplane.
-- A valid contract agreement exists for the mentioned offer.
+## Definition of an asset with a response channel
+
+A data provider can define a response channel endpoint for a specific asset by defining a `responseChannel` json object
+within the usual `dataAddress`. This `responseChannel` object is a `DataAddress` itself, and will contain the 
+addressing information for the response channel.
+
+```json
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dct": "http://purl.org/dc/terms/"
+  },
+  "@type": "Asset",
+  "@id": "{{ASSET_ID}}",
+  "dataAddress": {
+    "@type": "DataAddress",
+    "type": "{{SUPPORTED_TYPE}}",
+    "someDataAddressProperty": "someValue",
+    "responseChannel": {
+        "@type": "DataAddress",
+        "type": "HttpData",
+        "baseUrl": "{{RESPONSE_CHANNEL_HTTP_ENDPOINT}}",
+        "proxyPath": "true",
+        "proxyMethod": "true",
+        "proxyBody": "true"
+    }
+  }
+}
+```
 
 ## Getting an EDR with response channel properties
 
@@ -39,7 +64,7 @@ to receive response channel information in an EDR. For this to happen, the trans
 process request needs to include the type of the response channel protocol. Since HTTP is the only supported protocol,
 `HttpData` is the response type to be used.
 
-As an example, for this transfer process request:
+As an example, for the following transfer process request:
 
 ```json
 {
@@ -58,7 +83,9 @@ As an example, for this transfer process request:
 
 Changing the `transferType` from `HttpData-PULL` to `HttpData-PULL-HttpData`, indicates the intention to receive
 response channel details. Other possible `transferType` combinations can be discovered within `dcat:distribution`
-when requesting a providers' catalog.
+when requesting a providers' catalog. Usually, when a provider offers an asset with a response channel, only distributions
+with the corresponding response channel type will be available. If none of the available distributions contains 
+response channel information it means that particular dataset does not support a response channel.
 
 ## Sending messages to the response channel
 
@@ -88,15 +115,6 @@ To use the response channel the same process as for any other transfer using an 
   }
 }
 ```
-
-## Current limitations
-
-- The same `baseUrl` of the provider data offer will be used as the response channel `baseUrl`. The same backend
-  application should be able to handle this request.
-- If the provider data offer has a data address of any type other than `HttpData`, the response channel won't work.
-- There is no manner to specify if and which assets have response channels associated. If the functionality is
-  enabled by the connector operator, an `HttpData` response channel distribution type will be made available for every
-  asset offered by the dataspace provider, even if the underlying asset data address type is not `HttpData`.
 
 ## Notice
 

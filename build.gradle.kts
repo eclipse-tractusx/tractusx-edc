@@ -75,10 +75,10 @@ allprojects {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
             implementation("com.azure:azure-core-http-netty:1.16.0") {
-                because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
+                because("Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
             }
-            implementation("software.amazon.awssdk:netty-nio-client:2.31.77") {
-                because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
+            implementation("io.netty:netty-codec-http2:4.1.124.Final") {
+                because("Version 4.1.123.Final vulnerability: https://www.cve.org/CVERecord?id=CVE-2025-8916")
             }
             testImplementation("com.networknt:json-schema-validator:1.5.8") {
                 because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
