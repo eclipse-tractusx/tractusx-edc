@@ -1155,6 +1155,51 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+    delete:
+      tags:
+      - Contract Negotiation V3
+      description: Deletes the contract negotiation with the given ID. Only terminated
+        negotiations without agreement will be deleted
+      operationId: deleteNegotiationV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ContractNegotiation is deleted
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: A contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "409":
+          description: The given contract negotiation cannot be deleted due to a wrong
+            state or has existing contract agreement
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/contractnegotiations/{id}/agreement:
     get:
       tags:
@@ -2048,6 +2093,50 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4alpha/connectordiscovery/dspversionparams:
+    post:
+      tags:
+      - Connector Discovery
+      description: Discover supported connector parameters.
+      operationId: discoverDspVersionParamsV4Alpha
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectorParamsDiscoveryRequestSchema"
+      responses:
+        "200":
+          description: A list of connector parameters per DSP version
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConnectorDiscoveryResponse"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "500":
+          description: Discovery failed due to an internal error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "502":
+          description: Discovery failed due to connection to counter party
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v4alpha/contractagreements/request:
     post:
       tags:
@@ -2319,7 +2408,7 @@ components:
           '@id': 5e839777-d93e-4785-8972-1005f51cf367
           '@type': dcat:DataService
           dct:terms: connector
-          dct:endpointUrl: http://localhost:16806/protocol
+          dcat:endpointURL: http://localhost:16806/protocol
         dspace:participantId: urn:connector:provider
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -2368,6 +2457,50 @@ components:
           sortOrder: DESC
           sortField: fieldName
           filterExpression: []
+    ConnectorDiscoveryResponse:
+      type: object
+      properties:
+        context:
+          type: object
+        counterPartyAddress:
+          type: string
+        counterPartyId:
+          type: string
+        protocol:
+          type: string
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+        edc:counterPartyId: did:web:one-example.com
+        edc:counterPartyAddress: https://provider.domain.com/api/dsp/2025-1
+        edc:protocol: dataspace-protocol-http:2025-1
+    ConnectorParamsDiscoveryRequestSchema:
+      required:
+      - '@context'
+      - bpnl
+      - counterPartyAddress
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@type':
+          type: string
+          example: https://w3id.org/tractusx/v0.0.1/ns/ConnectorParamsDiscoveryRequest
+        bpnl:
+          type: string
+        counterPartyAddress:
+          type: string
+      example: |
+        {
+            "@context": {
+                "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+                "edc": "https://w3id.org/edc/v0.0.1/ns/",
+            },
+            "@type": "tx:ConnectorParamsDiscoveryRequest",
+            "tx:bpnl": "BPNL1234567890",
+            "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
+        }
     ContractAgreement:
       type: object
       properties:
