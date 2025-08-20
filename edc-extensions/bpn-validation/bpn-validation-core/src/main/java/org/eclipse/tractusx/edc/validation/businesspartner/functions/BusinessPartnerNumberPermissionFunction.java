@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +27,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -37,6 +39,7 @@ import java.util.regex.Pattern;
 
 import static org.eclipse.edc.spi.result.Result.failure;
 import static org.eclipse.edc.spi.result.Result.success;
+import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
 
 /**
  * AtomicConstraintFunction to validate business partner numbers for edc permissions.
@@ -47,6 +50,12 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
             Operator.IS_ANY_OF,
             Operator.IS_NONE_OF
     );
+    
+    private BdrsClient bdrsClient;
+    
+    public BusinessPartnerNumberPermissionFunction(BdrsClient bdrsClient) {
+        this.bdrsClient = bdrsClient;
+    }
 
     @Override
     public boolean evaluate(Operator operator, Object rightOperand, Permission permission, ParticipantAgentPolicyContext context) {
@@ -62,6 +71,10 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
         if (identity == null) {
             context.reportProblem("Identity of the participant agent cannot be null");
             return false;
+        }
+        
+        if (identity.startsWith(DID_PREFIX)) {
+            identity = bdrsClient.resolveBpn(identity);
         }
 
         return switch (operator) {

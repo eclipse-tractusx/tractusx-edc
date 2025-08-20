@@ -18,6 +18,5 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension
-org.eclipse.tractusx.edc.iam.iatp.IatpIdentityExtension
 org.eclipse.tractusx.edc.iam.iatp.IatpScopeExtractorExtension
 

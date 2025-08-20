@@ -38,7 +38,8 @@ public class DelegatedAuthEndToEndTest {
 
     private static final TransferParticipant CONNECTOR = TransferParticipant.Builder.newInstance()
             .name("connector")
-            .id("connector")
+            .id("did:web:connector")
+            .bpn("connector-bpn")
             .build();
 
     @RegisterExtension

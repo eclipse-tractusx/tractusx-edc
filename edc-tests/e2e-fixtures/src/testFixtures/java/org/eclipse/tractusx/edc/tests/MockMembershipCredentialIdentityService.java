@@ -19,6 +19,9 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.IdentityService;
@@ -28,6 +31,8 @@ import org.eclipse.edc.spi.iam.VerificationContext;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.TypeManager;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -36,36 +41,53 @@ import static java.lang.String.format;
  * An {@link IdentityService} that will inject the BPN claim in every token.
  * Please only use in testing scenarios!
  */
-public class MockBpnIdentityService implements IdentityService {
-
+public class MockMembershipCredentialIdentityService implements IdentityService {
+    
     private static final String BUSINESS_PARTNER_NUMBER_CLAIM = "BusinessPartnerNumber";
+    private static final String VC_CLAIM = "vc";
     private final String businessPartnerNumber;
+    private final String did;
     private final TypeManager typeManager = new JacksonTypeManager();
-
-    public MockBpnIdentityService(String businessPartnerNumber) {
+    
+    public MockMembershipCredentialIdentityService(String businessPartnerNumber, String did) {
         this.businessPartnerNumber = businessPartnerNumber;
+        this.did = did;
     }
-
+    
     @Override
     public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
-        var token = Map.of(BUSINESS_PARTNER_NUMBER_CLAIM, businessPartnerNumber);
-
+        var vc = membershipCredential();
+        var token = Map.of(VC_CLAIM, vc);
+        
         var tokenRepresentation = TokenRepresentation.Builder.newInstance()
                 .token(typeManager.writeValueAsString(token))
                 .build();
         return Result.success(tokenRepresentation);
     }
-
+    
     @Override
     public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, VerificationContext verificationContext) {
-
         var token = typeManager.readValue(tokenRepresentation.getToken(), Map.class);
-        if (token.containsKey(BUSINESS_PARTNER_NUMBER_CLAIM)) {
-            return Result.success(ClaimToken.Builder.newInstance()
-                    .claim(BUSINESS_PARTNER_NUMBER_CLAIM, token.get(BUSINESS_PARTNER_NUMBER_CLAIM))
-                    .build());
+        if (token.containsKey(VC_CLAIM)) {
+            var vc = typeManager.getMapper().convertValue(token.get(VC_CLAIM), VerifiableCredential.class);
+            var claimToken = ClaimToken.Builder.newInstance()
+                    .claim(VC_CLAIM, List.of(vc))
+                    .build();
+            return Result.success(claimToken);
         }
         return Result.failure(format("Expected %s claim, but token did not contain them", BUSINESS_PARTNER_NUMBER_CLAIM));
     }
-
+    
+    private VerifiableCredential membershipCredential() {
+        return VerifiableCredential.Builder.newInstance()
+                .type("VerifiableCredential")
+                .type("MembershipCredential")
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id(did)
+                        .claim("holderIdentifier", businessPartnerNumber)
+                        .build())
+                .issuer(new Issuer("issuer", Map.of()))
+                .issuanceDate(Instant.now())
+                .build();
+    }
 }

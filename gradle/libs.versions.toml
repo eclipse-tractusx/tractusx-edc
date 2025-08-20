@@ -2,7 +2,8 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.14.0-20250719-SNAPSHOT"
+edc = "0.14.0"
+edc-build = "0.1.0"
 allure = "2.29.1"
 awaitility = "4.3.0"
 aws = "2.32.24"
@@ -45,6 +46,7 @@ edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
+edc-spi-protocol = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
 edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
 edc-spi-request-policy-context = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
 edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
@@ -65,7 +67,6 @@ edc-spi-identity-trust = { module = "org.eclipse.edc:identity-trust-spi", versio
 edc-spi-vc = { module = "org.eclipse.edc:verifiable-credentials-spi", version.ref = "edc" }
 edc-spi-edrstore = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
-edc-build-plugin = { module = "org.eclipse.edc.edc-build:org.eclipse.edc.edc-build.gradle.plugin", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
@@ -156,7 +157,9 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 
 # DSP libraries
+dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
 dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
+dsp-spi-v2024 = { module = "org.eclipse.edc:dsp-spi-2024", version.ref = "edc" }
 dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
 
 # Federated Catalog modules
@@ -230,3 +233,4 @@ docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0" }
 nexus = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.8" }
 swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.35" }
+edc-build = { id = "org.eclipse.edc.edc-build", version.ref = "edc-build" }

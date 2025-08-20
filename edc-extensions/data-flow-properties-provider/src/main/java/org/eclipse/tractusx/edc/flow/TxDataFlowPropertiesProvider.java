@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static org.eclipse.edc.spi.response.ResponseStatus.FATAL_ERROR;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
+import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
 
 /**
  * Extension of {@link DataFlowPropertiesProvider} which provides additional properties in the {@link DataFlowStartMessage}
@@ -47,6 +48,10 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
     @Override
     public StatusResult<Map<String, String>> propertiesFor(TransferProcess transferProcess, Policy policy) {
         try {
+            if (policy.getAssignee().startsWith(DID_PREFIX)) {
+                return StatusResult.success(Map.of(AUDIENCE_PROPERTY, policy.getAssignee()));
+            }
+            
             var did = bdrsClient.resolveDid(policy.getAssignee());
             if (did == null) {
                 return StatusResult.failure(FATAL_ERROR, "Failed to fetch did for BPN %s".formatted(policy.getAssignee()));

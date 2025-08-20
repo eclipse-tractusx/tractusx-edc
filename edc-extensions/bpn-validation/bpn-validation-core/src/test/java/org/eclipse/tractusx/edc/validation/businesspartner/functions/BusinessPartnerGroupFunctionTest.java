@@ -25,6 +25,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BusinessPartnerGroupFunctionTest {
@@ -56,11 +58,12 @@ class BusinessPartnerGroupFunctionTest {
     public static final String TEST_GROUP_2 = "test-group-2";
     private static final String TEST_BPN = "BPN000TEST";
     private final BusinessPartnerStore store = mock();
+    private final BdrsClient bdrsClient = mock();
     private final ParticipantAgent agent = mock();
     private final Monitor monitor = mock();
     private final Permission unusedPermission = Permission.Builder.newInstance().build();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(agent);
-    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store, monitor);
+    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor);
 
     @ParameterizedTest(name = "Invalid operator {0}")
     @ArgumentsSource(InvalidOperatorProvider.class)
@@ -97,6 +100,30 @@ class BusinessPartnerGroupFunctionTest {
         var result = function.evaluate(operator, allowedGroups, unusedPermission, context);
 
         assertThat(result).isEqualTo(expectedOutcome);
+    }
+    
+    @Test
+    void evaluate_whenMissingIdentity_shouldReturnFalse() {
+        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+        var result = function.evaluate(IS_ANY_OF, allowedGroups, unusedPermission, context);
+        
+        assertThat(result).isFalse();
+        assertThat(context.getProblems()).hasSize(1)
+                .anyMatch(it -> it.contains("Identity of the participant agent cannot be null"));
+    }
+    
+    @Test
+    void evaluate_whenIdentityIsDid_shouldResolveBpn() {
+        var did = "did:web:foo";
+        var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
+        when(agent.getIdentity()).thenReturn(did);
+        when(bdrsClient.resolveBpn(did)).thenReturn(TEST_BPN);
+        when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(allowedGroups));
+        
+        var result = function.evaluate(IS_ANY_OF, allowedGroups, unusedPermission, context);
+        
+        assertThat(result).isTrue();
+        verify(bdrsClient).resolveBpn(did);
     }
 
     @Test

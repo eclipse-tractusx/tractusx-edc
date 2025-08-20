@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +27,7 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
@@ -46,6 +48,7 @@ import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
 import static org.eclipse.edc.policy.model.Operator.NEQ;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
 
 /**
  * This function evaluates, that a particular {@link ParticipantAgent} is a member of a particular group.
@@ -80,14 +83,17 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  * @see BusinessPartnerStore
  */
 public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
+    private BdrsClient bdrsClient;
     private final Monitor monitor;
 
-    public BusinessPartnerGroupFunction(BusinessPartnerStore store, Monitor monitor) {
+    public BusinessPartnerGroupFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
         this.store = store;
+        this.bdrsClient = bdrsClient;
         this.monitor = monitor;
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
@@ -107,8 +113,16 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
             return false;
         }
 
-        var bpn = participantAgent.getIdentity();
-        var groups = store.resolveForBpn(bpn);
+        var identity = participantAgent.getIdentity();
+        if (identity == null) {
+            context.reportProblem("Identity of the participant agent cannot be null");
+            return false;
+        }
+
+        if (identity.startsWith(DID_PREFIX)) {
+            identity = bdrsClient.resolveBpn(identity);
+        }
+        var groups = store.resolveForBpn(identity);
 
         var assignedGroups = groups.getContent();
 

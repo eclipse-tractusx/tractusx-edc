@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,21 +17,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp;
+package org.eclipse.tractusx.edc.spi.identity.mapper;
 
-import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.tractusx.edc.iam.iatp.identity.IatpIdentityExtractor;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@ExtendWith(DependencyInjectionExtension.class)
-public class IatpIdentityExtensionTest {
-
-    @Test
-    void initialize(IatpIdentityExtension extension) {
-        assertThat(extension.extractor()).isInstanceOf(IatpIdentityExtractor.class);
-    }
-
+public interface BdrsConstants {
+    
+    String DID_PREFIX = "did:";
+    
 }
