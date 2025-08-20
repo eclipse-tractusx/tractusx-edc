@@ -27,6 +27,7 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -41,8 +42,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.mockserver.model.HttpRequest.request;
@@ -55,12 +61,14 @@ public class TransferPullEndToEndTest {
     abstract static class Tests extends ConsumerPullBaseTest {
         static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
                 .name(CONSUMER_NAME)
-                .id(CONSUMER_BPN)
+                .id(CONSUMER_DID)
+                .bpn(CONSUMER_BPN)
                 .build();
 
         static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
                 .name(PROVIDER_NAME)
-                .id(PROVIDER_BPN)
+                .id(PROVIDER_DID)
+                .bpn(PROVIDER_BPN)
                 .build();
 
         @Override
@@ -430,8 +438,14 @@ public class TransferPullEndToEndTest {
 
         @BeforeAll
         static void beforeAll() {
-            CONSUMER.setProtocol("dataspace-protocol-http");
-            PROVIDER.setProtocol("dataspace-protocol-http");
+            CONSUMER.setProtocol(DSP_08);
+            PROVIDER.setProtocol(DSP_08);
+            PROVIDER.setId(PROVIDER.getBpn());
+        }
+        
+        @AfterAll
+        static void afterAll() {
+            PROVIDER.setId(PROVIDER.getDid());
         }
     }
 
@@ -452,8 +466,8 @@ public class TransferPullEndToEndTest {
         @BeforeAll
         static void beforeAll() {
             CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
-            CONSUMER.setProtocol("dataspace-protocol-http:2025-1", "/2025-1");
-            PROVIDER.setProtocol("dataspace-protocol-http:2025-1", "/2025-1");
+            CONSUMER.setProtocol(DSP_2025, DSP_2025_PATH);
+            PROVIDER.setProtocol(DSP_2025, DSP_2025_PATH);
         }
     }
 }

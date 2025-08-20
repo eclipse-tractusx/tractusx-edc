@@ -46,6 +46,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.hamcrest.Matchers.contains;
@@ -55,7 +56,8 @@ public class EmptyAssetSelectorValidatorTest {
 
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(PROVIDER_DID)
+            .bpn(PROVIDER_BPN)
             .build();
 
     @RegisterExtension

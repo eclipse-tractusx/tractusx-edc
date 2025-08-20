@@ -27,7 +27,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TxDataFlowPropertiesProviderTest {
@@ -36,7 +39,7 @@ public class TxDataFlowPropertiesProviderTest {
     private final TxDataFlowPropertiesProvider provider = new TxDataFlowPropertiesProvider(bdrsClient);
 
     @Test
-    void shouldReturnProperties() {
+    void shouldReturnProperties_whenIdIsBpn() {
         var bpn = "bpn";
         var did = "did";
         when(bdrsClient.resolveDid(bpn)).thenReturn(did);
@@ -46,6 +49,18 @@ public class TxDataFlowPropertiesProviderTest {
         assertThat(result).isSucceeded().satisfies(properties -> {
             assertThat(properties).containsEntry(AUDIENCE_PROPERTY, did);
         });
+    }
+    
+    @Test
+    void shouldReturnProperties_whenIdIsDid() {
+        var did = "did:abc";
+        
+        var result = provider.propertiesFor(createTransferProcess(), createPolicy(did));
+        
+        assertThat(result).isSucceeded().satisfies(properties -> {
+            assertThat(properties).containsEntry(AUDIENCE_PROPERTY, did);
+        });
+        verify(bdrsClient, never()).resolveDid(any());
     }
 
     @Test

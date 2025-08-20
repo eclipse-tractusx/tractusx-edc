@@ -27,6 +27,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 public class ProvisionAdditionalHeadersExtension implements ServiceExtension {
 
@@ -41,11 +42,14 @@ public class ProvisionAdditionalHeadersExtension implements ServiceExtension {
 
     @Inject
     private ContractAgreementService contractAgreementService;
+    
+    @Inject
+    private BdrsClient bdrsClient;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
         typeManager.registerTypes(AdditionalHeadersResourceDefinition.class, AdditionalHeadersProvisionedResource.class);
-        resourceManifestGenerator.registerGenerator(new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService));
+        resourceManifestGenerator.registerGenerator(new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService, bdrsClient));
         provisionManager.register(new AdditionalHeadersProvisioner());
     }
 }

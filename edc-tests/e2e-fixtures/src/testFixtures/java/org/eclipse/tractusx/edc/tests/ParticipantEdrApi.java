@@ -119,7 +119,7 @@ public class ParticipantEdrApi {
 
         var policy = createObjectBuilder(getDatasetFirstPolicy(dataset))
                 .add(ODRL_TARGET_ATTRIBUTE, createObjectBuilder().add(ID, dataset.get(ID)))
-                .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getBpn()))
+                .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, other.getId()))
                 .build();
 
         var connectorAddress = other.getProtocolUrl();

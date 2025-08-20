@@ -27,6 +27,7 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -41,9 +42,10 @@ import static org.mockito.Mockito.when;
 class AdditionalHeadersResourceDefinitionGeneratorTest {
 
     private final ContractAgreementService contractAgreementService = mock();
-    private final ProviderResourceDefinitionGenerator generator = new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService);
+    private final BdrsClient bdrsClient = mock();
+    private final ProviderResourceDefinitionGenerator generator = new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService, bdrsClient);
 
-    private static ContractAgreement contractAgreementWithBpn(String bpn) {
+    private static ContractAgreement contractAgreementWithConsumerId(String bpn) {
         return ContractAgreement.Builder.newInstance()
                 .id(UUID.randomUUID().toString())
                 .consumerId(bpn)
@@ -79,7 +81,7 @@ class AdditionalHeadersResourceDefinitionGeneratorTest {
     void shouldCreateResourceDefinitionWithDataAddress() {
         var dataAddress = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
         var build = Policy.Builder.newInstance().build();
-        when(contractAgreementService.findById(any())).thenReturn(contractAgreementWithBpn("bpn"));
+        when(contractAgreementService.findById(any())).thenReturn(contractAgreementWithConsumerId("bpn"));
         var transferProcess = TransferProcess.Builder.newInstance()
                 .dataDestination(dataAddress)
                 .contractId("contractId")
@@ -96,6 +98,35 @@ class AdditionalHeadersResourceDefinitionGeneratorTest {
                             .isEqualTo("http://any");
                     assertThat(resourceDefinition.getContractId()).isEqualTo("contractId");
                     assertThat(resourceDefinition.getBpn()).isEqualTo("bpn");
+                });
+        verify(contractAgreementService).findById("contractId");
+    }
+    
+    @Test
+    void whenIdIsDid_shouldCallBdrsClientAndCreateResourceDefinitionWithDataAddress() {
+        var bpn = "bpn";
+        var did = "did:web:abc";
+        
+        var dataAddress = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
+        var build = Policy.Builder.newInstance().build();
+        when(contractAgreementService.findById(any())).thenReturn(contractAgreementWithConsumerId(did));
+        when(bdrsClient.resolveBpn(did)).thenReturn(bpn);
+        var transferProcess = TransferProcess.Builder.newInstance()
+                .dataDestination(dataAddress)
+                .contractId("contractId")
+                .build();
+        
+        var result = generator.generate(transferProcess, dataAddress, build);
+        
+        assertThat(result)
+                .asInstanceOf(type(AdditionalHeadersResourceDefinition.class))
+                .satisfies(resourceDefinition -> {
+                    assertThat(resourceDefinition.getDataAddress())
+                            .extracting(address -> HttpDataAddress.Builder.newInstance().copyFrom(address).build())
+                            .extracting(HttpDataAddress::getBaseUrl)
+                            .isEqualTo("http://any");
+                    assertThat(resourceDefinition.getContractId()).isEqualTo("contractId");
+                    assertThat(resourceDefinition.getBpn()).isEqualTo(bpn);
                 });
         verify(contractAgreementService).findById("contractId");
     }

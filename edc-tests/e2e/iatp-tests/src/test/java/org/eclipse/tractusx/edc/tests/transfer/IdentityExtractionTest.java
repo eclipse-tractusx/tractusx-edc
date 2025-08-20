@@ -25,7 +25,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.participant.spi.ParticipantAgentService;
+import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
@@ -42,6 +42,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatpRuntime;
 
 /**
@@ -49,42 +51,69 @@ import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatp
  * Due to how the extractors are used and registered, this must be tested using a fully-fledged runtime.
  */
 @EndToEndTest
-public class IdentityExtractorTest {
+public class IdentityExtractionTest {
 
     private static final LazySupplier<URI> STS_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
     private static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id("did:example:" + CONSUMER_NAME)
             .stsUri(STS_URI)
             .stsClientId(CONSUMER_BPN)
             .trustedIssuer("did:example:issuer")
-            .did("did:example:" + CONSUMER_NAME)
+            .bpn(CONSUMER_BPN)
             .build();
 
     @RegisterExtension
     private static final RuntimeExtension CONSUMER_RUNTIME = iatpRuntime(CONSUMER.getName(), CONSUMER.getKeyPair(), CONSUMER::getConfig);
 
     @Test
-    void verifyCorrectParticipantAgentId(ParticipantAgentService participantAgentService) {
+    void verifyCorrectParticipantAgentId_forDsp08(DataspaceProfileContextRegistry registry) {
+        var claimtoken = ClaimToken.Builder.newInstance()
+                .claim("vc", List.of(createCredential().build()))
+                .build();
+        
+        var bpnExtractionFunction = registry.getIdExtractionFunction(DSP_08);
+        var id = bpnExtractionFunction.apply(claimtoken);
+        
+        assertThat(id).isEqualTo("the-holder");
+    }
+    
+    @Test
+    void verifyCorrectParticipantAgentId_forDsp2025(DataspaceProfileContextRegistry registry) {
         var claimtoken = ClaimToken.Builder.newInstance()
                 .claim("vc", List.of(createCredential().build()))
                 .build();
 
-        var agent = participantAgentService.createFor(claimtoken);
+        var bpnExtractionFunction = registry.getIdExtractionFunction(DSP_2025);
+        var id = bpnExtractionFunction.apply(claimtoken);
 
-        assertThat(agent.getIdentity()).isEqualTo("the-holder");
+        assertThat(id).isEqualTo("test-id");
     }
 
     @Test
-    void verifyAgentId_whenNoMembershipCredential(ParticipantAgentService participantAgentService) {
+    void verifyAgentId_whenNoMembershipCredential_forDsp08(DataspaceProfileContextRegistry registry) {
         var claimtoken = ClaimToken.Builder.newInstance()
                 .claim("vc", List.of(createCredential().types(List.of("VerifiableCredential")).build()))
                 .build();
-
-        assertThatThrownBy(() -> participantAgentService.createFor(claimtoken)).isInstanceOf(EdcException.class)
+        
+        var bpnExtractionFunction = registry.getIdExtractionFunction(DSP_08);
+        
+        assertThatThrownBy(() -> bpnExtractionFunction.apply(claimtoken)).isInstanceOf(EdcException.class)
                 .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property 'holderIdentifier'");
     }
-
+    
+    @Test
+    void verifyAgentId_whenNoMembershipCredential_forDsp2025(DataspaceProfileContextRegistry registry) {
+        var claimtoken = ClaimToken.Builder.newInstance()
+                .claim("vc", List.of(createCredential().types(List.of("VerifiableCredential")).build()))
+                .build();
+        
+        var didExtractionFunction = registry.getIdExtractionFunction(DSP_2025);
+        
+        assertThatThrownBy(() -> didExtractionFunction.apply(claimtoken)).isInstanceOf(EdcException.class)
+                .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property 'id'");
+    }
+    
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private VerifiableCredential.Builder createCredential() {
         return VerifiableCredential.Builder.newInstance()

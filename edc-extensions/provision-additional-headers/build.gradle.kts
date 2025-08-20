@@ -23,6 +23,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":spi:bdrs-client-spi"))
+
     implementation(libs.edc.spi.controlplane)
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.transfer)

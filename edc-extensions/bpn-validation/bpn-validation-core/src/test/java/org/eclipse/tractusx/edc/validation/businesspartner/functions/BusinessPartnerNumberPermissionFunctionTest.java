@@ -23,6 +23,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,14 +41,16 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BusinessPartnerNumberPermissionFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
+    private final BdrsClient bdrsClient = mock();
     private final Permission unusedPermission = Permission.Builder.newInstance().build();
     private final ParticipantAgentPolicyContext policyContext = new TestParticipantAgentPolicyContext(participantAgent);
-    private final BusinessPartnerNumberPermissionFunction<TestParticipantAgentPolicyContext> validation = new BusinessPartnerNumberPermissionFunction<>();
+    private final BusinessPartnerNumberPermissionFunction<TestParticipantAgentPolicyContext> validation = new BusinessPartnerNumberPermissionFunction<>(bdrsClient);
 
     @ParameterizedTest(name = "Illegal Operator {0}")
     @ArgumentsSource(IllegalOperatorProvider.class)
@@ -76,6 +79,19 @@ class BusinessPartnerNumberPermissionFunctionTest {
         assertThat(result).isFalse();
         assertThat(policyContext.getProblems()).hasSize(1)
                 .anyMatch(it -> it.contains("Identity of the participant agent cannot be null"));
+    }
+    
+    @Test
+    void testBdrsClientCalledWhenIdentityIsDid() {
+        var did = "did:web:foo";
+        var bpn = "foo";
+        when(participantAgent.getIdentity()).thenReturn(did);
+        when(bdrsClient.resolveBpn(did)).thenReturn(bpn);
+        
+        var result = validation.evaluate(Operator.EQ, "foo", unusedPermission, policyContext);
+        
+        assertThat(result).isTrue();
+        verify(bdrsClient).resolveBpn(did);
     }
 
     @Test

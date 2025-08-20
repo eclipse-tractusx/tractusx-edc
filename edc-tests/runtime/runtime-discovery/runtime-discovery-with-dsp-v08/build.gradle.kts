@@ -27,6 +27,7 @@ dependencies {
     runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "tx-dcp")
         exclude(module = "tx-dcp-sts-dim")
+        exclude(module = "dataspace-protocol")
         exclude(module= "dsp-2024")
         exclude(module= "dsp-2025")
         exclude(module = "dsp-http-api-configuration-2025")

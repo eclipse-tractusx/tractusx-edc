@@ -19,11 +19,13 @@
 
 package org.eclipse.tractusx.edc.tests.catalog;
 
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -36,8 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
@@ -53,13 +59,19 @@ public class CatalogTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(CONSUMER_DID)
+            .bpn(CONSUMER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
 
 
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(PROVIDER_DID)
+            .bpn(PROVIDER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
 
     @RegisterExtension
@@ -71,6 +83,11 @@ public class CatalogTest {
 
     @RegisterExtension
     private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
+    
+    @BeforeEach
+    void setup() {
+        CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
+    }
 
     @Test
     @DisplayName("Consumer gets catalog from the provider. No constraints.")

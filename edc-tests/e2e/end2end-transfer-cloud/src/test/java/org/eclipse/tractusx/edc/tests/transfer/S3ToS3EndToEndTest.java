@@ -20,12 +20,14 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import jakarta.json.Json;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.tractusx.edc.tests.aws.LocalstackExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -38,8 +40,12 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
@@ -56,11 +62,17 @@ public class S3ToS3EndToEndTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(CONSUMER_DID)
+            .bpn(CONSUMER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(PROVIDER_DID)
+            .bpn(PROVIDER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
 
     @RegisterExtension
@@ -76,6 +88,11 @@ public class S3ToS3EndToEndTest {
     private static final LocalstackExtension PROVIDER_CONTAINER = new LocalstackExtension();
     @RegisterExtension
     private static final LocalstackExtension CONSUMER_CONTAINER = new LocalstackExtension();
+    
+    @BeforeEach
+    void setup() {
+        CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
+    }
 
     @Test
     void transferFile_success() {

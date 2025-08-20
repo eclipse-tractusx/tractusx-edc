@@ -24,6 +24,7 @@ import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.identitytrust.sts.spi.service.StsAccountService;
 import org.eclipse.edc.json.JacksonTypeManager;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
@@ -54,6 +55,8 @@ import java.util.UUID;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.dimRuntime;
@@ -72,21 +75,25 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     private static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(DID_SERVER.didFor(CONSUMER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(CONSUMER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
-            .did(DID_SERVER.didFor(CONSUMER_NAME))
+            .bpn(CONSUMER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
     private static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(DID_SERVER.didFor(PROVIDER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(PROVIDER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .dimUri(DIM_URI)
-            .did(DID_SERVER.didFor(PROVIDER_NAME))
+            .bpn(PROVIDER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
 
     @RegisterExtension
@@ -127,6 +134,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
 
         dimServer = ClientAndServer.startClientAndServer(DIM_URI.get().getPort());
         dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
+        
+        CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
     }
 
     @AfterAll

@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,11 +27,15 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.Optional;
 
+import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
+
 /**
- * An incoming {@link RemoteMessage} is mapped to a DID by calling {@link BdrsClient#resolveDid(String)} with the {@link RemoteMessage#getCounterPartyId()}
+ * Extracts the audience from a {@link RemoteMessage} using {@link RemoteMessage#getCounterPartyId()}.
+ * If the counter-party id is a DID, returns it as-is. If it is a BPN, calls {@link BdrsClient#resolveDid(String)}
+ * to resolve the corresponding DID.
  */
 class BdrsClientAudienceMapper implements AudienceResolver {
-
+    
     private final BdrsClient client;
 
     BdrsClientAudienceMapper(BdrsClient client) {
@@ -40,7 +45,12 @@ class BdrsClientAudienceMapper implements AudienceResolver {
     @Override
     public Result<String> resolve(RemoteMessage remoteMessage) {
         try {
-            var resolve = client.resolveDid(remoteMessage.getCounterPartyId());
+            var counterPartyId = remoteMessage.getCounterPartyId();
+            if (counterPartyId.startsWith(DID_PREFIX)) {
+                return Result.success(counterPartyId);
+            }
+            
+            var resolve = client.resolveDid(counterPartyId);
             return Result.from(Optional.ofNullable(resolve));
         } catch (Exception e) {
             return Result.failure("Failure in DID resolution: " + e.getMessage());

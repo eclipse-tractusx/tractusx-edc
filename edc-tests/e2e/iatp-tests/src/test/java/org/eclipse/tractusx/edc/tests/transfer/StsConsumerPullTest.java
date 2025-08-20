@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -36,6 +37,8 @@ import java.util.Map;
 
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.iatpRuntime;
@@ -51,19 +54,23 @@ public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     private static final IatpParticipant CONSUMER = IatpParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
-            .id(CONSUMER_BPN)
+            .id(DID_SERVER.didFor(CONSUMER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(CONSUMER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .did(DID_SERVER.didFor(CONSUMER_NAME))
+            .bpn(CONSUMER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
     private static final IatpParticipant PROVIDER = IatpParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_BPN)
+            .id(DID_SERVER.didFor(PROVIDER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(PROVIDER_BPN)
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-            .did(DID_SERVER.didFor(PROVIDER_NAME))
+            .bpn(PROVIDER_BPN)
+            .protocol(DSP_2025)
+            .protocolVersionPath(DSP_2025_PATH)
             .build();
 
     @RegisterExtension
@@ -98,6 +105,8 @@ public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
     void setUp() {
         CONSUMER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER_RUNTIME, STS_RUNTIME);
         PROVIDER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER_RUNTIME, STS_RUNTIME);
+        
+        CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
     }
 
     @Override
