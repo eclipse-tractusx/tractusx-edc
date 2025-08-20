@@ -16,10 +16,10 @@
       "@id": "cx-policy:AffiliatesRegion"
     },
     "BusinessPartnerGroup": {
-      "@id": "cx-policy:BusinessPartnerGroup"
+      "@id": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup"
     },
     "BusinessPartnerNumber": {
-      "@id": "cx-policy:BusinessPartnerNumber"
+      "@id": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerNumber"
     },
     "ConfidentialInformationMeasures": {
       "@id": "cx-policy:ConfidentialInformationMeasures"
