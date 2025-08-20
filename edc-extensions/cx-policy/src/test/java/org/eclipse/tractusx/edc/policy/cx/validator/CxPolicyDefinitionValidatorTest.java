@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Fraunhofer Institute for Software and Systems Engineering - initial API and implementation
+ * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.

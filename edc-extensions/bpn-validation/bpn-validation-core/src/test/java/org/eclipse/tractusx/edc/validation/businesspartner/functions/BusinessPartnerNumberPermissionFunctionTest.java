@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -80,16 +81,16 @@ class BusinessPartnerNumberPermissionFunctionTest {
         assertThat(policyContext.getProblems()).hasSize(1)
                 .anyMatch(it -> it.contains("Identity of the participant agent cannot be null"));
     }
-    
+
     @Test
     void testBdrsClientCalledWhenIdentityIsDid() {
         var did = "did:web:foo";
         var bpn = "foo";
         when(participantAgent.getIdentity()).thenReturn(did);
         when(bdrsClient.resolveBpn(did)).thenReturn(bpn);
-        
+
         var result = validation.evaluate(Operator.EQ, "foo", unusedPermission, policyContext);
-        
+
         assertThat(result).isTrue();
         verify(bdrsClient).resolveBpn(did);
     }
