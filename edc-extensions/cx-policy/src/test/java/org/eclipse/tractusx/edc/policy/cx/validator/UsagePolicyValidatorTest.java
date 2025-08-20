@@ -41,8 +41,11 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DATE_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.LIABILITY_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_RESTRICTION_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.VERSION_CHANGES_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.WARRANTY_DEFINITION_LITERAL;
 
 class UsagePolicyValidatorTest {
 
@@ -53,6 +56,42 @@ class UsagePolicyValidatorTest {
     @BeforeEach
     void setUp() {
         validator = new UsagePolicyValidator(path);
+    }
+
+    @Test
+    void shouldReturnSuccess_whenAllRequiredPermissionConstraintsPresent() {
+        JsonObject permission = rule(ACTION_USAGE,
+                atomicConstraint(USAGE_PURPOSE_LITERAL),
+                atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL),
+                atomicConstraint(LIABILITY_LITERAL),
+                atomicConstraint(WARRANTY_DEFINITION_LITERAL),
+                atomicConstraint(VERSION_CHANGES_LITERAL)
+        );
+        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+
+        ValidationResult result = validator.validate(input);
+
+        assertThat(result).isSucceeded();
+    }
+
+    @Test
+    void shouldReturnFailure_whenAllRequiredPermissionConstraintsNotPresent() {
+        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
+        JsonObject permission = rule(ACTION_USAGE,
+                atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL),
+                atomicConstraint(LIABILITY_LITERAL),
+                atomicConstraint(WARRANTY_DEFINITION_LITERAL),
+                atomicConstraint(VERSION_CHANGES_LITERAL)
+        );
+        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+
+        ValidationResult result = validator.validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
+                msg.contains("Usage policy permission must include at least the following constraints")
+                        && msg.contains(USAGE_PURPOSE_LITERAL)
+                        && msg.contains(FRAMEWORK_AGREEMENT_LITERAL));
     }
 
     @Test

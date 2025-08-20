@@ -32,7 +32,10 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
+import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
 
 /**
  * Validates usage policy constraints according to the ODRL specification.
@@ -44,6 +47,10 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
     private final Set<String> encounteredPermissionConstraints;
     private final Set<String> encounteredObligationConstraints;
     private final Set<String> encounteredProhibitionConstraints;
+    private final Set<String> requiredPermissionConstraints = Set.of(
+            FRAMEWORK_AGREEMENT_LITERAL,
+            USAGE_PURPOSE_LITERAL
+    );
 
     public UsagePolicyValidator(JsonLdPath path) {
         this.path = path;
@@ -59,6 +66,7 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
                 .verify(AtLeastOneRuleExists::new)
                 .verifyArrayItem(ODRL_PERMISSION_ATTRIBUTE, builder ->
                         UsagePermissionValidator.instance(builder, encounteredPermissionConstraints))
+                .verify(path -> new PermissionContainsRequiredConstraints(path, encounteredPermissionConstraints, requiredPermissionConstraints))
                 .verifyArrayItem(ODRL_OBLIGATION_ATTRIBUTE, builder ->
                         UsageObligationValidator.instance(builder, encounteredObligationConstraints))
                 .verifyArrayItem(ODRL_PROHIBITION_ATTRIBUTE, builder ->
@@ -67,8 +75,32 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
                 .validate(input);
     }
 
+    private static final class PermissionContainsRequiredConstraints implements Validator<JsonObject> {
+        private final JsonLdPath path;
+        private final Set<String> encounteredConstraints;
+        private final Set<String> requiredConstraints;
+
+        PermissionContainsRequiredConstraints(JsonLdPath path, Set<String> encounteredConstraints, Set<String> requiredConstraints) {
+            this.path = path;
+            this.encounteredConstraints = encounteredConstraints;
+            this.requiredConstraints = requiredConstraints;
+        }
+
+        @Override
+        public ValidationResult validate(JsonObject input) {
+            return requiredConstraints.stream()
+                    .filter(constraint -> !encounteredConstraints.contains(constraint))
+                    .findFirst()
+                    .map(c -> ValidationResult.failure(
+                            violation(String.format("Usage policy permission must include at least the following constraints %s", requiredConstraints.toString()), path.toString())))
+                    .orElse(ValidationResult.success());
+        }
+    }
+
+
     private static final class UsagePermissionValidator {
         public static JsonObjectValidator.Builder instance(JsonObjectValidator.Builder builder, Set<String> encounteredConstraints) {
+
             return builder
                     .verify(path -> new ActionTypeIs(path, ACTION_USAGE))
                     .verifyArrayItem(ODRL_CONSTRAINT_ATTRIBUTE, b -> ConstraintValidator.instance(b, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE, encounteredConstraints));
