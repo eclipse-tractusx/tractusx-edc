@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -50,9 +51,9 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
             Operator.IS_ANY_OF,
             Operator.IS_NONE_OF
     );
-    
+
     private BdrsClient bdrsClient;
-    
+
     public BusinessPartnerNumberPermissionFunction(BdrsClient bdrsClient) {
         this.bdrsClient = bdrsClient;
     }
@@ -72,7 +73,7 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
             context.reportProblem("Identity of the participant agent cannot be null");
             return false;
         }
-        
+
         if (identity.startsWith(DID_PREFIX)) {
             identity = bdrsClient.resolveBpn(identity);
         }

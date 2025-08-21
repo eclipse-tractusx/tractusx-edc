@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -76,6 +77,15 @@ class BusinessPartnerNumberPermissionFunctionTest {
     }
 
     @Test
+    void testValidationWhenSingleParticipantIsValid() {
+        when(participantAgent.getIdentity()).thenReturn("foo");
+
+        var result = validation.evaluate(Operator.EQ, "foo", unusedPermission, policyContext);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
     void testValidationFailsInvalidIdentity() {
         when(participantAgent.getIdentity()).thenReturn("bar");
 
@@ -102,6 +112,25 @@ class BusinessPartnerNumberPermissionFunctionTest {
         assertThat(validation.evaluate(Operator.IS_ANY_OF, "bar", unusedPermission, policyContext)).isFalse();
         assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IS_ANY_OF' requires a 'List' but got a 'java.lang.String'");
 
+    }
+
+    @Test
+    void evaluate_isA() {
+        when(participantAgent.getIdentity()).thenReturn("foo");
+        assertThat(validation.evaluate(Operator.IS_A, bpnList("foo", "bar"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_A, bpnList("foo"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_A, bpnList("bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_A, "bar", unusedPermission, policyContext)).isFalse();
+        assertThat(policyContext.getProblems()).containsOnly("Invalid right-value: operator 'IS_A' requires a 'List' but got a 'java.lang.String'");
+    }
+
+    @Test
+    void evaluate_isAllOf() {
+        when(participantAgent.getIdentity()).thenReturn("foo");
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("foo", "bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("foo"), unusedPermission, policyContext)).isTrue();
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, List.of("bar"), unusedPermission, policyContext)).isFalse();
+        assertThat(validation.evaluate(Operator.IS_ALL_OF, "bar", unusedPermission, policyContext)).isFalse();
     }
 
     @Test

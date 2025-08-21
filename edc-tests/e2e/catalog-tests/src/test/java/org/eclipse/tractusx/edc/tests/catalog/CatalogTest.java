@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -78,7 +79,7 @@ public class CatalogTest {
 
     @RegisterExtension
     private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
-    
+
     @BeforeEach
     void setup() {
         CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
