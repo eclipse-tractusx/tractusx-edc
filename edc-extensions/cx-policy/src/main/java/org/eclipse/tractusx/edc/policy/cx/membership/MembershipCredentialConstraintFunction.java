@@ -32,7 +32,7 @@ import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstr
 import java.util.Set;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 
 
 /**
@@ -48,7 +48,7 @@ public class MembershipCredentialConstraintFunction<C extends ParticipantAgentPo
             context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
             return false;
         }
-        if (!(CX_POLICY_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString())) {
+        if (!(CX_POLICY_2025_09_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString())) {
             context.reportProblem("Invalid left-operand: must be 'Membership', but was '%s'".formatted(leftOperand));
             return false;
         }
@@ -67,7 +67,7 @@ public class MembershipCredentialConstraintFunction<C extends ParticipantAgentPo
 
     @Override
     public boolean canHandle(Object leftOperand) {
-        return leftOperand instanceof String && (CX_POLICY_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString());
+        return leftOperand instanceof String && (CX_POLICY_2025_09_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString());
     }
 
     @Override

@@ -43,7 +43,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -110,7 +110,7 @@ public class RetireAgreementTest {
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1");
         var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1"));
-        var policy = PolicyHelperFunctions.frameworkPolicy(Map.of(), CX_POLICY_NS + "access");
+        var policy = PolicyHelperFunctions.frameworkPolicy(Map.of(), CX_POLICY_2025_09_NS + "access");
         var contractPolicy = PROVIDER.createPolicyDefinition(policy);
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
