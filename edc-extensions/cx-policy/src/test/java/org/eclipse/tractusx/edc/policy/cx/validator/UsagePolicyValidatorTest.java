@@ -31,6 +31,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_AT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_ATTRIBUTE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.appendRulesToPolicy;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.emptyRule;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.policy;
@@ -60,57 +61,50 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenAllRequiredPermissionConstraintsPresent() {
-        JsonObject permission = rule(ACTION_USAGE,
+        var permission = rule(ACTION_USAGE,
                 atomicConstraint(USAGE_PURPOSE_LITERAL),
                 atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL),
                 atomicConstraint(LIABILITY_LITERAL),
                 atomicConstraint(WARRANTY_DEFINITION_LITERAL),
                 atomicConstraint(VERSION_CHANGES_LITERAL)
         );
-        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
 
-        ValidationResult result = validator.validate(input);
+        var result = validator.validate(input);
 
         assertThat(result).isSucceeded();
     }
 
     @Test
     void shouldReturnFailure_whenAllRequiredPermissionConstraintsNotPresent() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject permission = rule(ACTION_USAGE,
+        var permission = rule(ACTION_USAGE,
+                atomicConstraint(LIABILITY_LITERAL),
+                atomicConstraint(WARRANTY_DEFINITION_LITERAL),
+                atomicConstraint(VERSION_CHANGES_LITERAL)
+        );
+        var input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+
+        var result = validator.validate(input);
+
+        assertThat(result).isFailed();
+        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
+                msg.contains("Usage policy permission must include at least the following constraints") &&
+                        msg.contains(USAGE_PURPOSE_LITERAL) &&
+                        msg.contains(FRAMEWORK_AGREEMENT_LITERAL));
+    }
+
+    @Test
+    void shouldReturnSuccess_whenValidUsagePermissionWithOnlyRequiredConstraints() {
+        var permission = rule(ACTION_USAGE,
+                atomicConstraint(USAGE_PURPOSE_LITERAL),
                 atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL),
                 atomicConstraint(LIABILITY_LITERAL),
                 atomicConstraint(WARRANTY_DEFINITION_LITERAL),
                 atomicConstraint(VERSION_CHANGES_LITERAL)
         );
-        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
 
-        ValidationResult result = validator.validate(input);
-
-        assertThat(result).isFailed();
-        FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
-                msg.contains("Usage policy permission must include at least the following constraints")
-                        && msg.contains(USAGE_PURPOSE_LITERAL)
-                        && msg.contains(FRAMEWORK_AGREEMENT_LITERAL));
-    }
-
-    @Test
-    void shouldReturnSuccess_whenValidUsagePermissionWithConstraints() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject permission = rule(ACTION_USAGE, constraint);
-        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
-
-        ValidationResult result = validator.validate(input);
-
-        assertThat(result).isSucceeded();
-    }
-
-    @Test
-    void shouldReturnSuccess_whenValidUsagePermissionWithoutConstraints() {
-        JsonObject permission = rule(ACTION_USAGE);
-        JsonObject input = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
-
-        ValidationResult result = validator.validate(input);
+        var result = validator.validate(input);
 
         assertThat(result).isSucceeded();
     }
@@ -130,9 +124,12 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsageProhibitionWithConstraints() {
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL), atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
+
         JsonObject constraint = atomicConstraint(USAGE_RESTRICTION_LITERAL);
         JsonObject prohibition = rule(ACTION_USAGE, constraint);
         JsonObject input = policy(ODRL_PROHIBITION_ATTRIBUTE, prohibition);
+        input = appendRulesToPolicy(input, ODRL_PERMISSION_ATTRIBUTE, permission);
 
         ValidationResult result = validator.validate(input);
 
@@ -141,8 +138,11 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsageProhibitionWithoutConstraints() {
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL), atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
+
         JsonObject prohibition = rule(ACTION_USAGE);
         JsonObject input = policy(ODRL_PROHIBITION_ATTRIBUTE, prohibition);
+        input = appendRulesToPolicy(input, ODRL_PERMISSION_ATTRIBUTE, permission);
 
         ValidationResult result = validator.validate(input);
 
@@ -151,9 +151,12 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnFailure_whenProhibitionHasWrongActionType() {
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL), atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
+
         JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
         JsonObject prohibition = rule(ACTION_ACCESS, constraint);
         JsonObject input = policy(ODRL_PROHIBITION_ATTRIBUTE, prohibition);
+        input = appendRulesToPolicy(input, ODRL_PERMISSION_ATTRIBUTE, permission);
 
         ValidationResult result = validator.validate(input);
 
@@ -162,9 +165,12 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsageObligationWithConstraints() {
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL), atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
+
         JsonObject constraint = atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL);
         JsonObject obligation = rule(ACTION_USAGE, constraint);
         JsonObject input = policy(ODRL_OBLIGATION_ATTRIBUTE, obligation);
+        input = appendRulesToPolicy(input, ODRL_PERMISSION_ATTRIBUTE, permission);
 
         ValidationResult result = validator.validate(input);
 
@@ -173,8 +179,11 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsageObligationWithoutConstraints() {
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL), atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
+
         JsonObject obligation = rule(ACTION_USAGE);
         JsonObject input = policy(ODRL_OBLIGATION_ATTRIBUTE, obligation);
+        input = appendRulesToPolicy(input, ODRL_PERMISSION_ATTRIBUTE, permission);
 
         ValidationResult result = validator.validate(input);
 
@@ -183,9 +192,12 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnFailure_whenObligationHasWrongActionType() {
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL), atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
+
         JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
         JsonObject obligation = rule(ACTION_ACCESS, constraint);
         JsonObject input = policy(ODRL_OBLIGATION_ATTRIBUTE, obligation);
+        input = appendRulesToPolicy(input, ODRL_PERMISSION_ATTRIBUTE, permission);
 
         ValidationResult result = validator.validate(input);
 
@@ -209,7 +221,7 @@ class UsagePolicyValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenCompleteValidUsagePolicy() {
-        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL));
+        JsonObject permission = rule(ACTION_USAGE, atomicConstraint(USAGE_PURPOSE_LITERAL), atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL));
         JsonObject prohibition = rule(ACTION_USAGE, atomicConstraint(USAGE_RESTRICTION_LITERAL));
         JsonObject obligation = rule(ACTION_USAGE, atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL));
 

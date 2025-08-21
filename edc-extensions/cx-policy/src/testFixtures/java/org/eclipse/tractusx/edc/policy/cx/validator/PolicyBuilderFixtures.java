@@ -125,6 +125,17 @@ public final class PolicyBuilderFixtures {
                 .build();
     }
 
+    public static JsonObject appendRulesToPolicy(JsonObject policy, String ruleType, JsonObject... rules) {
+        var rulesArrayBuilder = Json.createArrayBuilder();
+        for (JsonObject rule : rules) {
+            rulesArrayBuilder.add(rule);
+        }
+
+        return Json.createObjectBuilder(policy)
+                .add(ruleType, rulesArrayBuilder)
+                .build();
+    }
+
     public static JsonObject policyDefinition(JsonObject policy, String id) {
         return Json.createObjectBuilder()
                 .add(ID, id)
