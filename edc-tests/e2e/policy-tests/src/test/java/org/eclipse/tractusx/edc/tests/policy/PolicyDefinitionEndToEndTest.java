@@ -51,6 +51,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPermission;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyFromRules;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyWithEmptyRule;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
@@ -114,7 +115,6 @@ public class PolicyDefinitionEndToEndTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(frameworkPolicy(Map.of(namespace + "Membership", "active"), CX_POLICY_2025_09_NS + "access"), "MembershipCredential"),
-                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use"), "DataExchangeGovernance use case"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1", "cx.region.northAmerica:1"), "use", true), "Affiliates Region"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.europe:1"), "use", true), "Affiliates Region (IS_ANY_OF, one element)"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesBpnl", Operator.IS_ANY_OF, "BPNL00000000001A", "use", true), "Affiliates BPNL"),
@@ -154,7 +154,7 @@ public class PolicyDefinitionEndToEndTest {
             return Stream.concat(super.provideArguments(extensionContext), Stream.of(
                     Arguments.of(emptyPolicy(), "Empty Policy"),
                     Arguments.of(policyWithEmptyRule(this.namespace + "access"), "Access policy with empty permission"),
-                    Arguments.of(inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s"), "In force date policy")
+                    Arguments.of(inForceDateUsagePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s"), "In force date policy")
             ));
         }
     }

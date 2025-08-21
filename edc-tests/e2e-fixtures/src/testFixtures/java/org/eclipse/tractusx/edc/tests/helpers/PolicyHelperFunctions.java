@@ -35,10 +35,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.policy;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -56,6 +58,9 @@ public class PolicyHelperFunctions {
     public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY;
 
     private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
+
+    private static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_NS + "FrameworkAgreement";
+    private static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
@@ -122,11 +127,19 @@ public class PolicyHelperFunctions {
     public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, String action, boolean createRightOperandsAsArray) {
         var constraint = atomicConstraint(leftOperand, operator.getOdrlRepresentation(), rightOperand, createRightOperandsAsArray);
 
+        var constraintsBuilder = Json.createArrayBuilder()
+                .add(constraint);
+
+        if (action.contains("use")) {
+            constraintsBuilder.add(frameworkAgreementConstraint());
+            constraintsBuilder.add(usagePurposeConstraint());
+        }
+
         var permission = Json.createObjectBuilder()
                 .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
                         .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
-                        .add("and", constraint)
+                        .add("and", constraintsBuilder.build())
                         .build())
                 .build();
 
@@ -135,6 +148,41 @@ public class PolicyHelperFunctions {
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
+    }
+
+    private static JsonObject frameworkAgreementConstraint() {
+        return Json.createObjectBuilder()
+                .add(TYPE, ODRL_CONSTRAINT_TYPE)
+                .add("leftOperand", FRAMEWORK_AGREEMENT_LITERAL)
+                .add("operator", "eq")
+                .add("rightOperand", "DataExchangeGovernance:2.0")
+                .build();
+    }
+
+    private static JsonObject usagePurposeConstraint() {
+        return Json.createObjectBuilder()
+                .add(TYPE, ODRL_CONSTRAINT_TYPE)
+                .add("leftOperand", USAGE_PURPOSE_LITERAL)
+                .add("operator", "isAnyOf")
+                .add("rightOperand", "cx.pcf.base:1")
+                .build();
+    }
+
+    public static JsonObject inForceDateUsagePolicy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
+        var constraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorStart, startDate, false))
+                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorEnd, endDate, false))
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        return policy(List.of(Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", constraint)
+                .build()));
     }
 
     /**
