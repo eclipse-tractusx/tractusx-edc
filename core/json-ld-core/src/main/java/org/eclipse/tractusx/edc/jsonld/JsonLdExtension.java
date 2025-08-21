@@ -36,7 +36,7 @@ import static java.lang.String.format;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_PREFIX;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDC_CONTEXT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
@@ -52,7 +52,9 @@ public class JsonLdExtension implements ServiceExtension {
     public static final String SECURITY_JWS_V1 = "https://w3id.org/security/suites/jws-2020/v1";
     public static final String SECURITY_ED25519_V1 = "https://w3id.org/security/suites/ed25519-2020/v1";
 
+    @Deprecated(since = "0.11.0")
     public static final String CX_POLICY_CONTEXT = "https://w3id.org/tractusx/policy/v1.0.0";
+    public static final String CX_POLICY_2025_09_CONTEXT = "https://w3id.org/catenax/2025/9/policy/context.jsonld";
     public static final String TX_AUTH_CONTEXT = "https://w3id.org/tractusx/auth/v1.0.0";
 
     private static final String PREFIX = "document" + File.separator;
@@ -61,7 +63,7 @@ public class JsonLdExtension implements ServiceExtension {
             SECURITY_JWS_V1, PREFIX + "security-jws-2020.jsonld",
             SECURITY_ED25519_V1, PREFIX + "security-ed25519-2020.jsonld",
             TX_CONTEXT, PREFIX + "tx-v1.jsonld",
-            CX_POLICY_CONTEXT, PREFIX + "cx-policy-v1.jsonld",
+            CX_POLICY_2025_09_CONTEXT, PREFIX + "cx-policy-v1.jsonld",
             TX_AUTH_CONTEXT, PREFIX + "tx-auth-v1.jsonld",
             EDC_CONTEXT, PREFIX + "edc-v1.jsonld");
     @Inject
@@ -74,11 +76,11 @@ public class JsonLdExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE, DSP_SCOPE_V_08);
         jsonLdService.registerNamespace(TX_AUTH_PREFIX, TX_AUTH_NS, DSP_SCOPE_V_08);
-        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_NS, DSP_SCOPE_V_08);
+        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_2025_09_NS, DSP_SCOPE_V_08);
 
         jsonLdService.registerContext(TX_CONTEXT, DSP_SCOPE_V_2025_1);
         jsonLdService.registerContext(TX_AUTH_CONTEXT, DSP_SCOPE_V_2025_1);
-        jsonLdService.registerContext(CX_POLICY_CONTEXT, DSP_SCOPE_V_2025_1);
+        jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, DSP_SCOPE_V_2025_1);
 
         FILES.entrySet().stream().map(this::mapToFile)
                 .forEach(result -> result.onSuccess(entry -> jsonLdService.registerCachedDocument(entry.getKey(), entry.getValue().toURI()))

@@ -37,7 +37,7 @@ import java.util.Map;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -141,7 +141,7 @@ public class CatalogTest {
     void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
         var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPN1", "BPN2", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = frameworkPolicy(Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"), CX_POLICY_NS + "access");
+        var onlyDiogenesPolicy = frameworkPolicy(Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"), CX_POLICY_2025_09_NS + "access");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
