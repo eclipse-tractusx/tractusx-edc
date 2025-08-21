@@ -287,10 +287,14 @@ public class PolicyHelperFunctions {
     }
 
     public static JsonObject frameworkPermission(Map<String, String> permissions, String action) {
-
         var constraints = permissions.entrySet().stream()
                 .map(permission -> atomicConstraint(permission.getKey(), "eq", permission.getValue(), false))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
+
+        if (action.contains("use")) {
+            constraints.add(frameworkAgreementConstraint());
+            constraints.add(usagePurposeConstraint());
+        }
 
         return Json.createObjectBuilder()
                 .add("action", action)
