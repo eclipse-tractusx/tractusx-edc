@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.net.URI;
 
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CREDENTIALS_V_1;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CX_POLICY_CONTEXT;
+import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CX_POLICY_2025_09_CONTEXT;
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_ED25519_V1;
 import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_JWS_V1;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +50,7 @@ public class JsonLdExtensionTest {
     void initialize(ServiceExtensionContext context, JsonLdExtension extension) {
         extension.initialize(context);
         jsonLdService.registerCachedDocument(eq(CREDENTIALS_V_1), any(URI.class));
-        jsonLdService.registerCachedDocument(eq(CX_POLICY_CONTEXT), any(URI.class));
+        jsonLdService.registerCachedDocument(eq(CX_POLICY_2025_09_CONTEXT), any(URI.class));
         jsonLdService.registerCachedDocument(eq(SECURITY_JWS_V1), any(URI.class));
         jsonLdService.registerCachedDocument(eq(SECURITY_ED25519_V1), any(URI.class));
 

@@ -66,7 +66,7 @@ public class CredentialScopeExtractorTest {
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
         var ctx = new TestRequestPolicyContext(requestContext, null);
 
-        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
+        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_2025_09_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
 
         assertThat(scopes).contains(CREDENTIAL_TYPE_NAMESPACE + ":PfcCredential:read");
     }
@@ -78,7 +78,7 @@ public class CredentialScopeExtractorTest {
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
         var ctx = new TestRequestPolicyContext(requestContext, null);
 
-        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
+        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_2025_09_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
 
         assertThat(scopes).isEmpty();
     }

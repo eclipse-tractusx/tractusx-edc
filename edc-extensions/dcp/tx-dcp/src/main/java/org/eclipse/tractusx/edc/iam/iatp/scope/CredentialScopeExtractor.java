@@ -34,7 +34,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 
 /**
  * Extract credentials from the policy constraints
@@ -61,8 +61,8 @@ public class CredentialScopeExtractor implements ScopeExtractor {
 
         if (requestContext != null) {
 
-            if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_NS) && isMessageSupported(requestContext)) {
-                leftOperand = leftOperand.replace(CX_POLICY_NS, "");
+            if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_2025_09_NS) && isMessageSupported(requestContext)) {
+                leftOperand = leftOperand.replace(CX_POLICY_2025_09_NS, "");
                 var credentialType = extractCredentialType(leftOperand, rightValue);
                 return Set.of(SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType))));
             }

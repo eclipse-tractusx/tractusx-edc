@@ -27,6 +27,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_SEQUENCE_
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_XONE_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
@@ -34,44 +35,44 @@ public final class PolicyValidationConstants {
     private PolicyValidationConstants() {
     }
 
-    public static final String ACTION_ACCESS = CX_POLICY_NS + "access";
+    public static final String ACTION_ACCESS = CX_POLICY_2025_09_NS + "access";
     public static final String ACTION_USAGE = ODRL_SCHEMA + "use";
 
-    public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_NS + "FrameworkAgreement";
-    public static final String MEMBERSHIP_LITERAL = CX_POLICY_NS + "Membership";
+    public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_2025_09_NS + "FrameworkAgreement";
+    public static final String MEMBERSHIP_LITERAL = CX_POLICY_2025_09_NS + "Membership";
     public static final String BUSINESS_PARTNER_GROUP_LITERAL = TX_NAMESPACE + "BusinessPartnerGroup";
     public static final String BUSINESS_PARTNER_NUMBER_LITERAL = TX_NAMESPACE + "BusinessPartnerNumber";
-    public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
-    public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_NS + "AffiliatesRegion";
-    public static final String AFFILIATES_BPNL_LITERAL = CX_POLICY_NS + "AffiliatesBpnl";
-    public static final String BUSINESS_PARTNER_GROUP = CX_POLICY_NS + "BusinessPartnerGroup";
-    public static final String BUSINESS_PARTNER_NUMBER = CX_POLICY_NS + "BusinessPartnerNumber";
+    public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_2025_09_NS + "UsagePurpose";
+    public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_2025_09_NS + "AffiliatesRegion";
+    public static final String AFFILIATES_BPNL_LITERAL = CX_POLICY_2025_09_NS + "AffiliatesBpnl";
+    public static final String BUSINESS_PARTNER_GROUP = CX_POLICY_2025_09_NS + "BusinessPartnerGroup";
+    public static final String BUSINESS_PARTNER_NUMBER = CX_POLICY_2025_09_NS + "BusinessPartnerNumber";
 
-    public static final String CONFIDENTIAL_INFORMATION_MEASURE_LITERAL = CX_POLICY_NS + "ConfidentialInformationMeasures";
-    public static final String CONFIDENTIAL_INFORMATION_SHARING_LITERAL = CX_POLICY_NS + "ConfidentialInformationSharing";
-    public static final String CONTRACT_REFERENCE_LITERAL = CX_POLICY_NS + "ContractReference";
-    public static final String CONTRACT_TERMINATION_LITERAL = CX_POLICY_NS + "ContractTermination";
+    public static final String CONFIDENTIAL_INFORMATION_MEASURE_LITERAL = CX_POLICY_2025_09_NS + "ConfidentialInformationMeasures";
+    public static final String CONFIDENTIAL_INFORMATION_SHARING_LITERAL = CX_POLICY_2025_09_NS + "ConfidentialInformationSharing";
+    public static final String CONTRACT_REFERENCE_LITERAL = CX_POLICY_2025_09_NS + "ContractReference";
+    public static final String CONTRACT_TERMINATION_LITERAL = CX_POLICY_2025_09_NS + "ContractTermination";
 
-    public static final String DATA_FREQUENCY_LITERAL = CX_POLICY_NS + "DataFrequency";
-    public static final String DATA_PROVISIONING_END_DATE_LITERAL = CX_POLICY_NS + "DataProvisioningEndDate";
-    public static final String DATA_PROVISIONING_END_DURATION_LITERAL = CX_POLICY_NS + "DataProvisioningEndDurationDays";
-    public static final String DATA_USAGE_END_DATE_LITERAL = CX_POLICY_NS + "DataUsageEndDate";
-    public static final String DATA_USAGE_END_DEFINITION_LITERAL = CX_POLICY_NS + "DataUsageEndDefinition";
-    public static final String DATA_USAGE_END_DURATION_LITERAL = CX_POLICY_NS + "DataUsageEndDurationDays";
+    public static final String DATA_FREQUENCY_LITERAL = CX_POLICY_2025_09_NS + "DataFrequency";
+    public static final String DATA_PROVISIONING_END_DATE_LITERAL = CX_POLICY_2025_09_NS + "DataProvisioningEndDate";
+    public static final String DATA_PROVISIONING_END_DURATION_LITERAL = CX_POLICY_2025_09_NS + "DataProvisioningEndDurationDays";
+    public static final String DATA_USAGE_END_DATE_LITERAL = CX_POLICY_2025_09_NS + "DataUsageEndDate";
+    public static final String DATA_USAGE_END_DEFINITION_LITERAL = CX_POLICY_2025_09_NS + "DataUsageEndDefinition";
+    public static final String DATA_USAGE_END_DURATION_LITERAL = CX_POLICY_2025_09_NS + "DataUsageEndDurationDays";
 
-    public static final String EXCLUSIVE_USAGE_LITERAL = CX_POLICY_NS + "ExclusiveUsage";
-    public static final String JURISDICTION_LOCATION_LITERAL = CX_POLICY_NS + "JurisdictionLocation";
-    public static final String JURISDICTION_LOCATION_REFERENCE_LITERAL = CX_POLICY_NS + "JurisdictionLocationReference";
-    public static final String LIABILITY_LITERAL = CX_POLICY_NS + "Liability";
-    public static final String MANAGED_LEGAL_ENTITY_BPNL_LITERAL = CX_POLICY_NS + "ManagedLegalEntityBpnl";
-    public static final String MANAGED_LEGAL_ENTITY_REGION_LITERAL = CX_POLICY_NS + "ManagedLegalEntityRegion";
+    public static final String EXCLUSIVE_USAGE_LITERAL = CX_POLICY_2025_09_NS + "ExclusiveUsage";
+    public static final String JURISDICTION_LOCATION_LITERAL = CX_POLICY_2025_09_NS + "JurisdictionLocation";
+    public static final String JURISDICTION_LOCATION_REFERENCE_LITERAL = CX_POLICY_2025_09_NS + "JurisdictionLocationReference";
+    public static final String LIABILITY_LITERAL = CX_POLICY_2025_09_NS + "Liability";
+    public static final String MANAGED_LEGAL_ENTITY_BPNL_LITERAL = CX_POLICY_2025_09_NS + "ManagedLegalEntityBpnl";
+    public static final String MANAGED_LEGAL_ENTITY_REGION_LITERAL = CX_POLICY_2025_09_NS + "ManagedLegalEntityRegion";
 
-    public static final String PRECEDENCE_LITERAL = CX_POLICY_NS + "Precedence";
-    public static final String USAGE_RESTRICTION_LITERAL = CX_POLICY_NS + "UsageRestriction";
-    public static final String VERSION_CHANGES_LITERAL = CX_POLICY_NS + "VersionChanges";
-    public static final String WARRANTY_LITERAL = CX_POLICY_NS + "Warranty";
-    public static final String WARRANTY_DEFINITION_LITERAL = CX_POLICY_NS + "WarrantyDefinition";
-    public static final String WARRANTY_DURATION_MONTHS_LITERAL = CX_POLICY_NS + "WarrantyDurationMonths";
+    public static final String PRECEDENCE_LITERAL = CX_POLICY_2025_09_NS + "Precedence";
+    public static final String USAGE_RESTRICTION_LITERAL = CX_POLICY_2025_09_NS + "UsageRestriction";
+    public static final String VERSION_CHANGES_LITERAL = CX_POLICY_2025_09_NS + "VersionChanges";
+    public static final String WARRANTY_LITERAL = CX_POLICY_2025_09_NS + "Warranty";
+    public static final String WARRANTY_DEFINITION_LITERAL = CX_POLICY_2025_09_NS + "WarrantyDefinition";
+    public static final String WARRANTY_DURATION_MONTHS_LITERAL = CX_POLICY_2025_09_NS + "WarrantyDurationMonths";
 
 
     // old

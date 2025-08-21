@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createMembershipCredential;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPcfCredential;
 import static org.mockito.Mockito.mock;
@@ -45,7 +45,7 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_leftOperandInvalid() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createMembershipCredential().build())));
 
-        var result = function.evaluate(CX_POLICY_NS + "foobar", Operator.EQ, "active", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "foobar", Operator.EQ, "active", null, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).hasSize(1).allMatch(it -> it.startsWith("Invalid left-operand: must be 'Membership', but was"));
@@ -53,7 +53,7 @@ class MembershipCredentialConstraintFunctionTest {
 
     @Test
     void evaluate_noVcClaimOnParticipantAgent() {
-        var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("ParticipantAgent did not contain a 'vc' claim.");
@@ -63,7 +63,7 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_vcClaimEmpty() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of()));
 
-        var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("ParticipantAgent contains a 'vc' claim but it did not contain any VerifiableCredentials.");
@@ -73,7 +73,7 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_vcClaimNotList() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", new Object()));
 
-        var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("ParticipantAgent contains a 'vc' claim, but the type is incorrect. Expected java.util.List, received java.lang.Object.");
@@ -83,7 +83,7 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_rightOperandNotActive() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createMembershipCredential().build())));
 
-        var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "invalid", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "invalid", null, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("Right-operand must be equal to 'active', but was 'invalid'");
@@ -93,7 +93,7 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_whenSingleCredentialFound() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createMembershipCredential().build())));
 
-        var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
         assertThat(result).isTrue();
     }
@@ -104,7 +104,7 @@ class MembershipCredentialConstraintFunctionTest {
                 createMembershipCredential().build(),
                 createPcfCredential().build())));
 
-        var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
         assertThat(result).isTrue();
     }
@@ -113,27 +113,27 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_whenCredentialNotFound() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createPcfCredential().build())));
 
-        var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
         assertThat(result).isFalse();
     }
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null);
+        var result = function.validate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(CX_POLICY_NS + "Membership", Operator.IS_ANY_OF, "active", null);
+        var result = function.validate(CX_POLICY_2025_09_NS + "Membership", Operator.IS_ANY_OF, "active", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidValue_thenFailure() {
-        var result = function.validate(CX_POLICY_NS + "Membership", Operator.EQ, "invalid_value", null);
+        var result = function.validate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "invalid_value", null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
     }

@@ -72,7 +72,7 @@ import java.util.stream.Stream;
 
 import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_TYPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesBpnlProhibitionConstraintFunction.AFFILIATES_BPNL;
 import static org.eclipse.tractusx.edc.policy.cx.affiliates.AffiliatesRegionProhibitionConstraintFunction.AFFILIATES_REGION;
 import static org.eclipse.tractusx.edc.policy.cx.businesspartner.BusinessPartnerGroupConstraintFunction.BUSINESS_PARTNER_GROUP;
@@ -121,7 +121,7 @@ public class CxPolicyExtension implements ServiceExtension {
             TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
 
     private static String withCxPolicyNsPrefix(String name) {
-        return CX_POLICY_NS + name;
+        return CX_POLICY_2025_09_NS + name;
     }
 
     @Inject
@@ -198,17 +198,17 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(USAGE_PURPOSE), new UsagePurposeConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_FREQUENCY, new DataFrequencyConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_USAGE_END_DATE, new DataUsageEndDateConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_USAGE_END_DEFINITION, new DataUsageEndDefinitionConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_2025_09_NS + DATA_USAGE_END_DURATION_DAYS, new DataUsageEndDurationDaysConstraintFunction<>());
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION), new JurisdictionLocationConstraintFunction<>());
@@ -284,7 +284,7 @@ public class CxPolicyExtension implements ServiceExtension {
     public static void registerBindings(RuleBindingRegistry registry) {
         registry.dynamicBind(s -> {
             if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL)
-                    .anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
+                    .anyMatch(postfix -> s.startsWith(CX_POLICY_2025_09_NS + postfix))) {
                 return RULE_SCOPES;
             }
             return Set.of();
@@ -294,13 +294,13 @@ public class CxPolicyExtension implements ServiceExtension {
         registry.bind(ODRL_SCHEMA + "use", NEGOTIATION_SCOPE);
         registry.bind(ODRL_SCHEMA + "use", TRANSFER_PROCESS_SCOPE);
 
-        registry.bind(CX_POLICY_NS + "access", CATALOG_SCOPE);
-        registry.bind(CX_POLICY_NS + "access", NEGOTIATION_SCOPE);
-        registry.bind(CX_POLICY_NS + "access", TRANSFER_PROCESS_SCOPE);
+        registry.bind(CX_POLICY_2025_09_NS + "access", CATALOG_SCOPE);
+        registry.bind(CX_POLICY_2025_09_NS + "access", NEGOTIATION_SCOPE);
+        registry.bind(CX_POLICY_2025_09_NS + "access", TRANSFER_PROCESS_SCOPE);
 
-        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, CATALOG_SCOPE);
-        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, NEGOTIATION_SCOPE);
-        registry.bind(CX_POLICY_NS + USAGE_PURPOSE, TRANSFER_PROCESS_SCOPE);
+        registry.bind(CX_POLICY_2025_09_NS + USAGE_PURPOSE, CATALOG_SCOPE);
+        registry.bind(CX_POLICY_2025_09_NS + USAGE_PURPOSE, NEGOTIATION_SCOPE);
+        registry.bind(CX_POLICY_2025_09_NS + USAGE_PURPOSE, TRANSFER_PROCESS_SCOPE);
 
         var namesInCatalogScope = Set.of(
                 withCxPolicyNsPrefix(USAGE_PURPOSE),
