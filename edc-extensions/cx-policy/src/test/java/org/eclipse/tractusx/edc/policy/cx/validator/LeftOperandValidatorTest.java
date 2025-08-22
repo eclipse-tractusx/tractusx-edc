@@ -40,7 +40,6 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PROHIBITION_A
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_GROUP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
@@ -121,7 +120,7 @@ class LeftOperandValidatorTest {
     @Test
     void shouldReturnFailure_whenLeftOperandNotAllowedForUsagePermissionPolicy() {
         JsonObject input = Json.createObjectBuilder()
-                .add(ID, BUSINESS_PARTNER_GROUP_LITERAL)
+                .add(ID, DATA_PROVISIONING_END_DURATION_LITERAL)
                 .build();
 
         ValidationResult result = validateLeftOperand(input, ACTION_USAGE, ODRL_PERMISSION_ATTRIBUTE);
@@ -166,7 +165,7 @@ class LeftOperandValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", "   ", "https://example.com/"})
+    @ValueSource(strings = { "", "   ", "https://example.com/" })
     void shouldReturnFailure_whenIdEndsWithSlashOrEmpty(String id) {
         JsonObject input = Json.createObjectBuilder()
                 .add(ID, id)
