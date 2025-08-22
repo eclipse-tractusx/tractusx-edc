@@ -37,7 +37,6 @@ import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.TERMINATED;
-import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
@@ -49,6 +48,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_P
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -100,9 +101,11 @@ public class PolicyMonitorEndToEndTest {
         );
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-        var policy = inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
-        var policyId = PROVIDER.createPolicyDefinition(policy);
-        PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+        var accessPolicy = emptyPolicy();
+        var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy);
+        var usagePolicy = inForceDateUsagePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
+        var usagePolicyId = PROVIDER.createPolicyDefinition(usagePolicy);
+        PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), accessPolicyId, usagePolicyId);
 
 
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
