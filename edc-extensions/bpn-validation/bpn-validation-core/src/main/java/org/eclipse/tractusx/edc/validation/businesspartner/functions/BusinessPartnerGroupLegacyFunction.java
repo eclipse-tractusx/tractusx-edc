@@ -27,7 +27,6 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
@@ -41,9 +40,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.eclipse.edc.policy.model.Operator.EQ;
 import static org.eclipse.edc.policy.model.Operator.IN;
+import static org.eclipse.edc.policy.model.Operator.IS_ALL_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_ANY_OF;
 import static org.eclipse.edc.policy.model.Operator.IS_NONE_OF;
+import static org.eclipse.edc.policy.model.Operator.NEQ;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
 
@@ -64,7 +66,7 @@ import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PRE
  * }
  * </pre>
  * <p>
- * Upon evaluation, the {@link BusinessPartnerGroupFunction} will take the {@link ParticipantAgent}s BPN, use it to resolve the groups that the BPN is part of, and check, whether `"gold_partner"` and
+ * Upon evaluation, the {@link BusinessPartnerGroupLegacyFunction} will take the {@link ParticipantAgent}s BPN, use it to resolve the groups that the BPN is part of, and check, whether `"gold_partner"` and
  * `"platin_partner"` are amongst those groups.
  * <p>
  * The following operators are supported:
@@ -78,21 +80,29 @@ import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PRE
  * </ul>
  *
  * @see BusinessPartnerStore
+ *
+ * @deprecated since 0.11.0
  */
-public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+@Deprecated(since = "0.11.0")
+public class BusinessPartnerGroupLegacyFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
 
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
-    private static final List<Operator> ALLOWED_OPERATORS = List.of(IS_ANY_OF, IS_NONE_OF);
+    public static final String BUSINESS_PARTNER_CONSTRAINT_KEY_V2025 = TX_NAMESPACE + "BusinessPartnerGroup2025";
+    private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
     private BdrsClient bdrsClient;
     private final Monitor monitor;
 
-    public BusinessPartnerGroupFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
+    public BusinessPartnerGroupLegacyFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
         this.store = store;
         this.bdrsClient = bdrsClient;
         this.monitor = monitor;
+        OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
+        OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIsAnyOf);
+        OPERATOR_EVALUATOR_MAP.put(IS_ALL_OF, this::evaluateIsAllOf);
+        OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIsAnyOf);
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
 
@@ -148,6 +158,24 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
         return null;
     }
 
+    @Deprecated(since = "0.9.0")
+    private Boolean evaluateNotEquals(BpnGroupHolder bpnGroupHolder) {
+        monitor.warning("%s is a deprecated operator, in future please use %s operator.".formatted(NEQ, IS_NONE_OF));
+        return !bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
+    }
+
+    @Deprecated(since = "0.9.0")
+    private Boolean evaluateEquals(BpnGroupHolder bpnGroupHolder) {
+        monitor.warning("%s is a deprecated operator, in future please use %s operator.".formatted(EQ, IS_ALL_OF));
+        return bpnGroupHolder.allowedGroups.equals(bpnGroupHolder.assignedGroups);
+    }
+
+    private Boolean evaluateIsAllOf(BpnGroupHolder bpnGroupHolder) {
+        var assigned = bpnGroupHolder.assignedGroups;
+        var allowed = bpnGroupHolder.allowedGroups;
+        return (assigned.isEmpty() || !allowed.isEmpty()) && assigned.containsAll(allowed);
+    }
+
     private boolean evaluateIsAnyOf(BpnGroupHolder bpnGroupHolder) {
         if (bpnGroupHolder.allowedGroups.isEmpty() && bpnGroupHolder.assignedGroups.isEmpty()) {
             return true;
@@ -169,15 +197,4 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     private record BpnGroupHolder(Set<String> assignedGroups, Set<String> allowedGroups) {
     }
 
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'."
-                    .formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        return rightValue instanceof String
-                ? Result.success()
-                : Result.failure("Invalid right-operand: right operand must be a string");
-    }
 }

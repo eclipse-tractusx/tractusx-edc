@@ -63,7 +63,7 @@ class BusinessPartnerGroupFunctionTest {
     private final Monitor monitor = mock();
     private final Permission unusedPermission = Permission.Builder.newInstance().build();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(agent);
-    private final BusinessPartnerGroupFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor);
+    private final BusinessPartnerGroupLegacyFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor);
 
     @ParameterizedTest(name = "Invalid operator {0}")
     @ArgumentsSource(InvalidOperatorProvider.class)

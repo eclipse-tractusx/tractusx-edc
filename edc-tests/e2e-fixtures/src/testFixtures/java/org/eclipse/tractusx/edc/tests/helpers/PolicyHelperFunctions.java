@@ -46,16 +46,16 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_TY
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONSTRAINT_TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 public class PolicyHelperFunctions {
 
-    public static final String TX_NAMESPACE = "https://w3id.org/tractusx/v0.0.1/ns/";
     private static final String ODRL_JSONLD = "http://www.w3.org/ns/odrl.jsonld";
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
 
-    public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY;
+    public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = CX_POLICY_NS + BUSINESS_PARTNER_EVALUATION_KEY;
 
-    private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
+    private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = CX_POLICY_2025_09_NS + "BusinessPartnerGroup";
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
@@ -175,7 +175,7 @@ public class PolicyHelperFunctions {
 
         var bpnConstraint = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
-                .add("leftOperand", TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY)
+                .add("leftOperand", CX_POLICY_2025_09_NS + BUSINESS_PARTNER_EVALUATION_KEY)
                 .add("operator", operator.getOdrlRepresentation())
                 .add("rightOperand", bpnArray)
                 .build();
@@ -226,7 +226,7 @@ public class PolicyHelperFunctions {
     private static JsonObject permission(String... bpns) {
 
         var bpnConstraints = Stream.of(bpns)
-                .map(bpn -> atomicConstraint(TX_NAMESPACE + BUSINESS_PARTNER_EVALUATION_KEY, "isAnyOf", bpn, false))
+                .map(bpn -> atomicConstraint(CX_POLICY_2025_09_NS + BUSINESS_PARTNER_EVALUATION_KEY, "isAnyOf", bpn, false))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         return Json.createObjectBuilder()

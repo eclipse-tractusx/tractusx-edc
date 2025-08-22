@@ -54,24 +54,24 @@ class BusinessPartnerNumberValidationExtensionTest {
     void testRegisterPermissionFunction(ServiceExtensionContext context, BusinessPartnerNumberValidationExtension extension) {
         extension.initialize(context);
 
-        verify(policyEngine, times(3))
+        verify(policyEngine, times(6))
                 .registerFunction(
                         isA(Class.class),
                         eq(Permission.class),
                         eq(BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
-        verify(policyEngine, times(3))
+        verify(policyEngine, times(6))
                 .registerFunction(
                         isA(Class.class),
                         eq(Permission.class),
                         eq(TX_BUSINESS_PARTNER_CONSTRAINT_KEY),
                         any());
 
-        verify(ruleBindingRegistry, times(3))
+        verify(ruleBindingRegistry, times(6))
                 .bind(eq(BUSINESS_PARTNER_CONSTRAINT_KEY),
                         anyString());
 
-        verify(ruleBindingRegistry, times(3))
+        verify(ruleBindingRegistry, times(6))
                 .bind(eq(TX_BUSINESS_PARTNER_CONSTRAINT_KEY),
                         anyString());
     }
