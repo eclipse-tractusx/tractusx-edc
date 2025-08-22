@@ -114,6 +114,7 @@ public class PolicyDefinitionEndToEndTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(frameworkPolicy(Map.of(namespace + "Membership", "active"), CX_POLICY_2025_09_NS + "access"), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy(Map.of(namespace + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use"), "DataExchangeGovernance use case"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1", "cx.region.northAmerica:1"), "use", true), "Affiliates Region"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesRegion", Operator.IS_ANY_OF, List.of("cx.region.europe:1"), "use", true), "Affiliates Region (IS_ANY_OF, one element)"),
                     Arguments.of(frameworkPolicy(namespace + "AffiliatesBpnl", Operator.IS_ANY_OF, "BPNL00000000001A", "use", true), "Affiliates BPNL"),

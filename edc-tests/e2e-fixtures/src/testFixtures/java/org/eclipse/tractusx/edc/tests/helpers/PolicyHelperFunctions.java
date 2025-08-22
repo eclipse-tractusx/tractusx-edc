@@ -130,11 +130,13 @@ public class PolicyHelperFunctions {
         var constraintsBuilder = Json.createArrayBuilder()
                 .add(constraint);
 
-        if (action.contains("use")) {
+        if (!leftOperand.equals(FRAMEWORK_AGREEMENT_LITERAL) && action.contains("use")) {
             constraintsBuilder.add(frameworkAgreementConstraint());
-            constraintsBuilder.add(usagePurposeConstraint());
         }
 
+        if (!leftOperand.equals(USAGE_PURPOSE_LITERAL) && action.contains("use")) {
+            constraintsBuilder.add(usagePurposeConstraint());
+        }
         var permission = Json.createObjectBuilder()
                 .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
@@ -292,8 +294,12 @@ public class PolicyHelperFunctions {
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         if (action.contains("use")) {
-            constraints.add(frameworkAgreementConstraint());
-            constraints.add(usagePurposeConstraint());
+            if (!permissions.containsKey(FRAMEWORK_AGREEMENT_LITERAL)) {
+                constraints.add(frameworkAgreementConstraint());
+            }
+            if (!permissions.containsKey(USAGE_PURPOSE_LITERAL)) {
+                constraints.add(usagePurposeConstraint());
+            }
         }
 
         return Json.createObjectBuilder()
