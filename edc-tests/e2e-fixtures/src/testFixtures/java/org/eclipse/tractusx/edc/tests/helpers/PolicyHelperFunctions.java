@@ -137,6 +137,7 @@ public class PolicyHelperFunctions {
         if (!leftOperand.equals(USAGE_PURPOSE_LITERAL) && action.contains("use")) {
             constraintsBuilder.add(usagePurposeConstraint());
         }
+
         var permission = Json.createObjectBuilder()
                 .add("action", action)
                 .add("constraint", Json.createObjectBuilder()
