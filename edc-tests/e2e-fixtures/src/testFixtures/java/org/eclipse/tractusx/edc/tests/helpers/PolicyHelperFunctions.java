@@ -59,8 +59,8 @@ public class PolicyHelperFunctions {
 
     private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
 
-    private static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_NS + "FrameworkAgreement";
-    private static final String USAGE_PURPOSE_LITERAL = CX_POLICY_NS + "UsagePurpose";
+    private static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_2025_09_NS + "FrameworkAgreement";
+    private static final String USAGE_PURPOSE_LITERAL = CX_POLICY_2025_09_NS + "UsagePurpose";
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
