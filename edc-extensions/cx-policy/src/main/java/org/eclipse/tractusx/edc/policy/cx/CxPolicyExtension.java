@@ -66,6 +66,8 @@ import org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraint
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDurationMonthsConstraintFunction;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -131,9 +133,15 @@ public class CxPolicyExtension implements ServiceExtension {
     private RuleBindingRegistry bindingRegistry;
 
     @Inject
+    private BusinessPartnerStore store;
+
+    @Inject
+    private BdrsClient bdrsClient;
+
+    @Inject
     JsonObjectValidatorRegistry validatorRegistry;
 
-    public static void registerFunctions(PolicyEngine engine) {
+    public void registerFunctions(PolicyEngine engine) {
 
         // Usage Prohibition Validators
         engine.registerFunction(ContractNegotiationPolicyContext.class, Prohibition.class,
@@ -173,9 +181,9 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
 
         engine.registerFunction(CatalogPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_GROUP), new BusinessPartnerGroupConstraintFunction<>());
+                withCxPolicyNsPrefix(BUSINESS_PARTNER_GROUP), new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient));
         engine.registerFunction(CatalogPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER), new BusinessPartnerNumberConstraintFunction<>());
+                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER), new BusinessPartnerNumberConstraintFunction<>(bdrsClient));
 
         // Usage Permission Validators
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,

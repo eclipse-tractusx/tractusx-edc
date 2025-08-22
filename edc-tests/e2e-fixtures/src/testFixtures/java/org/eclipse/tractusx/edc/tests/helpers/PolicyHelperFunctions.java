@@ -88,6 +88,16 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject frameworkPolicy(Map<String, String> permissions, String action, String operator) {
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", Json.createArrayBuilder()
+                        .add(frameworkPermission(permissions, action, operator)))
+                .build();
+    }
+
+
     public static JsonObject emptyPolicy() {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
@@ -290,8 +300,12 @@ public class PolicyHelperFunctions {
     }
 
     public static JsonObject frameworkPermission(Map<String, String> permissions, String action) {
+        return frameworkPermission(permissions, action, "eq");
+    }
+
+    public static JsonObject frameworkPermission(Map<String, String> permissions, String action, String operator) {
         var constraints = permissions.entrySet().stream()
-                .map(permission -> atomicConstraint(permission.getKey(), "eq", permission.getValue(), false))
+                .map(permission -> atomicConstraint(permission.getKey(), operator, permission.getValue(), false))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         if (action.contains("use")) {

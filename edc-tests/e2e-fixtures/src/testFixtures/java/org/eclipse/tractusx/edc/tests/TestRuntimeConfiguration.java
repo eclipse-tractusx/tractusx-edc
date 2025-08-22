@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests;
 public class TestRuntimeConfiguration {
 
     public static final String BPN_SUFFIX = "-BPN";
+    public static final String BPN_PREFIX = "BPNL0000";
     public static final String DID_PREFIX = "did:web:";
     public static final String CONSUMER_NAME = "CONSUMER";
     public static final String CONSUMER_BPN = "BPNL0000CONSUMER";

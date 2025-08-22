@@ -32,7 +32,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
@@ -88,9 +87,6 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         bindToLegacyScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
         bindToLegacyScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
 
-        bindToScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor));
-        bindToScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor));
-        bindToScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor));
     }
 
     private <C extends PolicyContext> void bindToLegacyScope(String scope, Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function) {

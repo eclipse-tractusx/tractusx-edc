@@ -40,10 +40,12 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.Map;
+
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
-import static org.eclipse.edc.policy.model.Operator.EQ;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
@@ -57,6 +59,7 @@ import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getD
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.QueryHelperFunctions.createQuery;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -119,8 +122,8 @@ public class CatalogTest {
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_shouldReject() {
-        var onlyConsumerPolicy = bpnPolicy("BPNLAAAAAAAAAAAA", "BPNLAAAAAAAAAAAA", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = bpnPolicy("BPNL0ARISTOTELES");
+        var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
+        var onlyDiogenesPolicy = bpnPolicy("BPNLAAAAAAAAAABC");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
@@ -137,7 +140,7 @@ public class CatalogTest {
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
-        assertThat(catalog).hasSize(1);
+        assertThat(catalog).hasSize(2);
     }
 
 
@@ -145,20 +148,28 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
-        var onlyConsumerPolicy = bpnPolicy("BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
+        var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
+        var onlyDiogenesPolicy = frameworkPolicy(
+                Map.of(CX_POLICY_2025_09_NS + "BusinessPartnerNumber", "BPNLAAAAAAAAAAAB"),
+                CX_POLICY_2025_09_NS + "access",
+                "isAnyOf");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
+        var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
         var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
+        PROVIDER.createAsset("test-asset3");
 
         PROVIDER.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
+        PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
+
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
-        assertThat(catalog).hasSize(1);
+        assertThat(catalog).hasSize(2);
     }
 
     @Test
@@ -166,16 +177,22 @@ public class CatalogTest {
     void requestCatalog_filteredByBpn_shouldReject() {
 
         var mustBeGreekPhilosopher = bpnGroupPolicy(Operator.IS_ANY_OF, "greek_customer", "philosopher");
+        var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_NONE_OF, "greek_customer", "mathematician");
+
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
         var philosopherId = PROVIDER.createPolicyDefinition(mustBeGreekPhilosopher);
+        var mathId = PROVIDER.createPolicyDefinition(mustBeGreekMathematician);
         var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
+        PROVIDER.createAsset("test-asset3");
 
         PROVIDER.createContractDefinition("test-asset1", "def1", noConstraintPolicyId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset2", "def2", philosopherId, noConstraintPolicyId);
+        PROVIDER.createContractDefinition("test-asset3", "def3", mathId, noConstraintPolicyId);
+
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
@@ -187,7 +204,8 @@ public class CatalogTest {
     void requestCatalog_filteredByBpn_UsingLegacyCxPolicy_shouldReject() {
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
         var id = "philosopher-policy";
-        PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class).create(buildLegacyPolicyDefinition(id));
+        PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class)
+                .create(buildLegacyPolicyDefinition(id, "greek_customer", Operator.EQ, "philosopher"));
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
@@ -201,31 +219,6 @@ public class CatalogTest {
                     assertThat(getDatasetAssetId(cd.asJsonObject())).isEqualTo("test-asset2");
                     assertThat(getDatasetPolicies(cd)).hasSize(1);
                 });
-    }
-
-    private PolicyDefinition buildLegacyPolicyDefinition(String id) {
-        var action = Action.Builder.newInstance()
-                .type(CX_POLICY_NS + "access")
-                .build();
-
-        var constraint = AtomicConstraint.Builder.newInstance()
-                .leftExpression(new LiteralExpression("greek_customer"))
-                .operator(EQ)
-                .rightExpression(new LiteralExpression("philosopher"))
-                .build();
-
-        var policy = Policy.Builder.newInstance()
-                .type(PolicyType.SET)
-                .permission(Permission.Builder.newInstance()
-                        .action(action)
-                        .constraint(constraint)
-                        .build())
-                .build();
-
-        return PolicyDefinition.Builder.newInstance()
-                .id(id)
-                .policy(policy)
-                .build();
     }
 
     @Test
@@ -271,6 +264,31 @@ public class CatalogTest {
         var o3 = CONSUMER.getCatalogDatasets(PROVIDER, createQuery(500, 500));
         assertThat(o2).doesNotContainAnyElementsOf(o3);
 
+    }
+
+    private PolicyDefinition buildLegacyPolicyDefinition(String id, String leftExpression, Operator operator, Object rightExpression) {
+        var action = Action.Builder.newInstance()
+                .type(CX_POLICY_NS + "access")
+                .build();
+
+        var constraint = AtomicConstraint.Builder.newInstance()
+                .leftExpression(new LiteralExpression(leftExpression))
+                .operator(operator)
+                .rightExpression(new LiteralExpression(rightExpression))
+                .build();
+
+        var policy = Policy.Builder.newInstance()
+                .type(PolicyType.SET)
+                .permission(Permission.Builder.newInstance()
+                        .action(action)
+                        .constraint(constraint)
+                        .build())
+                .build();
+
+        return PolicyDefinition.Builder.newInstance()
+                .id(id)
+                .policy(policy)
+                .build();
     }
 
 }
