@@ -82,8 +82,9 @@ class CxPolicyDefinitionValidatorTest {
 
     @Test
     void shouldReturnSuccess_whenValidUsagePolicy() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject permission = rule(ACTION_USAGE, constraint);
+        JsonObject usagePurposeConstraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
+        JsonObject frameworkAgreementConstraint = atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL);
+        JsonObject permission = rule(ACTION_USAGE, usagePurposeConstraint, frameworkAgreementConstraint);
         JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
         JsonObject input = policyDefinition(policy, "some-id");
 

@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.inForceDatePolicy;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
@@ -51,6 +50,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPermission;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyFromRules;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.policyWithEmptyRule;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
@@ -156,7 +156,7 @@ public class PolicyDefinitionEndToEndTest {
             return Stream.concat(super.provideArguments(extensionContext), Stream.of(
                     Arguments.of(emptyPolicy(), "Empty Policy"),
                     Arguments.of(policyWithEmptyRule(this.namespace + "access"), "Access policy with empty permission"),
-                    Arguments.of(inForceDatePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s"), "In force date policy")
+                    Arguments.of(inForceDateUsagePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s"), "In force date policy")
             ));
         }
     }

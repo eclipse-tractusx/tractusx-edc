@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
@@ -41,7 +42,7 @@ import static java.lang.String.format;
  * An {@link IdentityService} that will inject the BPN claim in every token.
  * Please only use in testing scenarios!
  */
-public class MockMembershipCredentialIdentityService implements IdentityService {
+public class MockVcIdentityService implements IdentityService {
     
     private static final String BUSINESS_PARTNER_NUMBER_CLAIM = "BusinessPartnerNumber";
     private static final String VC_CLAIM = "vc";
@@ -49,16 +50,16 @@ public class MockMembershipCredentialIdentityService implements IdentityService 
     private final String did;
     private final TypeManager typeManager = new JacksonTypeManager();
     
-    public MockMembershipCredentialIdentityService(String businessPartnerNumber, String did) {
+    public MockVcIdentityService(String businessPartnerNumber, String did) {
         this.businessPartnerNumber = businessPartnerNumber;
         this.did = did;
     }
     
     @Override
     public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
-        var vc = membershipCredential();
-        var token = Map.of(VC_CLAIM, vc);
-        
+        var credentials = List.of(membershipCredential(), dataExchangeGovernanceCredential());
+        var token = Map.of(VC_CLAIM, credentials);
+
         var tokenRepresentation = TokenRepresentation.Builder.newInstance()
                 .token(typeManager.writeValueAsString(token))
                 .build();
@@ -69,13 +70,13 @@ public class MockMembershipCredentialIdentityService implements IdentityService 
     public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, VerificationContext verificationContext) {
         var token = typeManager.readValue(tokenRepresentation.getToken(), Map.class);
         if (token.containsKey(VC_CLAIM)) {
-            var vc = typeManager.getMapper().convertValue(token.get(VC_CLAIM), VerifiableCredential.class);
+            var credentials = typeManager.getMapper().convertValue(token.get(VC_CLAIM), new TypeReference<List<VerifiableCredential>>(){});
             var claimToken = ClaimToken.Builder.newInstance()
-                    .claim(VC_CLAIM, List.of(vc))
+                    .claim(VC_CLAIM, credentials)
                     .build();
             return Result.success(claimToken);
         }
-        return Result.failure(format("Expected %s claim, but token did not contain them", BUSINESS_PARTNER_NUMBER_CLAIM));
+        return Result.failure(format("Expected %s claim, but token did not contain them", VC_CLAIM));
     }
     
     private VerifiableCredential membershipCredential() {
@@ -85,6 +86,20 @@ public class MockMembershipCredentialIdentityService implements IdentityService 
                 .credentialSubject(CredentialSubject.Builder.newInstance()
                         .id(did)
                         .claim("holderIdentifier", businessPartnerNumber)
+                        .build())
+                .issuer(new Issuer("issuer", Map.of()))
+                .issuanceDate(Instant.now())
+                .build();
+    }
+
+    private VerifiableCredential dataExchangeGovernanceCredential() {
+        return VerifiableCredential.Builder.newInstance()
+                .type("VerifiableCredential")
+                .type("DataExchangeGovernanceCredential")
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id(did)
+                        .claim("holderIdentifier", businessPartnerNumber)
+                        .claim("contractVersion", "2.0")
                         .build())
                 .issuer(new Issuer("issuer", Map.of()))
                 .issuanceDate(Instant.now())
