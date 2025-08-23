@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.affiliates;
 
+import jakarta.json.Json;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -26,6 +27,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
@@ -44,14 +46,17 @@ class AffiliatesRegionConstraintFunctionTest {
 
     @Test
     void validate_whenValidOperatorAndRightValueArePassed_thenSuccess() {
-        var rightValue = List.of("cx.region.europe:1", "cx.region.northAmerica:1");
+        var value1 = Json.createValue("cx.region.europe:1");
+        var value2 = Json.createValue("cx.region.northAmerica:1");
+        var rightValue = List.of(Map.of("@value", value1), Map.of("@value", value2));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
-        var rightValue = List.of("cx.region.all:1");
+        var value = Json.createValue("cx.region.all:1");
+        var rightValue = List.of(Map.of("@value", value));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isSucceeded();
     }

@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.usage;
 
+import jakarta.json.Json;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -26,6 +27,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,7 +45,9 @@ class UsageRestrictionConstraintFunctionTest {
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ALL_OF, List.of("cx.thirdParty.forbidden:1"), null);
+        var value = Json.createValue("cx.thirdParty.forbidden:1");
+        var rightValue = List.of(Map.of("@value", value));
+        var result = function.validate(Operator.IS_ALL_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
 

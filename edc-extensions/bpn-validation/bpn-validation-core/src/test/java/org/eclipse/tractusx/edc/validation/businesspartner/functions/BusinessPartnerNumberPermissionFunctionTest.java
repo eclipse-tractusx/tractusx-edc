@@ -51,7 +51,7 @@ class BusinessPartnerNumberPermissionFunctionTest {
     private final BdrsClient bdrsClient = mock();
     private final Permission unusedPermission = Permission.Builder.newInstance().build();
     private final ParticipantAgentPolicyContext policyContext = new TestParticipantAgentPolicyContext(participantAgent);
-    private final BusinessPartnerNumberPermissionFunction<TestParticipantAgentPolicyContext> validation = new BusinessPartnerNumberPermissionFunction<>(bdrsClient);
+    private final BusinessPartnerNumberPermissionLegacyFunction<TestParticipantAgentPolicyContext> validation = new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient);
 
     @ParameterizedTest(name = "Illegal Operator {0}")
     @ArgumentsSource(IllegalOperatorProvider.class)

@@ -19,45 +19,73 @@
 
 package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
+import jakarta.json.Json;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class BusinessPartnerGroupConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final BusinessPartnerGroupConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupConstraintFunction<>();
+    private final BusinessPartnerStore store = mock();
+    private final BdrsClient bdrsClient = mock();
+    private final BusinessPartnerGroupConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient);
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.IS_ANY_OF, "BPNL00000000001A", null, context)).isTrue();
+        var identity = "BPNL00000000001A";
+        var rightValue = List.of("group1", "group2");
+        when(participantAgent.getIdentity()).thenReturn(identity);
+        when(store.resolveForBpn(identity)).thenReturn(StoreResult.success(List.of("group1", "group2")));
+        assertThat(function.evaluate(Operator.IS_ANY_OF, rightValue, null, context)).isTrue();
+    }
+
+    @Test
+    void evaluate_withDid() {
+        var didIdentity = "did:example:some-identity";
+        var bpn = "BPNL00000000001A";
+        var allowedGroups = List.of("group1", "group2");
+        when(participantAgent.getIdentity()).thenReturn(didIdentity);
+        when(bdrsClient.resolveBpn(didIdentity)).thenReturn(bpn);
+        when(store.resolveForBpn(bpn)).thenReturn(StoreResult.success(allowedGroups));
+        assertThat(function.evaluate(Operator.IS_ANY_OF, allowedGroups, null, context)).isTrue();
     }
 
     @Test
     void validate_whenIsAnyOfAndValidRightValueArePassed_thenSuccess() {
-        var rightValue = List.of("BPNL00000000001A", "BPNL00000000002B");
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var bpn2 = Json.createValue("BPNL00000000002B");
+        var rightValue = List.of(Map.of("@value", bpn1), Map.of("@value", bpn2));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenIsNoneOfAndValidRightValueArePassed_thenSuccess() {
-        var rightValue = List.of("BPNL00000000001A", "BPNL00000000002B");
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var bpn2 = Json.createValue("BPNL00000000002B");
+        var rightValue = List.of(Map.of("@value", bpn1), Map.of("@value", bpn2));
         var result = function.validate(Operator.IS_NONE_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
-        var rightValue = List.of("BPNL00000000001A");
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var rightValue = List.of(Map.of("@value", bpn1));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
