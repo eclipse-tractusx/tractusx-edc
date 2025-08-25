@@ -41,8 +41,7 @@ import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
 
 /**
- * This is a placeholder constraint function for BusinessPartnerNumber. It always returns true but allows
- * the validation of policies to be strictly enforced.
+ * This is a constraint function that evaluates the BusinessPartnerNumber of a participant agent.
  */
 public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
     public static final String BUSINESS_PARTNER_NUMBER = "BusinessPartnerNumber";

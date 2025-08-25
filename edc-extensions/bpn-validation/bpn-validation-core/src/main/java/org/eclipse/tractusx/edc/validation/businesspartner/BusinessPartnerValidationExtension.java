@@ -39,7 +39,6 @@ import static org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogP
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
 
 /**
@@ -89,7 +88,6 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         ruleBindingRegistry.bind(USE, scope);
         ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
         ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);
-        ruleBindingRegistry.bind(CX_POLICY_NS, scope);
 
         policyEngine.registerFunction(contextType, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, function);
     }
