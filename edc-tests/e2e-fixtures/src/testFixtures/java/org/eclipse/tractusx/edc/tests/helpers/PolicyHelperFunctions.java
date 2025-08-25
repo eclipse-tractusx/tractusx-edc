@@ -221,12 +221,12 @@ public class PolicyHelperFunctions {
                 .add(EDC_NAMESPACE + "policy", policy);
     }
 
-    public static JsonObject bpnPolicy(String... bnps) {
+    public static JsonObject bpnPolicy(String... bpns) {
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_JSONLD)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
-                        .add(permission(bnps)))
+                        .add(permission(bpns)))
                 .build();
     }
 

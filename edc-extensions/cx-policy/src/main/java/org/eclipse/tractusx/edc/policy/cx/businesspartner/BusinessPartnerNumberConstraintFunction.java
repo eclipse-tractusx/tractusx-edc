@@ -110,6 +110,9 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
                     .anyMatch(bpn -> identity.equals(bpn));
 
             return success(containsBpn);
+        } else if (rightValue instanceof String singleNumber) {
+            boolean containsBpn = identity.equals(singleNumber);
+            return success(containsBpn);
         }
         return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
                 .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
