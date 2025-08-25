@@ -38,6 +38,7 @@ jobs:
     if: ${{ github.ref_name == 'main' || github.ref_type == 'tag'  }}
     outputs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
+      is_official_release: ${{ steps.validation.outputs.is_official_release }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -71,6 +72,13 @@ jobs:
             exit 1
             fi
           fi
+          
+          if [[ ! -z $SNAPSHOT_INPUT ]] then
+            echo "is_official_release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_official_release=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - id: check-tag
         name: "Check if tag exists"
         run: |-
@@ -103,7 +111,7 @@ jobs:
       - name: Check dependencies before release
         uses: ./.github/actions/generate-and-check-dependencies
         with:
-          run: strict
+          run: ${{ needs.validate-and-prepare.outputs.is_official_release == true && 'strict' || 'standard' }}
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Version and Chart Updates
