@@ -41,6 +41,10 @@ iatp:
   id: "did:web:changeme"
   # -- Configures the trusted issuers for this runtime
   trustedIssuers: []
+  # - id: "did:web:example1.com"
+  #   supportedTypes:
+  #     - "MembershipCredential"
+  # - "did:web:example2.com"
   sts:
     dim:
       # -- URL where connectors can request SI tokens

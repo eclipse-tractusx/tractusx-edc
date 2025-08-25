@@ -242,8 +242,17 @@ spec:
             {{- end}}
 
             {{- range $index, $issuer := .Values.iatp.trustedIssuers }}
+            {{- if eq (kindOf $issuer) "string" }}
             - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
               value: {{ $issuer | quote }}
+            {{- else }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
+              value: {{ $issuer.id | quote }}
+            {{- if $issuer.supportedTypes }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_SUPPORTEDTYPES"
+              value: {{ $issuer.supportedTypes | toJson | quote }}
+            {{- end }}
+            {{- end }}
             {{- end }}
 
             #################
