@@ -20,10 +20,18 @@
 
 package org.eclipse.tractusx.edc.tests.catalog;
 
+import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
+import org.eclipse.edc.connector.controlplane.policy.spi.store.PolicyDefinitionStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.policy.model.Action;
+import org.eclipse.edc.policy.model.AtomicConstraint;
+import org.eclipse.edc.policy.model.LiteralExpression;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.policy.model.PolicyType;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +46,7 @@ import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -48,7 +57,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.BUSINESS_PARTNER_LEGACY_EVALUATION_KEY;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
@@ -114,8 +122,8 @@ public class CatalogTest {
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_shouldReject() {
-        var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPN1", "BPN2", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = bpnPolicy("ARISTOTELES-BPN");
+        var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
+        var onlyDiogenesPolicy = bpnPolicy("BPNLAAAAAAAAAABC");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
@@ -140,8 +148,11 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
-        var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPN1", "BPN2", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = frameworkPolicy(Map.of(BUSINESS_PARTNER_LEGACY_EVALUATION_KEY, "ARISTOTELES-BPN"), CX_POLICY_2025_09_NS + "access");
+        var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
+        var onlyDiogenesPolicy = frameworkPolicy(
+                Map.of(CX_POLICY_2025_09_NS + "BusinessPartnerNumber", "BPNLAAAAAAAAAAAB"),
+                CX_POLICY_2025_09_NS + "access",
+                "isAnyOf");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
@@ -166,7 +177,7 @@ public class CatalogTest {
     void requestCatalog_filteredByBpn_shouldReject() {
 
         var mustBeGreekPhilosopher = bpnGroupPolicy(Operator.IS_ANY_OF, "greek_customer", "philosopher");
-        var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_ALL_OF, "greek_customer", "mathematician");
+        var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_NONE_OF, "greek_customer", "mathematician");
 
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
@@ -186,6 +197,28 @@ public class CatalogTest {
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy CX policy)")
+    void requestCatalog_filteredByBpn_UsingLegacyCxPolicy_shouldReject() {
+        PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
+        var id = "philosopher-policy";
+        PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class)
+                .create(buildLegacyPolicyDefinition(id, "greek_customer", Operator.EQ, "philosopher"));
+
+        PROVIDER.createAsset("test-asset1");
+        PROVIDER.createAsset("test-asset2");
+
+        PROVIDER.createContractDefinition("test-asset2", "def1", id, id);
+
+        // act
+        var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
+        assertThat(catalog).hasSize(1)
+                .allSatisfy(cd -> {
+                    assertThat(getDatasetAssetId(cd.asJsonObject())).isEqualTo("test-asset2");
+                    assertThat(getDatasetPolicies(cd)).hasSize(1);
+                });
     }
 
     @Test
@@ -231,6 +264,31 @@ public class CatalogTest {
         var o3 = CONSUMER.getCatalogDatasets(PROVIDER, createQuery(500, 500));
         assertThat(o2).doesNotContainAnyElementsOf(o3);
 
+    }
+
+    private PolicyDefinition buildLegacyPolicyDefinition(String id, String leftExpression, Operator operator, Object rightExpression) {
+        var action = Action.Builder.newInstance()
+                .type(CX_POLICY_NS + "access")
+                .build();
+
+        var constraint = AtomicConstraint.Builder.newInstance()
+                .leftExpression(new LiteralExpression(leftExpression))
+                .operator(operator)
+                .rightExpression(new LiteralExpression(rightExpression))
+                .build();
+
+        var policy = Policy.Builder.newInstance()
+                .type(PolicyType.SET)
+                .permission(Permission.Builder.newInstance()
+                        .action(action)
+                        .constraint(constraint)
+                        .build())
+                .build();
+
+        return PolicyDefinition.Builder.newInstance()
+                .id(id)
+                .policy(policy)
+                .build();
     }
 
 }

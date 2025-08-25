@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.common;
 
+import jakarta.json.JsonString;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Rule;
@@ -26,6 +27,7 @@ import org.eclipse.edc.spi.result.Result;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -89,7 +91,11 @@ public abstract class ValueValidatingConstraintFunction<T extends Rule, C extend
                     List.of(s.trim());
         }
         if (rightValue instanceof List<?> rightValuelist) {
-            list = rightValuelist;
+            list = rightValuelist.stream()
+                    .filter(entry -> entry instanceof Map<?, ?>)
+                    .map(entry -> ((Map<?, ?>) entry).get("@value"))
+                    .map(value -> ((JsonString) value).getString())
+                    .toList();
         }
 
         if (list.isEmpty()) {

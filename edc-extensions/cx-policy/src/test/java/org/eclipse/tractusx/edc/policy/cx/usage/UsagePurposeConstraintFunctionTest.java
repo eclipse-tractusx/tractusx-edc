@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.usage;
 
+import jakarta.json.Json;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -26,6 +27,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
@@ -44,7 +46,10 @@ class UsagePurposeConstraintFunctionTest {
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ANY_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), null);
+        var legalRequirementForThirdparty = Json.createValue("cx.core.legalRequirementForThirdparty:1");
+        var industrycore = Json.createValue("cx.core.industrycore:1");
+        var rightValue = List.of(Map.of("@value", legalRequirementForThirdparty), Map.of("@value", industrycore));
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isSucceeded();
     }
 

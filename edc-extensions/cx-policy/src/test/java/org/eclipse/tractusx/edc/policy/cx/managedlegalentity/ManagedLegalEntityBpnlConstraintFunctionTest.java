@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.managedlegalentity;
 
+import jakarta.json.Json;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -26,6 +27,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,15 +45,18 @@ class ManagedLegalEntityBpnlConstraintFunctionTest {
 
     @Test
     void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var rightOperand = List.of("BPNL00000000001A", "BPNL00000000002A");
-        var result = function.validate(Operator.IS_ANY_OF, rightOperand, null);
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var bpn2 = Json.createValue("BPNL00000000002A");
+        var rightValue = List.of(Map.of("@value", bpn1), Map.of("@value", bpn2));
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
 
     @Test
     void validate_whenOperatorAndSingleRightOperandAreValid_thenSuccess() {
-        var rightOperand = List.of("BPNL00000000001A");
-        var result = function.validate(Operator.IS_ANY_OF, rightOperand, null);
+        var bpn = Json.createValue("BPNL00000000001A");
+        var rightValue = List.of(Map.of("@value", bpn));
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result.succeeded()).isTrue();
     }
 

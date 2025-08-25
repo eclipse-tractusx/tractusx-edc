@@ -36,6 +36,7 @@ import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DID_PREFIX;
 
@@ -47,7 +48,7 @@ public interface Runtimes {
 
     static RuntimeExtension pgRuntime(TractusxParticipantBase participant, PostgresExtension postgres, Supplier<Config> configurationProvider) {
         Function<String, String> bpnToDid = bpn -> DID_PREFIX + bpn.replace(BPN_SUFFIX, "");
-        Function<String, String> didToBpn = did -> did.replace(DID_PREFIX, "") + BPN_SUFFIX;
+        Function<String, String> didToBpn = did -> BPN_PREFIX + did.replace(DID_PREFIX, "");
         return new ParticipantRuntimeExtension(
                 new EmbeddedRuntime(participant.getName(), ":edc-tests:runtime:runtime-postgresql")
                         .configurationProvider(() -> participant.getConfig().merge(postgres.getConfig(participant.getName())))

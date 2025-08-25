@@ -43,6 +43,7 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.AFFILIATES_REGION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_GROUP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.BUSINESS_PARTNER_NUMBER_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
@@ -63,7 +64,6 @@ class AtomicConstraintValidatorTest {
     @Test
     void validate_shouldSucceed_whenValidAccessPolicyConstraint() {
         var constraint = atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL);
-        String jsonString = constraint.toString();
         ValidationResult result = accessPolicyValidator.validate(constraint);
 
         assertThat(result).isSucceeded();
@@ -167,13 +167,13 @@ class AtomicConstraintValidatorTest {
 
     @Test
     void validate_shouldFail_whenInvalidLeftOperandForUsagePolicy() {
-        var constraint = atomicConstraint(BUSINESS_PARTNER_NUMBER_LITERAL);
+        var constraint = atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL);
 
         ValidationResult result = usagePolicyValidator.validate(constraint);
 
         assertThat(result).isFailed();
         FailureAssert.assertThat(result.getFailure()).messages().anyMatch(msg ->
-                msg.contains("BusinessPartnerNumber") && msg.contains("not allowed"));
+                msg.contains("DataProvisioningEndDurationDays") && msg.contains("not allowed"));
     }
 
     @Test

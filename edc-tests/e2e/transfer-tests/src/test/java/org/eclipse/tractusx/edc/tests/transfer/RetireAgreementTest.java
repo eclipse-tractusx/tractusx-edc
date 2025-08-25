@@ -109,7 +109,7 @@ public class RetireAgreementTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1");
-        var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ALL_OF, "test-group1"));
+        var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1"));
         var policy = PolicyHelperFunctions.frameworkPolicy(Map.of(), CX_POLICY_2025_09_NS + "access");
         var contractPolicy = PROVIDER.createPolicyDefinition(policy);
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);

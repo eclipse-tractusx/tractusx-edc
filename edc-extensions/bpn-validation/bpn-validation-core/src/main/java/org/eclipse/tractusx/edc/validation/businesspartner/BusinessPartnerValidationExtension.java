@@ -32,23 +32,23 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
-import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction;
+import org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
 import static org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext.CATALOG_SCOPE;
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
+import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
 
 /**
- * Registers a {@link org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction} for the following scopes:
+ * Registers a {@link org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction} for the following scopes:
  * <ul>
  *     <li>{@code catalog}</li>
  *     <li>{@code contract.negotiation}</li>
  *     <li>{@code transfer.process}</li>
  * </ul>
- * The rule to which the function is bound is {@link BusinessPartnerGroupFunction#BUSINESS_PARTNER_CONSTRAINT_KEY}. That means, that policies that are bound to these scopes look
+ * The rule to which the function is bound is {@link BusinessPartnerGroupLegacyFunction#BUSINESS_PARTNER_CONSTRAINT_KEY}. That means, that policies that are bound to these scopes look
  * like this:
  * <pre>
  * {
@@ -60,7 +60,7 @@ import static org.eclipse.tractusx.edc.validation.businesspartner.functions.Busi
  * }
  * </pre>
  * <p>
- * Note that the {@link BusinessPartnerGroupFunction} is an {@link org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction}, thus it is registered with the {@link PolicyEngine} for the {@link Permission} class.
+ * Note that the {@link BusinessPartnerGroupLegacyFunction} is an {@link org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction}, thus it is registered with the {@link PolicyEngine} for the {@link Permission} class.
  */
 @Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = { "policy", "contract" })
 public class BusinessPartnerValidationExtension implements ServiceExtension {
@@ -79,12 +79,12 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor().withPrefix("BusinessPartnerGroupFunction");
-        bindToScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor));
-        bindToScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor));
-        bindToScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupFunction<>(store, bdrsClient, monitor));
+        bindToLegacyScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
+        bindToLegacyScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
+        bindToLegacyScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
     }
 
-    private <C extends PolicyContext> void bindToScope(String scope, Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function) {
+    private <C extends PolicyContext> void bindToLegacyScope(String scope, Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function) {
         ruleBindingRegistry.bind(USE, scope);
         ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
         ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY, scope);

@@ -28,7 +28,6 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_XONE_CONSTRAINT_ATTRIBUTE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public final class PolicyValidationConstants {
     private PolicyValidationConstants() {
@@ -39,11 +38,13 @@ public final class PolicyValidationConstants {
 
     public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_2025_09_NS + "FrameworkAgreement";
     public static final String MEMBERSHIP_LITERAL = CX_POLICY_2025_09_NS + "Membership";
-    public static final String BUSINESS_PARTNER_GROUP_LITERAL = TX_NAMESPACE + "BusinessPartnerGroup";
-    public static final String BUSINESS_PARTNER_NUMBER_LITERAL = TX_NAMESPACE + "BusinessPartnerNumber";
+    public static final String BUSINESS_PARTNER_GROUP_LITERAL = CX_POLICY_2025_09_NS + "BusinessPartnerGroup";
+    public static final String BUSINESS_PARTNER_NUMBER_LITERAL = CX_POLICY_2025_09_NS + "BusinessPartnerNumber";
     public static final String USAGE_PURPOSE_LITERAL = CX_POLICY_2025_09_NS + "UsagePurpose";
     public static final String AFFILIATES_REGION_LITERAL = CX_POLICY_2025_09_NS + "AffiliatesRegion";
     public static final String AFFILIATES_BPNL_LITERAL = CX_POLICY_2025_09_NS + "AffiliatesBpnl";
+    public static final String BUSINESS_PARTNER_GROUP = CX_POLICY_2025_09_NS + "BusinessPartnerGroup";
+    public static final String BUSINESS_PARTNER_NUMBER = CX_POLICY_2025_09_NS + "BusinessPartnerNumber";
 
     public static final String CONFIDENTIAL_INFORMATION_MEASURE_LITERAL = CX_POLICY_2025_09_NS + "ConfidentialInformationMeasures";
     public static final String CONFIDENTIAL_INFORMATION_SHARING_LITERAL = CX_POLICY_2025_09_NS + "ConfidentialInformationSharing";
@@ -117,7 +118,9 @@ public final class PolicyValidationConstants {
             DATA_USAGE_END_DURATION_LITERAL,
             DATA_USAGE_END_DATE_LITERAL,
             DATA_USAGE_END_DEFINITION_LITERAL,
-            INFORCE_POLICY_LITERAL
+            INFORCE_POLICY_LITERAL,
+            BUSINESS_PARTNER_GROUP,
+            BUSINESS_PARTNER_NUMBER
     );
     public static final Set<String> USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             AFFILIATES_REGION_LITERAL,

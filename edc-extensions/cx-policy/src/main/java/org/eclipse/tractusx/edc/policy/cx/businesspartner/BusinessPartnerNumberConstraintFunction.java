@@ -1,7 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
- * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
- * Copyright (c) 2025 Cofinity-X GmbH
+/*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,52 +15,51 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.validation.businesspartner.functions;
+package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
-import static org.eclipse.edc.policy.model.Operator.EQ;
-import static org.eclipse.edc.policy.model.Operator.HAS_PART;
 import static org.eclipse.edc.spi.result.Result.failure;
 import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
 
 /**
- * AtomicConstraintFunction to validate business partner numbers for edc permissions.
+ * This is a constraint function that evaluates the BusinessPartnerNumber of a participant agent.
  */
-public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
+    public static final String BUSINESS_PARTNER_NUMBER = "BusinessPartnerNumber";
 
     private static final List<Operator> SUPPORTED_OPERATORS = Arrays.asList(
-            EQ,
-            Operator.IN,
-            Operator.NEQ,
             Operator.IS_ANY_OF,
-            Operator.IS_A,
-            Operator.IS_NONE_OF,
-            Operator.IS_ALL_OF,
-            Operator.HAS_PART
+            Operator.IS_NONE_OF
     );
 
     private BdrsClient bdrsClient;
 
-    public BusinessPartnerNumberPermissionFunction(BdrsClient bdrsClient) {
+    public BusinessPartnerNumberConstraintFunction(BdrsClient bdrsClient) {
+        super(
+                Set.of(Operator.IS_ANY_OF, Operator.IS_NONE_OF),
+                "^BPNL[0-9A-Z]{12}$",
+                true
+        );
+
         this.bdrsClient = bdrsClient;
     }
 
@@ -87,15 +84,7 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
         }
 
         return switch (operator) {
-            case EQ, IS_ALL_OF -> checkEquality(identity, rightOperand, operator)
-                    .orElse(reportFailure(context));
-            case NEQ -> checkEquality(identity, rightOperand, operator)
-                    .map(b -> !b)
-                    .orElse(reportFailure(context));
-            case HAS_PART -> checkStringContains(identity, rightOperand)
-                    .orElse(reportFailure(context));
-            case IN, IS_A, IS_ANY_OF ->
-                    checkListContains(identity, rightOperand, operator).orElse(reportFailure(context));
+            case IS_ANY_OF -> checkListContains(identity, rightOperand, operator).orElse(reportFailure(context));
             case IS_NONE_OF -> checkListContains(identity, rightOperand, operator)
                     .map(b -> !b)
                     .orElse(reportFailure(context));
@@ -120,27 +109,11 @@ public class BusinessPartnerNumberPermissionFunction<C extends ParticipantAgentP
                     .anyMatch(bpn -> identity.equals(bpn));
 
             return success(containsBpn);
+        } else if (rightValue instanceof String singleNumber) {
+            boolean containsBpn = identity.equals(singleNumber);
+            return success(containsBpn);
         }
         return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
-                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
-    }
-
-    private Result<Boolean> checkStringContains(String identity, Object rightValue) {
-        if (rightValue instanceof String bpnString) {
-            return success(identity.contains(bpnString));
-        }
-        return failure("Invalid right-value: operator '%s' requires a 'String' but got a '%s'"
-                .formatted(HAS_PART, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Result<Boolean> checkEquality(String identity, Object rightValue, Operator operator) {
-        if (rightValue instanceof String bpnString) {
-            return success(Objects.equals(identity, bpnString));
-        } else if (rightValue instanceof List bpnList) {
-            return success(bpnList.stream().allMatch(bpn -> Objects.equals(identity, bpn)));
-        }
-        return failure("Invalid right-value: operator '%s' requires a 'String' or a 'List' but got a '%s'"
                 .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 }

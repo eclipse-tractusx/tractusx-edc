@@ -66,7 +66,7 @@ import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PRE
  * }
  * </pre>
  * <p>
- * Upon evaluation, the {@link BusinessPartnerGroupFunction} will take the {@link ParticipantAgent}s BPN, use it to resolve the groups that the BPN is part of, and check, whether `"gold_partner"` and
+ * Upon evaluation, the {@link BusinessPartnerGroupLegacyFunction} will take the {@link ParticipantAgent}s BPN, use it to resolve the groups that the BPN is part of, and check, whether `"gold_partner"` and
  * `"platin_partner"` are amongst those groups.
  * <p>
  * The following operators are supported:
@@ -80,9 +80,12 @@ import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PRE
  * </ul>
  *
  * @see BusinessPartnerStore
+ *
+ * @deprecated since 0.11.0
  */
-public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
-    
+@Deprecated(since = "0.11.0")
+public class BusinessPartnerGroupLegacyFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
@@ -90,7 +93,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
     private BdrsClient bdrsClient;
     private final Monitor monitor;
 
-    public BusinessPartnerGroupFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
+    public BusinessPartnerGroupLegacyFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
         this.store = store;
         this.bdrsClient = bdrsClient;
         this.monitor = monitor;
@@ -117,7 +120,7 @@ public class BusinessPartnerGroupFunction<C extends ParticipantAgentPolicyContex
             context.reportProblem("Identity of the participant agent cannot be null");
             return false;
         }
-        
+
         if (identity.startsWith(DID_PREFIX)) {
             identity = bdrsClient.resolveBpn(identity);
         }

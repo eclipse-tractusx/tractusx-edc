@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.policy.cx.affiliates;
 
+import jakarta.json.Json;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
@@ -26,6 +27,7 @@ import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
@@ -44,14 +46,17 @@ class AffiliatesBpnlConstraintFunctionTest {
 
     @Test
     void validate_whenValidOperatorAndRightValueArePassed_thenSuccess() {
-        var rightValue = List.of("BPNL00000000001A", "BPNL00000000002B");
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var bpn2 = Json.createValue("BPNL00000000002B");
+        var rightValue = List.of(Map.of("@value", bpn1), Map.of("@value", bpn2));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
-        var rightValue = List.of("BPNL00000000001A");
+        var bpn = Json.createValue("BPNL00000000001A");
+        var rightValue = List.of(Map.of("@value", bpn));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isSucceeded();
     }
@@ -71,7 +76,8 @@ class AffiliatesBpnlConstraintFunctionTest {
 
     @Test
     void validate_whenInvalidBpnlFormat_thenFailure() {
-        var rightValue = List.of("invalid-bpnl");
+        var invalidBpnl = Json.createValue("invalid-bpnl");
+        var rightValue = List.of(Map.of("@value", invalidBpnl));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isFailed().detail().contains("matching pattern");
     }
@@ -85,7 +91,8 @@ class AffiliatesBpnlConstraintFunctionTest {
 
     @Test
     void validate_whenInvalidListBpnlStringList_thenFailure() {
-        var rightValue = List.of("[BPNL00000000001A]");
+        var bpnlArray = Json.createValue("[BPNL00000000001A]");
+        var rightValue = List.of(Map.of("@value", bpnlArray));
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result).isFailed().detail().contains("list must contain only unique values matching pattern");
     }
