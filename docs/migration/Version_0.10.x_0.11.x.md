@@ -87,3 +87,22 @@ and for version 2025-1:
   "https://w3id.org/edc/v0.0.1/ns/protocol": "dataspace-protocol-http:2025-1"
 }
 ```
+
+## 4. Policy validations according to standard CX-0152
+
+Standard CX-0152 specifies all the allowed actions and respective constraints to be used within the CatenaX dataspace.
+To ensure compliance with the newly added standard, Tractus-X EDC has introduced a validation mechanism that validate
+newly created policies against the standard. Policies are now validated in their entirety including action types, 
+rule types, constraint logic, left and right operand values, as well as operators.
+
+It is highly probable that existing interfaces with the connector that managed policy definitions will be affected by 
+this change. We recommend reviewing and updating all policies to ensure they comply with the standard.
+
+We've taken care to ensure that existing policies created before the upgrade are not affected by this validation. This 
+means that all existing policies will remain functional and valid after the upgrade. However, any new policies created
+after the upgrade will need to adhere to the CX-0152 standard.
+
+For more information on the CX-0152 standard, please refer to the official documentation. The following link
+might break since it points to a branch other than main. Nevertheless the repository should contain the required 
+information.
+- [Catena-X Dataspace Policy Standard (CX-0152)](https://github.com/catenax-eV/product-standardization-prod/blob/R25.09-release-bundle/standards/CX-0152-PolicyConstrainsForDataExchange/CX-0152-PolicyConstraintsForDataExchange.md)
