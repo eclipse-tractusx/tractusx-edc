@@ -38,7 +38,7 @@ jobs:
     if: ${{ github.ref_name == 'main' || github.ref_type == 'tag'  }}
     outputs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
-      is_release_candidate: ${{ steps.validation.outputs.is_official_release }}
+      is_official_release: ${{ steps.validation.outputs.is_official_release }}
     steps:
       - uses: actions/checkout@v5
         with:
