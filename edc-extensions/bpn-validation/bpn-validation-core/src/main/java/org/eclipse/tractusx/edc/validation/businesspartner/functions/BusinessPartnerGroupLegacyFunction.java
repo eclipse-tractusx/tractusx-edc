@@ -87,7 +87,6 @@ import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PRE
 public class BusinessPartnerGroupLegacyFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
 
     public static final String BUSINESS_PARTNER_CONSTRAINT_KEY = TX_NAMESPACE + "BusinessPartnerGroup";
-    public static final String BUSINESS_PARTNER_CONSTRAINT_KEY_V2025 = TX_NAMESPACE + "BusinessPartnerGroup2025";
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
