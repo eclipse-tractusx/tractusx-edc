@@ -102,6 +102,7 @@ public class CredentialSpoofTest {
     private static IatpParticipant participant(String name, String bpn) {
         return IatpParticipant.Builder.newInstance().name(name).id(bpn)
                 .stsUri(STS.stsUri())
+                .bpn(bpn)
                 .stsClientId(bpn)
                 .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
                 .dimUri(DIM_URI)
@@ -165,8 +166,6 @@ public class CredentialSpoofTest {
     @DisplayName("Malicious actor should not impersonate a consumer sending a valid consumer VP")
     void shouldNotImpersonateConsumer_withConsumerPresentation() {
         var assetId = "api-asset-1";
-
-
         Map<String, Object> dataAddress = Map.of(
                 "baseUrl", "http://mock",
                 "type", "HttpData",

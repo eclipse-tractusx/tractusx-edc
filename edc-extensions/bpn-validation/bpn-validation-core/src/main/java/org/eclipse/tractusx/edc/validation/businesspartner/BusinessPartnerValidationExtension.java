@@ -39,19 +39,17 @@ import static org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogP
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext.NEGOTIATION_SCOPE;
 import static org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext.TRANSFER_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction.BUSINESS_PARTNER_CONSTRAINT_KEY;
-import static org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction.BUSINESS_PARTNER_CONSTRAINT_KEY_V2025;
 
 /**
- * Registers a {@link org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupFunction} for the following scopes:
+ * Registers a {@link org.eclipse.tractusx.edc.validation.businesspartner.functions.BusinessPartnerGroupLegacyFunction} for the following scopes:
  * <ul>
  *     <li>{@code catalog}</li>
  *     <li>{@code contract.negotiation}</li>
  *     <li>{@code transfer.process}</li>
  * </ul>
- * The rule to which the function is bound is {@link BusinessPartnerGroupFunction#BUSINESS_PARTNER_CONSTRAINT_KEY}. That means, that policies that are bound to these scopes look
+ * The rule to which the function is bound is {@link BusinessPartnerGroupLegacyFunction#BUSINESS_PARTNER_CONSTRAINT_KEY}. That means, that policies that are bound to these scopes look
  * like this:
  * <pre>
  * {
@@ -63,7 +61,7 @@ import static org.eclipse.tractusx.edc.validation.businesspartner.functions.Busi
  * }
  * </pre>
  * <p>
- * Note that the {@link BusinessPartnerGroupFunction} is an {@link org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction}, thus it is registered with the {@link PolicyEngine} for the {@link Permission} class.
+ * Note that the {@link BusinessPartnerGroupLegacyFunction} is an {@link org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction}, thus it is registered with the {@link PolicyEngine} for the {@link Permission} class.
  */
 @Extension(value = "Registers a function to evaluate whether a BPN number is covered by a certain policy or not", categories = { "policy", "contract" })
 public class BusinessPartnerValidationExtension implements ServiceExtension {
@@ -82,11 +80,9 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor().withPrefix("BusinessPartnerGroupFunction");
-
         bindToLegacyScope(TRANSFER_SCOPE, TransferProcessPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
         bindToLegacyScope(NEGOTIATION_SCOPE, ContractNegotiationPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
         bindToLegacyScope(CATALOG_SCOPE, CatalogPolicyContext.class, new BusinessPartnerGroupLegacyFunction<>(store, bdrsClient, monitor));
-
     }
 
     private <C extends PolicyContext> void bindToLegacyScope(String scope, Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function) {
@@ -96,15 +92,6 @@ public class BusinessPartnerValidationExtension implements ServiceExtension {
         ruleBindingRegistry.bind(CX_POLICY_NS, scope);
 
         policyEngine.registerFunction(contextType, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY, function);
-    }
-
-    private <C extends PolicyContext> void bindToScope(String scope, Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function) {
-        ruleBindingRegistry.bind(USE, scope);
-        ruleBindingRegistry.bind(ODRL_SCHEMA + "use", scope);
-        ruleBindingRegistry.bind(BUSINESS_PARTNER_CONSTRAINT_KEY_V2025, scope);
-        ruleBindingRegistry.bind(CX_POLICY_2025_09_NS, scope);
-
-        policyEngine.registerFunction(contextType, Permission.class, BUSINESS_PARTNER_CONSTRAINT_KEY_V2025, function);
     }
 
 }
