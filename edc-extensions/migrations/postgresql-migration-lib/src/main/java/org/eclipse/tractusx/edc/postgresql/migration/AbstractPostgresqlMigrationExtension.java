@@ -64,6 +64,7 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
 
         ConfigUtil.propertyCompatibility(context, MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), MIGRATION_ENABLED_TEMPLATE_DEPRECATED.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
         if (!enabled) {
+            context.getMonitor().info("Migration for subsystem %s disabled".formatted(subSystemName));
             return;
         }
 
@@ -84,6 +85,10 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
 
     @Override
     public void prepare() {
+        if (migrationExecutor == null) {
+            return;
+        }
+
         var migrateResult = migrationExecutor.get();
 
         if (!migrateResult.success) {
