@@ -22,22 +22,22 @@
 changelog:
   exclude:
     labels:
-      - dependencies
+      - 'dependencies'
     authors:
       - 'dependabot[bot]'
   categories:
     - title: Breaking changes
       labels:
-        - breaking-change
+        - 'breaking change'
     - title: Bugfixes
       labels:
-        - bug
+        - 'bug'
     - title: New Features & Improvements
       labels:
-        - enhancement
+        - 'enhancement'
     - title: Documentation
       labels:
-        - documentation
+        - 'documentation'
     - title: Other Changes
       labels:
         - "*"
