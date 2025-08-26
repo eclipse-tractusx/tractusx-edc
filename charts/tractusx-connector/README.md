@@ -272,7 +272,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.10.0 \
 | iatp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIM access |
 | iatp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIM access |
 | iatp.sts.oauth.token_url | string | `nil` | URL where connectors can request OAuth2 access tokens for DIM access |
-| iatp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime |
+| iatp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | install.postgresql | bool | `true` | Deploying a PostgreSQL instance |
 | install.vault | bool | `true` | Deploying a HashiCorp Vault instance |

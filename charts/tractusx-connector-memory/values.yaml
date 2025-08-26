@@ -39,8 +39,12 @@ participant:
 iatp:
   # -- Decentralized IDentifier (DID) of the connector
   id: "did:web:changeme"
-  # -- Configures the trusted issuers for this runtime
+  # -- Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer
   trustedIssuers: []
+  # - id: "did:web:example1.com"
+  #   supportedTypes:
+  #     - "MembershipCredential"
+  # - "did:web:example2.com"
   sts:
     dim:
       # -- URL where connectors can request SI tokens

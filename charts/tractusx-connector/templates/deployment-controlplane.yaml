@@ -237,12 +237,20 @@ spec:
               value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
             {{- if .Values.iatp.sts.dim.url }}
             - name: "TX_EDC_IAM_STS_DIM_URL"
-              value: {{ .Values.iatp.sts.dim.url | quote}}
+              value: {{ .Values.iatp.sts.dim.url | quote }}
             {{- end }}
-
             {{- range $index, $issuer := .Values.iatp.trustedIssuers }}
+            {{- if eq (kindOf $issuer) "string" }}
             - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
               value: {{ $issuer | quote }}
+            {{- else }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
+              value: {{ $issuer.id | quote }}
+            {{- if $issuer.supportedTypes }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_SUPPORTEDTYPES"
+              value: {{ $issuer.supportedTypes | toJson | quote }}
+            {{- end }}
+            {{- end }}
             {{- end }}
 
             #################
