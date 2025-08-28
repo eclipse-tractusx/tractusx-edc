@@ -19,6 +19,7 @@ nimbus = "10.4.2"
 netty-mockserver = "5.15.0"
 opentelemetry = "2.19.0"
 opentelemetry-instrumentation = "2.19.0"
+opentelemetry-log4j-appender = "2.19.0-alpha"
 postgres = "42.7.7"
 restAssured = "5.5.6"
 rsApi = "4.0.0"
@@ -219,6 +220,7 @@ log4j2-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log
 log4j2-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j2" }
 log4j2-core-test = { module = "org.apache.logging.log4j:log4j-core-test", version.ref = "log4j2" }
 log4j2-json-template = { module = "org.apache.logging.log4j:log4j-layout-template-json", version.ref = "log4j2" }
+opentelemetry-log4j-appender = { module = "io.opentelemetry.instrumentation:opentelemetry-log4j-appender-2.17", version.ref = "opentelemetry-log4j-appender" }
 
 [bundles]
 edc-monitoring = ["edc-micrometer-core", "edc-micrometer-jersey", "edc-micrometer-jetty"]
