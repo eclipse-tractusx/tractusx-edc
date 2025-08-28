@@ -4,7 +4,7 @@
 
 > **BREAKING CHANGES**
 >
-> Please consolidate the migration documentation ([link](../migration/Version_0.1.0_0.1.1.md)).
+> Please consolidate the migration documentation ([link](../migration/2022-09-Version_0.1.0_0.1.1)).
 >
 > **Important Notice**
 >

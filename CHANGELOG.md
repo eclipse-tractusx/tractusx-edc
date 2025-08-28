@@ -201,7 +201,7 @@ Full Changelog: [0.5.0-rc5_rn...0.5.0_rn](https://github.com/eclipse-tractusx/tr
 ## [0.3.0] - 2023-02-20
 
 **Important Note**: This version introduces multiple breaking changes. Before updating **always** consolidate the
-corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
+corresponding [documentation](/docs/migration/2023-03-Version_0.1.x_0.3.x).
 
 ### 0.3.0 Added
 
@@ -347,7 +347,7 @@ corresponding [documentation](/docs/migration/Version_0.1.x_0.3.x.md).
 ## [0.1.1] - 2022-09-04
 
 **Important Note**: Please consolidate the migration documentation before updating your
-connector. [documentation](/docs/migration/Version_0.1.0_0.1.1.md).
+connector. [documentation](/docs/migration/2022-09-Version_0.1.0_0.1.1).
 
 ### 0.1.1 Added
 
@@ -366,7 +366,7 @@ connector. [documentation](/docs/migration/Version_0.1.0_0.1.1.md).
 ## [0.1.0] - 2022-08-19
 
 **Important Note**: Version 0.1.0 introduces multiple breaking changes. Before updating **always** consolidate the
-corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
+corresponding [documentation](/docs/migration/2022-08-Version_0.0.x_0.1.x).
 
 ### 0.1.0 Added
 
@@ -385,7 +385,7 @@ corresponding [documentation](/docs/migration/Version_0.0.x_0.1.x.md).
 - EDC has been updated to
   version [0.0.1-20220818-SNAPSHOT](https://oss.sonatype.org/#nexus-search;gav~org.eclipse.dataspaceconnector~~0.0.1-20220818-SNAPSHOT~~) -
   implications to the behavior of the connector have been covered in
-  the [corresponding migration guide](docs/migration/Version_0.0.x_0.1.x.md)
+  the [corresponding migration guide](docs/migration/2022-08-Version_0.0.x_0.1.x)
 
 ### 0.1.0 Fixed
 

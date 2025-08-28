@@ -4,7 +4,7 @@
 
 > **BREAKING CHANGES**
 >
-> When upgrading from version 0.0.x please consolidate the migration documentation before ([link](../migration/Version_0.0.x_0.1.x.md)).
+> When upgrading from version 0.0.x please consolidate the migration documentation before ([link](../migration/2022-08-Version_0.0.x_0.1.x)).
 
 ## 0. Summary
 
