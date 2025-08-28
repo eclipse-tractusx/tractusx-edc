@@ -49,6 +49,7 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
     private static final String MIGRATION_SCHEMA = "org.eclipse.tractusx.edc.postgresql.migration.schema";
 
     private Supplier<MigrateResult> migrationExecutor;
+    private boolean enabled;
 
     @Override
     public String name() {
@@ -60,7 +61,7 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
         var config = context.getConfig();
 
         var subSystemName = Objects.requireNonNull(getSubsystemName());
-        var enabled = config.getBoolean(MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
+        enabled = config.getBoolean(MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
 
         ConfigUtil.propertyCompatibility(context, MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), MIGRATION_ENABLED_TEMPLATE_DEPRECATED.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
         if (!enabled) {
@@ -85,7 +86,7 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
 
     @Override
     public void prepare() {
-        if (migrationExecutor == null) {
+        if (!enabled) {
             return;
         }
 
