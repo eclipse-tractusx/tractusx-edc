@@ -82,7 +82,7 @@ The EDC Oauth2 Extension has now the possibility to add the audience to the clai
 added to the control plane again most of the functionality of the CX Oauth2 Extension was removed.
 
 > **Breaking Change** The official OAuth2 Extension uses different settings then the EDC OAuth Extension. Please
-> consolidate the [Migration Documentation](../migration/Version_0.1.2_0.1.3.md).
+> consolidate the [Migration Documentation](../migration/2023-03-Version_0.1.2_0.1.3).
 
 ## 3. Bug Fixes
 
