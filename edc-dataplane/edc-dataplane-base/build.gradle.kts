@@ -52,4 +52,5 @@ dependencies {
     runtimeOnly(libs.edc.dpf.azblob)
     runtimeOnly(libs.edc.identity.did.web)
     runtimeOnly(libs.log4j2.core)
+    runtimeOnly(libs.opentelemetry.log4j.appender)
 }
