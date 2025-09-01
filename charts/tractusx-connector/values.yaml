@@ -630,6 +630,9 @@ dataplane:
     public: ""
 
 postgresql:
+  image:
+    repository: "bitnamilegacy/postgresql"
+    tag: "16.2.0-debian-12-r10"
   jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   primary:
     persistence:
