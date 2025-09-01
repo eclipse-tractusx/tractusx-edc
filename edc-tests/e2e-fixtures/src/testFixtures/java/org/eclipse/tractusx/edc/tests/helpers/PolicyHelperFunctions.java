@@ -168,7 +168,7 @@ public class PolicyHelperFunctions {
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
                 .add("leftOperand", FRAMEWORK_AGREEMENT_LITERAL)
                 .add("operator", "eq")
-                .add("rightOperand", "DataExchangeGovernance:2.0")
+                .add("rightOperand", "DataExchangeGovernance:1.0")
                 .build();
     }
 

@@ -257,7 +257,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), CX_POLICY_2025_09_NS + "access"), "MembershipCredential"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "FrameworkAgreement", "DataExchangeGovernance:2.0"), "use"), "DataExchangeGovernance use case")
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "FrameworkAgreement", "DataExchangeGovernance:1.0"), "use"), "DataExchangeGovernance use case")
             );
         }
     }

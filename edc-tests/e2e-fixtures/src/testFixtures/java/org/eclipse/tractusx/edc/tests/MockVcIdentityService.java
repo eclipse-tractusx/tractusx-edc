@@ -99,7 +99,7 @@ public class MockVcIdentityService implements IdentityService {
                 .credentialSubject(CredentialSubject.Builder.newInstance()
                         .id(did)
                         .claim("holderIdentifier", businessPartnerNumber)
-                        .claim("contractVersion", "2.0")
+                        .claim("contractVersion", "1.0")
                         .build())
                 .issuer(new Issuer("issuer", Map.of()))
                 .issuanceDate(Instant.now())
