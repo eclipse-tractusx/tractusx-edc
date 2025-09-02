@@ -129,10 +129,10 @@ public class FrameworkAgreementCredentialConstraintFunction<C extends Participan
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(Operator.EQ, operator));
         }
 
-        return rightValue instanceof String s && s.equals("DataExchangeGovernance:2.0") ?
+        return rightValue instanceof String s && s.equals("DataExchangeGovernance:1.0") ?
                 Result.success() :
                 Result.failure("Invalid right-operand: allowed values are '%s'."
-                        .formatted("DataExchangeGovernance:2.0"));
+                        .formatted("DataExchangeGovernance:1.0"));
     }
 
     @NotNull
