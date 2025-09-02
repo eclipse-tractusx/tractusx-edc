@@ -41,7 +41,7 @@ public class BdrsServerExtension implements BeforeAllCallback, AfterAllCallback 
     private final LazySupplier<URI> directoryEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:%d%s".formatted(getFreePort(), "/directory")));
     private final LazySupplier<URI> managementEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:%d%s".formatted(getFreePort(), "/management")));
 
-    private final GenericContainer<?> bdrsServer = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.4")
+    private final GenericContainer<?> bdrsServer = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.5")
             .withLogConsumer(o -> System.out.println("[BDRS] " + o.getUtf8StringWithoutLineEnding()))
             .withNetworkMode("host");
 
