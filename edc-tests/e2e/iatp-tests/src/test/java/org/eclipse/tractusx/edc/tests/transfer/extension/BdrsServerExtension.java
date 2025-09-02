@@ -41,7 +41,7 @@ public class BdrsServerExtension implements BeforeAllCallback, AfterAllCallback 
     private final LazySupplier<URI> directoryEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:%d%s".formatted(getFreePort(), "/directory")));
     private final LazySupplier<URI> managementEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:%d%s".formatted(getFreePort(), "/management")));
 
-    private final GenericContainer<?> bdrsServer = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.5")
+    private final GenericContainer<?> bdrsServer = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.7")
             .withLogConsumer(o -> System.out.println("[BDRS] " + o.getUtf8StringWithoutLineEnding()))
             .withNetworkMode("host");
 
@@ -59,7 +59,7 @@ public class BdrsServerExtension implements BeforeAllCallback, AfterAllCallback 
                 entry("edc.iam.trusted-issuer.issuer.id", issuerDid),
                 entry("web.http.directory.port", String.valueOf(directoryEndpoint.get().getPort())),
                 entry("web.http.directory.path", directoryEndpoint.get().getPath()),
-                entry("edc.api.auth.key", "password"),
+                entry("web.http.management.auth.key", "password"),
                 entry("web.http.management.port", String.valueOf(managementEndpoint.get().getPort())),
                 entry("web.http.management.path", managementEndpoint.get().getPath())
         );
