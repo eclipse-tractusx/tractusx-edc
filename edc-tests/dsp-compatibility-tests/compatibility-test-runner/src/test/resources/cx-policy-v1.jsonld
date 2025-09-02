@@ -4,19 +4,93 @@
     "@protected": true,
     "cred": "https://www.w3.org/2018/credentials#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "cx-policy": "https://w3id.org/tractusx/policy/v1.0.0/",
-    "Dismantler": "cx-policy:Dismantler",
-    "Dismantler.activityType": "cx-policy:Dismantler.activityType",
-    "Dismantler.allowedBrands": "cx-policy:Dismantler.allowedBrands",
-    "Membership": "cx-policy:Membership",
-    "UsagePurpose": "cx-policy:UsagePurpose",
-    "ContractReference": "cx-policy:ContractReference",
-    "FrameworkAgreement": "cx-policy:FrameworkAgreement",
-    "FrameworkAgreement.behavioraltwin": "cx-policy:FrameworkAgreement.behavioraltwin",
-    "FrameworkAgreement.pcf": "cx-policy:FrameworkAgreement.pcf",
-    "FrameworkAgreement.quality": "cx-policy:FrameworkAgreement.quality",
-    "FrameworkAgreement.resiliency": "cx-policy:FrameworkAgreement.resiliency",
-    "FrameworkAgreement.sustainability": "cx-policy:FrameworkAgreement.sustainability",
-    "FrameworkAgreement.traceability": "cx-policy:FrameworkAgreement.traceability"
+    "cx-policy": "https://w3id.org/catenax/2025/9/policy/",
+    "access": {
+      "@id": "cx-policy:access"
+    },
+    "AffiliatesBpnl": {
+      "@id": "cx-policy:AffiliatesBpnl"
+    },
+    "AffiliatesRegion": {
+      "@id": "cx-policy:AffiliatesRegion"
+    },
+    "BusinessPartnerGroup": {
+      "@id": "https://w3id.org/tractusx/edc/v0.0.1/BusinessPartnerGroup"
+    },
+    "BusinessPartnerNumber": {
+      "@id": "https://w3id.org/tractusx/edc/v0.0.1/BusinessPartnerNumber"
+    },
+    "ConfidentialInformationMeasures": {
+      "@id": "cx-policy:ConfidentialInformationMeasures"
+    },
+    "ConfidentialInformationSharing": {
+      "@id": "cx-policy:ConfidentialInformationSharing"
+    },
+    "ContractReference": {
+      "@id": "cx-policy:ContractReference"
+    },
+    "ContractTermination": {
+      "@id": "cx-policy:ContractTermination"
+    },
+    "DataFrequency": {
+      "@id": "cx-policy:DataFrequency"
+    },
+    "DataProvisioningEndDate": {
+      "@id": "cx-policy:DataProvisioningEndDate"
+    },
+    "DataProvisioningEndDurationDays": {
+      "@id": "cx-policy:DataProvisioningEndDurationDays"
+    },
+    "DataUsageEndDate": {
+      "@id": "cx-policy:DataUsageEndDate"
+    },
+    "DataUsageEndDurationDays": {
+      "@id": "cx-policy:DataUsageEndDurationDays"
+    },
+    "DataUsageEndDefinition": {
+      "@id": "cx-policy:DataUsageEndDefinition"
+    },
+    "ExclusiveUsage": {
+      "@id": "cx-policy:ExclusiveUsage"
+    },
+    "FrameworkAgreement": {
+      "@id": "cx-policy:FrameworkAgreement"
+    },
+    "JurisdictionLocation": {
+      "@id": "cx-policy:JurisdictionLocation"
+    },
+    "JurisdictionLocationReference": {
+      "@id": "cx-policy:JurisdictionLocationReference"
+    },
+    "Liability": {
+      "@id": "cx-policy:Liability"
+    },
+    "ManagedLegalEntityBpnl": {
+      "@id": "cx-policy:ManagedLegalEntityBpnl"
+    },
+    "ManagedLegalEntityRegion": {
+      "@id": "cx-policy:ManagedLegalEntityRegion"
+    },
+    "Membership": {
+      "@id": "cx-policy:Membership"
+    },
+    "Precedence": {
+      "@id": "cx-policy:Precedence"
+    },
+    "UsagePurpose": {
+      "@id": "cx-policy:UsagePurpose"
+    },
+    "UsageRestriction": {
+      "@id": "cx-policy:UsageRestriction"
+    },
+    "VersionChanges": {
+      "@id": "cx-policy:VersionChanges"
+    },
+    "Warranty": {
+      "@id": "cx-policy:Warranty"
+    },
+    "WarrantyDuration": {
+      "@id": "cx-policy:WarrantyDuration"
+    }
   }
 }

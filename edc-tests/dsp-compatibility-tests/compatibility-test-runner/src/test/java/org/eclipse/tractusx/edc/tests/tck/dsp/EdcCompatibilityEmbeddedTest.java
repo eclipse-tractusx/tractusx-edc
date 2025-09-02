@@ -156,7 +156,7 @@ public class EdcCompatibilityEmbeddedTest {
         properties.put("dataspacetck.dsp.jsonld.context.tractusx_auth.path", resourceConfig("tx-auth-v1.jsonld"));
         properties.put("dataspacetck.dsp.jsonld.context.tractusx_auth.uri", "https://w3id.org/tractusx/auth/v1.0.0");
         properties.put("dataspacetck.dsp.jsonld.context.tractusx_policy.path", resourceConfig("cx-policy-v1.jsonld"));
-        properties.put("dataspacetck.dsp.jsonld.context.tractusx_policy.uri", "https://w3id.org/tractusx/policy/v1.0.0");
+        properties.put("dataspacetck.dsp.jsonld.context.tractusx_policy.uri", "https://w3id.org/catenax/2025/9/policy/context.jsonld");
         properties.put("dataspacetck.dsp.connector.http.url", PROTOCOL_URL + "/2025-1");
         properties.put("dataspacetck.dsp.connector.http.base.url", PROTOCOL_URL);
         properties.put("dataspacetck.dsp.connector.negotiation.initiate.url", WEBHOOK_URL + "/negotiations/requests");
