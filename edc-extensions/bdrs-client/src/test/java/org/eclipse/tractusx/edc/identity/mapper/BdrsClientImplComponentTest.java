@@ -97,7 +97,7 @@ class BdrsClientImplComponentTest {
     private static final Network DOCKER_NETWORK = Network.newNetwork();
 
     @Container
-    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.4")
+    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.7")
             .withEnv("EDC_HTTP_MANAGEMENT_AUTH_KEY", "password")
             .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
