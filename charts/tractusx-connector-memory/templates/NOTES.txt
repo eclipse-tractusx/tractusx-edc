@@ -1,22 +1,30 @@
-1. Get the runtime URL by running these commands:
-{{ with index .Values.runtime.ingresses 0}}
-{{- if .enabled }}
-{{- range .paths }}
-  http{{ if .tls }}s{{ end }}://{{ .hostname }}{{ .path }}
+{{- range $.Values.runtime.ingresses }}
+  {{- if .enabled }}
+    {{- if  (has "management" .endpoints) }}
+
+Your Runtime's Management API is running here:
+    http{{ if .tls.enabled }}s{{ end }}://{{ .hostname }}{{ $.Values.runtime.endpoints.management.path }}
+
+    {{- end }}
+  {{- end }}
 {{- end }}
-{{- else if contains "NodePort" $.Values.runtime.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ $.Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "txdc.fullname" $ }}-controlplane)
-  export NODE_IP=$(kubectl get nodes --namespace {{ $.Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
+{{- if contains "NodePort" $.Values.runtime.service.type }}
+Run these commands to learn where your application is exposed via NodePort:
+    export NODE_PORT=$(kubectl get --namespace {{ $.Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "txdc.fullname" $ }}-controlplane)
+    export NODE_IP=$(kubectl get nodes --namespace {{ $.Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+    echo http://$NODE_IP:$NODE_PORT
+
 {{- else if contains "LoadBalancer" $.Values.runtime.service.type }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "txdc.fullname" . }}-controlplane'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "txdc.fullname" . }}-controlplane --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ $.Values.runtime.service.port }}
+NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "txdc.fullname" . }}-controlplane'
+    export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "txdc.fullname" . }}-controlplane --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+    echo http://$SERVICE_IP:{{ $.Values.runtime.service.port }}
+
 {{- else if contains "ClusterIP" $.Values.runtime.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ $.Release.Namespace }} -l "app.kubernetes.io/name={{ include "txdc.name" $ }}-controlplane,app.kubernetes.io/instance={{ $.Release.Name }}-controlplane" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace {{ $.Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  kubectl --namespace {{ $.Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
-  echo "Visit http://127.0.0.1:8080 to use your application"
+If no ingress is configured, you can forward the Control Plane's ClusterIP by running these commands:
+    export CONTAINER_PORT=$(kubectl get pod --namespace {{ $.Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+    kubectl --namespace {{ $.Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+    echo "Visit http://127.0.0.1:8080 to use your application"
+
 {{- end }}
-{{- end }}
+
