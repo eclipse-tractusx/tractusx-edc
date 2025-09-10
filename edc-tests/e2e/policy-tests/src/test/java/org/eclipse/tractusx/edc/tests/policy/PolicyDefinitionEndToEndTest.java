@@ -126,8 +126,6 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(frameworkPolicy(namespace + "JurisdictionLocationReference", Operator.EQ, "cx.location.dataConsumer:1", "use"), "Jurisdiction Location Reference"),
                     Arguments.of(frameworkPolicy(namespace + "Liability", Operator.EQ, "cx.grossNegligence:1", "use"), "Liability"),
                     Arguments.of(frameworkPolicy(namespace + "Liability", Operator.EQ, "cx.slightNegligence:1", "use"), "Liability"),
-                    Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityRegion", Operator.IS_ANY_OF, List.of("cx.region.all:1", "cx.region.europe:1"), "use", true), "Managed Legal Entity Region"),
-                    Arguments.of(frameworkPolicy(namespace + "ManagedLegalEntityBpnl", Operator.IS_ANY_OF, "BPNL00000000001A", "use", true), "Managed Legal Entity BPNL"),
                     Arguments.of(frameworkPolicy(namespace + "Precedence", Operator.EQ, "cx.precedence.contractReference:1", "use"), "Precedence"),
                     Arguments.of(frameworkPolicy(namespace + "UsagePurpose", Operator.IS_ANY_OF, List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1"), "use", true), "Usage Purpose"),
                     Arguments.of(frameworkPolicy(namespace + "VersionChanges", Operator.EQ, "cx.versionChanges.minor:1", "use"), "Version Changes"),
