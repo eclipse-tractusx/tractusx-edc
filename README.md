@@ -5,7 +5,7 @@
 [![Apache 2.0 License][license-shield]][license-url]
 [![Latest Release][release-shield]][release-url]
 ![Latest Snapshot][snapshot-shield]
-![fork] [fork]
+![fork][fork]
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=eclipse-tractusx_tractusx-edc&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=eclipse-tractusx_tractusx-edc)
 
