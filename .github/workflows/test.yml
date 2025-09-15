@@ -1,22 +1,33 @@
 name: test
+
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
   push:
     branches:
       - main
+
 jobs:
   test:
+    runs-on: ubuntu-latest
     steps:
-      - name: Update coiso
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update badge
         shell: bash
-        run: |-
+        run: |
           sed -i 's#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-red#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-green#g' README.md
+
       - name: Commit changes
         id: make-commit
         shell: bash
         run: |
-          git add .
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-          git commit --message "Prepare release ${{ inputs.version }}"
+          git config user.name "sfsfot"
+          git config user.email "sda@sda.org"
+          git add README.md
+          git commit --message "Prepare release ${{ inputs.version }}" || echo "No changes to commit"
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
