@@ -7,4 +7,4 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-      - run: sed -i 's#\[fork\]:https://img.shields.io/badge/latest--snapshot-error-red#\[fork\]:https://img.shields.io/badge/latest--snapshot-error-green#g' $(find . -name "README.md")
+      - run: find . -name "README.md" -print0 | xargs -0 sed -i 's#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-red#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-green#g'
