@@ -73,11 +73,11 @@ jobs:
       - name: Update README badge
         run: |          
           if [ -n "${{ needs.maven-release.result }}" ]; then
-            if [ -z "${{ inputs.dated }}" ]; then
+            if [! -z "${{ inputs.dated }}" ]; then
               ls
-              sed -i "s|^\[fork\]:.*|[fork]: monitoring-edc-loki-logs|" "README.md"
+              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|" "README.md"
             fi
           else
             ls
-            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERROR-red|" "README.md"
+            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERRORYE-red|" "README.md"
           fi
