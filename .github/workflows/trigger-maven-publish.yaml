@@ -73,11 +73,19 @@ jobs:
       - name: Update README badge
         run: |
           RESULT="${{ needs.maven-release.outputs.result }}"
+          VERSION="${{ inputs.version }}"
+          DATED="${{ inputs.dated }}"
+          ESCAPED_VERSION="${VERSION//-/--}"
+          
+          
+          echo "needs.maven-release.outputs.result = $RESULT"
+          echo "inputs.version = $VERSION"
+          echo "inputs.dated = $DATED"
+          echo "escaped_version = $ESCAPED_VERSION"
+        
           if [ "$RESULT" == "success" ]; then
-            if [ -n "${{ inputs.dated }}" ]; then
+            if [ -n "$DATED" ]; then
               ls
-              VERSION="${{ inputs.version }}"
-              ESCAPED_VERSION="${VERSION//-/--}"
               sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-green|" 'README.md'
             else
               ls
@@ -85,7 +93,7 @@ jobs:
             fi
           else
             ls
-            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERRORYE-red|" 'README.md'
+            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERROR-red|" 'README.md'
           fi
 
       - name: Commit changes
