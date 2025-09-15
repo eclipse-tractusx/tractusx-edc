@@ -67,14 +67,17 @@ jobs:
     needs: maven-release
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup-java
+
       - name: Update README badge
         run: |          
           if [ -n "${{ needs.maven-release.result }}" ]; then
             if [ -z "${{ inputs.dated }}" ]; then
-              cd "$(git rev-parse --show-toplevel)"
-              sed -i "s|^\[fork\]:.*|[fork]: monitoring-edc-loki-logs|g" "README.md"
+              ls
+              sed -i "s|^\[fork\]:.*|[fork]: monitoring-edc-loki-logs|" "README.md"
             fi
           else
-            cd "$(git rev-parse --show-toplevel)"
-            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERROR-red|g" "README.md"
+            ls
+            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERROR-red|" "README.md"
           fi
