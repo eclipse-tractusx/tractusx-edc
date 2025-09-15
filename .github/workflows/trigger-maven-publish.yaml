@@ -53,14 +53,14 @@ jobs:
 
       - run: |
           echo "Input Version: ${{ inputs.version }}"
-
+      
           # set the input version in gradle.properties, if passed
-          if [ ! -z ${{ inputs.version }} ];
-          then
-            sed -i 's#^version=.*#version='"${{ inputs.version }}"'#g' $(find . -name "gradle.properties")
-            VERSION=${{ inputs.version }}
+          if [ -z "${{ inputs.version }}" ]; then
+          sed -i 's#^version=.*#version=${{ inputs.version }}#g' $(find . -name "gradle.properties")
+          VERSION="${{ inputs.version }}"
           fi
-          grep version gradle.properties | (echo -n "Publishing using " && cat)
+      
+          grep version gradle.properties | (echo -n "Publishing using " && cat))
 
   update-snapshot-badge:
     name: 'Update Snapshot badge in README.md'
@@ -71,7 +71,7 @@ jobs:
         then
           if[-z ${{ inputs.dated }}]; 
           then
-            sed -i '' "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot${{ inputs.version }}-green|" 'README.md'               
+            sed -i '' "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|" 'README.md'               
           fi
         else
           sed -i '' "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERROR-red|" 'README.md'
