@@ -38,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
+      DATED: ${{ steps.get-version.outputs.DATED }}
     steps:
       - uses: actions/checkout@v5
       - name: "Get version"

@@ -73,7 +73,7 @@ jobs:
       - name: Update README badge
         run: |          
           if [ -n "${{ needs.maven-release.result }}" ]; then
-            if [! -z "${{ inputs.dated }}" ]; then
+            if [ -z "${{ inputs.dated }}" ]; then
               ls
               sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|" "README.md"
             fi
@@ -81,3 +81,13 @@ jobs:
             ls
             sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-ERRORYE-red|" "README.md"
           fi
+
+      - name: Commit changes
+        id: make-commit
+        shell: bash
+        run: |
+          git add .
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+          git commit --message "bla"
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
