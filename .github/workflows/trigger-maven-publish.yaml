@@ -67,9 +67,7 @@ jobs:
     needs: maven-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-java
-
+      - uses: actions/checkout@v5
       - name: Update README badge
         run: |          
           if [ -n "${{ needs.maven-release.result }}" ]; then
