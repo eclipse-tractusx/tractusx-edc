@@ -20,7 +20,7 @@ jobs:
       - name: Update badge
         shell: bash
         run: |
-          sed -i 's#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-red#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-green#g' README.md
+          sed -i 's#\[fork\]:https://img.shields.io/badge/latest--snapshot-error-red#\[fork\]:https://img.shields.io/badge/latest--snapshot-error-green#g' README.md
 
       - name: Commit changes
         id: make-commit
@@ -29,5 +29,5 @@ jobs:
           git config user.name "sfsfot"
           git config user.email "sda@sda.org"
           git add README.md
-          git commit --message "Prepare release ${{ inputs.version }}" || echo "No changes to commit"
+          git commit --message "Prepare release " || echo "No changes to commit"
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
