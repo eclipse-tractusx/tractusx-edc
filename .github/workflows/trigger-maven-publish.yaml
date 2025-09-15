@@ -46,7 +46,7 @@ jobs:
     name: 'Publish all artefacts to MavenCentral'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
@@ -65,6 +65,8 @@ jobs:
   update-snapshot-badge:
     name: 'Update Snapshot badge in README.md'
     needs: maven-release
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
