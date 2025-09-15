@@ -71,9 +71,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Update README badge
-        run: |          
-          if [ -n "${{ needs.maven-release.result }}" ]; then
-            if [ -z "${{ inputs.dated }}" ]; then
+        run: |
+          RESULT="${{ needs.maven-release.outputs.result }}"
+          if [ "$RESULT" == "success" ]; then
+            if [ -n "${{ inputs.dated }}" ]; then
               ls
               VERSION="${{ inputs.version }}"
               ESCAPED_VERSION="${VERSION//-/--}"
