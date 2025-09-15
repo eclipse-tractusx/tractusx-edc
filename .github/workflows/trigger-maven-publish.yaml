@@ -76,9 +76,9 @@ jobs:
             # check if inputs.dated is empty
             if [ -z "${{ inputs.dated }}" ]; then
               # On ubuntu (GNU sed) use -i with no empty-suffix
-              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|" "./README.md"
-              sed -i '' "s|^\[fork\]:.*|[fork]: monitoring-edc-loki-logs|g" $(find . -name "README.md")
-              sed -i '' "s|^\[fork\]:.*|[fork]: monitoring-edc-loki-logs|g" $(find . -name "README.md")
+#              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|" "./README.md"
+              sed -i '' "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|g" $(find . -name "README.md")
+              sed -i '' "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|g" $(find . -name "README.md")
 
 
             fi
