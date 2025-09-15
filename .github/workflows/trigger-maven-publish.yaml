@@ -28,12 +28,18 @@ on:
       version:
         required: false
         description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+      dated:
+        type: string
+        required: false
   workflow_call:
     inputs:
       version:
         type: string
         required: false
         description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+      dated:
+        type: string
+        required: false
 
 jobs:
   maven-release:
@@ -63,3 +69,21 @@ jobs:
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           username: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
           password: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+
+  update-snapshot-badge:
+    name: 'Update Snapshot badge in README.md'
+    needs: maven-release
+    runs-on: ubuntu-latest
+      - run: |
+        if [${{ needs.maven-release.result }}]
+        then
+          if[-z ${{ inputs.dated }}]; 
+          then
+            sed -i 's/'['fork']'':''/'['fork']'':''/'#g' $(find . -name "README.md")
+            [fork]: https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green               
+          else
+            sed -i 's#'['fork']''':' https://img.shields.io/badge/latest--snapshot-error-red#'['fork']''':' https://img.shields.io/badge/latest--snapshot-error-green#g' $(find . -name "README.md")               
+          fi
+        else
+          sed -i 's#'['fork']''':' https://img.shields.io/badge/latest--snapshot-error-red#'['fork']''':' https://img.shields.io/badge/latest--snapshot-error-green#g' $(find . -name "README.md")
+        fi

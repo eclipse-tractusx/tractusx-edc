@@ -4,6 +4,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Apache 2.0 License][license-shield]][license-url]
 [![Latest Release][release-shield]][release-url]
+![Latest Snapshot][snapshot-shield]
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=eclipse-tractusx_tractusx-edc&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=eclipse-tractusx_tractusx-edc)
 
@@ -83,3 +84,7 @@ See [LICENSE](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE
 [release-shield]: https://img.shields.io/github/v/release/eclipse-tractusx/tractusx-edc.svg?style=for-the-badge
 
 [release-url]: https://github.com/eclipse-tractusx/tractusx-edc/releases
+
+[snapshot-shield]: https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Feclipse-tractusx%2Ftractusx-edc%2Fmain%2Fgradle.properties&search=%5Eversion%3D%28.*%29%24&replace=%241&flags=m&label=latest-snapshot&style=for-the-badge
+
+[fork]: https://img.shields.io/badge/latest--snapshot-error-red
