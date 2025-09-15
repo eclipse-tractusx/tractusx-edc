@@ -19,7 +19,7 @@ jobs:
       - name: Update badge
         shell: bash
         run: |
-          sed -i 's/\[fork\]:https://img.shields.io/badge/latest--snapshot-error-red/\[fork\]:https://img.shields.io/badge/latest--snapshot-error-green/g' $(find . -name "README.md")
+          sed -i 's/\[fork.*/\[fork\]:https://img.shields.io/badge/latest--snapshot-error-green/g' $(find . -name "README.md")
       - name: Commit changes
         id: make-commit
         shell: bash
