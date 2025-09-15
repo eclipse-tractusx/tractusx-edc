@@ -62,7 +62,6 @@ jobs:
       - name: "Get version"
         id: get-version
         run: |
-          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}')          
           echo "VERSION=0.12.0.20250815-SNAPSHOT" >> "$GITHUB_OUTPUT"
           echo "DATED=true" >> "$GITHUB_OUTPUT"
 
