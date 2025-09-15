@@ -33,25 +33,6 @@ on:
     branches:
       - main
 jobs:
-  secret-presence:
-    runs-on: ubuntu-latest
-    outputs:
-      DOCKER_HUB_TOKEN: ${{ steps.secret-presence.outputs.DOCKER_HUB_TOKEN }}
-      HAS_MVNCRED: ${{ steps.secret-presence.outputs.HAS_MVNCRED }}
-      HAS_SWAGGER: ${{ steps.secret-presence.outputs.HAS_SWAGGER }}
-    steps:
-      - name: Check whether secrets exist
-        id: secret-presence
-        run: |
-          [ ! -z "${{ secrets.DOCKER_HUB_TOKEN }}" ] && echo "DOCKER_HUB_TOKEN=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] &&
-          [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] &&
-          [ ! -z "${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}" ] &&
-          [ ! -z "${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}" ]  && echo "HAS_MVNCRED=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.SWAGGERHUB_API_KEY }}" ]  &&
-          [ ! -z "${{ secrets.SWAGGERHUB_USER }}" ]  && echo "HAS_SWAGGER=true" >> $GITHUB_OUTPUT
-          exit 0
-
   determine-version:
     name: "Determine snapshot version to be published"
     runs-on: ubuntu-latest
@@ -69,9 +50,7 @@ jobs:
     name: "Publish artefacts to OSSRH Snapshots / MavenCentral"
     permissions:
       contents: read
-    needs: [ secret-presence, determine-version ]
-    if: |
-      needs.secret-presence.outputs.HAS_MVNCRED
+    needs: [ determine-version ]
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets: inherit
     with:
