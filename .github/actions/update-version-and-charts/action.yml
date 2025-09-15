@@ -63,7 +63,8 @@ runs:
       shell: bash
       run: |
         git add .
-        git config user.name "eclipse-tractusx-bot"
-        git config user.email "tractusx-bot@eclipse.org"
+        git config user.name "@bot"
+        git config user.email "@.org"
         git commit --message "Prepare release ${{ inputs.version }}"
-        echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT || echo "No changes to commit"
+        git push origin HEAD
