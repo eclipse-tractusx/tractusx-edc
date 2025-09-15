@@ -7,4 +7,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-      - run: find . -name "README.md" -print0 | xargs -0 sed -i 's#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-red#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-green#g'
+    run: |
+      git config --global user.name "github-actions[bot]"
+      git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      sed -i 's#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-red#\[fork\]: https://img.shields.io/badge/latest--snapshot-error-green#g' README.md
+      git add README.md
+      git commit -m "Update fork badge from red to green" || echo "No changes to commit"
+      git push
