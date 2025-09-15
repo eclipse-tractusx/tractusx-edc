@@ -83,6 +83,7 @@ jobs:
           
           if [[ "${{ github.event.workflow_run.event }}" == "schedule" || "${{ inputs.dated_snapshot }}" == "true" ]]; then
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT" >> "$GITHUB_OUTPUT"
+            echo "DATED=true" >> "$GITHUB_OUTPUT"
           else
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-SNAPSHOT" >> "$GITHUB_OUTPUT"
           fi
@@ -111,6 +112,7 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.determine-version.outputs.VERSION }}
+      dated: ${{ needs.determine-version.outputs.DATED }}
 
   publish-openapi-to-gh-pages:
     name: "Publish OpenAPI UI spec GitHub Pages"
