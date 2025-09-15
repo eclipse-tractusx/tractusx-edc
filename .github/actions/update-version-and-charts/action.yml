@@ -67,4 +67,3 @@ runs:
         git config user.email "@.org"
         git commit --message "Prepare release ${{ inputs.version }}"
         echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT || echo "No changes to commit"
-        git push origin HEAD
