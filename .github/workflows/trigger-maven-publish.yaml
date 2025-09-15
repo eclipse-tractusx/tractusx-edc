@@ -75,7 +75,9 @@ jobs:
           if [ -n "${{ needs.maven-release.result }}" ]; then
             if [ -z "${{ inputs.dated }}" ]; then
               ls
-              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|" 'README.md'
+              VERSION="${{ inputs.version }}"
+              ESCAPED_VERSION="${VERSION//-/--}"
+              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-green|" 'README.md'
             else
               ls
               sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-${{ inputs.version }}-green|" 'README.md'
