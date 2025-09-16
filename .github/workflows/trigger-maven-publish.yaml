@@ -76,6 +76,8 @@ jobs:
             git commit --message "bla"
             git push origin HEAD
           fi
+      - name: Try to fail
+        run: exit 1
 
   update-snapshot-badge:
     name: 'Update Snapshot badge in README.md'
