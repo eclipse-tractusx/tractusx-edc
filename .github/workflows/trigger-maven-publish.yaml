@@ -97,6 +97,10 @@ jobs:
           git add .
           git config user.name "Bruno Nogueira"
           git config user.email "7brunon@gmail.com"
-          git commit --message "bla"
-          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-          git push origin HEAD || echo "Not a versioned Sanpshot"
+          if git diff --cached --quiet; then
+            echo "Not a versioned Sanpshot"
+          else
+            echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+            git commit --message "bla"
+            git push origin HEAD
+          fi
