@@ -100,7 +100,7 @@ jobs:
 
           if [ "$RESULT" == "success" ]; then
             if [ -n "$DATED" ]; then
-              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-dark-green?style=for-the-badge|" 'README.md'
+              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-dark--green?style=for-the-badge|" 'README.md'
             fi
           else
             sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-UploadError-red?style=for-the-badge|" 'README.md'
