@@ -45,8 +45,7 @@ jobs:
         id: get-version
         run: |
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}')          
-          echo "VERSION=7.7.7.20770707-SNAPSHOT" >> "$GITHUB_OUTPUT"
-          echo "DATED=true" >> "$GITHUB_OUTPUT"
+          echo "VERSION=7.7.7.77777777-SNAPSHOT" >> "$GITHUB_OUTPUT"
 
   publish-maven-artifacts:
     name: "Publish artefacts to OSSRH Snapshots / MavenCentral"
