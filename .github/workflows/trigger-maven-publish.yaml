@@ -99,7 +99,7 @@ jobs:
           echo "inputs.dated = $DATED"
           echo "escaped_version = $ESCAPED_VERSION"
         
-          if [ "$RESULT" == "success" ]; then
+          if [ always() && ("$RESULT" == "success") ]; then
             if [ -n "$DATED" ]; then
               sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-green|" 'README.md'
             fi
