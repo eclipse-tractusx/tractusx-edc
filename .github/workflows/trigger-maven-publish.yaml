@@ -81,6 +81,7 @@ jobs:
 
   update-snapshot-badge:
     name: 'Update Snapshot badge in README.md'
+    if: always()
     needs: maven-release
     permissions:
       contents: write
@@ -99,7 +100,7 @@ jobs:
           echo "inputs.dated = $DATED"
           echo "escaped_version = $ESCAPED_VERSION"
         
-          if [ always() && ("$RESULT" == "success") ]; then
+          if [ "$RESULT" == "success" ]; then
             if [ -n "$DATED" ]; then
               sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-green|" 'README.md'
             fi
