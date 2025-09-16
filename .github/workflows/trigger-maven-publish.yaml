@@ -99,4 +99,4 @@ jobs:
           git config user.email "7brunon@gmail.com"
           git commit --message "bla"
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-          git push origin HEAD
+          git push origin HEAD || echo "Not a versioned Sanpshot"
