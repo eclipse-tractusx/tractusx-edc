@@ -31,6 +31,7 @@ on:
       dated:
         type: string
         required: false
+        description: 'notEmpty if is a versioned snapshot'
   workflow_call:
     inputs:
       version:
@@ -40,13 +41,14 @@ on:
       dated:
         type: string
         required: false
+        description: 'notEmpty if is a versioned snapshot'
 
 jobs:
   maven-release:
     name: 'Publish all artefacts to MavenCentral'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
@@ -62,22 +64,18 @@ jobs:
           fi
           grep version gradle.properties | (echo -n "Publishing using " && cat)
 
+#      - name: Try to fail
+#        run: exit 1
+
       - name: Commit changes
         id: make-commit
         shell: bash
         run: |
           git add .
-          git config user.name "Bruno Nogueira"
-          git config user.email "7brunon@gmail.com"
-          if git diff --cached --quiet; then
-            echo "Same Sanpshot"
-          else
-            echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-            git commit --message "bla"
-            git push origin HEAD
-          fi
-      - name: Try to fail
-        run: exit 1
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+          git commit --message "Update snapshot badge"
+          git push origin HEAD
 
   update-snapshot-badge:
     name: 'Update Snapshot badge in README.md'
@@ -94,31 +92,20 @@ jobs:
           VERSION="${{ inputs.version }}"
           DATED="${{ inputs.dated }}"
           ESCAPED_VERSION="${VERSION//-/--}"
-          
-          echo "needs.maven-release.outputs.result = $RESULT"
-          echo "inputs.version = $VERSION"
-          echo "inputs.dated = $DATED"
-          echo "escaped_version = $ESCAPED_VERSION"
-        
+
           if [ "$RESULT" == "success" ]; then
             if [ -n "$DATED" ]; then
-              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-green|" 'README.md'
+              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-dark-green?style=for-the-badge|" 'README.md'
             fi
           else
-            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-UploadError-red|" 'README.md'
+            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-UploadError-red?style=for-the-badge|" 'README.md'
           fi
-
       - name: Commit changes
         id: make-commit
         shell: bash
         run: |
           git add .
-          git config user.name "Bruno Nogueira"
-          git config user.email "7brunon@gmail.com"
-          if git diff --cached --quiet; then
-            echo "Not a versioned Sanpshot"
-          else
-            echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-            git commit --message "bla"
-            git push origin HEAD
-          fi
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+          git commit --message "Update snapshot badge"
+          git push origin HEAD
