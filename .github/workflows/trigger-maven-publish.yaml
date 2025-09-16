@@ -72,8 +72,8 @@ jobs:
         shell: bash
         run: |
           git add .
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
+          git config user.name "Bruno Nogueira"
+          git config user.email "7brunon@gmail.com"
           git commit --message "Update snapshot badge"
           git push origin HEAD
 
@@ -105,7 +105,7 @@ jobs:
         shell: bash
         run: |
           git add .
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
+          git config user.name "Bruno Nogueira"
+          git config user.email "7brunon@gmail.com"
           git commit --message "Update snapshot badge"
           git push origin HEAD
