@@ -98,13 +98,10 @@ jobs:
           DATED="${{ inputs.dated }}"
           ESCAPED_VERSION="${VERSION//-/--}"
 
-          if [ "$RESULT" == "success" ]; then
-            if [ -n "$DATED" ]; then
-              sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-dark--green?style=for-the-badge|" 'README.md'
-            fi
-          else
-            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-UploadError-red?style=for-the-badge|" 'README.md'
+          if [ ("$RESULT" == "success") && (-n "$DATED") ]; then
+            sed -i "s|^\[fork\]:.*|[fork]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-dark--green?style=for-the-badge|" 'README.md'
           fi
+
       - name: Commit changes
         id: commit-update-snapshot-badge
         shell: bash
