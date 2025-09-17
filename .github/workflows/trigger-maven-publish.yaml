@@ -64,8 +64,8 @@ jobs:
           fi
           grep version gradle.properties | (echo -n "Publishing using " && cat)
 
-      - name: Try to fail
-        run: exit 1
+#      - name: Try to fail
+#        run: exit 1
 
       - name: Commit changes
         id: commit-update-gradleproperties
