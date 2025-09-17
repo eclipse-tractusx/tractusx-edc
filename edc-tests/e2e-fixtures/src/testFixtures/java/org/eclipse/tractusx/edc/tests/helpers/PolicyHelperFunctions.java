@@ -52,7 +52,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 public class PolicyHelperFunctions {
 
-    private static final String ODRL_JSONLD = "http://www.w3.org/ns/odrl.jsonld";
+    private static final String ODRL_JSONLD = "https://w3id.org/catenax/2025/9/policy/odrl.jsonld";
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
 
     public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = CX_POLICY_NS + BUSINESS_PARTNER_EVALUATION_KEY;
