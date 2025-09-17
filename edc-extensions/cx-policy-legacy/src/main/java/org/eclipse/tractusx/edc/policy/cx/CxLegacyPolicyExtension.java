@@ -58,7 +58,7 @@ import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFun
 @Extension(CxLegacyPolicyExtension.NAME)
 public class CxLegacyPolicyExtension implements ServiceExtension {
 
-    public static final String NAME = "CX Policy";
+    public static final String NAME = "CX Legacy Policy";
     private static final Set<String> RULE_SCOPES = Set.of(CATALOG_REQUEST_SCOPE, NEGOTIATION_REQUEST_SCOPE,
             TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
 
@@ -87,7 +87,8 @@ public class CxLegacyPolicyExtension implements ServiceExtension {
 
     public static void registerBindings(RuleBindingRegistry registry) {
         registry.dynamicBind(s -> {
-            if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL).anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
+            if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL)
+                    .anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
                 return RULE_SCOPES;
             }
             return Set.of();
