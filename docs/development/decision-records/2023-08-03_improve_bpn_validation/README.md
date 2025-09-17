@@ -25,7 +25,7 @@ VerifiableCredentials (the BPN would be a claim, however). A new policy constrai
 ```json
 {
   "constraint": {
-    "leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
+    "leftOperand": "https://w3id.org/catenax/2025/9/policy/BusinessPartnerGroup",
     "operator": "isAnyOf",
     "rightOperand": [
       "gold_customer",

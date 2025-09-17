@@ -53,7 +53,7 @@ import static org.eclipse.tractusx.edc.validation.businesspartner.functions.Busi
  * <pre>
  * {
  *     "constraint": {
- *         "leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
+ *         "leftOperand": "https://w3id.org/catenax/2025/9/policy/BusinessPartnerGroup",
  *         "operator": "isAnyOf",
  *         "rightOperand": ["gold_customer","platin_partner"]
  *     }
