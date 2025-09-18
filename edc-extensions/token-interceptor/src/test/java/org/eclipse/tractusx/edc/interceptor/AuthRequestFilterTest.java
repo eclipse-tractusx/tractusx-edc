@@ -52,9 +52,9 @@ class AuthRequestFilterTest {
     }
 
     @Test
-    void filter_whenProtocolPathAndNonBearerToken_shouldAddBearerPrefix() {
+    void filter_whenNonBearerToken_shouldAddBearerPrefix() {
         headers.add(HttpHeaders.AUTHORIZATION, "token123");
-        when(uriInfo.getBaseUri()).thenReturn(URI.create("http://example.com/protocol/test"));
+        when(uriInfo.getRequestUri()).thenReturn(URI.create("http://example.com/protocol/test"));
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn("token123");
 
         filter.filter(requestContext);
@@ -64,9 +64,9 @@ class AuthRequestFilterTest {
     }
 
     @Test
-    void filter_whenProtocolPathAndBearerToken_shouldNotModifyHeader() {
+    void filter_whenBearerToken_shouldNotModifyHeader() {
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer token123");
-        when(uriInfo.getBaseUri()).thenReturn(URI.create("http://example.com/protocol/test"));
+        when(uriInfo.getRequestUri()).thenReturn(URI.create("http://example.com/protocol/test"));
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer token123");
 
         filter.filter(requestContext);
@@ -77,7 +77,7 @@ class AuthRequestFilterTest {
 
     @Test
     void filter_whenNoAuthHeader_shouldNotModifyHeaders() {
-        when(uriInfo.getBaseUri()).thenReturn(URI.create("http://example.com/protocol/test"));
+        when(uriInfo.getRequestUri()).thenReturn(URI.create("http://example.com/protocol/test"));
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(null);
 
         filter.filter(requestContext);
@@ -86,21 +86,9 @@ class AuthRequestFilterTest {
     }
 
     @Test
-    void filter_whenNonProtocolPath_shouldNotModifyHeaders() {
-        headers.add(HttpHeaders.AUTHORIZATION, "token123");
-        when(uriInfo.getBaseUri()).thenReturn(URI.create("http://example.com/api/test"));
-        when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn("token123");
-
-        filter.filter(requestContext);
-
-        verify(requestContext, never()).getHeaders();
-        assert headers.get(HttpHeaders.AUTHORIZATION).equals(List.of("token123"));
-    }
-
-    @Test
     void filter_when2025VersionPath_shouldNotModifyHeaders() {
         headers.add(HttpHeaders.AUTHORIZATION, "token123");
-        when(uriInfo.getBaseUri()).thenReturn(URI.create("http://example.com/protocol" + V_2025_1_PATH + "/test"));
+        when(uriInfo.getRequestUri()).thenReturn(URI.create("http://example.com/protocol" + V_2025_1_PATH + "/test"));
         when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn("token123");
 
         filter.filter(requestContext);

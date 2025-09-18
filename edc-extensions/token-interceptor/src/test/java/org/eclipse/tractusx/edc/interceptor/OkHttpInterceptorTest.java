@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_PATH;
 import static org.mockito.ArgumentMatchers.same;
@@ -52,7 +53,7 @@ class OkHttpInterceptorTest {
     }
 
     @Test
-    void filter_whenProtocolPathAndNonBearerToken_shouldNotModifyRequest() throws IOException {
+    void filter_whenNonBearerToken_shouldNotModifyRequest() throws IOException {
         var request = requestBuilder
                 .url("http://example.com/protocol/test")
                 .header(HttpHeaders.AUTHORIZATION, "Basic token123")
@@ -65,7 +66,7 @@ class OkHttpInterceptorTest {
     }
 
     @Test
-    void filter_whenProtocolPathAndBearerToken_shouldStripBearerPrefix() throws IOException {
+    void filter_whenBearerToken_shouldStripBearerPrefix() throws IOException {
         var request = requestBuilder
                 .url("http://example.com/protocol/test")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
@@ -92,15 +93,43 @@ class OkHttpInterceptorTest {
     }
 
     @Test
-    void filter_whenNonProtocolPath_shouldNotModifyRequest() throws IOException {
+    void filter_whenSkipedPath_shouldNotModifyRequest() throws IOException {
+        final List<String> skipPath = java.util.List.of(
+                "/sts/token",
+                "/dataflows/check",
+                "/presentations/query",
+                "/did.json");
+
         var request = requestBuilder
-                .url("http://example.com/api/test")
+                .url("http://example.com/api/test" + skipPath.get(0))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
                 .build();
         when(chain.request()).thenReturn(request);
-
         interceptor.intercept(chain);
+        verify(chain).proceed(same(request));
 
+        request = requestBuilder
+                .url("http://example.com/api/test" + skipPath.get(1))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
+                .build();
+        when(chain.request()).thenReturn(request);
+        interceptor.intercept(chain);
+        verify(chain).proceed(same(request));
+
+        request = requestBuilder
+                .url("http://example.com/api/test" + skipPath.get(2))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
+                .build();
+        when(chain.request()).thenReturn(request);
+        interceptor.intercept(chain);
+        verify(chain).proceed(same(request));
+
+        request = requestBuilder
+                .url("http://example.com/api/test" + skipPath.get(3))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
+                .build();
+        when(chain.request()).thenReturn(request);
+        interceptor.intercept(chain);
         verify(chain).proceed(same(request));
     }
 

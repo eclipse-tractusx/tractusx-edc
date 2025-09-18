@@ -36,7 +36,8 @@ public class OkHttpInterceptor implements Interceptor {
     private static final List<String> SKIP_PATHS = List.of(
             "/sts/token",
             "/dataflows/check",
-            "/presentations/query");
+            "/presentations/query",
+            "/did.json");
 
     @Override
     public @NotNull Response intercept(Chain chain) throws IOException {
