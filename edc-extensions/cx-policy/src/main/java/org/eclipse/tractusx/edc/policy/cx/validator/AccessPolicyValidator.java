@@ -45,6 +45,10 @@ public class AccessPolicyValidator implements Validator<JsonObject> {
 
     @Override
     public ValidationResult validate(JsonObject input) {
+        if (LegacyPolicyCheck.isLegacy(input)) {
+            return ValidationResult.success();
+        }
+        
         return JsonObjectValidator.newValidator()
                 .verifyArrayItem(ODRL_PERMISSION_ATTRIBUTE, AccessPermissionValidator::instance)
                 .verify(ODRL_OBLIGATION_ATTRIBUTE, ArrayIsEmpty::new)

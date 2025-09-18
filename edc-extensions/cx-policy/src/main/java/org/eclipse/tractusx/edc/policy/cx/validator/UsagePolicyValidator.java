@@ -62,6 +62,10 @@ public class UsagePolicyValidator implements Validator<JsonObject> {
 
     @Override
     public ValidationResult validate(JsonObject input) {
+        if (LegacyPolicyCheck.isLegacy(input)) {
+            return ValidationResult.success();
+        }
+        
         return JsonObjectValidator.newValidator()
                 .verify(AtLeastOneRuleExists::new)
                 .verifyArrayItem(ODRL_PERMISSION_ATTRIBUTE, builder ->
