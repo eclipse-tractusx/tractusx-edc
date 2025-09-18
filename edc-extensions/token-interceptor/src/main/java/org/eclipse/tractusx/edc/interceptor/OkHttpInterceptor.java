@@ -33,18 +33,18 @@ import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_PA
 public class OkHttpInterceptor implements Interceptor {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final List<String> SKIP_PATHS = List.of(
-            "/sts/token",
-            "/dataflows/check",
-            "/presentations/query",
-            "/did.json");
+    private final List<String> skipPaths;
+
+    public OkHttpInterceptor(List<String> skipPaths) {
+        this.skipPaths = skipPaths;
+    }
 
     @Override
     public @NotNull Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
         String url = originalRequest.url().toString();
 
-        if (SKIP_PATHS.stream().noneMatch(url::contains) && !url.contains(V_2025_1_PATH)) {
+        if (skipPaths.stream().noneMatch(url::contains) && !url.contains(V_2025_1_PATH)) {
             String authHeader = originalRequest.header(HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
                 String strippedAuth = authHeader.substring(BEARER_PREFIX.length()).trim();

@@ -26,6 +26,10 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.edc.spi.web)
     implementation(libs.dsp.spi.v2025)
+    implementation(libs.edc.identity.trust.core)
+    implementation(libs.edc.identity.trust.sts.remote.lib)
+    implementation(project(":edc-extensions:bdrs-client"))
+    implementation(project(":core:core-utils"))
 
     testImplementation(libs.edc.junit)
 }

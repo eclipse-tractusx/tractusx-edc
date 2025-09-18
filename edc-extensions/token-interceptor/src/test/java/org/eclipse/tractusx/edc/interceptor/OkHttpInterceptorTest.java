@@ -47,7 +47,13 @@ class OkHttpInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        interceptor = new OkHttpInterceptor();
+        List<String> skipPaths = List.of(
+                "/sts/token",
+                "/dataflows/check",
+                "/presentations/query",
+                "/did.json");
+
+        interceptor = new OkHttpInterceptor(skipPaths);
         requestBuilder = new Request.Builder().url("http://example.com");
         when(chain.proceed(any())).thenReturn(response);
     }
