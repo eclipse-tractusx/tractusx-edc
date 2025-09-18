@@ -17,6 +17,7 @@ jakarta-json = "2.0.1"
 junit = "1.13.4"
 nimbus = "10.5"
 netty-mockserver = "5.15.0"
+okhttp = "5.1.0"
 opentelemetry = "2.20.0"
 opentelemetry-instrumentation = "2.19.0"
 opentelemetry-log4j-appender = "2.20.0-alpha"
@@ -204,6 +205,7 @@ jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakar
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
 opentelemetry-instrumentation-annotations = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations", version.ref = "opentelemetry-instrumentation" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }

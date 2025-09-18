@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.eclipse.edc.spi.result.Result.failure;
 
 /**
  * An {@link IdentityService} that will inject the BPN claim in every token.
@@ -68,9 +69,15 @@ public class MockVcIdentityService implements IdentityService {
     
     @Override
     public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, VerificationContext verificationContext) {
-        var token = typeManager.readValue(tokenRepresentation.getToken(), Map.class);
-        if (token.containsKey(VC_CLAIM)) {
-            var credentials = typeManager.getMapper().convertValue(token.get(VC_CLAIM), new TypeReference<List<VerifiableCredential>>(){});
+        var token = tokenRepresentation.getToken();
+        if (!token.startsWith("Bearer ")) {
+            return failure("Token is not a Bearer token");
+        }
+        token = token.replace("Bearer ", "");
+
+        var tokenParsed = typeManager.readValue(token, Map.class);
+        if (tokenParsed.containsKey(VC_CLAIM)) {
+            var credentials = typeManager.getMapper().convertValue(tokenParsed.get(VC_CLAIM), new TypeReference<List<VerifiableCredential>>(){});
             var claimToken = ClaimToken.Builder.newInstance()
                     .claim(VC_CLAIM, credentials)
                     .build();
