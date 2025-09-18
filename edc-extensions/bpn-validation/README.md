@@ -46,7 +46,7 @@ The following example demonstrates a full JSON-LD structure in expanded form, co
 {
   "@type": "https://w3id.org/edc/v0.0.1/ns/PolicyDefinitionDto",
   "https://w3id.org/edc/v0.0.1/ns/policy": {
-    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "@context": "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
     "permission": {
       "action": "USE",
       "constraint": {
@@ -92,7 +92,7 @@ the policy. Here, only the ODRL `eq"` operator is supported, and the `rightOpera
 {
   "@type": "https://w3id.org/edc/v0.0.1/ns/PolicyDefinitionDto",
   "https://w3id.org/edc/v0.0.1/ns/policy": {
-    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "@context": "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
     "permission": [
       {
         "action": "USE",
@@ -124,7 +124,7 @@ In case multiple BPNs are to be white-listed, the policy would contain multiple 
 {
   "@type": "https://w3id.org/edc/v0.0.1/ns/PolicyDefinitionDto",
   "https://w3id.org/edc/v0.0.1/ns/policy": {
-    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "@context": "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
     "permission": [
       {
         "action": "USE",

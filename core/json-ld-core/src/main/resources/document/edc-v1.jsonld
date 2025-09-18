@@ -13,7 +13,7 @@
       "@id": "edc:policy",
       "@type": "@id",
       "@context": [
-        "http://www.w3.org/ns/odrl.jsonld"
+        "https://w3id.org/catenax/2025/9/policy/odrl.jsonld"
       ]
     },
     "createdAt": "edc:createdAt",
