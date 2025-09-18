@@ -1,0 +1,9 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "BusinessPartnerNumber": "tx:BusinessPartnerNumber",
+    "BusinessPartnerGroup": "tx:BusinessPartnerGroup"
+  }
+}
