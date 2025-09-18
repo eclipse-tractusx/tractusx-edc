@@ -28,10 +28,10 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.policy.cx.legacy.contractreference.ContractReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.legacy.dismantler.DismantlerCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.legacy.framework.FrameworkAgreementCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.legacy.membership.MembershipCredentialConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.legacy.contractreference.ContractReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.legacy.usage.UsagePurposeConstraintFunction;
 
 import java.util.Set;
