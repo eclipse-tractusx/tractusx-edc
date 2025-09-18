@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx;
+package org.eclipse.tractusx.edc.policy.cx.legacy;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
@@ -28,28 +28,25 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.legacy.dismantler.DismantlerCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.legacy.framework.FrameworkAgreementCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.legacy.membership.MembershipCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.legacy.contractreference.ContractReferenceConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.legacy.usage.UsagePurposeConstraintFunction;
 
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_REQUEST_SCOPE;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.CATALOG_SCOPE;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_REQUEST_SCOPE;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.NEGOTIATION_SCOPE;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
-import static org.eclipse.tractusx.edc.policy.cx.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
-import static org.eclipse.tractusx.edc.policy.cx.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
-import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.common.PolicyScopes.CATALOG_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.common.PolicyScopes.CATALOG_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.common.PolicyScopes.NEGOTIATION_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.common.PolicyScopes.NEGOTIATION_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.common.PolicyScopes.TRANSFER_PROCESS_REQUEST_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.common.PolicyScopes.TRANSFER_PROCESS_SCOPE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.contractreference.ContractReferenceConstraintFunction.CONTRACT_REFERENCE;
+import static org.eclipse.tractusx.edc.policy.cx.legacy.usage.UsagePurposeConstraintFunction.USAGE_PURPOSE;
 
 
 /**
@@ -87,7 +84,7 @@ public class CxLegacyPolicyExtension implements ServiceExtension {
 
     public static void registerBindings(RuleBindingRegistry registry) {
         registry.dynamicBind(s -> {
-            if (Stream.of(FRAMEWORK_AGREEMENT_LITERAL, DISMANTLER_LITERAL, MEMBERSHIP_LITERAL)
+            if (Stream.of(FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL, DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL, MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL)
                     .anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
                 return RULE_SCOPES;
             }

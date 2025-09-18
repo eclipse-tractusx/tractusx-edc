@@ -17,12 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.legacy.contractreference;
 
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.tractusx.edc.policy.cx.legacy.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

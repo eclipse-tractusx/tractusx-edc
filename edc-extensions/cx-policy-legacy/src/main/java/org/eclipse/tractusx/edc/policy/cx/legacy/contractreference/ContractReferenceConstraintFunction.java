@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.contractreference;
+package org.eclipse.tractusx.edc.policy.cx.legacy.contractreference;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;

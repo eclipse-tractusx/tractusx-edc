@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.membership;
+package org.eclipse.tractusx.edc.policy.cx.legacy.membership;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
@@ -26,7 +26,7 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
-import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.legacy.common.AbstractDynamicCredentialConstraintFunction;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;

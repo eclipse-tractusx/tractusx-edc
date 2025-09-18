@@ -17,5 +17,5 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.policy.cx.CxLegacyPolicyExtension
+org.eclipse.tractusx.edc.policy.cx.legacy.CxLegacyPolicyExtension
 

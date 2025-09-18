@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx;
+package org.eclipse.tractusx.edc.policy.cx.legacy;
 
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;

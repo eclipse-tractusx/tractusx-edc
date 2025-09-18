@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.common;
+package org.eclipse.tractusx.edc.policy.cx.legacy.common;
 
 /**
  * Defines standard EDC policy scopes.
