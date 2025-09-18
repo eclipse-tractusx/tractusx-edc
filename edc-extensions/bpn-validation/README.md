@@ -54,7 +54,7 @@ The following example demonstrates a full JSON-LD structure in expanded form, co
         "or": [
           {
             "@type": "http://www.w3.org/ns/odrl/2/Constraint",
-            "leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
+            "leftOperand": "https://w3id.org/catenax/2025/9/policy/BusinessPartnerGroup",
             "operator": "http://www.w3.org/ns/odrl/2/isAllOf",
             "rightOperand": "greek,philosopher"
           }
@@ -72,7 +72,7 @@ particular BPN has either of these groups assigned is determined by the `Partici
 in an internal database. See [the next section](#manipulating-groups) for details.
 
 The second important aspect is the `leftOperand`, which must
-be `"https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup"`. Together with the scope, the `leftOperand` determines,
+be `"https://w3id.org/catenax/2025/9/policy/BusinessPartnerGroup"`. Together with the scope, the `leftOperand` determines,
 which constraint functions is called to evaluate the policy. Here, it is the `BusinessPartnerGroupFunction`.
 
 ### Manipulating groups

@@ -41,7 +41,6 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_PREFIX;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDC_CONTEXT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_PREFIX;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_CONTEXT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
 
@@ -63,7 +62,6 @@ public class JsonLdExtension implements ServiceExtension {
             CREDENTIALS_V_1, PREFIX + "credential-v1.jsonld",
             SECURITY_JWS_V1, PREFIX + "security-jws-2020.jsonld",
             SECURITY_ED25519_V1, PREFIX + "security-ed25519-2020.jsonld",
-            TX_CONTEXT, PREFIX + "tx-v1.jsonld",
             CX_POLICY_2025_09_CONTEXT, PREFIX + "cx-policy-v1.jsonld",
             TX_AUTH_CONTEXT, PREFIX + "tx-auth-v1.jsonld",
             EDC_CONTEXT, PREFIX + "edc-v1.jsonld",
@@ -80,7 +78,6 @@ public class JsonLdExtension implements ServiceExtension {
         jsonLdService.registerNamespace(TX_AUTH_PREFIX, TX_AUTH_NS, DSP_SCOPE_V_08);
         jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_2025_09_NS, DSP_SCOPE_V_08);
 
-        jsonLdService.registerContext(TX_CONTEXT, DSP_SCOPE_V_2025_1);
         jsonLdService.registerContext(TX_AUTH_CONTEXT, DSP_SCOPE_V_2025_1);
         jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, DSP_SCOPE_V_2025_1);
         jsonLdService.registerContext(CX_ODRL_CONTEXT, DSP_SCOPE_V_2025_1);
