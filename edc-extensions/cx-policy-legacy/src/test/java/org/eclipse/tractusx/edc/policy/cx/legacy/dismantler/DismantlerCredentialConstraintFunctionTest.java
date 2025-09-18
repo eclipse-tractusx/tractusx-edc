@@ -37,8 +37,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.policy.model.Operator.IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.policy.cx.legacy.CredentialFunctions.createDismantlerCredential;
-import static org.eclipse.tractusx.edc.policy.cx.legacy.CredentialFunctions.createPlainDismantlerCredential;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
