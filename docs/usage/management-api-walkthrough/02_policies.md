@@ -1,29 +1,27 @@
 # Policies
 
 In the EDC, policies are pure [ODRL (Open Digital Rights Language)](https://www.w3.org/TR/odrl-model/).
-Like the payloads of the [Dataspace Protocol](README.md), they are written in **JSON-LD**. Even if the
-user only has rudimentary knowledge of [JSON-LD](https://json-ld.org/), the [**policy playground
-**](https://eclipse-tractusx.github.io/tutorial-resources/policy-playground/) will provide a good starting point to
-start writing policies. It is important to keep in mind that the extensive ODRL-context (that the EDC is aware of)
-allows for ergonomic reuse of the vocabulary in individual policies.
+Like the payloads of the [Dataspace Protocol](README.md), they are written in **JSON-LD**.
 
 ## Properties
 
-The `Policy` object is extensible. EDC generally follows the subset that the [Dataspace Protocol](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1/message/schema/contract-schema.json#/definitions/Policy)
+The `Policy` object is extensible. EDC generally follows the subset that
+the [Dataspace Protocol](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1/message/schema/contract-schema.json#/definitions/Policy)
 has selected from [ODRL](https://www.w3.org/TR/odrl-model/#policy).
 
-| Variable                           | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `@context`                         | In JSON-LD, `@context` is a fundamental concept used to define the mapping of terms used within the JSON-LD document to specific IRIs (Internationalized Resource Identifiers). It provides a way to establish a shared understanding of the vocabulary used in a JSON-LD document, making it possible to create structured and semantically rich data that can be easily integrated with other data sources on the web. You can choose to bind prefixes to namespaces manually via json properties. However, importing existing remote contexts like `"@context":[ "http://www.w3.org/ns/odrl.jsonld" ]` is usually less error-prone. |
-| `policy`.`@type`                   | A Set Policy is the default Policy subclass. The Set is aimed at scenarios where there is an open criteria for the semantics of the policy expressions and typically refined by other systems/profiles that process the information at a later time. No privileges are granted to any Party (if defined). More detailed information about the possible policy subclasses can be found [here](https://w3c.github.io/poe/model/#infoModel).                                                                                                                                                                                              |
-| `policy`.`permission`              | A Policy MUST have at least one permission, prohibition, or obligation property values.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `policy`.`permission`.`action`     | "use" the target asset (under a specific permission), currently only the actions "use" and "access" is used by Catena-X                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `policy`.`permission`.`constraint` | A boolean/logical expression that refines an Action and Party/Asset collection or the conditions applicable to a Rule. The leftOperand instances MUST clearly be defined to indicate the semantics of the Constraint. Catena-X will use the **left operand** of a *constraint* to associate a specific verifiable credential (VC). As most are use-case-agreements, [this notation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/cx/policy/specs/policy.mapping.md) is useful. **Right Operand:** The rightOperand is the value of the Constraint that is to be compared to the leftOperand.                        |
+| Variable                                                                   | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+|----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `@context`                                                                 | In JSON-LD, `@context` is a fundamental concept used to define the mapping of terms used within the JSON-LD document to specific IRIs (Internationalized Resource Identifiers). It provides a way to establish a shared understanding of the vocabulary used in a JSON-LD document, making it possible to create structured and semantically rich data that can be easily integrated with other data sources on the web. You can choose to bind prefixes to namespaces manually via json properties. However, importing existing remote contexts like `"@context":[ "https://w3id.org/catenax/2025/9/policy/odrl.jsonld" ]` is usually less error-prone and strongly encouraged by the examples. |
+| `policy`.`@type`                                                           | A Set Policy is the default Policy subclass. The Set is aimed at scenarios where there is an open criteria for the semantics of the policy expressions and typically refined by other systems/profiles that process the information at a later time. No privileges are granted to any Party (if defined). More detailed information about the possible policy subclasses can be found [here](https://w3c.github.io/poe/model/#infoModel).                                                                                                                                                                                                                                                        |
+| `policy`.`permission`<br/>`policy`.`obligation`<br/>`policy`.`prohibition` | These properties define the context of what may, may not under which condition be done with the Dataset in question.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `policy`.`permission/oblication/prohibition`.`action`                      | Currently only the actions "use" (reused from ODRL) and "access" (specific to Catena-X) are conventions in the Dataspace. In the context of tractusx-edc, `action` should only be used for access policies and `use` should only be used for usage policies in a [`ContractDefinition`](./03_contractdefinitions.md).                                                                                                                                                                                                                                                                                                                                                                            |
+| `policy`.`permission/oblication/prohibition`.`constraint`                  | A list of `Constraint` objects that each represent a boolean/logical expression. It binds an `action` to certain rules. The `leftOperand` instances must clearly be defined to indicate the semantics of the `Constraint`. In Catena-X, some `leftOperand`s of a `Constraint` are associated with a check on specific verifiable credentials (VC). As most are use-case-agreements, [this notation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/cx/policy/specs/policy.mapping.md) is useful. **Right Operand:** The rightOperand is the value of the Constraint that is to be compared to the leftOperand.                                                                  |
 
 ## Policies in Catena-X
 
 Catena-X has set strict conventions for participants which kinds of Policies they are expected to process. This is
-described in Standard [CX-0152 - Policy Constraints for Data Exchange](https://catenax-ev.github.io/docs/next/standards/overview).
+described in
+Standard [CX-0152 - Policy Constraints for Data Exchange](https://catenax-ev.github.io/docs/next/standards/overview).
 The standard defines Constraints which Catena-X participants can compose to Policies.
 
 There are certain rules for which Constraints can be used in which context. When setting the helm chart's
@@ -31,11 +29,17 @@ There are certain rules for which Constraints can be used in which context. When
 requests that attempt to create policies with unknown constraints or unconventional constraint combinations. It is
 highly recommended to keep the validation enabled to avoid accidental misconfiguration of data offers at runtime.
 
+| Name                    | Action          |   | Comment |
+|-------------------------|-----------------|---|---------|
+| `FrameworkAgreement`    | `access`, `use` |   |         |
+| `Membership`            | `access`, `use` |   |         |
+| `BusinessPartnerGroup`  | `access`        |   |         |
+| `BusinessPartnerNumber` | `access`        |   |         |
+| `inForceDate`           | `access`, `use` |   |         |
+
 ### Policies & Verifiable Credentials (VC)
 
 #### General Information
-
-Catena-X uses policies to grant access and usage rights to data.
 
 Many constraints refer to verifiable credentials (VC) that are stored in participant Credential Services, also known as
 wallets. Power over their participants' own credentials is a fundamental principle of self-sovereign identity (SSI).
@@ -68,7 +72,7 @@ Content-Type: application/json
   ],
   "@type": "PolicyDefinition",
   "@id": "membership-deg",
-  "policy":{
+  "policy": {
     "@type": "Set",
     "permission": [
       {
@@ -99,12 +103,7 @@ Please note that in JSON-LD, structures that look different may actually have th
 or compacted, define additional `@context` objects, refer to a predefined outside `context` or others. Using a parser
 or the [json-ld playground](https://json-ld.org/playground/) helps to be consistent.
 
-If the creation of the `policydefinition` was successful, the Management-API will return HTTP 200.
-
-The JSON-LD context to include depends on the type of constraint:
-
-- ODRL -> `https://w3id.org/catenax/2025/9/policy/odrl.jsonld`
-- Policy Constraints -> `https://w3id.org/catenax/2025/9/policy/context.jsonld`
+If the creation of the `policydefinition` was successful, the Management-API will return HTTP 201.
 
 #### Catena-X specific `constraints`
 
@@ -251,7 +250,7 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
 
 ##### Desired Outcome (Scenario 1)
 
-Partner 2 receives the Contract Offer and is able to negotiate the contract because he presents a valid 
+Partner 2 receives the Contract Offer and is able to negotiate the contract because he presents a valid
 `DataExchangeGovernanceCredential`.
 
 #### Scenario 2
