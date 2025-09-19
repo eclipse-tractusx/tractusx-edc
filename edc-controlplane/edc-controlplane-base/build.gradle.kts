@@ -59,6 +59,7 @@ dependencies {
     implementation(project(":edc-extensions:validators:empty-asset-selector"))
     implementation(project(":edc-extensions:connector-discovery:connector-discovery-api"))
     implementation(project(":edc-extensions:dataspace-protocol"))
+    implementation(project(":edc-extensions:token-interceptor"))
     runtimeOnly(project(":edc-extensions:event-subscriber"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
