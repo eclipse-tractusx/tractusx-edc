@@ -76,12 +76,12 @@ public class EdcCompatibilityPostgresTest {
 
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(CONNECTOR_UNDER_TEST,
-            ":edc-tests:runtime:runtime-postgresql")
+            ":edc-tests:runtime:runtime-dsp")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient(s -> s, s -> s))
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 
-    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC4");
+    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC5");
     
     @BeforeEach
     void setUp() {
@@ -104,7 +104,7 @@ public class EdcCompatibilityPostgresTest {
                 put("web.http.protocol.port", String.valueOf(PROTOCOL_URL.getPort())); // this must match the configured connector url in resources/docker.tck.properties
                 put("web.http.protocol.path", PROTOCOL_URL.getPath()); // this must match the configured connector url in resources/docker.tck.properties
                 put("web.http.tck.port", String.valueOf(WEBHOOK_URL.getPort()));
-                put("web.http.tck.path", "/tck");
+                put("web.http.tck.path", WEBHOOK_URL.getPath());
                 put("web.api.auth.key", API_KEY);
                 put("edc.dsp.callback.address", PROTOCOL_URL.toString()); // host.docker.internal is required by the container to communicate with the host
                 put("edc.management.context.enabled", "true");
