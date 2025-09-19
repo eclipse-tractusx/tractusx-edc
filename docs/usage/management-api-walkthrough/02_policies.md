@@ -68,7 +68,7 @@ class - please refer back to it when doubts arise.
 
 ### Policies & Verifiable Credentials (VC)
 
-Many constraints refer to verifiable credentials (VC) that are stored in participant Credential Services, also known as
+Some constraints are used to refer to verifiable credentials (VC) that are stored in participant Credential Services, also known as
 wallets. Power over their participants' own credentials is a fundamental principle of self-sovereign identity (SSI).
 
 The key architectural principle underlying this specification is that policy definitions must be decoupled from their
