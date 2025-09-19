@@ -17,21 +17,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    id("application")
-}
+package org.eclipse.tractusx.edc.tests.tck.dsp;
 
+import org.testcontainers.containers.GenericContainer;
 
-dependencies {
-    runtimeOnly(project(":edc-tests:runtime:runtime-postgresql"))
-    runtimeOnly(libs.tck.extension)
-}
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-edcBuild {
-    publish.set(false)
+public class TckContainer<SELF extends TckContainer<SELF>> extends GenericContainer<SELF> {
+    public TckContainer(String imageName) {
+        super(imageName);
+        addFixedExposedPort(8083, 8083); // TCK will use this as callback address - must be fixed!
+    }
 }
