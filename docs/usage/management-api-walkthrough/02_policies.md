@@ -12,12 +12,14 @@ has selected from [ODRL](https://www.w3.org/TR/odrl-model/#policy).
 | Variable                                                                   | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 |----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `@context`                                                                 | In JSON-LD, `@context` is a fundamental concept used to define the mapping of terms used within the JSON-LD document to specific IRIs (Internationalized Resource Identifiers). It provides a way to establish a shared understanding of the vocabulary used in a JSON-LD document, making it possible to create structured and semantically rich data that can be easily integrated with other data sources on the web. You can choose to bind prefixes to namespaces manually via json properties. However, importing existing remote contexts like `"@context":[ "https://w3id.org/catenax/2025/9/policy/odrl.jsonld" ]` is usually less error-prone and strongly encouraged by the examples. |
-| `policy`.`@type`                                                           | A Set Policy is the default Policy subclass. The Set is aimed at scenarios where there is an open criteria for the semantics of the policy expressions and typically refined by other systems/profiles that process the information at a later time. No privileges are granted to any Party (if defined). More detailed information about the possible policy subclasses can be found [here](https://w3c.github.io/poe/model/#infoModel).                                                                                                                                                                                                                                                        |
+| `policy`.`@type`                                                           | `@type` is a property in every json-ld object that describes which class it belongs to. In this context, the only accepted value is `Set`. `Set` is aimed at scenarios where there is an open criteria for the semantics of the policy expressions.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `policy`.`permission`<br/>`policy`.`obligation`<br/>`policy`.`prohibition` | These properties define the context of what may, may not under which condition be done with the Dataset in question.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `policy`.`permission/oblication/prohibition`.`action`                      | Currently only the actions "use" (reused from ODRL) and "access" (specific to Catena-X) are conventions in the Dataspace. In the context of tractusx-edc, `action` should only be used for access policies and `use` should only be used for usage policies in a [`ContractDefinition`](./03_contractdefinitions.md).                                                                                                                                                                                                                                                                                                                                                                            |
 | `policy`.`permission/oblication/prohibition`.`constraint`                  | A list of `Constraint` objects that each represent a boolean/logical expression. It binds an `action` to certain rules. The `leftOperand` instances must clearly be defined to indicate the semantics of the `Constraint`. In Catena-X, some `leftOperand`s of a `Constraint` are associated with a check on specific verifiable credentials (VC). As most are use-case-agreements, [this notation](https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/cx/policy/specs/policy.mapping.md) is useful. **Right Operand:** The rightOperand is the value of the Constraint that is to be compared to the leftOperand.                                                                  |
 
 ## Policies in Catena-X
+
+### Conventions on Constraints
 
 Catena-X has set strict conventions for participants which kinds of Policies they are expected to process. This is
 described in
@@ -29,26 +31,65 @@ There are certain rules for which Constraints can be used in which context. When
 requests that attempt to create policies with unknown constraints or unconventional constraint combinations. It is
 highly recommended to keep the validation enabled to avoid accidental misconfiguration of data offers at runtime.
 
-| Name                    | Action          |   | Comment |
-|-------------------------|-----------------|---|---------|
-| `FrameworkAgreement`    | `access`, `use` |   |         |
-| `Membership`            | `access`, `use` |   |         |
-| `BusinessPartnerGroup`  | `access`        |   |         |
-| `BusinessPartnerNumber` | `access`        |   |         |
-| `inForceDate`           | `access`, `use` |   |         |
+The following table was compiled from the [
+`PolicyValidationConstants`](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-extensions/cx-policy/src/main/java/org/eclipse/tractusx/edc/policy/cx/validator/PolicyValidationConstants.java#L75)
+class - please refer back to it when doubts arise.
+
+| Name                              | Action          | usable in                   | side-effects                                                                                                                                 |
+|-----------------------------------|-----------------|-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
+| `BusinessPartnerGroup`            | `access`        | `permission`                | validated against the identity extracted from the `MembershipCredential`                                                                     |
+| `BusinessPartnerNumber`           | `access`        | `permission`                | validated against the identity extracted from the `MembershipCredential`                                                                     |
+| `FrameworkAgreement`              | `access`, `use` | `permission`                |                                                                                                                                              |
+| `Membership`                      | `access`, `use` | `permission`                | validated against the `MembershipCredential`                                                                                                 |
+| `inForceDate`                     | `access`, `use` | `permission`                | validated continuously - all Transfer Processes relying on an Agreement with this Constraint will be stopped when `inForceDate` is exceeded. |
+| `AffiliatesRegion`                | `use`           | `permission`, `prohibition` |                                                                                                                                              |
+| `AffiliatesBpnl`                  | `use`           | `permission`, `prohibition` |                                                                                                                                              |
+| `DataFrequency`                   | `use`           | `permission`                |                                                                                                                                              |
+| `VersionChanges`                  | `use`           | `permission`                |                                                                                                                                              |
+| `ContractTermination`             | `use`           | `permission`                |                                                                                                                                              |
+| `ConfidentialInformationMeasures` | `use`           | `permission`                |                                                                                                                                              |
+| `ConfidentialInformationSharing`  | `use`           | `permission`                |                                                                                                                                              |
+| `ExclusiveUsage`                  | `use`           | `permission`                |                                                                                                                                              |
+| `Warranty`                        | `use`           | `permission`                |                                                                                                                                              |
+| `WarrantyDefinition`              | `use`           | `permission`                |                                                                                                                                              |
+| `WarrantyDurationMonths`          | `use`           | `permission`                |                                                                                                                                              |
+| `Liability`                       | `use`           | `permission`                |                                                                                                                                              |
+| `JurisdictionLocationReference`   | `use`           | `permission`                |                                                                                                                                              |
+| `JurisdictionLocation`            | `use`           | `permission`                |                                                                                                                                              |
+| `Precedence`                      | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDurationDays`        | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDate`                | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDefinition`          | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDate`                | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDate`                | `use`           | `permission`                |                                                                                                                                              |
+| `DataProvisioningEndDurationDays` | `use`           | `obligation`                |                                                                                                                                              |
+| `DataProvisioningEndDate`         | `use`           | `obligation`                |                                                                                                                                              |
+| `UsageRestriction`                | `use`           | `prohibition`               |                                                                                                                                              |
 
 ### Policies & Verifiable Credentials (VC)
-
-#### General Information
 
 Many constraints refer to verifiable credentials (VC) that are stored in participant Credential Services, also known as
 wallets. Power over their participants' own credentials is a fundamental principle of self-sovereign identity (SSI).
 
 The key architectural principle underlying this specification is that policy definitions must be decoupled from their
-corresponding VC schema. Namely, the specific **constraints** (
-see [ODRL-classes](#odrl-information-model-classes-excerpt))
-and shape of the VC schema must not be reflected in the policy definition. This allows VC schemas to be altered without
-impacting policy definitions.
+corresponding VC schema. Namely, the specific `Constraint` serves as intermediator to the VC schema in the policy 
+definition. This allows VC schemas in source code to be altered without impacting policy definitions.
+
+## Policies in EDC
+
+### Access vs Usage
+
+In EDC, a distinction is made between **Access** and **Usage** Policies.
+
+- **access policy:** determines whether a particular consumer is offered an asset or not. For example, we may want to
+  restrict certain assets such that only consumers within a particular geography can see them. Consumers outside that
+  geography wouldn't even have them in their catalog.
+- **usage policy or contract policy:** determines the conditions for initiating a contract negotiation for a particular
+  asset. Note that does not automatically guarantee the successful creation of a contract, it merely expresses the
+  eligibility to start the negotiation. The terms "usage policy" and "contract policy" are used synonymously!
+
+Whether a policy is used as access or usage policy is determined
+during [contract definition](03_contractdefinitions.md).
 
 ### Creating a Policy Definition
 
@@ -105,42 +146,7 @@ or the [json-ld playground](https://json-ld.org/playground/) helps to be consist
 
 If the creation of the `policydefinition` was successful, the Management-API will return HTTP 201.
 
-#### Catena-X specific `constraints`
-
-This implementation (`tractusx-edc`) contains extensions that trigger specific behavior when encountering specific
-policies.
-
-1. **Checks against the use-case**:
-   The [cx-policy extension](https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/cx-policy/src/main/java/org/eclipse/tractusx/edc/policy/cx)
-   is responsible to resolve a use-case-specific
-   leftOperand against a VC. The list of use-case credentials can be
-   found [here](https://github.com/eclipse-tractusx/tractusx-profiles/tree/main/cx/credentials/samples).
-2. **Checks against the BPN**:
-   The [BPN-validation extension](https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-extensions/bpn-validation)
-   allows to define either a single Business Partner
-   authorized to pass the constraint or define a group of BPNs that may pass and can be extended at runtime.
-3. **Checks for temporal validity**: If a usage policy is defined against a HTTP-based asset accessible via EDR-tokens,
-   the Data Provider can prohibit issuance of new tokens by defining a specific constraint based on the
-   [contract validity check extension](https://eclipse-edc.github.io/documentation/for-adopters/control-plane/policy-engine/#in-force-policy)
-
-### Access & Usage Policies
-
-In Catena-X, a distinction is made between **Access** and **Usage** Policies.
-
-- **access policy:** determines whether a particular consumer is offered an asset or not. For example, we may want to
-  restrict certain assets such that only consumers within a particular geography can see them. Consumers outside that
-  geography wouldn't even have them in their catalog.
-- **usage policy or contract policy:** determines the conditions for initiating a contract negotiation for a particular
-  asset. Note that does not automatically guarantee the successful creation of a contract, it merely expresses the
-  eligibility to start the negotiation. The terms "usage policy" and "contract policy" are used synonymously!
-
-**The Access and Usage Policies are not distinguished by any special semantics, but rather by the time at which they are
-checked.**
-
-Whether a policy is used as access or usage policy is determined
-during [contract definition](03_contractdefinitions.md).
-
-### Exemplary scenarios
+## Exemplary scenarios
 
 For the following Scenarios, we assume there is a **Partner 1 (provider)** who wants to provide Data for **Partner 2
 (consumer)**
@@ -152,9 +158,9 @@ Partner 2 (consumer) signed the **Traceability Framework Agreement** and followe
 Credential appears within Partner 2s identity.
 
 When doing a catalog request with
-the [IATP](https://github.com/eclipse-tractusx/identity-trust/blob/main/specifications/verifiable.presentation.protocol.md)
+the [DCP](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/v1.0/)
 presentation flow
-the `MembershipCredential` is provided to Partner 1:
+the `MembershipCredential`, `DataExchangeGovernance` and `BpnCredential` are provided to Partner 1:
 
 For example:
 
@@ -391,8 +397,7 @@ it.
 
 #### Chaining Constraints
 
-Constraints can be chained together via logical constraints. This is currently implemented for `odrl:and`, `odrl:or`
-and `odrl:xone` (exactly one constraint evaluates to `true`).
+Constraints can be chained together via logical constraints. This is currently permitted for `odrl:and`.
 
 ```json
 {
@@ -432,76 +437,6 @@ and `odrl:xone` (exactly one constraint evaluates to `true`).
 }
 ```
 
-## Additional Information about Policies
-
-ℹ️ All explanations in this chapter "General Information about Policies" were taken from the
-following [source](https://w3c.github.io/poe/model/).
-
-### Introduction
-
-Several business scenarios require expressing what are the permitted and prohibited actions over resources. These
-permitted/prohibited actions are usually expressed under the form of policies, i.e., expressions that indicate those
-uses and re-uses of the content which are conformant with existing regulations or to the constraints assigned by the
-owner. Policies may also be enriched with additional information, i.e., who are the entities in charge of the definition
-of such Policy and those who are required to conform to it, what are the additional constrains to be associated with the
-Permissions, Prohibitions and Duties expressed by the Policy. The ability to express these concepts and relationships is
-important both for the producers of content, i.e., they may state in a clear way what are the permitted and the
-prohibited actions to prevent misuse, and for the consumers, i.e., they may know precisely what resources they are
-allowed to use and re-use to avoid breaking any rules, laws or the owner's constraints. This specification describes a
-common approach to expressing these policy concepts.
-
-### Semantic Model
-
-The ODRL Information Model defines the underlying semantic model for permission, prohibition, and obligation statements
-describing content usage. The information model covers the core concepts, entities and relationships that provide the
-foundational model for content usage statements. These machine-readable policies may be linked directly with the content
-they are associated to with the aim to allow consumers to easily retrieve this information.
-
-#### ODRL Information Model classes (excerpt)
-
-| Class                          | Description                                                                                                                                                                                                                   |
-|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Policy`                       | A non-empty group of Permissions (via the permission property) and/or Prohibitions (via the prohibition property) and/or Duties (via the obligation property).                                                                |
-| `Set`                          | Subclass of `Policy`:Supports expressing generic Rules                                                                                                                                                                        |
-| `Action`                       | An operation on an Asset                                                                                                                                                                                                      |
-| `Rule`                         | An abstract concept that represents the common characteristics of Permissions, Prohibitions, and Duties.                                                                                                                      |
-| `Prohibition`                  | Subclass of `Rule`: The ability to exercise an Action over an Asset. The Permission MAY also have the duty property that expresses an agreed Action that MUST be exercised (as a pre-condition to be granted the Permission). |
-| `Permission`                   | Subclass of `Rule`: The inability to exercise an Action over an Asset.                                                                                                                                                        |
-| `Duty`                         | Subclass of `Rule`: The obligation to exercise an Action.                                                                                                                                                                     |
-| `Constraint/LogicalConstraint` | A boolean/logical expression that refines an Action and Party/Asset collection or the conditions applicable to a Rule.                                                                                                        |
-
-#### The `Policy` Class (excerpt)
-
-The Policy class has the following properties (see example below):
-
-- A Policy MUST have one uid property value (of type IRI [rfc3987]) to identify the Policy.
-- A Policy MUST have at least one permission, prohibition, or obligation property values of type Rule. (See the
-  Permission, Prohibition, and Obligation sections for more details.)
-
-#### The `Set` Class
-
-An ODRL Policy of subclass `Set` represents any combination of Rules. The `Set` Policy subclass is also the **default**
-subclass of Policy (if none is specified).
-
-Example:
-
-```json
-{
-  "@context": "http://www.w3.org/ns/odrl.jsonld",
-  "@type": "Set",
-  "@id": "{{ID_SET_BY_CLIENT}}",
-  "target": "{{ID_OF_TARGET_DATASET}}",
-  "permission": [
-    {
-      "action": "use"
-    }
-  ]
-}
-```
-
-ℹ️ For the examples in this document, the ODRL Policy subclasses are mapped to the JSON-LD `@type` tokens. The above
-example could have also used `Policy` type instead of `Set` type (**as they are equivalent**).
-
 - SPDX-License-Identifier: CC-BY-4.0
-- SPDX-FileCopyrightText: 2023 Contributors of the Eclipse Foundation
+- SPDX-FileCopyrightText: 2023, 2025 Contributors of the Eclipse Foundation
 - Source URL: [https://github.com/eclipse-tractusx/tractusx-edc](https://github.com/eclipse-tractusx/tractusx-edc)
