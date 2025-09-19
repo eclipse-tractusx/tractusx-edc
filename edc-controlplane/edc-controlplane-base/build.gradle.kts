@@ -46,6 +46,7 @@ dependencies {
     implementation(project(":edc-extensions:bdrs-client"))
     implementation(project(":edc-extensions:bpn-validation"))
     implementation(project(":edc-extensions:cx-policy"))
+    implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":edc-extensions:data-flow-properties-provider"))
     implementation(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))

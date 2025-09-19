@@ -27,6 +27,7 @@ dependencies {
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base"))
     implementation(project(":edc-extensions:cx-policy"))
+    implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
 

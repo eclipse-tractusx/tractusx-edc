@@ -36,7 +36,7 @@ import static java.lang.String.format;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_PREFIX;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDC_CONTEXT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
@@ -76,7 +76,7 @@ public class JsonLdExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE, DSP_SCOPE_V_08);
         jsonLdService.registerNamespace(TX_AUTH_PREFIX, TX_AUTH_NS, DSP_SCOPE_V_08);
-        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_2025_09_NS, DSP_SCOPE_V_08);
+        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_NS, DSP_SCOPE_V_08);
 
         jsonLdService.registerContext(TX_AUTH_CONTEXT, DSP_SCOPE_V_2025_1);
         jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, DSP_SCOPE_V_2025_1);
