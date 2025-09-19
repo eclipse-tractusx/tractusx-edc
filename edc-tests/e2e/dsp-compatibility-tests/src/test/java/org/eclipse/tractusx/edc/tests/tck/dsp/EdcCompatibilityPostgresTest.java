@@ -81,7 +81,7 @@ public class EdcCompatibilityPostgresTest {
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 
-    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC5");
+    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC4");
     
     @BeforeEach
     void setUp() {
