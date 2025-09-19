@@ -48,15 +48,15 @@ iatp:
   sts:
     dim:
       # -- URL where connectors can request SI tokens
-      url:
+      url: ab
     oauth:
       # -- URL where connectors can request OAuth2 access tokens for DIM access
-      token_url:
+      token_url: cd
       client:
         # -- Client ID for requesting OAuth2 access token for DIM access
-        id:
+        id: ef
         # -- Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIM access
-        secret_alias:
+        secret_alias: gh
 
 # -- Add custom ca certificates to the truststore
 customCaCerts: {}
@@ -210,17 +210,17 @@ runtime:
       refresh_endpoint:
     signer:
       # -- Alias under which the private key (JWK or PEM format) is stored in the vault
-      privatekey_alias:
+      privatekey_alias: ab
     verifier:
       # -- Alias under which the public key (JWK or PEM format) is stored in the vault, that belongs to the private key which was referred to at `dataplane.token.signer.privatekey_alias`
-      publickey_alias:
+      publickey_alias: cd
 
   bdrs:
     # -- Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min)
     cache_validity_seconds: 600
     server:
       # -- URL of the BPN/DID Resolution Service
-      url:
+      url: abc
 
   # -- configuration for the built-in federated catalog crawler
   catalog:
