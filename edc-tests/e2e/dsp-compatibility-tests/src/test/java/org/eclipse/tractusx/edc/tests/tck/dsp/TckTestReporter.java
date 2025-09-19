@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,31 +17,33 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    id("application")
-}
+package org.eclipse.tractusx.edc.tests.tck.dsp;
 
+import org.testcontainers.containers.output.OutputFrame;
 
-dependencies {
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude("org.eclipse.edc", "vault-hashicorp")
-        exclude(module = "tx-dcp")
-        exclude(module = "tx-dcp-sts-dim")
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+
+public class TckTestReporter implements Consumer<OutputFrame> {
+
+    private final List<String> failures = new ArrayList<>();
+    private final Pattern failedRegex = Pattern.compile("FAILED: (\\w+:.*)");
+
+    public TckTestReporter() {
     }
 
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
-        exclude("org.eclipse.edc", "data-plane-selector-client")
-        exclude("org.eclipse.edc", "vault-hashicorp")
+    @Override
+    public void accept(OutputFrame outputFrame) {
+        var line = outputFrame.getUtf8String();
+        var failed = failedRegex.matcher(line);
+        if (failed.find()) {
+            failures.add(failed.group(1));
+        }
     }
 
-    runtimeOnly(libs.tck.extension)
-}
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-edcBuild {
-    publish.set(false)
+    public List<String> failures() {
+        return new ArrayList<>(failures);
+    }
 }

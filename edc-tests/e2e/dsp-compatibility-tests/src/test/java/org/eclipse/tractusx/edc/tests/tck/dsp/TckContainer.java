@@ -17,19 +17,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.tractusx.edc.tests.tck.dsp;
 
-dependencies {
-    api(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "tx-dcp")
-        exclude(module = "tx-dcp-sts-dim")
+import org.testcontainers.containers.GenericContainer;
+
+public class TckContainer<SELF extends TckContainer<SELF>> extends GenericContainer<SELF> {
+    public TckContainer(String imageName) {
+        super(imageName);
+        addFixedExposedPort(8083, 8083); // TCK will use this as callback address - must be fixed!
     }
-
-    api(project(":edc-dataplane:edc-dataplane-base")) {
-        exclude("org.eclipse.edc", "data-plane-selector-client")
-    }
-
-    runtimeOnly(libs.tck.extension)
 }
