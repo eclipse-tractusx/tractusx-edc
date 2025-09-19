@@ -25,9 +25,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_PATH;
 import static org.mockito.ArgumentMatchers.same;
@@ -47,13 +48,7 @@ class OkHttpInterceptorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        List<String> skipPaths = List.of(
-                "/sts/token",
-                "/dataflows/check",
-                "/presentations/query",
-                "/did.json");
-
-        interceptor = new OkHttpInterceptor(skipPaths);
+        interceptor = new OkHttpInterceptor();
         requestBuilder = new Request.Builder().url("http://example.com");
         when(chain.proceed(any())).thenReturn(response);
     }
@@ -74,7 +69,7 @@ class OkHttpInterceptorTest {
     @Test
     void filter_whenBearerToken_shouldStripBearerPrefix() throws IOException {
         var request = requestBuilder
-                .url("http://example.com/protocol/test")
+                .url("http://example.com/protocol/test/catalog/request")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
                 .build();
         when(chain.request()).thenReturn(request);
@@ -98,51 +93,32 @@ class OkHttpInterceptorTest {
         verify(chain).proceed(same(request));
     }
 
-    @Test
-    void filter_whenSkipedPath_shouldNotModifyRequest() throws IOException {
-        final List<String> skipPath = java.util.List.of(
-                "/sts/token",
-                "/dataflows/check",
-                "/presentations/query",
-                "/did.json");
-
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "/catalog/request",
+            "/catalog/datasets",
+            "/negotiations/",
+            "/transfers/",
+            ".well-known/dspace-version"
+    })
+    void filter_whenDspPath_shouldModifyRequest(String path) throws IOException {
         var request = requestBuilder
-                .url("http://example.com/api/test" + skipPath.get(0))
+                .url("http://example.com/" + path)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
                 .build();
         when(chain.request()).thenReturn(request);
-        interceptor.intercept(chain);
-        verify(chain).proceed(same(request));
 
-        request = requestBuilder
-                .url("http://example.com/api/test" + skipPath.get(1))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
-                .build();
-        when(chain.request()).thenReturn(request);
         interceptor.intercept(chain);
-        verify(chain).proceed(same(request));
 
-        request = requestBuilder
-                .url("http://example.com/api/test" + skipPath.get(2))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
-                .build();
-        when(chain.request()).thenReturn(request);
-        interceptor.intercept(chain);
-        verify(chain).proceed(same(request));
-
-        request = requestBuilder
-                .url("http://example.com/api/test" + skipPath.get(3))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
-                .build();
-        when(chain.request()).thenReturn(request);
-        interceptor.intercept(chain);
-        verify(chain).proceed(same(request));
+        verify(chain).proceed(argThat(modifiedRequest ->
+                "token123".equals(modifiedRequest.header(HttpHeaders.AUTHORIZATION))
+        ));
     }
 
     @Test
     void filter_when2025VersionPath_shouldNotModifyRequest() throws IOException {
         var request = requestBuilder
-                .url("http://example.com/protocol" + V_2025_1_PATH + "/test")
+                .url("http://example.com/protocol/catalog/request" + V_2025_1_PATH + "/test")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
                 .build();
         when(chain.request()).thenReturn(request);
@@ -150,5 +126,30 @@ class OkHttpInterceptorTest {
         interceptor.intercept(chain);
 
         verify(chain).proceed(same(request));
+    }
+
+    @Test
+    void filter_whenDspace08Schema_shouldModifyRequest() throws IOException {
+        var request = requestBuilder
+                .url("http://example.com/protocol/catalog/request")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer token123")
+                .post(okhttp3.RequestBody.create(
+                        """
+                                {
+                                  "@context": {
+                                    "dspace": "https://w3id.org/dspace/v0.8/"
+                                  },
+                                  "@type": "dspace:SomeType"
+                                }
+                                """,
+                        okhttp3.MediaType.parse("application/json")))
+                .build();
+        when(chain.request()).thenReturn(request);
+
+        interceptor.intercept(chain);
+
+        verify(chain).proceed(argThat(modifiedRequest ->
+                "token123".equals(modifiedRequest.header(HttpHeaders.AUTHORIZATION))
+        ));
     }
 }
