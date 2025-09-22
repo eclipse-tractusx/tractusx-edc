@@ -138,7 +138,7 @@ include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 include(":samples:testing-with-mocked-connector")
 
 plugins {
-    id("com.gradle.develocity") version "4.1.1"
+    id("com.gradle.develocity") version "4.2"
     id("com.gradle.common-custom-user-data-gradle-plugin") version "2.3"
 }
 
