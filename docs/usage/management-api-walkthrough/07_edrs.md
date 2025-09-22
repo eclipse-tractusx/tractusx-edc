@@ -41,7 +41,7 @@ Content-Type: application/json
 {
     "@context": [
         "https://w3id.org/tractusx/policy/v1.0.0",
-        "http://www.w3.org/ns/odrl.jsonld",
+        "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
         {
             "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
         }

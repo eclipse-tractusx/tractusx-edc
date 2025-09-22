@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,27 +17,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.policy.cx.managedlegalentity;
+package org.eclipse.tractusx.edc.policy.cx.legacy.contractreference;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
-import java.util.Set;
 
 /**
- * This is a placeholder constraint function for ManagedLegalEntityBpnl. It always returns true but allows
+ * This is a placeholder constraint function for ContractReference. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class ManagedLegalEntityBpnlConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
-    public static final String MANAGED_LEGAL_ENTITY_BPNL_LITERAL = "ManagedLegalEntityBpnl";
+public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+    public static final String CONTRACT_REFERENCE = "ContractReference";
 
-    public ManagedLegalEntityBpnlConstraintFunction() {
-        super(
-                Set.of(Operator.IS_ANY_OF),
-                "^BPNL[0-9A-Z]{12}$",
-                true
-        );
+    @Override
+    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
+        return true;
     }
 }

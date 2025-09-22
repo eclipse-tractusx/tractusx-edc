@@ -17,9 +17,10 @@ jakarta-json = "2.0.1"
 junit = "1.13.4"
 nimbus = "10.5"
 netty-mockserver = "5.15.0"
-opentelemetry = "2.19.0"
+okhttp = "5.1.0"
+opentelemetry = "2.20.0"
 opentelemetry-instrumentation = "2.19.0"
-opentelemetry-log4j-appender = "2.19.0-alpha"
+opentelemetry-log4j-appender = "2.20.0-alpha"
 postgres = "42.7.7"
 restAssured = "5.5.6"
 rsApi = "4.0.0"
@@ -107,6 +108,9 @@ edc-lib-transform = { module = "org.eclipse.edc:transform-lib", version.ref = "e
 edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-lib-validator = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
+edc-lib-dsp-catalog-http-api= { module = "org.eclipse.edc:dsp-catalog-http-api-lib", version.ref = "edc" }
+edc-lib-dsp-negotiation-http-api= { module = "org.eclipse.edc:dsp-negotiation-http-api-lib", version.ref = "edc" }
+edc-lib-dsp-transfer-http-api= { module = "org.eclipse.edc:dsp-transfer-process-http-api-lib", version.ref = "edc" }
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }
@@ -204,6 +208,7 @@ jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakar
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 opentelemetry-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry" }
 opentelemetry-instrumentation-annotations = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations", version.ref = "opentelemetry-instrumentation" }
 netty-mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "netty-mockserver" }

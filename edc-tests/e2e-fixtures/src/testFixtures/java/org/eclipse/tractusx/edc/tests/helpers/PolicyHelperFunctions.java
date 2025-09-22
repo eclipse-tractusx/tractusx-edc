@@ -52,14 +52,14 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 public class PolicyHelperFunctions {
 
-    private static final String ODRL_JSONLD = "http://www.w3.org/ns/odrl.jsonld";
+    private static final String ODRL_JSONLD = "https://w3id.org/catenax/2025/9/policy/odrl.jsonld";
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
 
     public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = CX_POLICY_NS + BUSINESS_PARTNER_EVALUATION_KEY;
 
     private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = CX_POLICY_2025_09_NS + "BusinessPartnerGroup";
 
-    private static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_2025_09_NS + "FrameworkAgreement";
+    public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_2025_09_NS + "FrameworkAgreement";
     private static final String USAGE_PURPOSE_LITERAL = CX_POLICY_2025_09_NS + "UsagePurpose";
 
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
@@ -178,6 +178,29 @@ public class PolicyHelperFunctions {
                 .add("leftOperand", USAGE_PURPOSE_LITERAL)
                 .add("operator", "isAnyOf")
                 .add("rightOperand", "cx.pcf.base:1")
+                .build();
+    }
+    
+    public static JsonObject legacyFrameworkPolicy() {
+        var constraint1 = atomicConstraint(CX_POLICY_NS + "FrameworkAgreement", Operator.EQ.getOdrlRepresentation(), "DataExchangeGovernance:1.0", false);
+        var constraint2 = atomicConstraint(CX_POLICY_NS + "UsagePurpose", Operator.EQ.getOdrlRepresentation(), "cx.core.digitalTwinRegistry:1", false);
+        
+        var constraintsBuilder = Json.createArrayBuilder()
+                .add(constraint1)
+                .add(constraint2);
+        
+        var permission = Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", Json.createObjectBuilder()
+                        .add(TYPE, ODRL_LOGICAL_CONSTRAINT_TYPE)
+                        .add("and", constraintsBuilder.build())
+                        .build())
+                .build();
+        
+        return Json.createObjectBuilder()
+                .add(CONTEXT, ODRL_JSONLD)
+                .add(TYPE, "Set")
+                .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
     }
 

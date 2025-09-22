@@ -62,8 +62,6 @@ public final class PolicyValidationConstants {
     public static final String JURISDICTION_LOCATION_LITERAL = CX_POLICY_2025_09_NS + "JurisdictionLocation";
     public static final String JURISDICTION_LOCATION_REFERENCE_LITERAL = CX_POLICY_2025_09_NS + "JurisdictionLocationReference";
     public static final String LIABILITY_LITERAL = CX_POLICY_2025_09_NS + "Liability";
-    public static final String MANAGED_LEGAL_ENTITY_BPNL_LITERAL = CX_POLICY_2025_09_NS + "ManagedLegalEntityBpnl";
-    public static final String MANAGED_LEGAL_ENTITY_REGION_LITERAL = CX_POLICY_2025_09_NS + "ManagedLegalEntityRegion";
 
     public static final String PRECEDENCE_LITERAL = CX_POLICY_2025_09_NS + "Precedence";
     public static final String USAGE_RESTRICTION_LITERAL = CX_POLICY_2025_09_NS + "UsageRestriction";
@@ -100,8 +98,6 @@ public final class PolicyValidationConstants {
             CONTRACT_REFERENCE_LITERAL,
             AFFILIATES_REGION_LITERAL,
             AFFILIATES_BPNL_LITERAL,
-            MANAGED_LEGAL_ENTITY_BPNL_LITERAL,
-            MANAGED_LEGAL_ENTITY_REGION_LITERAL,
             DATA_FREQUENCY_LITERAL,
             VERSION_CHANGES_LITERAL,
             CONTRACT_TERMINATION_LITERAL,

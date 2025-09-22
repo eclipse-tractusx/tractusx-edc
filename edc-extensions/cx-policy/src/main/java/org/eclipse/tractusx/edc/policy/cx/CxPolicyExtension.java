@@ -54,8 +54,6 @@ import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredential
 import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.precedence.PrecedenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction;
@@ -100,8 +98,6 @@ import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCre
 import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction.JURISDICTION_LOCATION;
 import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction.JURISDICTION_LOCATION_REFERENCE;
 import static org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction.LIABILITY;
-import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityBpnlConstraintFunction.MANAGED_LEGAL_ENTITY_BPNL_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.managedlegalentity.ManagedLegalEntityRegionConstraintFunction.MANAGED_LEGAL_ENTITY_REGION;
 import static org.eclipse.tractusx.edc.policy.cx.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.precedence.PrecedenceConstraintFunction.PRECEDENCE;
 import static org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction.EXCLUSIVE_USAGE;
@@ -234,16 +230,6 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(LIABILITY), new LiabilityConstraintFunction<>());
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL), new ManagedLegalEntityBpnlConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL), new ManagedLegalEntityBpnlConstraintFunction<>());
-
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION), new ManagedLegalEntityRegionConstraintFunction<>());
-
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(EXCLUSIVE_USAGE), new ExcludingUsageConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(EXCLUSIVE_USAGE), new ExcludingUsageConstraintFunction<>());
@@ -332,8 +318,6 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION),
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
                 withCxPolicyNsPrefix(LIABILITY),
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION),
                 withCxPolicyNsPrefix(EXCLUSIVE_USAGE),
                 withCxPolicyNsPrefix(PRECEDENCE),
                 withCxPolicyNsPrefix(VERSION_CHANGES),
@@ -361,8 +345,6 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION),
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
                 withCxPolicyNsPrefix(LIABILITY),
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_BPNL_LITERAL),
-                withCxPolicyNsPrefix(MANAGED_LEGAL_ENTITY_REGION),
                 withCxPolicyNsPrefix(EXCLUSIVE_USAGE),
                 withCxPolicyNsPrefix(PRECEDENCE),
                 withCxPolicyNsPrefix(VERSION_CHANGES),

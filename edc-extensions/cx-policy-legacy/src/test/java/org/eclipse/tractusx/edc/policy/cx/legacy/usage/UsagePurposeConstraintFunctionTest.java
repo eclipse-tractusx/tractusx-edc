@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Contributors to the Eclipse Foundation
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,44 +17,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.policy.cx.managedlegalentity;
+package org.eclipse.tractusx.edc.policy.cx.legacy.usage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.tractusx.edc.policy.cx.legacy.TestParticipantAgentPolicyContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-class ManagedLegalEntityRegionConstraintFunctionTest {
+class UsagePurposeConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final ManagedLegalEntityRegionConstraintFunction<ParticipantAgentPolicyContext> function = new ManagedLegalEntityRegionConstraintFunction<>();
+    private final UsagePurposeConstraintFunction<ParticipantAgentPolicyContext> function = new UsagePurposeConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        assertThat(function.evaluate(Operator.IS_ANY_OF, "cx.region.all:1", null, context)).isTrue();
+        assertThat(function.evaluate(Operator.EQ, "usagePurpose", null, context)).isTrue();
     }
 
-    @Test
-    void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.IS_ANY_OF, "cx.region.northAmerica:1", null);
-        assertThat(result).isSucceeded();
-    }
-
-    @Test
-    void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.EQ, "cx.region.northAmerica:1", null);
-        assertThat(result).isFailed().detail().contains("Invalid operator");
-    }
-
-    @Test
-    void validate_whenInvalidValue_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "invalid", null);
-        assertThat(result).isFailed().detail().contains("Invalid right-operand: ");
-    }
 }

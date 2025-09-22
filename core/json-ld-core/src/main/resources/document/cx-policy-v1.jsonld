@@ -15,10 +15,10 @@
       "@id": "cx-policy:AffiliatesRegion"
     },
     "BusinessPartnerGroup": {
-      "@id": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup"
+      "@id": "cx-policy:BusinessPartnerGroup"
     },
     "BusinessPartnerNumber": {
-      "@id": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerNumber"
+      "@id": "cx-policy:BusinessPartnerNumber"
     },
     "ConfidentialInformationMeasures": {
       "@id": "cx-policy:ConfidentialInformationMeasures"
@@ -64,12 +64,6 @@
     },
     "Liability": {
       "@id": "cx-policy:Liability"
-    },
-    "ManagedLegalEntityBpnl": {
-      "@id": "cx-policy:ManagedLegalEntityBpnl"
-    },
-    "ManagedLegalEntityRegion": {
-      "@id": "cx-policy:ManagedLegalEntityRegion"
     },
     "Membership": {
       "@id": "cx-policy:Membership"

@@ -65,12 +65,6 @@
     "Liability": {
       "@id": "cx-policy:Liability"
     },
-    "ManagedLegalEntityBpnl": {
-      "@id": "cx-policy:ManagedLegalEntityBpnl"
-    },
-    "ManagedLegalEntityRegion": {
-      "@id": "cx-policy:ManagedLegalEntityRegion"
-    },
     "Membership": {
       "@id": "cx-policy:Membership"
     },
