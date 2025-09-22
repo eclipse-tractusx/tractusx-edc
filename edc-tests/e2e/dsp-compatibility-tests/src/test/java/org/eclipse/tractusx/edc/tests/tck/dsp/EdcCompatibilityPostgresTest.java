@@ -42,6 +42,7 @@ import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.utility.MountableFile;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -149,12 +150,18 @@ public class EdcCompatibilityPostgresTest {
         var monitor = new ConsoleMonitor(">>> TCK Runtime (Docker)", ConsoleMonitor.Level.INFO, true);
         var reporter = new TckTestReporter();
 
-        TCK_CONTAINER.addFileSystemBind(resourceConfig("docker.tck.properties"), "/etc/tck/config.properties", BindMode.READ_ONLY, SelinuxContext.SINGLE);
-        TCK_CONTAINER.addFileSystemBind(resourceConfig("dspace-edc-context-v1.jsonld"), "/etc/tck/dspace-edc-context-v1.jsonld", BindMode.READ_ONLY, SelinuxContext.SINGLE);
-        TCK_CONTAINER.addFileSystemBind(resourceConfig("tx-auth-v1.jsonld"), "/etc/tck/tx-auth-v1.jsonld", BindMode.READ_ONLY, SelinuxContext.SINGLE);
-        TCK_CONTAINER.addFileSystemBind(resourceConfig("cx-policy-v1.jsonld"), "/etc/tck/cx-policy-v1.jsonld", BindMode.READ_ONLY, SelinuxContext.SINGLE);
-        TCK_CONTAINER.addFileSystemBind(resourceConfig("cx-odrl.jsonld"), "/etc/tck/cx-odrl.jsonld", BindMode.READ_ONLY, SelinuxContext.SINGLE);
-        TCK_CONTAINER.withExtraHost("host.docker.internal", "host-gateway");
+        TCK_CONTAINER.addFileSystemBind(resourceConfig("docker.tck.properties"),
+                "/etc/tck/config.properties", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+        TCK_CONTAINER.addFileSystemBind(resourceConfig("dspace-edc-context-v1.jsonld"),
+                "/etc/tck/dspace-edc-context-v1.jsonld", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+        TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/tx-auth-v1.jsonld"),
+                "/etc/tck/tx-auth-v1.jsonld");
+        TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/cx-policy-v1.jsonld"),
+                "/etc/tck/cx-policy-v1.jsonld");
+        TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/cx-odrl.jsonld"),
+                "/etc/tck/cx-odrl.jsonld");
+        TCK_CONTAINER.withExtraHost("host.docker.internal",
+                "host-gateway");
         TCK_CONTAINER.withLogConsumer(outputFrame -> monitor.info(outputFrame.getUtf8String()));
         TCK_CONTAINER.withLogConsumer(reporter);
         TCK_CONTAINER.waitingFor(new LogMessageWaitStrategy().withRegEx(".*Test run complete.*").withStartupTimeout(Duration.ofSeconds(300)));

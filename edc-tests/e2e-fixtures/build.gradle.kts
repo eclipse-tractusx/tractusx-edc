@@ -29,6 +29,7 @@ dependencies {
     testFixturesApi(project(":edc-extensions:agreements:retirement-evaluation-spi"))
     testFixturesApi(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
     testFixturesApi(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
+    testFixturesApi(project(":core:json-ld-core"))
 
 
     testFixturesApi(libs.edc.core.token)
