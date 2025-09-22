@@ -23,16 +23,22 @@ import org.eclipse.edc.policy.context.request.spi.RequestPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyValidatorRule;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.iam.RequestContext;
 import org.eclipse.edc.spi.iam.RequestScope;
+import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 
+import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
 
 /**
  * Extract for TX default scopes e.g. MembershipCredential scope
  */
-public record DefaultScopeExtractor<C extends RequestPolicyContext>(Set<String> defaultScopes) implements PolicyValidatorRule<C> {
+public record DefaultScopeExtractor<C extends RequestPolicyContext>(Map<String, Set<String>> defaultScopes) implements PolicyValidatorRule<C> {
+    public static final String DSP_08 = "dataspace-protocol-http";
 
     @Override
     public Boolean apply(Policy policy, RequestPolicyContext policyContext) {
@@ -40,7 +46,17 @@ public record DefaultScopeExtractor<C extends RequestPolicyContext>(Set<String> 
         if (scopes == null) {
             throw new EdcException(format("%s not set in policy context", RequestScope.Builder.class.getName()));
         }
-        defaultScopes.forEach(scopes::scope);
+
+        var protocol = java.util.Optional.of(policyContext)
+                .map(RequestPolicyContext::requestContext)
+                .map(RequestContext::getMessage)
+                .map(RemoteMessage::getProtocol)
+                .orElse(null);
+        if (DSP_08.equals(protocol)) {
+            defaultScopes.get(DSP_SCOPE_V_08).forEach(scopes::scope);
+        } else {
+            defaultScopes.get(DSP_SCOPE_V_2025_1).forEach(scopes::scope);
+        }
         return true;
     }
 }
