@@ -32,7 +32,3 @@ dependencies {
 
     testImplementation(libs.edc.junit)
 }
-
-edcBuild {
-    publish.set(false)
-}

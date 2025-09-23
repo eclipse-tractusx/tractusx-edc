@@ -39,7 +39,8 @@ public class ConfidentialInformationSharingConstraintFunction<C extends Particip
                 Set.of(
                         "cx.sharing.affiliates:1",
                         "cx.sharing.managedLegalEntity:1"
-                )
+                ),
+                true
         );
     }
 }

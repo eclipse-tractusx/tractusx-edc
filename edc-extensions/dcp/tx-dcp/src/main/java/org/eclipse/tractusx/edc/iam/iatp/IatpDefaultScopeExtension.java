@@ -32,11 +32,16 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.tractusx.edc.iam.iatp.scope.DefaultScopeExtractor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
 import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
+import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
 
 @Extension(NAME)
@@ -73,15 +78,20 @@ public class IatpDefaultScopeExtension implements ServiceExtension {
         policyEngine.registerPostValidator(RequestTransferProcessPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes(context)));
     }
 
-    private Set<String> defaultScopes(ServiceExtensionContext context) {
+    private Map<String, Set<String>> defaultScopes(ServiceExtensionContext context) {
         var config = context.getConfig(TX_IATP_DEFAULT_SCOPE_PREFIX);
         var scopes = config.partition().map(this::createScope).collect(Collectors.toSet());
-
+        var scopesByVersion = new HashMap<String, Set<String>>();
         if (scopes.isEmpty()) {
-            monitor.info(format("No default scope from configuration. Using the default ones %s", DEFAULT_SCOPES));
-            return DEFAULT_SCOPES;
+            monitor.info(format("No default scope from configuration. Using the default ones %s for %s and %s for %s",
+                    DSP_SCOPE_V_2025_1, DEFAULT_SCOPES, DSP_SCOPE_V_08, V08_DEFAULT_SCOPES));
+            scopesByVersion.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
+            scopesByVersion.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);
+            return scopesByVersion;
         } else {
-            return scopes;
+            scopesByVersion.put(DSP_SCOPE_V_08, scopes);
+            scopesByVersion.put(DSP_SCOPE_V_2025_1, scopes);
+            return scopesByVersion;
         }
     }
 

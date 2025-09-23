@@ -37,7 +37,8 @@ public class ContractReferenceConstraintFunction<C extends ParticipantAgentPolic
     public ContractReferenceConstraintFunction() {
         super(
                 Set.of(Operator.IS_ALL_OF),
-                "[\\s\\S]+"
+                "[\\s\\S]+",
+                true
         );
     }
 }
