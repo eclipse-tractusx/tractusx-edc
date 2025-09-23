@@ -17,21 +17,33 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    id("application")
-}
+package org.eclipse.tractusx.edc.tests.tck.dsp;
 
+import org.testcontainers.containers.output.OutputFrame;
 
-dependencies {
-    runtimeOnly(project(":edc-tests:runtime:runtime-postgresql"))
-    runtimeOnly(libs.tck.extension)
-}
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
+public class TckTestReporter implements Consumer<OutputFrame> {
 
-edcBuild {
-    publish.set(false)
+    private final List<String> failures = new ArrayList<>();
+    private final Pattern failedRegex = Pattern.compile("FAILED: (\\w+:.*)");
+
+    public TckTestReporter() {
+    }
+
+    @Override
+    public void accept(OutputFrame outputFrame) {
+        var line = outputFrame.getUtf8String();
+        var failed = failedRegex.matcher(line);
+        if (failed.find()) {
+            failures.add(failed.group(1));
+        }
+    }
+
+    public List<String> failures() {
+        return new ArrayList<>(failures);
+    }
 }
