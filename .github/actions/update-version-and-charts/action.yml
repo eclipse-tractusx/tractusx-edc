@@ -62,7 +62,6 @@ runs:
       id: make-commit
       shell: bash
       run: |
-        git pull
         git add .
         git config user.name "eclipse-tractusx-bot"
         git config user.email "tractusx-bot@eclipse.org"
