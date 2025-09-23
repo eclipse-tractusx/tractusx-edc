@@ -33,11 +33,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
 import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
+import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -58,10 +62,13 @@ public class IatpDefaultScopeExtensionTest {
     @Test
     void initialize(ServiceExtensionContext context, IatpDefaultScopeExtension extension) {
         extension.initialize(context);
+        var scopes = new HashMap<String, Set<String>>();
+        scopes.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
+        scopes.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);
 
-        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
-        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
-        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(DEFAULT_SCOPES)));
+        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(scopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(scopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(scopes)));
     }
 
     @Test
@@ -78,10 +85,14 @@ public class IatpDefaultScopeExtensionTest {
         extension.initialize(context);
 
         var expectedScopes = Set.of("org.test.alias.foo:FooCredential:read", "org.test.alias.bar:BarCredential:write");
+        var scopes = new HashMap<String, Set<String>>();
+        scopes.put(DSP_SCOPE_V_08, expectedScopes);
+        scopes.put(DSP_SCOPE_V_2025_1, expectedScopes);
 
-        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(expectedScopes)));
-        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(expectedScopes)));
-        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(expectedScopes)));
+
+        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(scopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(scopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(scopes)));
     }
 
     @Test
@@ -94,11 +105,16 @@ public class IatpDefaultScopeExtensionTest {
         assertThatThrownBy(() -> extension.initialize(context)).isInstanceOf(EdcException.class);
     }
 
-    private record ScopeMatcher(Set<String> scopes) implements ArgumentMatcher<DefaultScopeExtractor> {
+    private record ScopeMatcher(Map<String, Set<String>> expectedScopes) implements ArgumentMatcher<DefaultScopeExtractor> {
 
         @Override
         public boolean matches(DefaultScopeExtractor defaultScopeExtractor) {
-            return defaultScopeExtractor.defaultScopes().containsAll(scopes);
+            Map<String, Set<String>> defaultScopes = defaultScopeExtractor.defaultScopes();
+            return defaultScopes.entrySet().stream()
+                    .allMatch((Map.Entry<String, Set<String>> entry) -> {
+                        Set<String> expectedSet = expectedScopes.get(entry.getKey());
+                        return expectedSet != null && entry.getValue().containsAll(expectedSet);
+                    });
         }
     }
 }
