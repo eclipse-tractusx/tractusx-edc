@@ -152,8 +152,8 @@ public class EdcCompatibilityPostgresTest {
 
         TCK_CONTAINER.addFileSystemBind(resourceConfig("docker.tck.properties"),
                 "/etc/tck/config.properties", BindMode.READ_ONLY, SelinuxContext.SINGLE);
-        TCK_CONTAINER.addFileSystemBind(resourceConfig("dspace-edc-context-v1.jsonld"),
-                "/etc/tck/dspace-edc-context-v1.jsonld", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+        TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/dspace-edc-context-v1.jsonld"),
+                "/etc/tck/dspace-edc-context-v1.jsonld");
         TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/tx-auth-v1.jsonld"),
                 "/etc/tck/tx-auth-v1.jsonld");
         TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/cx-policy-v1.jsonld"),

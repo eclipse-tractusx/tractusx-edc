@@ -31,7 +31,7 @@ dependencies {
     testFixturesApi(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
     testFixturesApi(project(":core:json-ld-core"))
 
-
+    testFixturesApi(libs.edc.ext.jsonld)
     testFixturesApi(libs.edc.core.token)
     testFixturesApi(libs.edc.junit)
     testFixturesApi(libs.edc.lib.cryptocommon)
