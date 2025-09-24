@@ -58,6 +58,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicyWithRightOperandAsArray;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.QueryHelperFunctions.createQuery;
@@ -170,6 +171,23 @@ public class CatalogTest {
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("Verify that the consumer receives only the offers he is permitted to (using BPN group validation)")
+    void requestCatalog_filteredByBpnGroup_shouldReturnOffer() {
+        var allowedGroup = "allowed-group";
+        var accessPolicy = bpnGroupPolicyWithRightOperandAsArray(Operator.IS_ANY_OF, allowedGroup, "test-group");
+
+        PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), allowedGroup);
+
+        PROVIDER.createAsset("test-asset");
+        var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy);
+        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        PROVIDER.createContractDefinition("test-asset", "def", accessPolicyId, contractPolicyId);
+
+        var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
+        assertThat(catalog).hasSize(1);
     }
 
     @Test
