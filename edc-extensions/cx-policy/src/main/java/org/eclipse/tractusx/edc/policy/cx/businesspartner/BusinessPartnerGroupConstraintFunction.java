@@ -124,7 +124,7 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
         var allowedGroups = bpnGroupHolder.allowedGroups;
         return bpnGroupHolder.assignedGroups
                 .stream()
-                .anyMatch(allowedGroups::contains);
+                .anyMatch(assigned -> allowedGroups.contains(assigned) || allowedGroups.stream().anyMatch(allowed -> allowed.contains("string=%s,".formatted(assigned))));
     }
 
     private boolean evaluateIsNoneOf(BpnGroupHolder bpnGroupHolder) {

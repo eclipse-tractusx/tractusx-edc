@@ -65,7 +65,11 @@ public class PolicyHelperFunctions {
     private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
 
     public static JsonObject bpnGroupPolicy(Operator operator, String... allowedGroups) {
-        return bpnGroupPolicy(operator.getOdrlRepresentation(), allowedGroups);
+        return bpnGroupPolicy(operator.getOdrlRepresentation(), false, allowedGroups);
+    }
+
+    public static JsonObject bpnGroupPolicyWithRightOperandAsArray(Operator operator, String... allowedGroups) {
+        return bpnGroupPolicy(operator.getOdrlRepresentation(), true, allowedGroups);
     }
 
     /**
@@ -279,9 +283,9 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-    private static JsonObject bpnGroupPolicy(String operator, String... allowedGroups) {
+    private static JsonObject bpnGroupPolicy(String operator, boolean rightOperandAsArray, String... allowedGroups) {
 
-        var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups), false);
+        var groupConstraint = atomicConstraint(BUSINESS_PARTNER_CONSTRAINT_KEY, operator, Arrays.asList(allowedGroups), rightOperandAsArray);
 
         var permission = Json.createObjectBuilder()
                 .add("action", CX_POLICY_2025_09_NS + "access")
