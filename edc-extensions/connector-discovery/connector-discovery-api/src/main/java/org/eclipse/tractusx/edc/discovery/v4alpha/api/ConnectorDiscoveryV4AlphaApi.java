@@ -56,7 +56,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
     JsonObject discoverDspVersionParamsV4Alpha(JsonObject querySpecJson);
 
 
-    @Schema(name = "ConnectorParamsDiscoveryRequestSchema", example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
+    @Schema(name = "ConnectorParamsDiscoveryRequest", example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
     record ConnectorParamsDiscoveryRequestSchema(
             @Schema(name = CONTEXT, requiredMode = REQUIRED)
             Object context,
@@ -71,7 +71,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
                 {
                     "@context": {
                         "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/"
                     },
                     "@type": "tx:ConnectorParamsDiscoveryRequest",
                     "tx:bpnl": "BPNL1234567890",
