@@ -2103,7 +2103,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConnectorParamsDiscoveryRequestSchema"
+              $ref: "#/components/schemas/ConnectorParamsDiscoveryRequest"
       responses:
         "200":
           description: A list of connector parameters per DSP version
@@ -2475,7 +2475,7 @@ components:
         edc:counterPartyId: did:web:one-example.com
         edc:counterPartyAddress: https://provider.domain.com/api/dsp/2025-1
         edc:protocol: dataspace-protocol-http:2025-1
-    ConnectorParamsDiscoveryRequestSchema:
+    ConnectorParamsDiscoveryRequest:
       required:
       - '@context'
       - bpnl
@@ -2491,16 +2491,13 @@ components:
           type: string
         counterPartyAddress:
           type: string
-      example: |
-        {
-            "@context": {
-                "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-                "edc": "https://w3id.org/edc/v0.0.1/ns/",
-            },
-            "@type": "tx:ConnectorParamsDiscoveryRequest",
-            "tx:bpnl": "BPNL1234567890",
-            "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
-        }
+      example:
+        '@context':
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+        '@type': tx:ConnectorParamsDiscoveryRequest
+        tx:bpnl: BPNL1234567890
+        edc:counterPartyAddress: https://provider.domain.com/api/dsp
     ContractAgreement:
       type: object
       properties:
