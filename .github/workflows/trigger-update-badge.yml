@@ -1,0 +1,50 @@
+name: trigger-update-badge.yml
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: 'a semver string denoting the version'
+      update-badge:
+        type: string
+        required: false
+        description: 'notEmpty if is a versioned snapshot'
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: 'a semver string denoting the version'
+      update-badge:
+        type: string
+        required: false
+        description: 'notEmpty if is a versioned snapshot'
+jobs:
+  update-snapshot-badge:
+    name: 'Update Snapshot badge in README.md'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Update README badge
+        run: |
+          VERSION="${{ inputs.version }}"
+          ESCAPED_VERSION="${VERSION//-/--}"
+          UPDATE_BADGE="${{ inputs.update-badge }}"
+          if [ -n "$UPDATE_BADGE" ]; then
+            sed -i "s|^\[snapshot-shield\]:.*|[snapshot-shield]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-blue?style=for-the-badge|" 'README.md'
+          fi
+      - name: Commit changes
+        id: commit-update-snapshot-badge
+        shell: bash
+        run: |
+          git add .
+          if git diff --cached --quiet; then 
+            echo "Not a versioned Snapshot" 
+          else 
+            git config user.name "eclipse-tractusx-bot"
+            git config user.email "tractusx-bot@eclipse.org"
+            git commit --message "Update snapshot badge"
+            git push origin HEAD
+          fi
