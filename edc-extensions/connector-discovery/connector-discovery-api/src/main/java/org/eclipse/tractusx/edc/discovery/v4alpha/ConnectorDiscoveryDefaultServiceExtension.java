@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha;
 
-import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -44,12 +44,12 @@ public class ConnectorDiscoveryDefaultServiceExtension implements ServiceExtensi
     @Inject
     private BdrsClient bdrsClient;
     @Inject
-    private VersionService versionService;
+    private EdcHttpClient httpClient;
     @Inject
     private TypeManager typeManager;
 
     @Provider(isDefault = true)
     public ConnectorDiscoveryService defaultConnectorDiscoveryService() {
-        return new ConnectorDiscoveryServiceImpl(bdrsClient, versionService, typeManager.getMapper());
+        return new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, typeManager.getMapper());
     }
 }
