@@ -41,7 +41,7 @@ import java.io.IOException;
 
 public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService {
 
-    private final static String DSP_DISCOVERY_PATH = "/.well-known/dspace-version";
+    private static final String DSP_DISCOVERY_PATH = "/.well-known/dspace-version";
 
     private final BdrsClient bdrsClient;
     private final EdcHttpClient httpClient;
