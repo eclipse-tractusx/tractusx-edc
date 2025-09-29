@@ -170,34 +170,34 @@ public class DiscoveryTest {
     }
 
     @Test
-    void discoveryShouldReturn502_ifMetadaEndpointNotReachable() {
+    void discoveryShouldReturn500_ifMetadaEndpointNotReachable() {
 
         var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl() + "/not-existing");
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
-        var body = response.statusCode(502)
+        var body = response.statusCode(500)
                 .extract().body().asString();
 
         assertThat(body)
                 .isNotNull()
-                .contains("Counter party well-known endpoint has failed");
+                .contains("Counter party well-known endpoint has failed with status 404 and message: Not Found");
 
     }
 
     @Test
-    void discoveryShouldReturn502_whenProviderEndpointNotReachable() {
+    void discoveryShouldReturn500_whenProviderEndpointNotReachable() {
 
-        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), "http://non-existing.provider");
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), "http://non-existing-provider.com");
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
-        var body = response.statusCode(502)
+        var body = response.statusCode(500)
                 .extract().body().asString();
 
         assertThat(body)
                 .isNotNull()
-                .contains("Timeout while waiting for the counter party to respond.");
+                .contains("An exception with the following message occurred while executing dsp version request:");
 
     }
 
