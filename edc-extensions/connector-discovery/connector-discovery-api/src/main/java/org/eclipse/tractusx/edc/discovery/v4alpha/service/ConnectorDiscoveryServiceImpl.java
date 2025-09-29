@@ -23,34 +23,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import okhttp3.Request;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest;
-import org.eclipse.edc.connector.controlplane.protocolversion.spi.ProtocolVersionRequest;
-import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
 import org.eclipse.edc.protocol.spi.ProtocolVersion;
 import org.eclipse.edc.protocol.spi.ProtocolVersions;
-import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.web.spi.exception.BadGatewayException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.io.IOException;
 
 
 public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService {
 
+    private final static String DSP_DISCOVERY_PATH = "/.well-known/dspace-version";
+
     private final BdrsClient bdrsClient;
-    private final VersionService versionService;
+    private final EdcHttpClient httpClient;
     private final ObjectMapper mapper;
 
-    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, VersionService versionService, ObjectMapper mapper) {
+    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, EdcHttpClient httpClient, ObjectMapper mapper) {
         this.bdrsClient = bdrsClient;
-        this.versionService = versionService;
+        this.httpClient = httpClient;
         this.mapper = mapper;
 
     }
@@ -60,13 +59,20 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
 
         var discoveredParameters = Json.createObjectBuilder();
 
-        try {
-            var result = requestVersions(request);
+        var wellKnownRequest = new Request.Builder()
+                .url(request.counterPartyAddress() + DSP_DISCOVERY_PATH)
+                .get()
+                .build();
 
-            if (result.failed()) {
-                throw new BadGatewayException("Counter party well-known endpoint has failed: " + result.getFailureMessages());
+        try (var response = httpClient.execute(wellKnownRequest)) {
+
+            if (!response.isSuccessful()) {
+                var failureMessage = response.message();
+                return ServiceResult.unexpected("Counter party well-known endpoint has failed with status %s and message: %s".formatted(response.code(), failureMessage));
             } else {
-                var protocolVersions = mapper.readValue(result.getContent(), ProtocolVersions.class);
+                var bytesBody = response.body().bytes();
+
+                var protocolVersions = mapper.readValue(bytesBody, ProtocolVersions.class);
                 var did = bdrsClient.resolveDid(request.bpnl());
                 var version20251 = findProtocolVersion(Dsp2025Constants.V_2025_1_VERSION, protocolVersions);
                 if (version20251 != null && did != null) {
@@ -81,28 +87,13 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
                 }
             }
 
-        } catch (TimeoutException e) {
-            throw new BadGatewayException("Timeout while waiting for the counter party to respond.");
-        } catch (BadGatewayException e) {
-            throw new BadGatewayException(e.getMessage());
-        } catch (Exception e) {
-            return ServiceResult.unexpected("Error while discovering dsp parameters: " + e.getMessage());
+        } catch (IOException e) {
+            return ServiceResult.unexpected("An exception with the following message occurred while executing dsp version request: %s".formatted(e.getMessage()));
         }
 
         return ServiceResult.unexpected("No valid protocol version found for the counter party. " +
                 "The provided BPNL couldn't be resolved to a DID or the counter party does " +
                 "not support any of the expected protocol versions (" + Dsp08Constants.V_08_VERSION + ", " + Dsp2025Constants.V_2025_1_VERSION + ")");
-    }
-
-    private StatusResult<byte[]> requestVersions(ConnectorParamsDiscoveryRequest request) throws Exception {
-
-        var protocolVersionRequest = ProtocolVersionRequest.Builder.newInstance()
-                .protocol(HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP)
-                .counterPartyId(request.bpnl())
-                .counterPartyAddress(request.counterPartyAddress())
-                .build();
-
-        return versionService.requestVersions(protocolVersionRequest).get(10, TimeUnit.SECONDS);
     }
 
     private ProtocolVersion findProtocolVersion(String targetVersion, ProtocolVersions protocolVersions) {
