@@ -1,0 +1,71 @@
+#################################################################################
+#  Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+
+---
+name: trigger-update-badge.yml
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: 'a semver string denoting the version'
+      update-badge:
+        type: string
+        required: false
+        description: 'notEmpty if is a versioned snapshot'
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: 'a semver string denoting the version'
+      update-badge:
+        type: string
+        required: false
+        description: 'notEmpty if is a versioned snapshot'
+jobs:
+  update-snapshot-badge:
+    name: 'Update Snapshot badge in README.md'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Update README badge
+        run: |
+          VERSION="${{ inputs.version }}"
+          ESCAPED_VERSION="${VERSION//-/--}"
+          UPDATE_BADGE="${{ inputs.update-badge }}"
+          if [ -n "$UPDATE_BADGE" ]; then
+            sed -i "s|^\[snapshot-shield\]:.*|[snapshot-shield]:https://img.shields.io/badge/latest--snapshot-$ESCAPED_VERSION-blue?style=for-the-badge|" 'README.md'
+          fi
+      - name: Commit changes
+        id: commit-update-snapshot-badge
+        shell: bash
+        run: |
+          git add .
+          if git diff --cached --quiet; then 
+            echo "Not a versioned Snapshot" 
+          else 
+            git config user.name "eclipse-tractusx-bot"
+            git config user.email "tractusx-bot@eclipse.org"
+            git commit --message "Update snapshot badge"
+            git push origin HEAD
+          fi
