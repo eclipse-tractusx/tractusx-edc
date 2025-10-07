@@ -45,7 +45,9 @@ jobs:
           fetch-depth: 0
       - id: validation
         name: "Validations"
+        shell: bash
         run: |
+          shopt -s nocasematch
           IFS=.- read -r MAJOR_INPUT MINOR_INPUT PATCH_INPUT SNAPSHOT_INPUT<<<"${{ inputs.version }}" 
 
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
