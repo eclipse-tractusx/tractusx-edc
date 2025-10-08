@@ -73,6 +73,9 @@ Content-Type: application/json
 }
 ```
 
+**NOTE:** It is important to always verify if all json-ld prefixed fields in the request can be resolved to a known JSON-LD vocabulary.
+It is also important to make sure prefixed terms will be resolved to the intended IRI.
+
 - `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
 - `protocol` is the providers' supported protocol
 - In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
