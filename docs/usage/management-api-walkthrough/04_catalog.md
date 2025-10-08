@@ -12,14 +12,17 @@ Content-Type: application/json
 ```
 ```json
 {
-  "@context": {
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "odrl": "http://www.w3.org/ns/odrl/2/"
-  },
+  "@context": [
+    "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
+    "https://w3id.org/catenax/2025/9/policy/context.jsonld",
+    {
+      "@vocab":"https://w3id.org/edc/v0.0.1/ns/"
+    }
+  ],
   "@type": "CatalogRequest",
   "counterPartyId": "<string>",
-  "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
-  "protocol": "dataspace-protocol-http",
+  "counterPartyAddress": "https://provider-control.plane/api/v1/dsp/2025-1",
+  "protocol": "dataspace-protocol-http:2025-1",
   "querySpec": {
     "@type": "QuerySpec",
     "offset": 0,
@@ -38,10 +41,10 @@ Content-Type: application/json
 ```
 The request body is lean. Mandatory properties are:
 - `counterPartyAddress` (formerly `providerUrl`): This property points to the DSP-endpoint of the Data Provider's Control
-  Plane. Usually this ends on `/api/v1/dsp`.
-- `counterPartyId`: must be the provider BPN. This in not a mandatory property for EDC but it's required for TractusX-EDC.
-  If omitted the catalog request will fail.
-- `protocol`: must be `"dataspace-protocol-http"`.
+  Plane.
+- `counterPartyId`: must be the provider BPN or DID.
+- `protocol`: must be a supported protocol by the provider. Usually `"dataspace-protocol-http"` for providers that support
+DSP 0.8 or `"dataspace-protocol-http:2025-1"` for providers that support DSP 2025-1.
 
 The `querySpec` section is optional and allows the Data Consumer to specify what entries from the catalog shall be returned.
 How to write proper `filterExpression`s was previously [explained](03_contractdefinitions.md#assetsselector).
@@ -63,95 +66,85 @@ any further communication between the Business Partners useless.
 
 ## Returned Payload
 
-The returned payload is a `dcat:Catalog` as required by the [DSP-Specification v0.8](https://docs.internationaldataspaces.org/ids-knowledgebase/v/dataspace-protocol/catalog/catalog.protocol).
+The returned payload is a `dcat:Catalog` as required by the supported DSP version.
 
 ```json
 {
   "@id": "acd67c9c-a5c6-4c59-9474-fcd3f948eab8",
-  "@type": "dcat:Catalog",
-  "dspace:participantId": "BPNL000000001INT",
-  "dcat:dataset": {
+  "@type": "Catalog",
+  "participantId": "did:web:something:BPNL000000001INT",
+  "dataset": {
     "@id": "{{ASSET_ID}}",
-    "@type": "dcat:Dataset",
-    "odrl:hasPolicy": {
+    "@type": "Dataset",
+    "hasPolicy": {
       "@id": "MQ==:MQ==:M2ZmZDRhY2MtMzkyNy00NGI4LWJlZDItNDcwY2RiZGRjN2Ex",
       "@type": "odrl:Offer",
-      "odrl:permission": {
-        "odrl:action": {
-          "odrl:type": "http://www.w3.org/ns/odrl/2/use"
+      "permission": {
+        "action": "use",
+        "constraint": {
+          "leftOperand": "FrameworkAgreement",
+          "operand": "eq",
+          "rightOperand": "DataExchangeGovernance:1.0"
         },
-        "odrl:constraint": {
-          "odrl:or": {
-            "odrl:leftOperand": "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup",
-            "odrl:operator": {
-              "@id": "odrl:eq"
-            },
-            "odrl:rightOperand": "gold-partners"
-          }
-        }
-      },
-      "odrl:prohibition": [],
-      "odrl:obligation": []
+        "prohibition": [],
+        "obligation": []
+      }
     },
-    "dcat:distribution": [
+    "distribution": [
       {
         "@type": "dcat:Distribution",
-        "dct:format": {
+        "format": {
           "@id": "AzureStorage-PUSH"
         },
-        "dcat:accessService": {
+        "accessService": {
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
-          "@type": "dcat:DataService",
-          "dct:terms": "connector",
-          "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "@type": "DataService",
+          "terms": "connector",
+          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
         }
       },
       {
         "@type": "dcat:Distribution",
-        "dct:format": {
+        "format": {
           "@id": "HttpData-PULL"
         },
-        "dcat:accessService": {
+        "accessService": {
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
-          "@type": "dcat:DataService",
-          "dct:terms": "connector",
-          "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "@type": "DataService",
+          "terms": "connector",
+          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
         }
       },
       {
-        "@type": "dcat:Distribution",
-        "dct:format": {
+        "@type": "Distribution",
+        "format": {
           "@id": "AmazonS3-PUSH"
         },
-        "dcat:accessService": {
+        "accessService": {
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "dcat:DataService",
-          "dct:terms": "connector",
-          "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "terms": "connector",
+          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
         }
       }
     ],
     "description": "Product EDC Demo Asset 1",
     "id": "1"
   },
-  "dcat:service": {
+  "service": {
     "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
     "@type": "dcat:DataService",
-    "dct:terms": "connector",
-    "dct:endpointUrl": "http://provider-data.plane/api/v1/dsp"
+    "terms": "connector",
+    "endpointUrl": "http://provider-data.plane/api/v1/dsp"
   },
-  "participantId": "{{PROVIDER_BPN}}",
-  "@context": {
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-    "tx-auth": "https://w3id.org/tractusx/auth/",
-    "cx-policy": "https://w3id.org/catenax/policy/",
-    "dcat": "http://www.w3.org/ns/dcat#",
-    "dct": "http://purl.org/dc/terms/",
-    "odrl": "http://www.w3.org/ns/odrl/2/",
-    "dspace": "https://w3id.org/dspace/v0.8/"
-  }
+  "@context": [
+    "https://w3id.org/tractusx/auth/v1.0.0",
+    "https://w3id.org/catenax/2025/9/policy/context.jsonld",
+    "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
+    "https://w3id.org/dspace/2025/1/context.jsonld",
+    "https://w3id.org/edc/dspace/v0.0.1"
+  ]
+}
 }
 ```
 In the payload above, some properties are meta-data that's independent of whether the Provider extends any Data Offers
@@ -159,22 +152,22 @@ to the Consumer.
 
 - The `@id` is the identifier for this catalog. As the catalog is created dynamically, the id is a UUID regenerated for each
   request to the Provider's catalog.
-- `dcat:service` holds data about the Provider's connector that the Consumer's connector communicated with.
-- `edc:participantId` signifies the BPN of the Provider. This is specific to the EDC and not mandated by the DSP-spec.
+- `service` holds data about the Provider's connector that the Consumer's connector communicated with.
+- `participantId` signifies the identifier of the Provider. This is specific to the EDC and not mandated by the DSP-spec.
 - `@context` is part of every JSON-LD document.
 
-The Data Offers are hidden in the `dcat:dataset` section, grouped by the [Asset](01_assets.md) that the offer is made for.
+The Data Offers are hidden in the `dataset` section, grouped by the [Asset](01_assets.md) that the offer is made for.
 Consequently, if there may be more than one offer for the same Asset, requiring a Data Consumer to select based on the
 policies included.
 
 - The `@id` corresponds to the id of the Asset that can be negotiated for.
-- `dcat:Distribution` makes statements over which Data Planes an Asset's data can be retrieved. Currently, the TractusX-EDC supports
+- `Distribution` makes statements over which Data Planes an Asset's data can be retrieved. Currently, the TractusX-EDC supports
   `HttpData-PULL`, `HttpData-PUSH`, `AmazonS3-PUSH` and `AzureStorage-PUSH` capabilities.
-- `dcat:hasPolicy` holds the Data Offer that is relevant for the Consumer.
+- `hasPolicy` holds the Data Offer that is relevant for the Consumer.
     - `@id` is the identifier for the Data Offer. The EDC composes this id by concatenating three identifiers in base64-encoding.
       separated with `:` (colons). The format is `base64(contractDefinitionId):base64(assetId):base64(newUuidV4)`. The last
       of three UUIDs changes with every request as every /v3/catalog/request call yields a new catalog with new Data Offers.
-    - The `odrl:permission`, `odrl:prohibition` and `odrl:obligation` will hold the content of the contractPolicy configured
+    - The `permission`, `prohibition` and `obligation` will hold the content of the contractPolicy configured
       in the [Contract Definition](03_contractdefinitions.md) the Contract Offer was derived from.
 
 ## Notice

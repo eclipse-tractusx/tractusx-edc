@@ -23,7 +23,7 @@ has selected from [ODRL](https://www.w3.org/TR/odrl-model/#policy).
 
 Catena-X has set strict conventions for participants which kinds of Policies they are expected to process. This is
 described in
-Standard [CX-0152 - Policy Constraints for Data Exchange](https://catenax-ev.github.io/docs/next/standards/overview).
+Standard [CX-0152 - Policy Constraints for Data Exchange](https://catenax-ev.github.io/docs/next/standards/CX-0152-PolicyConstrainsForDataExchange).
 The standard defines Constraints which Catena-X participants can compose to Policies.
 
 There are certain rules for which Constraints can be used in which context. When setting the helm chart's
@@ -34,6 +34,8 @@ highly recommended to keep the validation enabled to avoid accidental misconfigu
 The following table was compiled from the [
 `PolicyValidationConstants`](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-extensions/cx-policy/src/main/java/org/eclipse/tractusx/edc/policy/cx/validator/PolicyValidationConstants.java#L75)
 class - please refer back to it when doubts arise.
+For additional information on individuals' constraints schema or examples, 
+please refer to the CX-0152 standard [appendix](https://catenax-ev.github.io/docs/next/standards/CX-0152-PolicyConstrainsForDataExchange/Appendix).
 
 | Name                              | Action          | usable in                   | side-effects                                                                                                                                 |
 |-----------------------------------|-----------------|-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|

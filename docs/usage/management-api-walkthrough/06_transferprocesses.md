@@ -49,7 +49,7 @@ Content-Type: application/json
     "type": "<supported-transfer-type>"
   },
   "privateProperties": {},
-  "protocol": "dataspace-protocol-http",
+  "protocol": "dataspace-protocol-http:2025-1",
   "transferType": "HttpData-PULL",
   "callbackAddresses": [
     {
@@ -75,7 +75,7 @@ Content-Type: application/json
 - `dataDestination` will in the case of an HTTP PULL-based transfer of the Token be a `DataAddress` object, holding exclusively
   the `type` property that must be set to `"HttpProxy"`.
 - `privateProperties` can be filled with arbitrary data (like in the [assets-API](01_assets.md)).
-- `protocol` describes the protocol between the EDCs and will always be `dataspace-protocol-http`.
+- `protocol` describes the protocol between the EDCs.
 - `transferType` should be one of the returned format in the [Catalog](04_catalog.md)
 - `callbackAddresses`: Like the [Contract Negotiation API](05_contractnegotiations.md), an application can also register
   a callback listener to get updates on the Transfer Process state. The relevant signal is `transfer.process`.
@@ -90,9 +90,6 @@ This call also returns an id, that can be used to monitor the progress.
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-    "tx-auth": "https://w3id.org/tractusx/auth/",
-    "cx-policy": "https://w3id.org/catenax/policy/",
     "odrl": "http://www.w3.org/ns/odrl/2/"
   }
 }
@@ -147,9 +144,6 @@ yielding
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-    "tx-auth": "https://w3id.org/tractusx/auth/",
-    "cx-policy": "https://w3id.org/catenax/policy/",
     "odrl": "http://www.w3.org/ns/odrl/2/"
   }
 }
