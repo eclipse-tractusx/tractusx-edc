@@ -63,7 +63,6 @@ runs:
       shell: bash
       run: |
         if [[ "${{ inputs.bump_version }}" == "true" ]] then
-          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
           MESSAGE="Bump to version ${{ steps.resolver.outputs.version }}"
         else
           MESSAGE="Prepare release ${{ inputs.version }}"
