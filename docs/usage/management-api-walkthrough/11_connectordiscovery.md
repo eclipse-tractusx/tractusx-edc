@@ -8,7 +8,7 @@ metadata endpoint location (at `/.well-known/dspace-version`)
 which dataspace participants should use to discover which versions of the protocol are supported by a Connector.
 
 To ease the discovery of available and supported DSP versions of a Connector, the tractusx-edc project makes available
-and API endpoint that proxies the request to metadata endpoint and returns the corresponding parameters for
+an API endpoint that proxies the request to the metadata endpoint and returns the corresponding parameters for the
 latest supported DSP version.
 
 DSP parameter discovery is done via the following request: 
@@ -31,7 +31,7 @@ Content-Type: application/json
 }
 ```
 
-If the counterpart connector supports DSP version 2025-1, a valid response should be:
+If the counterparty connector supports DSP version 2025-1, a valid response should be:
 ```json
 [
   {
@@ -47,9 +47,7 @@ If the counterpart connector supports DSP version 2025-1, a valid response shoul
 Notice the automatic resolution of the `counterPartyId` to DID, and the appendment of the 
 correct DSP version path to the counterPartyAddress and to the required protocol.
 
-If the counterpart does not support DSP version 2025-1, then the correct parameters for a previous version will be returned.
-
-The expectation for a client of this API is to directly use the information provided in the above response in the request
+A client of this API can directly use the information provided in the above response in the request
 chain initiated by a catalog request, as described in the [catalog walkthrough](04_catalog.md).
 
 ## Reference
