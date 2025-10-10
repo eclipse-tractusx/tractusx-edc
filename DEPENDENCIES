@@ -282,10 +282,10 @@ maven/mavencentral/io.netty/netty-transport/4.1.86.Final, Apache-2.0 AND BSD-3-C
 maven/mavencentral/io.netty/netty-transport/4.2.6.Final, Apache-2.0, approved, #16113
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.20.1, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.20.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.20.0-alpha, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.20.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.20.0-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.20.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.20.0-alpha, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry.javaagent/opentelemetry-javaagent/2.20.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.37.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.54.0-alpha, , restricted, clearlydefined
@@ -963,7 +963,7 @@ maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.33.0, Apache-2.0
 maven/mavencentral/software.amazon.awssdk/s3/2.32.12, Apache-2.0, approved, #22931
 maven/mavencentral/software.amazon.awssdk/s3/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.32.12, Apache-2.0, approved, #22925
-maven/mavencentral/software.amazon.awssdk/sdk-core/2.33.0, Apache-2.0, restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sdk-core/2.33.0, Apache-2.0, approved, #23893
 maven/mavencentral/software.amazon.awssdk/sts/2.32.12, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.32.12, Apache-2.0, approved, #22926
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.33.0, Apache-2.0 AND BSD-2-Clause AND MIT, approved, clearlydefined
