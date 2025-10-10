@@ -62,8 +62,14 @@ runs:
       id: make-commit
       shell: bash
       run: |
+        if [[ "${{ inputs.bump_version }}" == "true" ]] then
+          MESSAGE="Bump to version ${{ steps.resolver.outputs.version }}"
+        else
+          MESSAGE="Prepare release ${{ inputs.version }}"
+        fi
+        
         git add .
         git config user.name "eclipse-tractusx-bot"
         git config user.email "tractusx-bot@eclipse.org"
-        git commit --message "Prepare release ${{ inputs.version }}"
+        git commit --message "$MESSAGE"
         echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT

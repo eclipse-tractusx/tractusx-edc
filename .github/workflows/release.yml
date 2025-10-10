@@ -213,7 +213,7 @@ jobs:
             });
 
   main-branch-update:
-    name: "Main Branch Update"
+    name: "Bump main branch version"
     runs-on: ubuntu-latest
     needs: [ validation, github-release ]
     if: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
