@@ -764,7 +764,7 @@ maven/mavencentral/org.eclipse.microprofile.openapi/microprofile-openapi-api/3.1
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
 maven/mavencentral/org.eclipse.sisu/org.eclipse.sisu.inject/0.9.0.M4, EPL-1.0, approved, technology.sisu
 maven/mavencentral/org.eclipse.sisu/org.eclipse.sisu.plexus/0.9.0.M4, EPL-1.0, approved, technology.sisu
-maven/mavencentral/org.flywaydb/flyway-core/11.13.1, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/11.13.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.flywaydb/flyway-database-postgresql/11.13.1, , restricted, clearlydefined
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
@@ -826,25 +826,31 @@ maven/mavencentral/org.junit-pioneer/junit-pioneer/1.9.1, EPL-2.0, approved, cle
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.3, EPL-2.0, approved, #9714
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.13.2, EPL-2.0, approved, #21577
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.13.4, EPL-2.0, approved, #21577
+maven/mavencentral/org.junit.jupiter/junit-jupiter-api/6.0.0, EPL-2.0, approved, #22892
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.13.4, EPL-2.0, approved, #21699
+maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/6.0.0, EPL-2.0, approved, #23932
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.13.4, EPL-2.0, approved, #21706
+maven/mavencentral/org.junit.jupiter/junit-jupiter-params/6.0.0, EPL-2.0, approved, #23934
 maven/mavencentral/org.junit.jupiter/junit-jupiter/5.13.1, EPL-2.0, approved, #21845
 maven/mavencentral/org.junit.jupiter/junit-jupiter/5.13.2, EPL-2.0, approved, #21845
-maven/mavencentral/org.junit.jupiter/junit-jupiter/5.13.4, EPL-2.0, approved, #21845
+maven/mavencentral/org.junit.jupiter/junit-jupiter/6.0.0, LicenseRef-scancode-unknown-license-reference AND EPL-2.0, restricted, clearlydefined
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.13.2, EPL-2.0, approved, #21576
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.13.4, EPL-2.0, approved, #21576
+maven/mavencentral/org.junit.platform/junit-platform-commons/6.0.0, EPL-2.0, approved, #22893
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.13.4, EPL-2.0, approved, #21701
+maven/mavencentral/org.junit.platform/junit-platform-engine/6.0.0, EPL-2.0, approved, #23933
 maven/mavencentral/org.junit.platform/junit-platform-launcher/1.10.3, EPL-2.0, approved, #15216
 maven/mavencentral/org.junit.platform/junit-platform-launcher/1.13.2, EPL-2.0, approved, #21708
 maven/mavencentral/org.junit.platform/junit-platform-launcher/1.13.4, EPL-2.0, approved, #21708
-maven/mavencentral/org.junit.platform/junit-platform-suite-api/1.13.4, EPL-2.0, approved, #21709
-maven/mavencentral/org.junit.platform/junit-platform-suite-commons/1.13.4, EPL-2.0, approved, #21704
+maven/mavencentral/org.junit.platform/junit-platform-launcher/6.0.0, EPL-2.0, approved, #23935
+maven/mavencentral/org.junit.platform/junit-platform-suite-api/6.0.0, EPL-2.0, approved, #23939
 maven/mavencentral/org.junit.platform/junit-platform-suite-engine/1.11.3, EPL-2.0, approved, #15933
 maven/mavencentral/org.junit.platform/junit-platform-suite-engine/1.13.1, EPL-2.0, approved, #21703
 maven/mavencentral/org.junit.platform/junit-platform-suite-engine/1.13.2, EPL-2.0, approved, #21703
-maven/mavencentral/org.junit.platform/junit-platform-suite-engine/1.13.4, EPL-2.0, approved, #21703
+maven/mavencentral/org.junit.platform/junit-platform-suite-engine/6.0.0, EPL-2.0, approved, #23937
 maven/mavencentral/org.junit/junit-bom/5.13.4, EPL-2.0, approved, #21846
 maven/mavencentral/org.junit/junit-bom/5.9.0, EPL-2.0, approved, #4711
+maven/mavencentral/org.junit/junit-bom/6.0.0, , restricted, clearlydefined
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
 maven/mavencentral/org.keycloak/keycloak-admin-client/26.0.5, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.keycloak/keycloak-client-common-synced/26.0.5, Apache-2.0, approved, #22754
