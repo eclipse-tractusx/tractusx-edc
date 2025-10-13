@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.discovery.e2e;
 
 import jakarta.json.JsonObject;
+import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
@@ -45,6 +46,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 
+@EndToEndTest
 public class DiscoveryTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
