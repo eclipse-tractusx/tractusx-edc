@@ -68,7 +68,7 @@ jobs:
           output: "trivy-results-config.sarif"
           severity: "CRITICAL,HIGH"
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: "trivy-results-config.sarif"
@@ -110,6 +110,6 @@ jobs:
           timeout: "10m0s"
       - name: Upload Trivy scan results to GitHub Security tab
         if: success() && steps.imageCheck.outcome != 'failure'
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results-${{ matrix.image }}.sarif"
