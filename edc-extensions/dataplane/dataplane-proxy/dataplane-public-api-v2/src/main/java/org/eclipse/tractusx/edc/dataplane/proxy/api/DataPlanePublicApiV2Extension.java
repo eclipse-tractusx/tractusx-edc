@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +21,8 @@
 package org.eclipse.tractusx.edc.dataplane.proxy.api;
 
 import org.eclipse.edc.connector.dataplane.spi.Endpoint;
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceService;
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceServiceRegistry;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
@@ -74,6 +77,8 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
     @Inject
     private PublicEndpointGeneratorService generatorService;
     @Inject
+    private EndpointDataReferenceServiceRegistry edrServiceRegistry;
+    @Inject
     private Hostname hostname;
 
     @Override
@@ -96,9 +101,11 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
         }
         var endpoint = Endpoint.url(publicBaseUrl);
         generatorService.addGeneratorFunction("HttpData", dataAddress -> endpoint);
+        edrServiceRegistry.register(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService); //added
 
         if (publicApiResponseUrl != null) {
             generatorService.addResponseGeneratorFunction("HttpData", () -> Endpoint.url(publicApiResponseUrl));
+            edrServiceRegistry.registerResponseChannel(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService); //added
         }
 
         generatorService.addGeneratorFunction(PROXY_HTTP_DATA_TYPE, dataAddress -> endpoint);
