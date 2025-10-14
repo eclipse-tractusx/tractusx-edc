@@ -34,6 +34,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -76,16 +77,19 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
     @BeforeEach
     void setup() {
         extension = new DataPlaneSelectorConfigurationServiceExtension();
+        try {
+            Field f1 = extension.getClass().getDeclaredField("dataPlaneSelectorService");
+            f1.setAccessible(true);
+            f1.set(extension, dataPlaneSelectorService);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
-        when(serviceExtensionContext.getService(DataPlaneSelectorService.class))
-                .thenReturn(dataPlaneSelectorService);
         when(serviceExtensionContext.getMonitor()).thenReturn(monitor);
     }
 
     @Test
     void testName() {
-        var extension = new DataPlaneSelectorConfigurationServiceExtension();
-
         assertThat(extension.name()).contains("Data Plane Selector Configuration Extension");
     }
 
@@ -96,7 +100,6 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
         when(serviceExtensionContext.getConfig("edc.dataplane.selector")).thenReturn(config);
         extension.initialize(serviceExtensionContext);
 
-        verify(serviceExtensionContext, times(1)).getService(DataPlaneSelectorService.class);
         verify(serviceExtensionContext, times(1)).getMonitor();
         when(serviceExtensionContext.getConfig(CONFIG_PREFIX))
                 .thenReturn(config);
