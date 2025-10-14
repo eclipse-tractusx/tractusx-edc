@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
  * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,26 +21,32 @@
 
 package org.eclipse.tractusx.edc.dataplane.selector.configuration;
 
+import org.eclipse.edc.boot.system.DefaultServiceExtensionContext;
+import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
+import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.boot.BootServicesExtension.PARTICIPANT_ID;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.CONFIG_PREFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.DESTINATION_TYPES_SUFFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.PROPERTIES_SUFFIX;
@@ -48,13 +55,15 @@ import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlan
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.TRANSFER_TYPES_SUFFIX;
 import static org.eclipse.tractusx.edc.dataplane.selector.configuration.DataPlaneSelectorConfigurationServiceExtension.URL_SUFFIX;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(DependencyInjectionExtension.class)
 class DataPlaneSelectorConfigurationServiceExtensionTest {
     private static final String S3_BUCKET = "s3-bucket";
     private static final String BLOB_STORAGE = "blob-storage";
@@ -69,23 +78,17 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
     private static final String DESTINATION_TYPES_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, DESTINATION_TYPES_SUFFIX);
     private static final String TRANSFER_TYPES_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, TRANSFER_TYPES_SUFFIX);
     private static final String PROPERTIES_KEY = "%s.%s".formatted(DATA_PLANE_INSTANCE_ID, PROPERTIES_SUFFIX);
-    private final ServiceExtensionContext serviceExtensionContext = mock();
+
     private final DataPlaneSelectorService dataPlaneSelectorService = mock();
     private final Monitor monitor = mock();
     private DataPlaneSelectorConfigurationServiceExtension extension;
 
     @BeforeEach
-    void setup() {
-        extension = new DataPlaneSelectorConfigurationServiceExtension();
-        try {
-            Field f1 = extension.getClass().getDeclaredField("dataPlaneSelectorService");
-            f1.setAccessible(true);
-            f1.set(extension, dataPlaneSelectorService);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    void setup(ServiceExtensionContext context, ObjectFactory factory) {
+        context.registerService(DataPlaneSelectorService.class, dataPlaneSelectorService);
+        context.registerService(Monitor.class, monitor);
 
-        when(serviceExtensionContext.getMonitor()).thenReturn(monitor);
+        extension = factory.constructInstance(DataPlaneSelectorConfigurationServiceExtension.class);
     }
 
     @Test
@@ -95,13 +98,12 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
 
     @Test
     void testInitialize() {
-
         var config = ConfigFactory.fromMap(getConfig());
-        when(serviceExtensionContext.getConfig("edc.dataplane.selector")).thenReturn(config);
-        extension.initialize(serviceExtensionContext);
+        var context = spy(contextWithConfig(config));
 
-        verify(serviceExtensionContext, times(1)).getMonitor();
-        when(serviceExtensionContext.getConfig(CONFIG_PREFIX))
+        extension.initialize(context);
+
+        when(context.getConfig(CONFIG_PREFIX))
                 .thenReturn(config);
 
         verify(dataPlaneSelectorService, times(1))
@@ -122,8 +124,9 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
         var configMap = getConfig();
         configMap.put(configKey, configValue);
         var config = ConfigFactory.fromMap(configMap);
-        when(serviceExtensionContext.getConfig(CONFIG_PREFIX)).thenReturn(config);
-        extension.initialize(serviceExtensionContext);
+        var context = contextWithConfig(config);
+
+        extension.initialize(context);
 
         // one warning deprecation, one warning config missing, one warning data plane instance skipped
         verify(monitor, times(3)).warning(anyString());
@@ -132,21 +135,29 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
     @Test
     void throwsExceptionOnPropertiesNoJson() {
         var configMap = getConfig();
-        configMap.put(PROPERTIES_KEY, "no json");
+        configMap.put(CONFIG_PREFIX + "." + PROPERTIES_KEY, "no json");
         var config = ConfigFactory.fromMap(configMap);
-        when(serviceExtensionContext.getConfig(CONFIG_PREFIX)).thenReturn(config);
+        var context = contextWithConfig(config);
 
-        assertThrows(EdcException.class, () -> extension.initialize(serviceExtensionContext));
+        assertThrows(EdcException.class, () -> extension.initialize(context));
+    }
+
+    @NotNull
+    private DefaultServiceExtensionContext contextWithConfig(Config config) {
+        var context = new DefaultServiceExtensionContext(monitor, config);
+        context.initialize();
+        return context;
     }
 
     private Map<String, String> getConfig() {
         return new HashMap<>() {
             {
-                put(URL_KEY, DATA_PLANE_INSTANCE_URL);
-                put(SOURCE_TYPES_KEY, DATA_PLANE_INSTANCE_SOURCE_TYPES);
-                put(TRANSFER_TYPES_KEY, DATA_PLANE_INSTANCE_TRANSFER_TYPES);
-                put(DESTINATION_TYPES_KEY, S3_BUCKET);
-                put(PROPERTIES_KEY, "{ \"%s\": \"%s\" }".formatted(PUBLIC_API_URL_PROPERTY, DATA_PLANE_INSTANCE_URL));
+                put(PARTICIPANT_ID, "participant");
+                put(CONFIG_PREFIX + "." + URL_KEY, DATA_PLANE_INSTANCE_URL);
+                put(CONFIG_PREFIX + "." + SOURCE_TYPES_KEY, DATA_PLANE_INSTANCE_SOURCE_TYPES);
+                put(CONFIG_PREFIX + "." + TRANSFER_TYPES_KEY, DATA_PLANE_INSTANCE_TRANSFER_TYPES);
+                put(CONFIG_PREFIX + "." + DESTINATION_TYPES_KEY, S3_BUCKET);
+                put(CONFIG_PREFIX + "." + PROPERTIES_KEY, "{ \"%s\": \"%s\" }".formatted(PUBLIC_API_URL_PROPERTY, DATA_PLANE_INSTANCE_URL));
             }
         };
     }
@@ -155,10 +166,10 @@ class DataPlaneSelectorConfigurationServiceExtensionTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(URL_KEY, ""),
-                    Arguments.of(SOURCE_TYPES_KEY, ""),
-                    Arguments.of(DESTINATION_TYPES_KEY, ""),
-                    Arguments.of(PROPERTIES_KEY, "{}"));
+                    Arguments.of(CONFIG_PREFIX + "." + URL_KEY, ""),
+                    Arguments.of(CONFIG_PREFIX + "." + SOURCE_TYPES_KEY, ""),
+                    Arguments.of(CONFIG_PREFIX + "." + DESTINATION_TYPES_KEY, ""),
+                    Arguments.of(CONFIG_PREFIX + "." + PROPERTIES_KEY, "{}"));
         }
     }
 }
