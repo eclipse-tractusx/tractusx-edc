@@ -3,7 +3,7 @@ format.version = "1.1"
 
 [versions]
 edc = "0.14.1"
-edc-build = "1.0.0"
+edc-build = "1.1.1"
 allure = "2.29.1"
 awaitility = "4.3.0"
 aws = "2.35.0"
