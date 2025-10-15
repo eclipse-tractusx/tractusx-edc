@@ -41,7 +41,8 @@ Content-Type: application/json
 ```
 The request body is lean. Mandatory properties are:
 - `counterPartyAddress` (formerly `providerUrl`): This property points to the DSP-endpoint of the Data Provider's Control
-  Plane.
+Plane. Note, that this parameter differs dependent on the version of DSP used and potentially differs if the counter party 
+uses another implementation of a Connector.
 - `counterPartyId`: Must be the counterParty BPN when DSP 0.8 is used. Must be the counterParty DID when DSP 2025-1 is used.
 - `protocol`: must be a supported protocol by the provider. Usually `"dataspace-protocol-http"` for providers that support
 DSP 0.8 or `"dataspace-protocol-http:2025-1"` for providers that support DSP 2025-1.
@@ -49,7 +50,7 @@ DSP 0.8 or `"dataspace-protocol-http:2025-1"` for providers that support DSP 202
 The `querySpec` section is optional and allows the Data Consumer to specify what entries from the catalog shall be returned.
 Apart from the demonstrated query spec fields such as `offset`, `limit`, `sortField` and `sortOrder`, a `querySpec` also allows the
 definition of `filterExpressions`. A filter expression is a list of 0 to many `Criterion`, that will be logically evaluated
-as AND. Please refer to the [Contract Definitions Asset Selector](03_contractdefinitions.md#assetsselector) section where
+as `AND`. Please refer to the [Contract Definitions Asset Selector](03_contractdefinitions.md#assetsselector) section where
 the creation of Criterion was already explained.
 
 ## What happens in the background

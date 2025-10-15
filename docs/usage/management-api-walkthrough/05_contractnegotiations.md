@@ -64,7 +64,9 @@ Content-Type: application/json
 **NOTE:** It is important that all json-ld prefixed fields are defined by exactly one reference specified in the context 
 section which refers to an existing published context definition.
 
-- `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
+- `counterPartyAddress` sets the coordinates for the connector that the Consumer-Connector shall negotiate with (i.e.,
+  the Provider Connector). Note, that the address is dependent on the DSP version used and the implementation of the DSP
+  protocol used on Provider side.
 - `protocol` is the providers' supported protocol
 - In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
   Data Offers for the same DataSet, the Data Consumer must choose one.
