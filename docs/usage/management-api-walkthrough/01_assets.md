@@ -1,6 +1,6 @@
 # Creating an Asset
 
-An Asset is the fundamental representation of an arbitrary backend interface in the EDC. The Data Provider registers it
+An Asset is the fundamental representation of an arbitrary backend interface in the Connector. The Data Provider registers it
 with its Control Plane as a first step to expose it to the Dataspace via the Dataplane later on. This registration is
 executed via the following Request:
 
@@ -48,7 +48,7 @@ HTTP bodies to its requests. The value entered as the Asset's `@id` will automat
 property.
 
 Most consequential however is the `dataAddress` section of the asset-APIs payload. It configures the Data Plane's
-behavior. Depending on the protocol used for data exchange, an EDC will use different Data Planes. This is manifested by
+behavior. Depending on the protocol used for data exchange, a Connector will use different Data Planes. This is manifested by
 the `type` property of the `dataAddress` object. There
 may be arbitrary extensions extending the required parameters in the `dataAddress` section. That's why the following
 examples are not complete but should rather be viewed as archetypes of established combinations of technologies.
@@ -57,7 +57,7 @@ The effects of each parameter will be explained by the following examples.
 
 ## HTTP Data Plane
 
-The HTTP Data Plane of the EDC will proxy an HTTP request that a Data Consumer sends via HTTP. However, the incoming
+The HTTP Data Plane of the Connector will proxy an HTTP request that a Data Consumer sends via HTTP. However, the incoming
 request will be manipulated by the Data Plane - to what degree depends on the configuration. Let's look at an example:
 
 ```json

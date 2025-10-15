@@ -8,7 +8,7 @@ Please note that improper usage of the Management-API can lead to accidental exp
 and trade secrets. The assumption is that the systems integrator has two tractusx-edc deployments of version 0.5.1 or
 higher available (one acting as provider, one acting as consumer).
 
-The EDC implements the [Dataspace Protocol (DSP)](https://docs.internationaldataspaces.org/dataspace-protocol/overview/readme),
+The Connector implements the [Dataspace Protocol (DSP)](https://docs.internationaldataspaces.org/dataspace-protocol/overview/readme),
 as specified by the IDSA. As the DSP uses JSON-LD for all payloads, the EDC Management API reflects this as well, even
 though it is not a part of the DSP.
 
@@ -19,15 +19,15 @@ endpoints are currently versioned independently of each other.
 
 | Resource                                           | Endpoint                                   | Involved Actors                           |
 |----------------------------------------------------|--------------------------------------------|-------------------------------------------|
-| [Asset](01_assets.md)                              | `<MANAGEMENT_URL>/v3/assets`               | Provider Admin & Provider EDC             |
-| [Policy Definition](02_policies.md)                | `<MANAGEMENT_URL>/v3/policydefinitions`    | Provider Admin & Provider EDC             |
-| [Contract Definition](03_contractdefinitions.md)   | `<MANAGEMENT_URL>/v3/contractdefinitions`  | Provider Admin & Provider EDC             |
-| [Catalog](04_catalog.md)                           | `<MANAGEMENT_URL>/v3/catalog`              | Consumer App, Consumer EDC & Provider EDC |
-| [Contract Negotiation](05_contractnegotiations.md) | `<MANAGEMENT_URL>/v3/contractnegotiations` | Consumer App, Consumer EDC & Provider EDC |
-| [Contract Agreement](08_contractagreements.md)     | `<MANAGEMENT_URL>/v3/contractagreements`   | Provider Admin & Provider EDC             |
-| [Transfer Process](06_transferprocesses.md)        | `<MANAGEMENT_URL>/v3/transferprocesses`    | Consumer App, Consumer EDC & Provider EDC |
-| [EDR](07_edrs.md)                                  | `<MANAGEMENT_URL>/v3/edrs`                 | Consumer App, Consumer EDC & Provider EDC |
-| Data Plane                                         | `<DATAPLANE_URL>`                          | Consumer App & Provider EDC               |
+| [Asset](01_assets.md)                              | `<MANAGEMENT_URL>/v3/assets`               | Provider Admin & Provider Connector             |
+| [Policy Definition](02_policies.md)                | `<MANAGEMENT_URL>/v3/policydefinitions`    | Provider Admin & Provider Connector             |
+| [Contract Definition](03_contractdefinitions.md)   | `<MANAGEMENT_URL>/v3/contractdefinitions`  | Provider Admin & Provider Connector             |
+| [Catalog](04_catalog.md)                           | `<MANAGEMENT_URL>/v3/catalog`              | Consumer App, Consumer Connector & Provider Connector |
+| [Contract Negotiation](05_contractnegotiations.md) | `<MANAGEMENT_URL>/v3/contractnegotiations` | Consumer App, Consumer Connector & Provider Connector |
+| [Contract Agreement](08_contractagreements.md)     | `<MANAGEMENT_URL>/v3/contractagreements`   | Provider Admin & Provider Connector             |
+| [Transfer Process](06_transferprocesses.md)        | `<MANAGEMENT_URL>/v3/transferprocesses`    | Consumer App, Consumer Connector & Provider Connector |
+| [EDR](07_edrs.md)                                  | `<MANAGEMENT_URL>/v3/edrs`                 | Consumer App, Consumer Connector & Provider Connector |
+| Data Plane                                         | `<DATAPLANE_URL>`                          | Consumer App & Provider Connector               |
 
 ## OpenAPI
 
@@ -68,7 +68,7 @@ A namespace is defined by associating a prefix with a URI or IRI in the @context
 typically a short string, while the URI or IRI represents a namespace or vocabulary where the terms or properties are
 defined.
 
-Some namespaces are known to the EDC internally. That means that the EDC will resolve all resources to non-prefixed IRIs
+Some namespaces are known to the Connector internally. That means that the Connector will resolve all resources to non-prefixed IRIs
 given they are not part of the following list:
 
 | Key    | Description                                                                                                                                                                                                                                    |
@@ -88,7 +88,7 @@ given they are not part of the following list:
 
 ### More documentation and learning resources
 
-- Setup of EDC infrastructure:
+- Setup of Connector infrastructure:
     - Read
       the ["Connect" section of the E2E-Tutorial](https://eclipse-tractusx.github.io/docs/tutorials/e2e/connect/prepareInfrastructure)
       for first steps. It provides an easy-to-start preconfigured deployment of critical Catena-X infrastructure
@@ -96,7 +96,7 @@ given they are not part of the following list:
     - The [MXD documentation](https://github.com/eclipse-tractusx/tutorial-resources/blob/main/mxd/README.md#1-prerequisites) has a similar section on its setup.
     - To deploy and configure the Tractus-X EDC, check
       its [documentation](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/README.md).
-- Exchanging data via two EDCs:
+- Exchanging data via two Connectors:
     - Via API: ["Boost" section of the E2E-Tutorial](https://eclipse-tractusx.github.io/docs/tutorials/e2e/boost/). It
       is
       exemplary and non-comprehensive.

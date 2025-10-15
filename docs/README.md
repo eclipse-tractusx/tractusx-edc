@@ -1,6 +1,6 @@
 # Tractus-X EDC
 
-The Tractus-X EDC repository creates runnable applications out of EDC extensions from the 
+The Tractus-X EDC repository creates runnable applications out of EDC Connector extensions from the 
 [EDC Connector](https://github.com/eclipse-edc/Connector) platform.
 
 When running an EDC connector from the Tractus-X EDC repository there are three different setups to choose from. They 

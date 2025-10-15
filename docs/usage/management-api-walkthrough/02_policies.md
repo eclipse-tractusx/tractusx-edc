@@ -95,7 +95,7 @@ during [contract definition](03_contractdefinitions.md).
 
 ### Creating a Policy Definition
 
-Policies can be created in the EDC as follows:
+Policies can be created in the Connector as follows:
 
 ```http request
 POST /v3/policydefinitions HTTP/1.1
@@ -332,12 +332,12 @@ Partner 2 receives the Contract Offer in the first place.
 The contract negotiation, started by Partner 2 fails because he has not been identified as Dismantler and therefore does
 not own the Dismantler Credential.
 
-#### Writing Policies for the EDC
+#### Writing Policies for the Connector
 
-ℹ️ ODRL's model and expressiveness surpass the EDC's current ability to interpret the policies and derive behavior from
+ℹ️ ODRL's model and expressiveness surpass the Connectors's current ability to interpret the policies and derive behavior from
 them. This must be kept in mind even when Data Offers based on policies are not yet published to the Dataspace. Here
 again, configuring the wrong policies is a risk for unsafe and non-compliant behavior. This is exacerbated by the fact
-that the EDC interprets policies it can't evaluate as true by default. A couple of examples:
+that the Connector interprets policies it can't evaluate as true by default. A couple of examples:
 
 #### Let all pass
 
@@ -367,7 +367,7 @@ that the EDC interprets policies it can't evaluate as true by default. A couple 
 
 A Business Partner Group is a group of BPNs that are allowed to pass this constraint. A BPN can be added
 to a group even after a Contract Offer for a certain BPN-Group was published. The groups are persisted and maintained
-in the Provider's Control Plane. The EDC-Management-API's `/business-partner-groups` endpoint offers CRUD-operations for
+in the Provider's Control Plane. The Connector-Management-API's `/business-partner-groups` endpoint offers CRUD-operations for
 it.
 
 ```json

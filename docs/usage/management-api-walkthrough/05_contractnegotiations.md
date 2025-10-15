@@ -33,7 +33,7 @@ Content-Type: application/json
     "@type": "Offer",
     "@id": "{{OFFER_ID}}",
     "target": "{{ASSET_ID}}",
-    "assigner": "{{PROVIDER_BPN}}",
+    "assigner": "{{PROVIDER_IDENTIFIER}}",
     "permission": {
       "action": "use",
       "constraint": {
@@ -61,15 +61,15 @@ Content-Type: application/json
 }
 ```
 
-**NOTE:** It is important to always verify if all json-ld prefixed fields in the request can be resolved to a known JSON-LD vocabulary.
-It is also important to make sure prefixed terms will be resolved to the intended IRI.
+**NOTE:** It is important that all json-ld prefixed fields are defined by exactly one reference specified in the context 
+section which refers to an existing published context definition.
 
 - `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
 - `protocol` is the providers' supported protocol
 - In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
   Data Offers for the same DataSet, the Data Consumer must choose one.
   It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `odrl:hasPolicy` field plus:
-    - `assigner` must hold the identifier of the Provider
+    - `assigner` must hold the identifier of the Provider (BPN OR DID, as returned in the catalog response)
     - `target` must be the id of the EDC-Asset/dcat:DataSet that the offer was made for.
 - `callbackAddresses` is a list of Consumer-side endpoints that the Provider's Data Plane writes events to.
     - `uri` is the http endpoint of the token repository. Mandatory.

@@ -42,21 +42,22 @@ Content-Type: application/json
 The request body is lean. Mandatory properties are:
 - `counterPartyAddress` (formerly `providerUrl`): This property points to the DSP-endpoint of the Data Provider's Control
   Plane.
-- `counterPartyId`: must be the provider BPN or DID.
+- `counterPartyId`: Must be the counterParty BPN when DSP 0.8 is used. Must be the counterParty DID when DSP 2025-1 is used.
 - `protocol`: must be a supported protocol by the provider. Usually `"dataspace-protocol-http"` for providers that support
 DSP 0.8 or `"dataspace-protocol-http:2025-1"` for providers that support DSP 2025-1.
 
 The `querySpec` section is optional and allows the Data Consumer to specify what entries from the catalog shall be returned.
-How to write proper `filterExpression`s was previously [explained](03_contractdefinitions.md#assetsselector).
+Apart from the demonstrated query spec fields such as `offset`, `limit`, `sortField` and `sortOrder`, a `querySpec` also allows the
+definition of `filterExpressions`. A filter expression is a list of 0 to many `Criterion`, that will be logically evaluated
+as AND. Please refer to the [Contract Definitions Asset Selector](03_contractdefinitions.md#assetsselector) section where
+the creation of Criterion was already explained.
 
 ## What happens in the background
 
-In this walkthrough's sequence of API-calls, this is the first that triggers interaction between two EDCs. The Consumer
-requests the Provider's catalog of Data Offers. Partners in the Dataspace are authenticated via Verifiable Credentials (VC).
-These can broadly be conceptualized as another JSON-LD document that holds information on a business partner's identity.
-It follows an aligned schema and is extensible with properties relevant to the Dataspace. For more info, see
-[the documentation](https://github.com/eclipse-tractusx/ssi-docu/blob/main/docs/credentials/summary/summary.vc.md)
-of the currently used Summary Credential used in Catena-X.
+In this walkthrough's sequence of API-calls, this is the first that triggers interaction between two Connectors.
+Partners in the Dataspace are authenticated via Verifiable Credentials (VC).
+These can broadly be conceptualized as another JSON-LD document that holds information on a business partner's identity,
+and the information in this document might be used to cross-check certain conditions. 
 
 When the Consumer makes a catalog-request to the Provider, the provider collects the Consumer's VC and checks it against
 each of the `accessPolicies` defined in his [Contract Definitions](03_contractdefinitions.md). If the VC passes the
@@ -66,7 +67,7 @@ any further communication between the Business Partners useless.
 
 ## Returned Payload
 
-The returned payload is a `dcat:Catalog` as required by the supported DSP version.
+The returned payload is a `dcat:Catalog` as specified by the DSP version used in the request.
 
 ```json
 {
@@ -128,7 +129,7 @@ The returned payload is a `dcat:Catalog` as required by the supported DSP versio
         }
       }
     ],
-    "description": "Product EDC Demo Asset 1",
+    "description": "Product Connector Demo Asset 1",
     "id": "1"
   },
   "service": {
@@ -153,7 +154,7 @@ to the Consumer.
 - The `@id` is the identifier for this catalog. As the catalog is created dynamically, the id is a UUID regenerated for each
   request to the Provider's catalog.
 - `service` holds data about the Provider's connector that the Consumer's connector communicated with.
-- `participantId` signifies the identifier of the Provider. This is specific to the EDC and not mandated by the DSP-spec.
+- `participantId` signifies the identifier of the Provider. This is specific to the Connector and not mandated by the DSP-spec.
 - `@context` is part of every JSON-LD document.
 
 The Data Offers are hidden in the `dataset` section, grouped by the [Asset](01_assets.md) that the offer is made for.
@@ -164,7 +165,7 @@ policies included.
 - `Distribution` makes statements over which Data Planes an Asset's data can be retrieved. Currently, the TractusX-EDC supports
   `HttpData-PULL`, `HttpData-PUSH`, `AmazonS3-PUSH` and `AzureStorage-PUSH` capabilities.
 - `hasPolicy` holds the Data Offer that is relevant for the Consumer.
-    - `@id` is the identifier for the Data Offer. The EDC composes this id by concatenating three identifiers in base64-encoding.
+    - `@id` is the identifier for the Data Offer. The Connector composes this id by concatenating three identifiers in base64-encoding.
       separated with `:` (colons). The format is `base64(contractDefinitionId):base64(assetId):base64(newUuidV4)`. The last
       of three UUIDs changes with every request as every /v3/catalog/request call yields a new catalog with new Data Offers.
     - The `permission`, `prohibition` and `obligation` will hold the content of the contractPolicy configured

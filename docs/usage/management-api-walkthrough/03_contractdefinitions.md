@@ -31,12 +31,12 @@ Content-Type: application/json
 }
 ```
 `accessPolicyId` and `contractPolicyId` are the identifiers of the [policies](02_policies.md) used in the contract
-definition. On creation, the EDC does not automatically check if a policy with the corresponding `@id` exists - the call
+definition. On creation, the Connector does not automatically check if a policy with the corresponding `@id` exists - the call
 sequence will fail later when the Data Consumer attempts to find the offer in the [catalog-request](04_catalog.md).
 
 ## assetsSelector
 
-The `assetsSelector` is a EDC-Criterion. This class specifies filters over a set of objects, Assets in this case. The
+The `assetsSelector` is a Connector-Criterion. This class specifies filters over a set of objects, Assets in this case. The
 concept is functionally similar to the `odrl:Constraint` in a [Policy](02_policies.md) but syntactically different.
 - `operandLeft` is a property in the Entity (`edc:Asset` in this case) that is assigned a value. If the property is nested,
   traversion can be achieved by chaining the properties like `"'https://w3id.org/edc/v0.0.1/ns/nested'.'https://w3id.org/edc/v0.0.1/ns/key'"`
@@ -107,11 +107,11 @@ When using a private property as an asset selector, the property defined in the 
 ## Side-Effects
 
 The [Domain Model](../README) shows the basic connection between the core concepts of
-the EDC. Contract Offers for a particular Data Consumer are created dynamically from the Contract Definitions created
+the Connector. Contract Offers for a particular Data Consumer are created dynamically from the Contract Definitions created
 by a Data Provider. The mechanics are explained in the section on the [catalog-API](04_catalog.md). But already at this
 stage, Data Providers must be aware that creating a Contract Definition is sufficient to expose a Backend System
 (as defined in the [Asset](01_assets.md)) to the Dataspace and let third parties access it.
-After contract definition, an EDC will automatically allow data access if a requesting party passes the policies.
+After contract definition, a Connector will automatically allow data access if a requesting party passes the policies.
 
 Contract Definitions thus must be created with great care. It is essential to align the backend-credentials with the
 Access and Contract Policies to manage access consistently from the Dataspace to the backend data.

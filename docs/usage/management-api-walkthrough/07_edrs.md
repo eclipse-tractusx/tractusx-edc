@@ -76,13 +76,13 @@ Content-Type: application/json
 **NOTE:** It is important to always verify if all json-ld prefixed fields in the request can be resolved to a known JSON-LD vocabulary.
 It is also important to make sure prefixed terms will be resolved to the intended IRI.
 
-- `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
+- `counterPartyAddress` sets the coordinates for the connector that the Consumer connector shall negotiate with (Provider EDC).
 - `protocol` is the providers' supported protocol
 - In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
   Data Offers for the same DataSet, the Data Consumer must choose one. 
   It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `hasPolicy` field plus:
     - `assigner` must hold the identifier (BPN or DID) of the Provider
-    - `target` must be the id of the EDC-Asset/dcat:DataSet that the offer was made for.
+    - `target` must be the id of the Connector Asset/dcat:DataSet that the offer was made for.
 
 This request synchronously returns a server-generated `negotiationId` that could be used to get the state of the negotiation.
 Once the negotiation reaches the `FINALIZED` state, using this API, the transfer process will be automatically fired off
@@ -151,7 +151,7 @@ Content-Type: application/json
 It returns a set of EDR entries holding meta-data including:
 - `transferProcessId`: The ID of the [Transfer Process](06_transferprocesses.md) that was implicitly initiated
   by the POST `/v3/edrs` request.
-- `agreementId`: The ID of the agreement that the two EDCs have made in the [Contract Negotiation](05_contractnegotiations.md)
+- `agreementId`: The ID of the agreement that the two connectors have made in the [Contract Negotiation](05_contractnegotiations.md)
   phase of their EDR-interaction.
 - `providerId`: The ID of the provider.
 - `assetId`: The ID of the asset.
@@ -248,8 +248,8 @@ Content-Type: application/json
 
 Once the EDR has been negotiated and stored, the data can be fetched in two ways depending on the use-case:
 
-- Provider data-plane ("EDC way")
-- Consumer proxy (Tractus-X EDC simplified)
+- Direct call to the provider connector dataplane
+- Consumer proxy (Tractus-X Connector simplified manner)
 
 ## Provider Data Plane
 
