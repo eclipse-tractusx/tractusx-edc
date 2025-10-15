@@ -40,27 +40,27 @@ Content-Type: application/json
 ```json
 {
     "@context": [
-        "https://w3id.org/tractusx/policy/v1.0.0",
+        "https://w3id.org/catenax/2025/9/policy/context.jsonld",
         "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
         {
             "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
         }
     ],
     "@type": "ContractRequest",
-    "counterPartyAddress": "https://provider-control.plane/api/v1/dsp",
-    "protocol": "dataspace-protocol-http",
+    "counterPartyAddress": "https://provider-control.plane/api/v1/dsp/2025-1",
+    "protocol": "dataspace-protocol-http:2025-1",
     "policy": {
         "@id": "{{OFFER_ID}}",
         "@type": "Offer",
-        "assigner": "{{PROVIDER_BPN}}",
+        "assigner": "{{PROVIDER_IDENTIFIER}}",
         "permission": [
             {
                 "action": "use",
                 "constraint": {
-                    "or": {
+                    "and": {
                         "leftOperand": "FrameworkAgreement",
                         "operator": "eq",
-                        "rightOperand": "Pcf:<version>"
+                        "rightOperand": "DataExchangeGovernance:1.0"
                     }
                 }
             }
@@ -73,14 +73,18 @@ Content-Type: application/json
 }
 ```
 
-- `counterPartyAddress` sets the coordinates for the connector that the Consumer-EDC shall negotiate with (Provider EDC).
-  It will usually end in `/api/v1/dsp`
-- `protocol` must be `dataspace-protocol-http`
+**NOTE:** It is important to always verify if all json-ld prefixed fields in the request can be resolved to a known JSON-LD vocabulary.
+It is also important to make sure prefixed terms will be resolved to the intended IRI.
+
+- `counterPartyAddress` sets the coordinates for the connector that the Consumer-Connector shall negotiate with (i.e., 
+the Provider Connector). Note, that the address is dependent on the DSP version used and the implementation of the DSP 
+protocol used on Provider side.
+- `protocol` is the providers' supported protocol
 - In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
   Data Offers for the same DataSet, the Data Consumer must choose one. 
-  It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `odrl:hasPolicy` field plus:
-    - `assigner` must hold the BPN of the Provider
-    - `target` must be the id of the EDC-Asset/dcat:DataSet that the offer was made for.
+  It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `hasPolicy` field plus:
+    - `assigner` must hold the identifier (BPN or DID) of the Provider
+    - `target` must be the id of the Connector Asset/dcat:DataSet that the offer was made for.
 
 This request synchronously returns a server-generated `negotiationId` that could be used to get the state of the negotiation.
 Once the negotiation reaches the `FINALIZED` state, using this API, the transfer process will be automatically fired off
@@ -149,7 +153,7 @@ Content-Type: application/json
 It returns a set of EDR entries holding meta-data including:
 - `transferProcessId`: The ID of the [Transfer Process](06_transferprocesses.md) that was implicitly initiated
   by the POST `/v3/edrs` request.
-- `agreementId`: The ID of the agreement that the two EDCs have made in the [Contract Negotiation](05_contractnegotiations.md)
+- `agreementId`: The ID of the agreement that the two connectors have made in the [Contract Negotiation](05_contractnegotiations.md)
   phase of their EDR-interaction.
 - `providerId`: The ID of the provider.
 - `assetId`: The ID of the asset.
@@ -186,10 +190,7 @@ that is located at `endpoint`.
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-    "tx-auth": "https://w3id.org/tractusx/auth/",
-    "cx-policy": "https://w3id.org/catenax/policy/",
-    "odrl": "http://www.w3.org/ns/odrl/2/"
+    "tx-auth": "https://w3id.org/tractusx/auth/"
   }
 }
 ```
@@ -249,8 +250,8 @@ Content-Type: application/json
 
 Once the EDR has been negotiated and stored, the data can be fetched in two ways depending on the use-case:
 
-- Provider data-plane ("EDC way")
-- Consumer proxy (Tractus-X EDC simplified)
+- Direct call to the provider connector dataplane
+- Consumer proxy (Tractus-X Connector simplified manner)
 
 ## Provider Data Plane
 

@@ -23,22 +23,22 @@ A Contract Agreement looks like this:
     "@type": "odrl:Agreement",
     "odrl:permission": {
       "odrl:action": {
-        "odrl:type": "http://www.w3.org/ns/odrl/2/use"
+        "odrl:type": "odrl:use"
       },
       "odrl:constraint": {
-        "odrl:or": {
-          "odrl:leftOperand": "https://w3id.org/catenax/policy/FrameworkAgreement",
+        "odrl:and": {
+          "odrl:leftOperand": "https://w3id.org/catenax/2025/9/policy/FrameworkAgreement",
           "odrl:operator": {
             "@id": "odrl:eq"
           },
-          "odrl:rightOperand": "Pcf"
+          "odrl:rightOperand": "DataExchangeGovernance:1.0"
         }
       }
     },
     "odrl:prohibition": [],
     "odrl:obligation": [],
-    "odrl:assignee": "<BPN_CONSUMER>",
-    "odrl:assigner": "<BPN_PROVIDER>",
+    "odrl:assignee": "<CONSUMER_IDENTIFIER>",
+    "odrl:assigner": "<PROVIDER_IDENTIFIER>",
     "odrl:target": {
       "@id": "{{ASSET_ID}}"
     }
@@ -49,9 +49,6 @@ A Contract Agreement looks like this:
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
-    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-    "tx-auth": "https://w3id.org/tractusx/auth/",
-    "cx-policy": "https://w3id.org/catenax/policy/",
     "odrl": "http://www.w3.org/ns/odrl/2/"
   }
 }
