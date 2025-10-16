@@ -34,7 +34,7 @@ Content-Type: application/json
   },
   "@type": "tx:ConnectorParamsDiscoveryRequest",
   "tx:bpnl": "BPNL1234567890",
-  "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
+  "edc:counterPartyAddress": "https://provider.domain.com/api/v1/dsp"
 }
 ```
 
@@ -51,6 +51,7 @@ If the counterparty connector supports DSP version 2025-1, a valid response shou
   }
 ]
 ```
+
 Notice the automatic resolution of the `counterPartyId` from a BPN to a DID, and the appendment of the
 correct DSP version path to the counterPartyAddress and to the required protocol.
 
@@ -79,8 +80,8 @@ Content-Type: application/json
     }
   ],
   "@type": "CatalogRequest",
-  "counterPartyId": "<string>",
-  "counterPartyAddress": "https://provider-control.plane/api/v1/dsp/2025-1",
+  "counterPartyId": "did:web:one-example.com",
+  "counterPartyAddress": "https://provider.domain.com/api/v1/dsp/2025-1",
   "protocol": "dataspace-protocol-http:2025-1",
   "querySpec": {
     "@type": "QuerySpec",
@@ -117,7 +118,7 @@ the creation of Criterion was already explained.
 In this walkthrough's sequence of API-calls, this is the first that triggers interaction between two Connectors.
 Partners in the Dataspace are authenticated via Verifiable Credentials (VC).
 These can broadly be conceptualized as another JSON-LD document that holds information on a business partner's identity,
-and the information in this document might be used to cross-check certain conditions. 
+and the information in this document might be used to cross-check certain conditions.
 
 When the Consumer makes a catalog-request to the Provider, the provider collects the Consumer's VC and checks it against
 each of the `accessPolicies` defined in his [Contract Definitions](03_contractdefinitions.md). If the VC passes the
@@ -133,7 +134,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
 {
   "@id": "acd67c9c-a5c6-4c59-9474-fcd3f948eab8",
   "@type": "Catalog",
-  "participantId": "did:web:something:BPNL000000001INT",
+  "participantId": "did:web:one-example.com",
   "dataset": {
     "@id": "{{ASSET_ID}}",
     "@type": "Dataset",
@@ -161,7 +162,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "DataService",
           "terms": "connector",
-          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       },
       {
@@ -173,7 +174,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "DataService",
           "terms": "connector",
-          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       },
       {
@@ -185,7 +186,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "dcat:DataService",
           "terms": "connector",
-          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       }
     ],
@@ -196,7 +197,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
     "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
     "@type": "dcat:DataService",
     "terms": "connector",
-    "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+    "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
   },
   "@context": [
     "https://w3id.org/tractusx/auth/v1.0.0",
@@ -205,7 +206,6 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
     "https://w3id.org/dspace/2025/1/context.jsonld",
     "https://w3id.org/edc/dspace/v0.0.1"
   ]
-}
 }
 ```
 In the payload above, some properties are meta-data that's independent of whether the Provider extends any Data Offers
