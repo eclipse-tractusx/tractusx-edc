@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,7 +30,7 @@ import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
-import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceServiceRegistry;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
@@ -112,8 +113,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         // register generator and secrets
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -141,8 +143,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         // register generator and secrets
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -165,8 +168,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         // register generator and secrets
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -189,8 +193,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         // register generator and secrets
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -211,8 +216,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
     void refresh_spoofedAuthToken() throws JOSEException {
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -236,8 +242,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
     void refresh_withWrongRefreshToken() {
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = "invalid_refresh_token";
@@ -260,8 +267,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
     void refresh_invalidAuthenticationToken_missingAccessToken() {
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -292,8 +300,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
     void refresh_invalidAuthenticationToken_missingAudience() {
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
@@ -324,15 +333,16 @@ public class DataPlaneTokenRefreshEndToEndTest {
     void refresh_invalidTokenId() {
         prepareDataplaneRuntime();
 
-        var authorizationService = DATAPLANE_RUNTIME.getService(DataPlaneAuthorizationService.class);
-        var edr = authorizationService.createEndpointDataReference(createDataFlow("test-process-id", CONSUMER_DID))
+        var edrService = DATAPLANE_RUNTIME.getService(EndpointDataReferenceServiceRegistry.class);
+        var dataFlow = createDataFlow("test-process-id", CONSUMER_DID);
+        var edr = edrService.create(dataFlow, dataFlow.getSource())
                 .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
 
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
 
-        authorizationService.revokeEndpointDataReference("test-process-id", "Revoked");
+        edrService.revoke(dataFlow, "Revoked");
         var tokenId = getJwtId(accessToken);
 
         var claims = new JWTClaimsSet.Builder()

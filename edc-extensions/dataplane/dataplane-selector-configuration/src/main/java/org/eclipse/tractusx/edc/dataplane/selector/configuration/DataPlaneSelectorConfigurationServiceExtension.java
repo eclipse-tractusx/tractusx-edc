@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Requires;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -59,6 +60,8 @@ public class DataPlaneSelectorConfigurationServiceExtension implements ServiceEx
     private static final String LOG_REGISTERED = NAME + ": Registered Data Plane Instance. (id=%s, url=%s, sourceTypes=%s, destinationTypes=%s, transferType=%s, properties=<omitted>)";
 
     private Monitor monitor;
+
+    @Inject
     private DataPlaneSelectorService dataPlaneSelectorService;
 
     @Override
@@ -68,7 +71,6 @@ public class DataPlaneSelectorConfigurationServiceExtension implements ServiceEx
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        this.dataPlaneSelectorService = context.getService(DataPlaneSelectorService.class);
         this.monitor = context.getMonitor();
 
         var config = context.getConfig(CONFIG_PREFIX);
