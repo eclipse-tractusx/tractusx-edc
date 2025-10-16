@@ -233,7 +233,7 @@ policies included.
 
 
 ## Reference
-- [Connector Discovery API](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.11.0/#/Connector%20Discovery/discoverDspVersionParamsV4Alpha)
+- [Connector Discovery API](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/#/Connector%20Discovery/discoverDspVersionParamsV4Alpha)
 
 ## Notice
 
