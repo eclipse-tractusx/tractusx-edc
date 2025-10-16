@@ -1,8 +1,68 @@
 # Fetching a Provider's Catalog
 
-The catalog API is the first request in this sequence that passes through the Dataspace. It is executed by the Data
-Consumer against their own Control Plane and triggers the retrieval of a catalog from a specified Data Provider. The request
-looks like this:
+The catalog API is the first request in a data transfer sequence. It is executed by the Data
+Consumer against their own control plane and triggers the retrieval of a catalog of data offers from a specified Data Provider.
+Before executing a catalog request, a data consumer must identify which versions of the DSP the data provider supports
+and select one to use in the data transfer request chain.
+
+## Discovering DSP versions and parameters
+
+As explained in the Dataspace Protocol document
+_"Connectors implementing the Dataspace Protocol may operate on different versions and bindings.
+Therefore, it is necessary that they can discover such information reliably and unambiguously"._
+The 2025-1 specification dictates that each connector should expose a commonly identifiable and publicly available version
+metadata endpoint location (at `/.well-known/dspace-version`)
+which dataspace participants should use to discover which versions of the protocol are supported by a Connector.
+
+To ease the discovery of available and supported DSP versions of a Connector, the tractusx-edc project makes available
+an API endpoint that proxies the request to the metadata endpoint and returns the corresponding parameters for the
+latest supported DSP version.
+
+DSP parameter discovery is done via the following request:
+
+```http request
+POST /v4alpha/connectordiscovery/dspversionparams HTTP/1.1
+Host: https://consumer-control.plane/api/management
+X-Api-Key: password
+Content-Type: application/json
+```
+```json
+{
+  "@context": {
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "tx:ConnectorParamsDiscoveryRequest",
+  "tx:bpnl": "BPNL1234567890",
+  "edc:counterPartyAddress": "https://provider.domain.com/api/v1/dsp"
+}
+```
+
+If the counterparty connector supports DSP version 2025-1, a valid response should be:
+```json
+[
+  {
+    "@context": {
+      "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "edc:counterPartyId": "did:web:one-example.com",
+    "edc:counterPartyAddress": "https://provider.domain.com/api/v1/dsp/2025-1",
+    "edc:protocol": "dataspace-protocol-http:2025-1"
+  }
+]
+```
+
+Notice the automatic resolution of the `counterPartyId` from a BPN to a DID, and the appendment of the
+correct DSP version path to the counterPartyAddress and to the required protocol.
+
+The information contained in the above discovery response can be directly used in the data transfer request chain, 
+as demonstrated in the following example.
+
+## Catalog request
+
+As mentioned in the beginning of this document, a catalog request is the first a data consumer should execute
+during the data transfer sequence. A catalog request is done the following way:
+
 
 ```http request
 POST /v3/catalog/request HTTP/1.1
@@ -20,8 +80,8 @@ Content-Type: application/json
     }
   ],
   "@type": "CatalogRequest",
-  "counterPartyId": "<string>",
-  "counterPartyAddress": "https://provider-control.plane/api/v1/dsp/2025-1",
+  "counterPartyId": "did:web:one-example.com",
+  "counterPartyAddress": "https://provider.domain.com/api/v1/dsp/2025-1",
   "protocol": "dataspace-protocol-http:2025-1",
   "querySpec": {
     "@type": "QuerySpec",
@@ -58,7 +118,7 @@ the creation of Criterion was already explained.
 In this walkthrough's sequence of API-calls, this is the first that triggers interaction between two Connectors.
 Partners in the Dataspace are authenticated via Verifiable Credentials (VC).
 These can broadly be conceptualized as another JSON-LD document that holds information on a business partner's identity,
-and the information in this document might be used to cross-check certain conditions. 
+and the information in this document might be used to cross-check certain conditions.
 
 When the Consumer makes a catalog-request to the Provider, the provider collects the Consumer's VC and checks it against
 each of the `accessPolicies` defined in his [Contract Definitions](03_contractdefinitions.md). If the VC passes the
@@ -74,7 +134,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
 {
   "@id": "acd67c9c-a5c6-4c59-9474-fcd3f948eab8",
   "@type": "Catalog",
-  "participantId": "did:web:something:BPNL000000001INT",
+  "participantId": "did:web:one-example.com",
   "dataset": {
     "@id": "{{ASSET_ID}}",
     "@type": "Dataset",
@@ -102,7 +162,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "DataService",
           "terms": "connector",
-          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       },
       {
@@ -114,7 +174,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "DataService",
           "terms": "connector",
-          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       },
       {
@@ -126,7 +186,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "dcat:DataService",
           "terms": "connector",
-          "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       }
     ],
@@ -137,7 +197,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
     "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
     "@type": "dcat:DataService",
     "terms": "connector",
-    "endpointUrl": "http://provider-data.plane/api/v1/dsp"
+    "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
   },
   "@context": [
     "https://w3id.org/tractusx/auth/v1.0.0",
@@ -146,7 +206,6 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
     "https://w3id.org/dspace/2025/1/context.jsonld",
     "https://w3id.org/edc/dspace/v0.0.1"
   ]
-}
 }
 ```
 In the payload above, some properties are meta-data that's independent of whether the Provider extends any Data Offers
@@ -171,6 +230,10 @@ policies included.
       of three UUIDs changes with every request as every /v3/catalog/request call yields a new catalog with new Data Offers.
     - The `permission`, `prohibition` and `obligation` will hold the content of the contractPolicy configured
       in the [Contract Definition](03_contractdefinitions.md) the Contract Offer was derived from.
+
+
+## Reference
+- [Connector Discovery API](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/#/Connector%20Discovery/discoverDspVersionParamsV4Alpha)
 
 ## Notice
 
