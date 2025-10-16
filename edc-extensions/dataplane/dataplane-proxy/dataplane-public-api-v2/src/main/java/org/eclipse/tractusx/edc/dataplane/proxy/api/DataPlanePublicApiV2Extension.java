@@ -101,11 +101,11 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
         }
         var endpoint = Endpoint.url(publicBaseUrl);
         generatorService.addGeneratorFunction("HttpData", dataAddress -> endpoint);
-        edrServiceRegistry.register(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService); //added
+        edrServiceRegistry.register(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService);
 
         if (publicApiResponseUrl != null) {
             generatorService.addResponseGeneratorFunction("HttpData", () -> Endpoint.url(publicApiResponseUrl));
-            edrServiceRegistry.registerResponseChannel(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService); //added
+            edrServiceRegistry.registerResponseChannel(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService);
         }
 
         generatorService.addGeneratorFunction(PROXY_HTTP_DATA_TYPE, dataAddress -> endpoint);
