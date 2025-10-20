@@ -44,7 +44,6 @@ import java.util.concurrent.ExecutorService;
 
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.Executors.newFixedThreadPool;
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
 
 /**
  * Instantiates the Proxy Data API for the consumer-side data plane.
@@ -65,16 +64,8 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
 
     @Setting(value = "Data plane proxy API consumer port", type = "int")
     private static final String CONSUMER_PORT = "tx.edc.dpf.consumer.proxy.port";
-    @Deprecated(since = "0.7.1")
-    private static final String CONSUMER_PORT_DEPRECATED = "tx.dpf.consumer.proxy.port";
     @Setting(value = "Thread pool size for the consumer data plane proxy gateway", type = "int")
     private static final String THREAD_POOL_SIZE = "tx.edc.dpf.consumer.proxy.thread.pool";
-    @Deprecated(since = "0.7.1")
-    private static final String THREAD_POOL_SIZE_DEPRECATED = "tx.dpf.consumer.proxy.thread.pool";
-    @Deprecated(since = "0.7.1")
-    private static final String AUTH_SETTING_APIKEY_ALIAS_DEPRECATED = "edc.api.auth.key.alias";
-    @Deprecated(since = "0.7.1")
-    private static final String AUTH_SETTING_APIKEY_DEPRECATED = "edc.api.auth.key";
 
     @Configuration
     private DataPlaneProxyConsumerApiConfiguration apiConfiguration;
@@ -104,11 +95,11 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         // when deprecated port will be purged, just assign `apiConfiguration.port()` to `port`
-        var port = propertyCompatibility(context, CONSUMER_PORT, CONSUMER_PORT_DEPRECATED, DEFAULT_PROXY_PORT);
+        var port = context.getSetting(CONSUMER_PORT, DEFAULT_PROXY_PORT);
         var portMapping = new PortMapping(PROXY, port, apiConfiguration.path());
         portMappingRegistry.register(portMapping);
 
-        var poolSize = propertyCompatibility(context, THREAD_POOL_SIZE, THREAD_POOL_SIZE_DEPRECATED, DEFAULT_THREAD_POOL);
+        var poolSize = context.getSetting(THREAD_POOL_SIZE, DEFAULT_THREAD_POOL);
         executorService = newFixedThreadPool(poolSize);
 
         var authenticationService = createAuthenticationService(context);
@@ -130,9 +121,9 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
 
     private AuthenticationService createAuthenticationService(ServiceExtensionContext context) {
 
-        var apiKey = ofNullable(propertyCompatibility(context, AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS, AUTH_SETTING_APIKEY_ALIAS_DEPRECATED, null))
+        var apiKey = ofNullable(context.getSetting(AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS, null))
                 .map(alias -> vault.resolveSecret(alias))
-                .orElseGet(() -> propertyCompatibility(context, AUTH_SETTING_CONSUMER_PROXY_APIKEY, AUTH_SETTING_APIKEY_DEPRECATED, UUID.randomUUID().toString()));
+                .orElseGet(() -> context.getSetting(AUTH_SETTING_CONSUMER_PROXY_APIKEY, UUID.randomUUID().toString()));
         return new TokenBasedAuthenticationService(context.getMonitor().withPrefix("ConsumerProxyAPI"), apiKey);
     }
 

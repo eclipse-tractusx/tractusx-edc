@@ -36,7 +36,6 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import java.util.function.Supplier;
 
 import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.NAME;
 
 @Extension(value = NAME)
@@ -46,18 +45,12 @@ public class BdrsClientExtension implements ServiceExtension {
     public static final int DEFAULT_BDRS_CACHE_VALIDITY = 15 * 60; // 15 minutes
     @Setting(value = "Base URL of the BDRS service", required = true)
     public static final String BDRS_SERVER_URL_PROPERTY = "tx.edc.iam.iatp.bdrs.server.url";
-    @Deprecated(since = "0.7.1")
-    public static final String BDRS_SERVER_URL_PROPERTY_DEPRECATED = "tx.iam.iatp.bdrs.server.url";
 
     @Setting(value = "Base URL of the CredentialService, that belongs to this connector runtime. If not specified, the URL is resolved from this participant's DID document.")
     public static final String CREDENTIAL_SERVICE_BASE_URL_PROPERTY = "tx.edc.iam.iatp.credentialservice.url";
-    @Deprecated(since = "0.7.1")
-    public static final String CREDENTIAL_SERVICE_BASE_URL_PROPERTY_DEPRECATED = "tx.iam.iatp.credentialservice.url";
 
     @Setting(value = "Validity period in seconds for the cached BPN/DID mappings. After this period a new resolution request will hit the server.", defaultValue = DEFAULT_BDRS_CACHE_VALIDITY + "")
     public static final String BDRS_SERVER_CACHE_VALIDITY_PERIOD = "tx.edc.iam.iatp.bdrs.cache.validity";
-    @Deprecated(since = "0.7.1")
-    public static final String BDRS_SERVER_CACHE_VALIDITY_PERIOD_DEPRECATED = "tx.iam.iatp.bdrs.cache.validity";
 
     // this setting is already defined in IdentityAndTrustExtension
     public static final String CONNECTOR_DID_PROPERTY = "edc.iam.issuer.id";
@@ -84,9 +77,9 @@ public class BdrsClientExtension implements ServiceExtension {
 
     @Provider
     public BdrsClient getBdrsClient(ServiceExtensionContext context) {
-        var baseUrl = propertyCompatibility(context, BDRS_SERVER_URL_PROPERTY, BDRS_SERVER_URL_PROPERTY_DEPRECATED);
+        var baseUrl = context.getConfig().getString(BDRS_SERVER_URL_PROPERTY);
         var monitor = context.getMonitor();
-        var cacheValidity = propertyCompatibility(context, BDRS_SERVER_CACHE_VALIDITY_PERIOD, BDRS_SERVER_CACHE_VALIDITY_PERIOD_DEPRECATED, DEFAULT_BDRS_CACHE_VALIDITY);
+        var cacheValidity = context.getSetting(BDRS_SERVER_CACHE_VALIDITY_PERIOD, DEFAULT_BDRS_CACHE_VALIDITY);
 
         // get DID
         var ownDid = context.getConfig().getString(CONNECTOR_DID_PROPERTY, null);
@@ -96,7 +89,7 @@ public class BdrsClientExtension implements ServiceExtension {
 
         // get CS URL
         Supplier<String> urlSupplier;
-        var configuredUrl = propertyCompatibility(context, CREDENTIAL_SERVICE_BASE_URL_PROPERTY, CREDENTIAL_SERVICE_BASE_URL_PROPERTY_DEPRECATED, (String) null);
+        var configuredUrl = context.getSetting(CREDENTIAL_SERVICE_BASE_URL_PROPERTY, null);
         if (configuredUrl != null) {
             urlSupplier = () -> configuredUrl;
         } else {
