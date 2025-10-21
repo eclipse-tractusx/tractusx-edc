@@ -1,16 +1,10 @@
 name: publish-latest-versioned-snapshot.yml
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        required: true
-        description: "Version of latest Snapshot"
-
   workflow_call:
     inputs:
       version:
         required: true
-        description: "Version of the Tractus-X EDC API to be should be published"
+        description: "Version of latest DATED Snapshot"
         type: string
 
 jobs:
