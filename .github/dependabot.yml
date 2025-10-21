@@ -32,6 +32,9 @@ updates:
       - "dependencies"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "org.eclipse.dataspacetck.dsp:*"
+      - dependency-name: "org.eclipse.dataspacetck.dcp:*"
 
   # Github Actions
   -
@@ -43,9 +46,6 @@ updates:
       - "github-actions"
     schedule:
       interval: "weekly"
-    ignore:
-      - dependency-name: "org.eclipse.dataspacetck.dsp:*"
-      - dependency-name: "org.eclipse.dataspacetck.dcp:*"
 
   # Docker
   - package-ecosystem: "docker"
