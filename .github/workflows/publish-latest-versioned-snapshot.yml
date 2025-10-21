@@ -14,12 +14,14 @@ jobs:
       contents: write
     steps:
       - name: Write version to latest-versioned-snapshot file
-        run: echo "${{ inputs.version }}" > latest-versioned-snapshot.txt
+        run: |
+          mkdir -p lvs
+          echo "${{ inputs.version }}" > lvs/latest-versioned-snapshot.txt
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./lvs
           destination_dir: ./misc
           keep_files: true
