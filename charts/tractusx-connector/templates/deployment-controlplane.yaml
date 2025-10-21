@@ -167,9 +167,13 @@ spec:
             {{- if .Values.controlplane.endpoints.management.jwksUrl }}
             - name: "WEB_HTTP_MANAGEMENT_AUTH_DAC_KEY_URL"
               value: {{ .Values.controlplane.endpoints.management.jwksUrl | quote}}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_TYPE"
+              value: "delegated"
             {{- else }}
-            - name: "EDC_HTTP_MANAGEMENT_AUTH_KEY"
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_KEY"
               value: {{ .Values.controlplane.endpoints.management.authKey | required ".Values.controlplane.endpoints.management.authKey is required" | quote }}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_TYPE"
+              value: "tokenbased"
             {{- end }}
 
             - name: "WEB_HTTP_PORT"
