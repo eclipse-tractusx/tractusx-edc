@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
-      STABLE: ${{ steps.get-version.outputs.STABLE }}
+      DATED: ${{ steps.get-version.outputs.DATED }}
     steps:
       - uses: actions/checkout@v5
       - name: "Get version"
@@ -84,7 +84,7 @@ jobs:
           
           if [[ "${{ github.event.workflow_run.event }}" == "schedule" || "${{ inputs.dated_snapshot }}" == "true" ]]; then
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT" >> "$GITHUB_OUTPUT"
-            echo "STABLE=true" >> "$GITHUB_OUTPUT"
+            echo "DATED=true" >> "$GITHUB_OUTPUT"
           else
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-SNAPSHOT" >> "$GITHUB_OUTPUT"
           fi
@@ -129,7 +129,7 @@ jobs:
     permissions:
       contents: write
     needs: [determine-version]
-    if: ${{ needs.determine-version.outputs.STABLE == 'true' }}
+    if: ${{ needs.determine-version.outputs.DATED == 'true' }}
     uses: ./.github/workflows/publish-latest-versioned-snapshot.yml
     secrets: inherit
     with:
