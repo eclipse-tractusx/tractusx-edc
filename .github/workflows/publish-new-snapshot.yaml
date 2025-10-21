@@ -126,11 +126,15 @@ jobs:
 
   publish-latest-versioned-snapshot:
     name: "Publish latest versioned snapshot in GitHub Pages"
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-    needs: [determine-version]
+    needs: [ determine-version ]
     if: ${{ needs.determine-version.outputs.DATED == 'true' }}
-    uses: ./.github/workflows/publish-latest-versioned-snapshot.yml
-    secrets: inherit
-    with:
-      version: ${{ needs.determine-version.outputs.VERSION }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/publish-latest-versioned-snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: ${{ needs.determine-version.outputs.VERSION }}
