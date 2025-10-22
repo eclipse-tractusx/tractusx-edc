@@ -69,7 +69,7 @@ public interface AgreementsRetirementApiV3 {
     void retireAgreementV3(JsonObject entry);
 
 
-    @Schema(name = "Retirement Example", example = RetirementSchema.EXAMPLE)
+    @Schema(name = "RetirementExample", example = RetirementSchema.EXAMPLE)
     record RetirementSchema(
             @Schema(name = ID) String id,
             String reason
