@@ -286,6 +286,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.10.1 \
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |
+| postgresql.image.repository | string | `"bitnamilegacy/postgresql"` |  |
+| postgresql.image.tag | string | `"16.2.0-debian-12-r10"` |  |
 | postgresql.jdbcUrl | string | `"jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"` |  |
 | postgresql.primary.persistence.enabled | bool | `false` |  |
 | postgresql.readReplicas.persistence.enabled | bool | `false` |  |
