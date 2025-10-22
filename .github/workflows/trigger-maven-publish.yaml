@@ -20,7 +20,7 @@
 
 
 ---
-name: "Publish Maven Artefacts to OSSRH"
+name: "Publish Maven Artefacts to Maven Central"
 
 on:
   workflow_dispatch:
@@ -37,49 +37,29 @@ on:
 
 jobs:
   maven-release:
-    name: 'Publish all artefacts to Sonatype/MavenCentral'
+    name: 'Publish all artefacts to MavenCentral'
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      # Set-Up
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
 
-      # Import GPG Key
-      - uses: ./.github/actions/import-gpg-key
-        name: "Import GPG Key"
-        with:
-          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
-
-      # publish releases
-      - name: Publish version
-        env:
-          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
-          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
-        run: |-
-          
+      - run: |
           echo "Input Version: ${{ inputs.version }}"
 
-          # check if version input was specified, else read from gradle.properties 
-          
+          # set the input version in gradle.properties, if passed
           if [ ! -z ${{ inputs.version }} ];
           then
+            sed -i 's#^version=.*#version='"${{ inputs.version }}"'#g' $(find . -name "gradle.properties")
             VERSION=${{ inputs.version }}
-            echo "Publishing using version from parameter: $VERSION"
-          else
-            VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
-            echo "Publishing using version from gradle.properties: $VERSION"
           fi
-          
-          # check if the version is a SNAPSHOT, and if not, append command to close staging repo
-          
-          cmd=""
-          if [[ $VERSION != *-SNAPSHOT ]]
-          then
-            cmd="closeAndReleaseSonatypeStagingRepository";
-          fi
-          echo "Publishing Version $VERSION to Sonatype"
-          
-          ./gradlew publishToSonatype ${cmd} --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
+
+          grep version gradle.properties | (echo -n "Publishing using " && cat)
+
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+        with:
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
+          username: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+          password: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
