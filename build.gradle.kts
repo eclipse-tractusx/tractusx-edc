@@ -43,6 +43,7 @@ buildscript {
     }
     dependencies {
         classpath(libs.edc.build.plugin)
+        //classpath("org.eclipse.edc.autodoc:org.eclipse.edc.autodoc.gradle.plugin:0.14.0")
     }
 }
 
@@ -84,10 +85,12 @@ allprojects {
         }
     }
 
-    configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
-        processorVersion.set(edcVersion)
-        outputDirectory.set(project.layout.buildDirectory.asFile.get())
-    }
+//    configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
+//        val edcVersionString = libs.versions.edc.asProvider().get()
+//
+//        processorVersion.set(edcVersionString)
+//        outputDirectory.set(project.layout.buildDirectory.asFile.get())
+//    }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
         pom {
