@@ -166,9 +166,13 @@ spec:
             {{- if .Values.runtime.endpoints.management.jwksUrl }}
             - name: "WEB_HTTP_MANAGEMENT_AUTH_DAC_KEY_URL"
               value: {{ .Values.runtime.endpoints.management.jwksUrl | quote}}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_TYPE"
+              value: "delegated"
             {{- else }}
-            - name: "EDC_HTTP_MANAGEMENT_AUTH_KEY"
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_KEY"
               value: {{ .Values.runtime.endpoints.management.authKey | required ".Values.controlplane.endpoints.management.authKey is required" | quote }}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_TYPE"
+              value: "tokenbased"
             {{- end }}
 
             - name: "TX_EDC_DPF_CONSUMER_PROXY_AUTH_APIKEY"
