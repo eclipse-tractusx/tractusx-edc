@@ -36,6 +36,7 @@ val txScmConnection: String by project
 val txWebsiteUrl: String by project
 val txScmUrl: String by project
 val edcVersion = libs.versions.edc
+val autodocVersion = libs.versions.autodoc
 
 buildscript {
     repositories {
@@ -57,6 +58,7 @@ project.subprojects.forEach {
 
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
+    apply(plugin = "org.eclipse.edc.autodoc")
 
     dependencies {
 
@@ -86,7 +88,7 @@ allprojects {
     }
 
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
-        processorVersion.set(libs.versions.autodoc)
+        processorVersion.set(autodocVersion)
         outputDirectory.set(project.layout.buildDirectory.asFile.get())
     }
 
