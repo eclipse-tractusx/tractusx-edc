@@ -758,7 +758,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Retirement Example"
+              $ref: "#/components/schemas/RetirementExample"
       responses:
         "204":
           description: The contract agreement was successfully retired
@@ -3206,7 +3206,7 @@ components:
         sortOrder: DESC
         sortField: fieldName
         filterExpression: []
-    Retirement Example:
+    RetirementExample:
       type: object
       properties:
         '@id':
