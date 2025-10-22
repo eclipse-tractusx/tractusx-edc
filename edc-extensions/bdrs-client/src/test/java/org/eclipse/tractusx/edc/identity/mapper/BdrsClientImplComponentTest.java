@@ -55,8 +55,10 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Date;
@@ -97,7 +99,7 @@ class BdrsClientImplComponentTest {
     private static final Network DOCKER_NETWORK = Network.newNetwork();
 
     @Container
-    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.7")
+    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>(getBdrsContainerNameFromDependabotManagedDockerfile())
             .withEnv("EDC_HTTP_MANAGEMENT_AUTH_KEY", "password")
             .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
@@ -111,6 +113,7 @@ class BdrsClientImplComponentTest {
             .withNetwork(DOCKER_NETWORK)
             .withCreateContainerCmdModifier(cmd -> cmd.withName(BDRS_CONTAINER_NAME))
             .withExposedPorts(8080, 8081, 8082);
+
     private static final String SHARED_TEMP_DIR = new File("src/test/resources/dids").getAbsolutePath();
     @Container
     private static final GenericContainer<?> NGINX_CONTAINER = new GenericContainer<>("nginx")
@@ -127,6 +130,13 @@ class BdrsClientImplComponentTest {
     private BdrsClientImpl client;
     private ECKey vpHolderKey;
     private ECKey vcIssuerKey;
+
+    static String getBdrsContainerNameFromDependabotManagedDockerfile() {
+        return new BufferedReader(new InputStreamReader(BdrsClientImplComponentTest.class.getResourceAsStream("/Dockerfile")))
+                .lines()
+                .findFirst().orElseThrow()
+                .substring(5);
+    }
 
     @BeforeEach
     void setup() throws IOException, ParseException {
