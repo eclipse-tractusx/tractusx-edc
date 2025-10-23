@@ -48,6 +48,18 @@ runs:
   steps:
     - uses: actions/checkout@v4
 
+    ###############################################
+    # Enable emulation for cross-arch builds
+    ###############################################
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    ###############################################
+    # Use Docker Buildx (required for multi-arch)
+    ###############################################
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     #####################
     # Login to DockerHub
     #####################
@@ -98,6 +110,7 @@ runs:
           OTEL_JAR=build/resources/otel/opentelemetry-javaagent.jar
           ADDITIONAL_FILES=build/legal/*
         push: true
+        platforms: linux/amd64,linux/arm64
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
