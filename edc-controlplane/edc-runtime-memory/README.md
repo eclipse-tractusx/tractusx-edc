@@ -30,7 +30,7 @@ extension. When in doubt, check the extensions' README that will likely be in [t
 
 ```shell
 docker run \
-    -e EDC_VAULT_SECRETS="key1:secret1;key2:secret2" \
+    -e TX_EDC_VAULT_SECRETS="key1:secret1;key2:secret2" \
     -p 8080:8080 -p 8181:8181 -p 8282:8282 -p 9090:9090 -p 9999:9999 \
     -v ${CONFIGURATION_PROPERTIES_FILE:-/dev/null}:/app/configuration.properties \
     -v ${LOGGING_PROPERTIES_FILE:-/dev/null}:/app/logging.properties \
