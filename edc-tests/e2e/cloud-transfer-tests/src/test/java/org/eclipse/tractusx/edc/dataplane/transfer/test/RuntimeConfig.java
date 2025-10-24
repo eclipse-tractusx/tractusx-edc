@@ -48,7 +48,7 @@ public class RuntimeConfig {
                 put("web.http.public.port", String.valueOf(getFreePort()));
                 put("web.http.consumer.api.path", "/api/consumer");
                 put("web.http.consumer.api.port", String.valueOf(getFreePort()));
-                put("tx.dpf.consumer.proxy.port", String.valueOf(getFreePort()));
+                put("tx.edc.dpf.consumer.proxy.port", String.valueOf(getFreePort()));
                 put("edc.iam.issuer.id", "did:web:" + UUID.randomUUID());
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-clientid");

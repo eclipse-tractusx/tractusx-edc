@@ -124,8 +124,8 @@ public class EdcCompatibilityPostgresTest {
                 put("tx.edc.dpf.consumer.proxy.auth.apikey", API_KEY);
                 put("edc.transfer.send.retry.limit", "3");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
-                put("edc.dataplane.token.expiry", "3");
-                put("edc.dataplane.token.expiry.tolerance", "0");
+                put("tx.edc.dataplane.token.expiry", "3");
+                put("tx.edc.dataplane.token.expiry.tolerance", "0");
                 put("web.http.catalog.port", String.valueOf(FEDERATED_CATALOG.getPort()));
                 put("web.http.catalog.path", FEDERATED_CATALOG.getPath());
                 put("web.http.catalog.auth.type", "tokenbased");

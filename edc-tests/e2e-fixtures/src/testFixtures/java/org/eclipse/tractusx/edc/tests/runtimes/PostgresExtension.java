@@ -75,7 +75,7 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
                 group + ".url", jdbcUrl,
                 group + ".user", USER,
                 group + ".password", PASSWORD,
-                "org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME
+                "tx.edc.postgresql.migration.schema", DB_SCHEMA_NAME
         );
 
         return ConfigFactory.fromMap(settings);

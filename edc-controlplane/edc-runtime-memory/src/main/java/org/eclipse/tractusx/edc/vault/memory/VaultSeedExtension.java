@@ -27,7 +27,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.core.utils.ConfigUtil;
 
 import java.util.stream.Stream;
 
@@ -37,8 +36,6 @@ public class VaultSeedExtension implements ServiceExtension {
 
     @Setting(value = "Secrets with which the vault gets initially populated. Specify as comma-separated list of key:secret pairs.")
     public static final String VAULT_MEMORY_SECRETS_PROPERTY = "tx.edc.vault.secrets";
-    @Deprecated(since = "0.7.1")
-    public static final String VAULT_MEMORY_SECRETS_PROPERTY_DEPRECATED = "edc.vault.secrets";
     public static final String NAME = "Vault Seed Extension";
 
     @Inject
@@ -51,7 +48,8 @@ public class VaultSeedExtension implements ServiceExtension {
 
     @Provider
     public Vault createInMemVault(ServiceExtensionContext context) {
-        var seedSecrets = ConfigUtil.propertyCompatibility(context, VAULT_MEMORY_SECRETS_PROPERTY, VAULT_MEMORY_SECRETS_PROPERTY_DEPRECATED, (String) null);
+
+        var seedSecrets = context.getSetting(VAULT_MEMORY_SECRETS_PROPERTY, null);
         if (seedSecrets != null) {
             Stream.of(seedSecrets.split(";"))
                     .filter(pair -> pair.contains(":"))

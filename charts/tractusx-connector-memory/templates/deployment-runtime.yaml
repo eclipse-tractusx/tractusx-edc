@@ -261,10 +261,10 @@ spec:
             ## BDRS CLIENT ##
             #################
 
-            - name: "TX_IAM_IATP_BDRS_SERVER_URL"
+            - name: "TX_EDC_IAM_IATP_BDRS_SERVER_URL"
               value: {{ .Values.runtime.bdrs.server.url | required ".Values.runtime.bdrs.server.url is required" | quote }}
             {{- if .Values.runtime.bdrs.cache_validity_seconds }}
-            - name: "TX_IAM_IATP_BDRS_CACHE_VALIDITY"
+            - name: "TX_EDC_IAM_IATP_BDRS_CACHE_VALIDITY"
               value: {{ .Values.runtime.bdrs.cache_validity_seconds | quote}}
             {{- end}}
 
@@ -308,7 +308,7 @@ spec:
             ###########
 
             # see extension https://github.com/eclipse-tractusx/tractusx-edc/tree/develop/edc-extensions/hashicorp-vault
-            - name: "EDC_VAULT_SECRETS"
+            - name: "TX_EDC_VAULT_SECRETS"
               value: {{ .Values.vault.secrets | quote}}
 
 

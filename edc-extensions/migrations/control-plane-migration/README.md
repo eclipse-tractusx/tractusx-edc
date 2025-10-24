@@ -12,13 +12,19 @@ This extension applies SQL migrations to these stores:
 
 ## Configuration
 
-| Key                                                                       | Description                                      | Mandatory | Default  |
-|:--------------------------------------------------------------------------|:-------------------------------------------------|-----------|----------|
-| org.eclipse.tractusx.edc.postgresql.migration.asset.enabled               | Enable migration for asset tables                |           | true     |
-| org.eclipse.tractusx.edc.postgresql.migration.contractdefinition.enabled  | Enable migration for contract definition tables  |           | true     |
-| org.eclipse.tractusx.edc.postgresql.migration.contractnegotiation.enabled | Enable migration for contract negotiation tables |           | true     |
-| org.eclipse.tractusx.edc.postgresql.migration.edr.enabled                 | Enable migration for edr tables                  |           | true     |
-| org.eclipse.tractusx.edc.postgresql.migration.policy.enabled              | Enable migration for policy tables               |           | true     |
-| org.eclipse.tractusx.edc.postgresql.migration.policy-monitor.enabled      | Enable migration for policy monitor tables       |           | true     |
-| org.eclipse.tractusx.edc.postgresql.migration.transferprocess.enabled     | Enable migration for transfer process tables     |           | true     |
-| org.eclipse.tractusx.edc.postgresql.migration.schema                      | The DB schema to be used during migration        |           | "public" |
+| Key                                                     | Description                                         | Mandatory | Default  |
+|:--------------------------------------------------------|:----------------------------------------------------|-----------|----------|
+| tx.edc.postgresql.migration.asset.enabled               | Enable migration for asset tables                   |           | true     |
+| tx.edc.postgresql.migration.contractdefinition.enabled  | Enable migration for contract definition tables     |           | true     |
+| tx.edc.postgresql.migration.contractnegotiation.enabled | Enable migration for contract negotiation tables    |           | true     |
+| tx.edc.postgresql.migration.edr.enabled                 | Enable migration for edr tables                     |           | true     |
+| tx.edc.postgresql.migration.policy.enabled              | Enable migration for policy tables                  |           | true     |
+| tx.edc.postgresql.migration.policy-monitor.enabled      | Enable migration for policy monitor tables          |           | true     |
+| tx.edc.postgresql.migration.transferprocess.enabled     | Enable migration for transfer process tables        |           | true     |
+| tx.edc.postgresql.migration.agreementbpns.enabled       | Enable migration for contract agreement bpns tables |           | true     |
+| tx.edc.postgresql.migration.agreementretirement.enabled | Enable migration for agreement retirement tables    |           | true     |
+| tx.edc.postgresql.migration.bpn.enabled                 | Enable migration for business partner group tables  |           | true     |
+| tx.edc.postgresql.migration.dataplaneinstance.enabled   | Enable migration for dataplane instance tables      |           | true     |
+| tx.edc.postgresql.migration.federatedcatalog.enabled    | Enable migration for federated catalog tables       |           | true     |
+| tx.edc.postgresql.migration.jti-validation.enabled      | Enable migration for jti-validation tables          |           | true     |
+| tx.edc.postgresql.migration.schema                      | The DB schema to be used during migration           |           | "public" |

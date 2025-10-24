@@ -48,7 +48,6 @@ dependencies {
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":edc-extensions:data-flow-properties-provider"))
-    implementation(project(":edc-extensions:dataplane:dataplane-selector-configuration"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
     implementation(project(":edc-extensions:edr:edr-api-v2"))
