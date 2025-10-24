@@ -99,8 +99,8 @@ public class TransferWithTokenRefreshTest {
     @RegisterExtension
     private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES, () ->
             PROVIDER.getConfig().merge(ConfigFactory.fromMap(Map.of(
-                    "edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY),
-                    "edc.dataplane.token.expiry.tolerance", "0"
+                    "tx.edc.dataplane.token.expiry", String.valueOf(VERY_SHORT_TOKEN_EXPIRY),
+                    "tx.edc.dataplane.token.expiry.tolerance", "0"
             ))))
             .registerServiceMock(BdrsClient.class, new MockBdrsClient((c) -> CONSUMER.getDid(), (c) -> CONSUMER.getBpn()));
 

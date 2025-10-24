@@ -43,7 +43,7 @@ abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension 
 
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
     @Setting(value = "Schema used for the migration", defaultValue = DEFAULT_MIGRATION_SCHEMA)
-    private static final String MIGRATION_SCHEMA = "org.eclipse.tractusx.edc.postgresql.migration.schema";
+    private static final String MIGRATION_SCHEMA = "tx.edc.postgresql.migration.schema";
 
     private Supplier<MigrateResult> migrationExecutor;
     private boolean enabled;
