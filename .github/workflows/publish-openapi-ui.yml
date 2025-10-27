@@ -47,7 +47,7 @@ jobs:
         run: ./gradlew resolve
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: openapi-spec
           path: resources/openapi/yaml
@@ -107,7 +107,7 @@ jobs:
           spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.apiGroup.name }}-api
           path: dist
