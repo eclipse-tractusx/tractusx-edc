@@ -52,7 +52,7 @@ runs:
     # Login to DockerHub
     #####################
     - name: DockerHub login
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         username: ${{ inputs.docker_user }}
         password: ${{ inputs.docker_token }}
