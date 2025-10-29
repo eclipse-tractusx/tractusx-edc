@@ -81,7 +81,7 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
                 } else {
                     var version08 = findProtocolVersion(Dsp08Constants.V_08_VERSION, protocolVersions);
                     if (version08 != null) {
-                        addDiscoveredParameters(Dsp08Constants.V_08_VERSION, request.bpnl(), request.counterPartyAddress() + version08.path(), discoveredParameters);
+                        addDiscoveredParameters(Dsp08Constants.V_08_VERSION, request.bpnl(), request.counterPartyAddress(), discoveredParameters);
                         return ServiceResult.success(discoveredParameters.build());
                     }
                 }
