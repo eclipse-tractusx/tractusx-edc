@@ -1,5 +1,6 @@
 #################################################################################
 #  Copyright (c) 2021,2024 Contributors to the Eclipse Foundation
+#  Copyright (c) 2025 Cofinity-X GmbH
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -40,7 +41,9 @@ updates:
   -
     package-ecosystem: "github-actions"
     target-branch: main
-    directory: /
+    directories:
+      - "/"                         # scan workflows
+      - "/.github/actions/*"        # scan all composite actions’ action.yml
     labels:
       - "dependabot"
       - "github-actions"
