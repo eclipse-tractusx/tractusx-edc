@@ -89,7 +89,7 @@ runs:
     # Build and push the image
     ###############################
     - name: Build and push
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v6
       with:
         context: ${{ inputs.rootDir }}
         file: ${{ inputs.rootDir }}/build/resources/docker/Dockerfile
