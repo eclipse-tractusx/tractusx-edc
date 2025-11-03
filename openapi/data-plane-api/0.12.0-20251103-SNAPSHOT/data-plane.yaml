@@ -1,0 +1,261 @@
+openapi: 3.0.1
+info:
+  title: Tractus-X EDC data-plane API
+  description: Tractus-X EDC data-plane API Documentation
+  license:
+    name: "The Apache License, Version 2.0"
+    url: http://www.apache.org/licenses/LICENSE-2.0.txt
+  version: 0.12.0-20251103-SNAPSHOT
+servers:
+- url: /
+paths:
+  /aas/request:
+    post:
+      tags:
+      - Data Plane Proxy API
+      operationId: requestAsset
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/AssetRequest"
+      responses:
+        default:
+          description: Requests asset data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetRequest"
+  /check/health:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: checkHealth
+      responses:
+        "200":
+          description: The runtime is working properly.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /check/liveness:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: getLiveness
+      responses:
+        "200":
+          description: The runtime is working properly.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /check/readiness:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a readiness probe to determine whether the runtime is
+        able to accept requests.
+      operationId: getReadiness
+      responses:
+        "200":
+          description: The runtime is able to accept requests.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /check/startup:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a startup probe to determine whether the runtime has completed
+        startup.
+      operationId: getStartup
+      responses:
+        "200":
+          description: The runtime has completed startup.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /token:
+    post:
+      tags:
+      - Token Refresh API
+      description: Resolves all groups for a particular BPN
+      operationId: refreshToken
+      parameters:
+      - name: grant_type
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: refresh_token
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "The access token and refresh token were updated. Expiry should\
+            \ be interpreted as starting from the time of message reception, allowing\
+            \ for some leeway."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "400":
+          description: "Request body was malformed, query parameters were missing,\
+            \ etc."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "401":
+          description: "The token could not be refreshed due to an authentication\
+            \ error, either the refresh token or the Authorization header were invalid."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+  /v4alpha/dataflows/{id}/trigger:
+    post:
+      tags:
+      - DataFlow API V4Alpha
+      description: "Requests the trigger of a data transfer. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received."
+      operationId: triggerDataTransferV4Alpha
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Request was sucessfully received
+          links:
+            poll-state:
+              operationId: triggerDataTransferV4Alpha
+        "400":
+          description: Request was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: Data flow with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "409":
+          description: Data flow is not in a required state
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+components:
+  schemas:
+    ApiErrorDetail:
+      type: object
+      properties:
+        invalidValue:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+      example:
+        message: error message
+        type: ErrorType
+        path: object.error.path
+        invalidValue: this value is not valid
+    AssetRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+        pathSegments:
+          type: string
+        providerId:
+          type: string
+        queryParams:
+          type: string
+        transferProcessId:
+          type: string
+    Failure:
+      type: object
+      properties:
+        failureDetail:
+          type: string
+        messages:
+          type: array
+          items:
+            type: string
+    HealthCheckResult:
+      type: object
+      properties:
+        component:
+          type: string
+        failure:
+          $ref: "#/components/schemas/Failure"
+        isHealthy:
+          type: boolean
+    HealthStatus:
+      type: object
+      properties:
+        componentResults:
+          type: array
+          items:
+            $ref: "#/components/schemas/HealthCheckResult"
+        isSystemHealthy:
+          type: boolean
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires:
+          type: integer
+          format: int64
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+  securitySchemes:
+    Authentication:
+      type: http
+      description: Self-Issued ID token containing a token
+      scheme: bearer
+      bearerFormat: JWT
