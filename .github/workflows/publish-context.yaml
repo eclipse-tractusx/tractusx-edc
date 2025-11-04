@@ -39,7 +39,6 @@ jobs:
         run: |
           mkdir -p public/context
           cp core/json-ld-core/src/main/resources/document/tx-auth-v1.jsonld public/context/
-          cp core/json-ld-core/src/main/resources/document/tx-v1.jsonld public/context/
 
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
