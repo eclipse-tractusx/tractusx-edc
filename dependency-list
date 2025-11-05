@@ -28,11 +28,13 @@ com.fasterxml.jackson.core:jackson-annotations:2.18.0
 com.fasterxml.jackson.core:jackson-annotations:2.18.2
 com.fasterxml.jackson.core:jackson-annotations:2.18.3
 com.fasterxml.jackson.core:jackson-annotations:2.19.0
+com.fasterxml.jackson.core:jackson-annotations:2.19.2
 com.fasterxml.jackson.core:jackson-core:2.14.1
 com.fasterxml.jackson.core:jackson-core:2.15.4
 com.fasterxml.jackson.core:jackson-core:2.16.2
 com.fasterxml.jackson.core:jackson-core:2.17.2
 com.fasterxml.jackson.core:jackson-core:2.19.0
+com.fasterxml.jackson.core:jackson-core:2.19.2
 com.fasterxml.jackson.core:jackson-databind:2.11.0
 com.fasterxml.jackson.core:jackson-databind:2.14.0
 com.fasterxml.jackson.core:jackson-databind:2.14.1
@@ -45,6 +47,7 @@ com.fasterxml.jackson.core:jackson-databind:2.18.1
 com.fasterxml.jackson.core:jackson-databind:2.18.2
 com.fasterxml.jackson.core:jackson-databind:2.18.3
 com.fasterxml.jackson.core:jackson-databind:2.19.0
+com.fasterxml.jackson.core:jackson-databind:2.19.2
 com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.0
 com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.2
 com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.1
@@ -70,6 +73,7 @@ com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations:2.18.0
 com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations:2.19.0
 com.fasterxml.jackson:jackson-bom:2.16.2
 com.fasterxml.jackson:jackson-bom:2.19.0
+com.fasterxml.jackson:jackson-bom:2.19.2
 com.fasterxml.uuid:java-uuid-generator:4.1.0
 com.github.cliftonlabs:json-simple:3.0.2
 com.github.dasniko:testcontainers-keycloak:3.7.0
@@ -120,7 +124,7 @@ com.nimbusds:nimbus-jose-jwt:10.0.1
 com.nimbusds:nimbus-jose-jwt:10.3
 com.nimbusds:nimbus-jose-jwt:9.28
 com.nimbusds:oauth2-oidc-sdk:11.23
-com.puppycrawl.tools:checkstyle:10.23.1
+com.puppycrawl.tools:checkstyle:11.0.0
 com.samskivert:jmustache:1.15
 com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0
 com.squareup.okhttp3:okhttp:4.12.0
@@ -135,7 +139,7 @@ com.sun.xml.bind.external:relaxng-datatype:4.0.3
 com.sun.xml.bind.external:rngom:4.0.3
 com.sun.xml.bind:jaxb-core:4.0.1
 com.sun.xml.bind:jaxb-impl:4.0.1
-commons-beanutils:commons-beanutils:1.10.1
+commons-beanutils:commons-beanutils:1.11.0
 commons-beanutils:commons-beanutils:1.8.3
 commons-beanutils:commons-beanutils:1.9.4
 commons-codec:commons-codec:1.11
@@ -201,7 +205,7 @@ io.netty:netty-transport:4.1.112.Final
 io.netty:netty-transport:4.1.118.Final
 io.netty:netty-transport:4.1.86.Final
 io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:1.32.0
-io.opentelemetry.javaagent:opentelemetry-javaagent:2.16.0
+io.opentelemetry.javaagent:opentelemetry-javaagent:2.21.0
 io.opentelemetry:opentelemetry-api:1.32.0
 io.opentelemetry:opentelemetry-context:1.32.0
 io.projectreactor.netty:reactor-netty-core:1.0.48
@@ -279,8 +283,9 @@ javax.servlet:javax.servlet-api:4.0.1
 javax.ws.rs:javax.ws.rs-api:2.1
 joda-time:joda-time:2.10.5
 junit:junit:4.13.2
-net.bytebuddy:byte-buddy-agent:1.15.11
+net.bytebuddy:byte-buddy-agent:1.17.6
 net.bytebuddy:byte-buddy:1.15.11
+net.bytebuddy:byte-buddy:1.17.6
 net.java.dev.jna:jna-platform:5.13.0
 net.java.dev.jna:jna:5.13.0
 net.javacrumbs.json-unit:json-unit-core:2.36.0
@@ -289,7 +294,7 @@ net.minidev:accessors-smart:2.5.2
 net.minidev:json-smart:2.4.7
 net.minidev:json-smart:2.5.2
 net.sf.jopt-simple:jopt-simple:5.0.4
-net.sf.saxon:Saxon-HE:12.5
+net.sf.saxon:Saxon-HE:12.8
 org.antlr:antlr4-runtime:4.13.2
 org.apache.commons:commons-compress:1.24.0
 org.apache.commons:commons-digester3:3.2
@@ -307,9 +312,6 @@ org.apache.groovy:groovy-bom:4.0.22
 org.apache.groovy:groovy-json:4.0.22
 org.apache.groovy:groovy-xml:4.0.22
 org.apache.groovy:groovy:4.0.22
-org.apache.httpcomponents.client5:httpclient5:5.1.3
-org.apache.httpcomponents.core5:httpcore5-h2:5.1.3
-org.apache.httpcomponents.core5:httpcore5:5.1.3
 org.apache.httpcomponents:httpclient:4.5.13
 org.apache.httpcomponents:httpclient:4.5.14
 org.apache.httpcomponents:httpcore:4.4.13
@@ -329,6 +331,7 @@ org.apache.velocity:velocity-engine-scripting:2.3
 org.apache.xbean:xbean-reflect:3.7
 org.apiguardian:apiguardian-api:1.1.2
 org.assertj:assertj-core:3.27.3
+org.assertj:assertj-core:3.27.4
 org.awaitility:awaitility:4.2.2
 org.awaitility:awaitility:4.3.0
 org.bouncycastle:bcpkix-jdk18on:1.72
@@ -339,8 +342,8 @@ org.bouncycastle:bcutil-jdk18on:1.72
 org.ccil.cowan.tagsoup:tagsoup:1.2.1
 org.checkerframework:checker-qual:3.12.0
 org.checkerframework:checker-qual:3.48.3
-org.checkerframework:checker-qual:3.49.2
 org.checkerframework:checker-qual:3.49.3
+org.checkerframework:checker-qual:3.49.5
 org.codehaus.plexus:plexus-classworlds:2.6.0
 org.codehaus.plexus:plexus-component-annotations:2.1.0
 org.codehaus.plexus:plexus-container-default:2.1.0
@@ -367,7 +370,7 @@ org.eclipse.edc:auth-configuration:0.13.0
 org.eclipse.edc:auth-delegated:0.13.0
 org.eclipse.edc:auth-spi:0.13.0
 org.eclipse.edc:auth-tokenbased:0.13.0
-org.eclipse.edc:autodoc-processor:0.13.0
+org.eclipse.edc:autodoc-processor:0.14.1
 org.eclipse.edc:boot-lib:0.13.0
 org.eclipse.edc:boot-spi:0.13.0
 org.eclipse.edc:boot:0.13.0
@@ -558,6 +561,7 @@ org.eclipse.edc:query-lib:0.13.0
 org.eclipse.edc:request-policy-context-spi:0.13.0
 org.eclipse.edc:runtime-core:0.13.0
 org.eclipse.edc:runtime-metamodel:0.13.0
+org.eclipse.edc:runtime-metamodel:0.14.1
 org.eclipse.edc:secrets-spi:0.13.0
 org.eclipse.edc:sql-bootstrapper:0.13.0
 org.eclipse.edc:sql-core:0.13.0
@@ -666,13 +670,15 @@ org.jetbrains:annotations:26.0.2
 org.jspecify:jspecify:1.0.0
 org.junit.jupiter:junit-jupiter-api:5.10.3
 org.junit.jupiter:junit-jupiter-api:5.12.2
-org.junit.jupiter:junit-jupiter-engine:5.12.2
-org.junit.jupiter:junit-jupiter-params:5.12.2
-org.junit.platform:junit-platform-commons:1.12.2
-org.junit.platform:junit-platform-engine:1.12.2
+org.junit.jupiter:junit-jupiter-api:5.13.4
+org.junit.jupiter:junit-jupiter-engine:5.13.4
+org.junit.jupiter:junit-jupiter-params:5.13.4
+org.junit.platform:junit-platform-commons:1.13.4
+org.junit.platform:junit-platform-engine:1.13.4
 org.junit.platform:junit-platform-launcher:1.10.3
-org.junit.platform:junit-platform-launcher:1.12.2
+org.junit.platform:junit-platform-launcher:1.13.4
 org.junit:junit-bom:5.12.2
+org.junit:junit-bom:5.13.4
 org.jvnet.mimepull:mimepull:1.9.15
 org.keycloak:keycloak-admin-client:26.0.4
 org.keycloak:keycloak-client-common-synced:26.0.4
@@ -681,6 +687,7 @@ org.mock-server:mockserver-client-java:5.15.0
 org.mock-server:mockserver-core:5.15.0
 org.mock-server:mockserver-netty:5.15.0
 org.mockito:mockito-core:5.17.0
+org.mockito:mockito-core:5.19.0
 org.mockito:mockito-core:5.2.0
 org.mozilla:rhino:1.7.7.2
 org.objenesis:objenesis:3.3
@@ -720,7 +727,7 @@ org.testcontainers:postgresql:1.21.1
 org.testcontainers:testcontainers:1.20.6
 org.testcontainers:testcontainers:1.21.0
 org.testcontainers:testcontainers:1.21.1
-org.xmlresolver:xmlresolver:5.2.2
+org.xmlresolver:xmlresolver:5.3.3
 org.xmlunit:xmlunit-core:2.9.1
 org.xmlunit:xmlunit-placeholders:2.9.1
 org.yaml:snakeyaml:1.33
