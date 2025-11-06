@@ -22,9 +22,12 @@ Intentions:
 
 - Dependabot can manage container image versions by monitoring Dockerfiles. There is a workaround to use a dummy
   Dockerfile that just contains a FROM clause with the image name and tag. Updates are then proposed by dependabot.
+  We apply this workaround.
 - The creation of the test containers makes use of the Dockerfile by reading in the image tag from the file and
   instantiate the container based on the read image tag.
 - A general test fixture component is introduced that is used within the integration and e2e tests to manage the
-  *Postgres* image as well as the *BDRS* image centrally. The usage is then depending on this central provisioning.
-- The new test fixtures will be placed in the core-utils component and then used in integration tests as well as
-  e2e tests.
+  *Postgres* image as well as the *BDRS* image with a central mechanism. The postgres image version is managed 
+  centrally as it is used in many places, the bdrs image is handled locally in the component that uses the image.
+- The new test fixtures component will be placed to the existing test fixtures in the 'edc-tests/e2e-fixtures' module.
+  Although this is actually dedicated to e2e tests, the fixtures are also used within the integration tests as well,
+  so no new dependency concept is added and it keeps test fixture functionality together.
