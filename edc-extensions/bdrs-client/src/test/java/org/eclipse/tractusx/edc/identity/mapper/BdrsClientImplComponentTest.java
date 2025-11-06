@@ -55,10 +55,8 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Date;
@@ -76,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.verifiablecredentials.jwt.JwtCreationUtils.createJwt;
 import static org.eclipse.tractusx.edc.identity.mapper.TestData.VP_CONTENT_EXAMPLE;
+import static org.eclipse.tractusx.edc.tests.testcontainer.TestContainerManager.getContainerNameFromDependabotManagedDockerfile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -99,7 +98,7 @@ class BdrsClientImplComponentTest {
     private static final Network DOCKER_NETWORK = Network.newNetwork();
 
     @Container
-    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>(getBdrsContainerNameFromDependabotManagedDockerfile())
+    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>(getContainerNameFromDependabotManagedDockerfile(BdrsClientImplComponentTest.class))
             .withEnv("EDC_HTTP_MANAGEMENT_AUTH_KEY", "password")
             .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
@@ -130,13 +129,6 @@ class BdrsClientImplComponentTest {
     private BdrsClientImpl client;
     private ECKey vpHolderKey;
     private ECKey vcIssuerKey;
-
-    static String getBdrsContainerNameFromDependabotManagedDockerfile() {
-        return new BufferedReader(new InputStreamReader(BdrsClientImplComponentTest.class.getResourceAsStream("/Dockerfile")))
-                .lines()
-                .findFirst().orElseThrow()
-                .substring(5);
-    }
 
     @BeforeEach
     void setup() throws IOException, ParseException {

@@ -34,13 +34,13 @@ import java.util.Map;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
 
 /**
  * JUnit extension that permits to spin up a PostgresSQL container
  */
 public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
 
-    private static final String POSTGRES_IMAGE_NAME = "postgres:17.4";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
     private static final String DB_SCHEMA_NAME = "testschema";
@@ -49,7 +49,7 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
 
     public PostgresExtension(String... databases) {
         this.databases = databases;
-        this.postgreSqlContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE_NAME)
+        this.postgreSqlContainer = new PostgreSQLContainer<>(getPostgresTestContainerName())
                 .withUsername(USER)
                 .withPassword(PASSWORD);
     }

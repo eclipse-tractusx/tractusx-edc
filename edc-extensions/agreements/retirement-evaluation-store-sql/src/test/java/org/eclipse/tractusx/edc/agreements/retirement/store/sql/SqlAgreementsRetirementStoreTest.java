@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
+
 @PostgresqlIntegrationTest
 class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase {
     private final TypeManager typeManager = new JacksonTypeManager();
@@ -42,7 +44,7 @@ class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase
 
     @RegisterExtension
     static PostgresqlStoreSetupExtension extension =
-            new PostgresqlStoreSetupExtension("postgres:17.3");
+            new PostgresqlStoreSetupExtension(getPostgresTestContainerName());
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {

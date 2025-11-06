@@ -36,6 +36,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
+
 @PostgresqlIntegrationTest
 class SqlEdrLockTest extends EndpointDataReferenceLockBaseTest {
     private SqlEdrLock edrLock;
@@ -45,7 +47,7 @@ class SqlEdrLockTest extends EndpointDataReferenceLockBaseTest {
 
     @RegisterExtension
     static PostgresqlStoreSetupExtension extension =
-            new PostgresqlStoreSetupExtension("postgres:17.3");
+            new PostgresqlStoreSetupExtension(getPostgresTestContainerName());
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {

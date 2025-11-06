@@ -34,6 +34,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
 
 @PostgresqlIntegrationTest
 class AssetPostgresqlMigrationExtensionTest {
@@ -41,7 +42,7 @@ class AssetPostgresqlMigrationExtensionTest {
 
     @RegisterExtension
     static PostgresqlStoreSetupExtension extension =
-            new PostgresqlStoreSetupExtension("postgres:17.3");
+            new PostgresqlStoreSetupExtension(getPostgresTestContainerName());
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) {
