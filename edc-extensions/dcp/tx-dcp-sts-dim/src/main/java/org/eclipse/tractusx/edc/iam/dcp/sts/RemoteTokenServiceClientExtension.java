@@ -41,15 +41,12 @@ import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauthClientImpl;
 import java.time.Clock;
 
 import static java.util.Optional.ofNullable;
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibilityNullable;
 
 @Extension(RemoteTokenServiceClientExtension.NAME)
 public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     @Setting(value = "STS Dim endpoint")
     public static final String DIM_URL = "tx.edc.iam.sts.dim.url";
-    @Deprecated(since = "0.7.1")
-    public static final String DIM_URL_DEPRECATED = "edc.iam.sts.dim.url";
     protected static final String NAME = "Secure Token Service (STS) client extension";
 
     @Inject
@@ -80,7 +77,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     @Provider
     public SecureTokenService secureTokenService(ServiceExtensionContext context) {
-        var dimUrlConfig = propertyCompatibilityNullable(context, DIM_URL, DIM_URL_DEPRECATED);
+        var dimUrlConfig = context.getSetting(DIM_URL, null);
         return ofNullable(dimUrlConfig)
                 .map(PathUtils::removeTrailingSlash)
                 .map(dimUrl -> {

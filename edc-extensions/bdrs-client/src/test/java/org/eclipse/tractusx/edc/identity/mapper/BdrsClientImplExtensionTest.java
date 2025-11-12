@@ -36,7 +36,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.BDRS_SERVER_URL_PROPERTY;
-import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.BDRS_SERVER_URL_PROPERTY_DEPRECATED;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.CONNECTOR_DID_PROPERTY;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.CREDENTIAL_SERVICE_BASE_URL_PROPERTY;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -63,7 +62,7 @@ class BdrsClientImplExtensionTest {
     @Test
     void createClient_whenUrlMissing_expectException(ServiceExtensionContext context, BdrsClientExtension extension) {
         var cfg = mock(Config.class);
-        when(cfg.getString(eq(BDRS_SERVER_URL_PROPERTY_DEPRECATED))).thenThrow(new EdcException(BDRS_SERVER_URL_PROPERTY));
+        when(cfg.getString(eq(BDRS_SERVER_URL_PROPERTY))).thenThrow(new EdcException(BDRS_SERVER_URL_PROPERTY));
         when(context.getConfig()).thenReturn(cfg);
         when(cfg.getString(eq(BDRS_SERVER_URL_PROPERTY), isNull())).thenReturn(null);
         when(cfg.getString(eq(CONNECTOR_DID_PROPERTY), isNull())).thenReturn("did:web:self");
