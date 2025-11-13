@@ -59,6 +59,7 @@ dependencies {
     testFixturesApi(libs.testcontainers.minio)
     testFixturesApi(libs.testcontainers.localstack)
     testFixturesApi(libs.testcontainers.postgres)
+    testFixturesApi(libs.wiremock)
 }
 
 edcBuild {
