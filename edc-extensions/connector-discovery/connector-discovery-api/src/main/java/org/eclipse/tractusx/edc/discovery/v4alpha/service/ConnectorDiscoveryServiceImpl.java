@@ -76,12 +76,18 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
                 var did = bdrsClient.resolveDid(request.bpnl());
                 var version20251 = findProtocolVersion(Dsp2025Constants.V_2025_1_VERSION, protocolVersions);
                 if (version20251 != null && did != null) {
-                    addDiscoveredParameters(Dsp2025Constants.V_2025_1_VERSION, did, request.counterPartyAddress() + version20251.path(), discoveredParameters);
+                    addDiscoveredParameters(Dsp2025Constants.V_2025_1_VERSION, did,
+                            request.counterPartyAddress() + removeTrailingSlash(version20251.path()),
+                            discoveredParameters);
+
                     return ServiceResult.success(discoveredParameters.build());
                 } else {
                     var version08 = findProtocolVersion(Dsp08Constants.V_08_VERSION, protocolVersions);
                     if (version08 != null) {
-                        addDiscoveredParameters(Dsp08Constants.V_08_VERSION, request.bpnl(), request.counterPartyAddress(), discoveredParameters);
+                        addDiscoveredParameters(Dsp08Constants.V_08_VERSION, request.bpnl(),
+                                request.counterPartyAddress() + removeTrailingSlash(version08.path()),
+                                discoveredParameters);
+
                         return ServiceResult.success(discoveredParameters.build());
                     }
                 }
@@ -94,6 +100,14 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
         return ServiceResult.unexpected("No valid protocol version found for the counter party. " +
                 "The provided BPNL couldn't be resolved to a DID or the counter party does " +
                 "not support any of the expected protocol versions (" + Dsp08Constants.V_08_VERSION + ", " + Dsp2025Constants.V_2025_1_VERSION + ")");
+    }
+
+    private String removeTrailingSlash(String path)
+    {
+        if(path.endsWith("/")) {
+            return path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 
     private ProtocolVersion findProtocolVersion(String targetVersion, ProtocolVersions protocolVersions) {
