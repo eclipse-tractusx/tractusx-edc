@@ -127,7 +127,7 @@ public class DiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl() + "/\"")
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl())
                 .contains("\"counterPartyId\":\"" + "unresolvableBpnl" + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
 
@@ -145,7 +145,7 @@ public class DiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl() + "/\"")
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
                 .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
 

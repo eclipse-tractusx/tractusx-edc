@@ -109,7 +109,7 @@ class ConnectorDiscoveryServiceImplTest {
         var expectedJsonArray = Json.createObjectBuilder()
                 .add(CATALOG_REQUEST_COUNTER_PARTY_ID, "someBpnl")
                 .add(CATALOG_REQUEST_PROTOCOL, "dataspace-protocol-http")
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any/")
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any")
                 .build();
 
         var response = service.discoverVersionParams(paramsDiscoveryRequest);
@@ -161,7 +161,7 @@ class ConnectorDiscoveryServiceImplTest {
         var expectedJsonArray = Json.createObjectBuilder()
                 .add(CATALOG_REQUEST_COUNTER_PARTY_ID, "someBpnl")
                 .add(CATALOG_REQUEST_PROTOCOL, "dataspace-protocol-http")
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any/")
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any")
                 .build();
 
         var response = service.discoverVersionParams(paramsDiscoveryRequest);
