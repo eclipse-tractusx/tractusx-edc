@@ -19,14 +19,15 @@
 
 package org.eclipse.tractusx.edc.tests.participant;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.util.io.Ports;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
 
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
@@ -36,8 +37,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import static org.mockserver.model.HttpRequest.request;
 
 /**
  * Extension of {@link TractusxParticipantBase} with Transfer specific configuration
@@ -91,17 +90,25 @@ public class TransferParticipant extends TractusxParticipantBase {
 
     private static class EventSubscription {
         private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
-        private final ClientAndServer server = ClientAndServer.startClientAndServer(eventReceiverPort.get());
+        private WireMockServer server = new WireMockServer(eventReceiverPort.get());
         private final BlockingQueue<JsonObject> events = new LinkedBlockingQueue<>();
         private final Duration timeout;
 
         EventSubscription(Duration timeout) {
             this.timeout = timeout;
-            server.when(request()).respond(httpRequest -> {
-                var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
-                var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
-                events.add(event);
-                return HttpResponse.response();
+            server.start();
+            server.stubFor(
+                    WireMock.any(WireMock.anyUrl())
+                            .willReturn(ResponseDefinitionBuilder.responseDefinition().withStatus(200))
+            );
+
+            // Capture every request body and add parsed JSON to events
+            server.addMockServiceRequestListener((request, response) -> {
+                byte[] body = request.getBody();
+                if (body != null && body.length > 0) {
+                    var json = Json.createReader(new ByteArrayInputStream(body)).readObject();
+                    events.add(json);
+                }
             });
         }
 

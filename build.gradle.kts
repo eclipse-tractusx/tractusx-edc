@@ -80,10 +80,10 @@ allprojects {
             implementation("io.netty:netty-codec-http2:4.2.7.Final") {
                 because("Version 4.1.123.Final vulnerability: https://www.cve.org/CVERecord?id=CVE-2025-8916")
             }
-            testImplementation("com.networknt:json-schema-validator:1.5.9") {
+            testImplementation("com.networknt:json-schema-validator:2.0.0") {
                 because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
             }
-            testFixturesApi("com.networknt:json-schema-validator:1.5.9") {
+            testFixturesApi("com.networknt:json-schema-validator:2.0.0") {
                 because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
             }
         }

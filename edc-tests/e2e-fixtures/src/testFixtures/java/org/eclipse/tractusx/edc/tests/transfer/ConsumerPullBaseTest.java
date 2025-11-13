@@ -19,29 +19,32 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.matching.AnythingPattern;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.verify.VerificationTimes;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 /**
  * Base tests for Http PULL scenario
@@ -50,13 +53,15 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
 
     public static final String MOCK_BACKEND_REMOTE_HOST = "localhost";
     public static final String MOCK_BACKEND_PATH = "/mock/api";
-    protected ClientAndServer server;
+    @RegisterExtension
+    static WireMockExtension server = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
     protected String privateBackendUrl;
 
     @BeforeEach
     void setup() {
-        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTE_HOST, getFreePort());
         privateBackendUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), MOCK_BACKEND_PATH);
     }
 
@@ -89,7 +94,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
                 });
 
         // wait until EDC is available on the consumer side
-        server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
+        server.stubFor(get(MOCK_BACKEND_PATH).willReturn(ok("test response")));
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
@@ -101,12 +106,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
         // Prov-DP -> Prov-backend
         assertThat(consumer().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
 
-        server.verify(request()
-                .withPath(MOCK_BACKEND_PATH)
-                .withHeader("Edc-Contract-Agreement-Id")
-                .withHeader("Edc-Bpn", consumer().getBpn())
-                .withMethod("GET"), VerificationTimes.exactly(1));
-
+        server.verify(1, getRequestedFor(urlEqualTo(MOCK_BACKEND_PATH)).withHeader("Edc-Contract-Agreement-Id", new AnythingPattern()).withHeader("Edc-Bpn", equalTo(consumer().getBpn())));
     }
 
     @Test
@@ -138,7 +138,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
                 });
 
         // wait until EDC is available on the consumer side
-        server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
+        server.stubFor(get(MOCK_BACKEND_PATH).willReturn(ok("test response")));
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
@@ -151,11 +151,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
         //Consumer-DP -> Prov-DP -> Prov-backend
         assertThat(consumer().dataPlane().pullData(Map.of("transferProcessId", transferProcessId))).isEqualTo("test response");
 
-        server.verify(request()
-                .withPath(MOCK_BACKEND_PATH)
-                .withHeader("Edc-Contract-Agreement-Id")
-                .withHeader("Edc-Bpn", consumer().getBpn())
-                .withMethod("GET"), VerificationTimes.exactly(1));
+        server.verify(1, getRequestedFor(urlEqualTo(MOCK_BACKEND_PATH)).withHeader("Edc-Contract-Agreement-Id", new AnythingPattern()).withHeader("Edc-Bpn", equalTo(consumer().getBpn())));
     }
 
     protected JsonObject httpDataDestination() {
@@ -166,11 +162,6 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
                         .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
                         .build())
                 .build();
-    }
-
-    @AfterEach
-    void teardown() {
-        server.stop();
     }
 
     protected JsonObject createAccessPolicy(String bpn) {

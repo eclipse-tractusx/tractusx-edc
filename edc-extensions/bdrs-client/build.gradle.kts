@@ -35,7 +35,7 @@ dependencies {
 
     implementation(libs.edc.identity.trust.service)
 
-    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.wiremock)
     testImplementation(libs.edc.junit)
     testImplementation(libs.awaitility)
     testImplementation(libs.edc.core.token)

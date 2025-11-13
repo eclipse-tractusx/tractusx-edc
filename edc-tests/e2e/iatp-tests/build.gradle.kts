@@ -35,7 +35,7 @@ dependencies {
     testImplementation(libs.edc.sts.core)
     testRuntimeOnly(libs.edc.transaction.local)
 
-    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.wiremock)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
