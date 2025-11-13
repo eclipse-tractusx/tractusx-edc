@@ -102,9 +102,8 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
                 "not support any of the expected protocol versions (" + Dsp08Constants.V_08_VERSION + ", " + Dsp2025Constants.V_2025_1_VERSION + ")");
     }
 
-    private String removeTrailingSlash(String path)
-    {
-        if(path.endsWith("/")) {
+    private String removeTrailingSlash(String path) {
+        if (path.endsWith("/")) {
             return path.substring(0, path.length() - 1);
         }
         return path;
