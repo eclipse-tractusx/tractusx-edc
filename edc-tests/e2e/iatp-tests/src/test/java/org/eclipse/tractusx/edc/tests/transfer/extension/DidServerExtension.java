@@ -19,18 +19,20 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.extension;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.util.io.Ports;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.mockserver.model.HttpRequest.request;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 /**
  * Centralized server for tests that exposes DIDs for participant.
@@ -40,11 +42,12 @@ public class DidServerExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final LazySupplier<Integer> port = new LazySupplier<>(Ports::getFreePort);
-    private ClientAndServer server;
+    private WireMockServer server;
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        server = ClientAndServer.startClientAndServer(port.get());
+        server = new WireMockServer(options().port(port.get()));
+        server.start();
     }
 
     @Override
@@ -56,8 +59,8 @@ public class DidServerExtension implements BeforeAllCallback, AfterAllCallback {
 
     public DidServerExtension register(String name, DidDocument didDocument) {
         try {
-            server.when(request("/%s/.well-known/did.json".formatted(name.toLowerCase())))
-                    .respond(HttpResponse.response(objectMapper.writeValueAsString(didDocument)));
+            server.stubFor(get(urlPathEqualTo("/%s/.well-known/did.json".formatted(name.toLowerCase())))
+                    .willReturn(aResponse().withStatus(200).withBody(objectMapper.writeValueAsString(didDocument))));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

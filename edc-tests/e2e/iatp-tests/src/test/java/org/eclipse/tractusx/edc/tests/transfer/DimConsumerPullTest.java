@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
 import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
@@ -44,14 +45,17 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
 
 import java.net.URI;
 import java.time.Clock;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -62,7 +66,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.dimRuntime;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockserver.model.HttpRequest.request;
 
 @EndToEndTest
 public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
@@ -107,8 +110,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
             () -> PROVIDER.iatpConfig().merge(BDRS_SERVER_EXTENSION.getConfig()));
 
     private static final TypeManager MAPPER = new JacksonTypeManager();
-    private static ClientAndServer oauthServer;
-    private static ClientAndServer dimServer;
+    private static WireMockServer oauthServer;
+    private static WireMockServer dimServer;
 
     @BeforeAll
     static void prepare() {
@@ -127,13 +130,15 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
                 PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER));
 
         var stsUri = STS.stsUri().get();
-        oauthServer = ClientAndServer.startClientAndServer(stsUri.getPort());
 
-        oauthServer.when(request().withMethod("POST").withPath(stsUri.getPath() + "/token"))
-                .respond(HttpResponse.response(MAPPER.writeValueAsString(Map.of("access_token", "token"))));
+        oauthServer = new WireMockServer(options().port(stsUri.getPort()));
+        oauthServer.start();
+        oauthServer.stubFor(post(urlPathEqualTo(stsUri.getPath() + "/token")).willReturn(aResponse().withStatus(200)
+                .withBody(MAPPER.writeValueAsString(Map.of("access_token", "token")))));
 
-        dimServer = ClientAndServer.startClientAndServer(DIM_URI.get().getPort());
-        dimServer.when(request().withMethod("POST")).respond(new DimDispatcher(generatorServices));
+        dimServer = new WireMockServer(options().port(DIM_URI.get().getPort()).extensions(new DimDispatcher(generatorServices)));
+        dimServer.start();
+        dimServer.stubFor(post(anyUrl()).willReturn(aResponse().withTransformers("dim-dispatcher")));
         
         CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
     }

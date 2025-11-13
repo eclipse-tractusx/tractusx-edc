@@ -34,10 +34,15 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.model.HttpStatusCode;
-import org.mockserver.verify.VerificationTimes;
 
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
@@ -51,9 +56,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.verify.VerificationTimes.atLeast;
 
 @EndToEndTest
 public class TransferPullEndToEndTest {
@@ -85,8 +87,6 @@ public class TransferPullEndToEndTest {
         void transferData_withSuspendResume() {
             var assetId = "api-asset-1";
 
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
-
             Map<String, Object> dataAddress = Map.of(
                     "baseUrl", privateBackendUrl,
                     "type", "HttpData",
@@ -106,7 +106,7 @@ public class TransferPullEndToEndTest {
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(ok("test response")));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -114,7 +114,7 @@ public class TransferPullEndToEndTest {
             var data = CONSUMER.data().pullData(edr, Map.of());
             assertThat(data).isNotNull().isEqualTo("test response");
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
 
             CONSUMER.suspendTransfer(transferProcessId, "reason");
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.SUSPENDED);
@@ -122,7 +122,7 @@ public class TransferPullEndToEndTest {
             // consumer cannot fetch data with the prev token (suspended)
             await().untilAsserted(() -> {
                 CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
-                server.verify(requestDefinition, atLeast(1));
+                server.verify(moreThanOrExactly(1), getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
             });
 
             CONSUMER.resumeTransfer(transferProcessId);
@@ -134,18 +134,16 @@ public class TransferPullEndToEndTest {
             data = CONSUMER.data().pullData(newEdr, Map.of());
             assertThat(data).isNotNull().isEqualTo("test response");
 
-            server.verify(requestDefinition, VerificationTimes.atLeast(2));
+            server.verify(moreThanOrExactly(2), getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
 
             // consumer cannot fetch data with the prev token (suspended) after the transfer process has been resumed
             CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403);
-            server.verify(requestDefinition, VerificationTimes.atLeast(2));
+            server.verify(moreThanOrExactly(2), getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
         @Test
         void transferData_withTerminate() {
             var assetId = "api-asset-1";
-
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
             Map<String, Object> dataAddress = Map.of(
                     "baseUrl", privateBackendUrl,
@@ -166,7 +164,7 @@ public class TransferPullEndToEndTest {
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(200).withBody("test response"));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(ok("test response")));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -174,13 +172,13 @@ public class TransferPullEndToEndTest {
             var data = CONSUMER.data().pullData(edr, Map.of());
             assertThat(data).isNotNull().isEqualTo("test response");
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
 
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.TERMINATED);
 
             // consumer cannot fetch data with the prev token (suspended)
             var body = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(403).extract().body().asString();
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
         protected JsonObject inForcePolicy() {
@@ -192,8 +190,6 @@ public class TransferPullEndToEndTest {
         void transferData_successful_notReturnOriginalSourceResponseCode_withTerminate() {
             var assetId = "api-asset-1";
 
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
-
             Map<String, Object> dataAddress = Map.of(
                     "baseUrl", privateBackendUrl,
                     "type", "HttpData",
@@ -213,8 +209,7 @@ public class TransferPullEndToEndTest {
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(HttpStatusCode.CREATED_201.code()).withBody("test response")
-                    .withHeader("to-be-returned", "false"));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(aResponse().withStatus(201).withBody("test response").withHeader("to-be-returned", "false")));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -225,14 +220,12 @@ public class TransferPullEndToEndTest {
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEqualTo("test response");
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
         @Test
         void transferData_unsuccessful_notReturnOriginalSourceResponseCode_withTerminate() {
             var assetId = "api-asset-1";
-
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
             Map<String, Object> dataAddress = Map.of(
                     "baseUrl", privateBackendUrl,
@@ -253,20 +246,18 @@ public class TransferPullEndToEndTest {
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(HttpStatusCode.EXPECTATION_FAILED_417.code()));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(aResponse().withStatus(417)));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
             CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.INTERNAL_SERVER_ERROR_500.code());
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
         @Test
         void transferData_success_withProxyOriginalResponse() {
             var assetId = "api-asset-proxy-1";
-
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
             Map<String, Object> dataAddress = Map.of(
                     "name", "transfer-test",
@@ -288,8 +279,7 @@ public class TransferPullEndToEndTest {
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(HttpStatusCode.CREATED_201.code()).withBody("test created")
-                    .withHeader("to-be-returned", "true"));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(aResponse().withStatus(201).withBody("test created").withHeader("to-be-returned", "true")));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -301,14 +291,12 @@ public class TransferPullEndToEndTest {
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEqualTo("test created");
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
         @Test
         void transferData_success_withProxyOriginalResponse_withoutSourceResponseBody() {
             var assetId = "api-asset-proxy-2";
-
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
             Map<String, Object> dataAddress = Map.of(
                     "name", "transfer-test",
@@ -330,8 +318,7 @@ public class TransferPullEndToEndTest {
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
             // wait until EDC is available on the consumer side
-            server.when(requestDefinition).respond(response().withStatusCode(HttpStatusCode.NO_CONTENT_204.code())
-                    .withHeader("to-be-returned", "true"));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(aResponse().withStatus(204).withHeader("to-be-returned", "true")));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -343,14 +330,12 @@ public class TransferPullEndToEndTest {
             var data = response.extract().body().asString();
             assertThat(data).isEmpty();
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
         @Test
         void transferData_failing_withProxyOriginalResponse() {
             var assetId = "api-asset-proxy-3";
-
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
             Map<String, Object> dataAddress = Map.of(
                     "name", "transfer-test",
@@ -371,8 +356,7 @@ public class TransferPullEndToEndTest {
 
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
-            server.when(requestDefinition).respond(response().withStatusCode(HttpStatusCode.EXPECTATION_FAILED_417.code())
-                    .withBody("test failed response"));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(aResponse().withStatus(417).withBody("test failed response")));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -381,14 +365,12 @@ public class TransferPullEndToEndTest {
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEqualTo("test failed response");
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
         @Test
         void transferData_failing_withProxyOriginalResponse_withoutSourceResponseBody() {
             var assetId = "api-asset-proxy-4";
-
-            var requestDefinition = request().withMethod("GET").withPath(MOCK_BACKEND_PATH);
 
             Map<String, Object> dataAddress = Map.of(
                     "name", "transfer-test",
@@ -409,7 +391,7 @@ public class TransferPullEndToEndTest {
 
             CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
-            server.when(requestDefinition).respond(response().withStatusCode(HttpStatusCode.GATEWAY_TIMEOUT_504.code()));
+            server.stubFor(get(MOCK_BACKEND_PATH).willReturn(aResponse().withStatus(504)));
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -418,7 +400,7 @@ public class TransferPullEndToEndTest {
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEmpty();
 
-            server.verify(requestDefinition, VerificationTimes.exactly(1));
+            server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
     }
 
