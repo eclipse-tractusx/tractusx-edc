@@ -14,10 +14,10 @@ maven/mavencentral/com.apicatalog/titanium-rdf-api/1.0.0, Apache-2.0, approved, 
 maven/mavencentral/com.apicatalog/titanium-rdf-n-quads/1.0.0, Apache-2.0, approved, #20243
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.11, MIT AND Apache-2.0, approved, #16697
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.12, MIT AND Apache-2.0, approved, #16697
-maven/mavencentral/com.azure/azure-core-http-netty/1.16.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-core-http-netty/1.16.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.55.3, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.55.4, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core/1.56.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-core/1.56.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.16.2, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.4.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.5.0, MIT, approved, clearlydefined
@@ -78,7 +78,7 @@ maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.17.2
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.2, Apache-2.0, approved, #16625
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.4, Apache-2.0, approved, #16625
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.19.2, Apache-2.0, approved, #23299
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.20.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.20.0, Apache-2.0, approved, #24684
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.15.4, Apache-2.0, approved, #9235
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.19.2, Apache-2.0, approved, #20840
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.15.4, Apache-2.0, approved, #9236
@@ -93,7 +93,7 @@ maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.19.2, Apache-2.0, approve
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.20.0, , restricted, clearlydefined
 maven/mavencentral/com.fasterxml.uuid/java-uuid-generator/4.1.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.github.cliftonlabs/json-simple/3.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.github.dasniko/testcontainers-keycloak/3.8.0, , restricted, clearlydefined
+maven/mavencentral/com.github.dasniko/testcontainers-keycloak/3.8.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.github.docker-java/docker-java-api/3.4.2, Apache-2.0, approved, #20872
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.4.2, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #15745
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.4.2, Apache-2.0, approved, #20873
@@ -260,18 +260,18 @@ maven/mavencentral/io.netty/netty-transport/4.1.86.Final, Apache-2.0 AND BSD-3-C
 maven/mavencentral/io.netty/netty-transport/4.2.6.Final, Apache-2.0, approved, #16113
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.19.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.20.0-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.20.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.20.0-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.20.0-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.javaagent/opentelemetry-javaagent/2.20.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.20.0-alpha, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.20.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.20.0-alpha, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.20.0-alpha, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.opentelemetry.javaagent/opentelemetry-javaagent/2.20.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.37.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.54.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.54.0-alpha, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.53.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-api/1.54.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry/opentelemetry-api/1.54.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-common/1.53.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-common/1.54.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry/opentelemetry-common/1.54.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.32.0, Apache-2.0, approved, #11683
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.53.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.54.0, , restricted, clearlydefined
@@ -358,7 +358,7 @@ maven/mavencentral/net.java.dev.jna/jna-platform/5.13.0, Apache-2.0 OR LGPL-2.1-
 maven/mavencentral/net.java.dev.jna/jna/5.13.0, Apache-2.0 AND LGPL-2.1-or-later, approved, #15196
 maven/mavencentral/net.javacrumbs.json-unit/json-unit-core/2.36.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/net.minidev/accessors-smart/2.4.7, Apache-2.0, approved, #7515
-maven/mavencentral/net.minidev/accessors-smart/2.6.0, , restricted, clearlydefined
+maven/mavencentral/net.minidev/accessors-smart/2.6.0, Apache-2.0, approved, #24380
 maven/mavencentral/net.minidev/json-smart/2.4.7, Apache-2.0, approved, #3288
 maven/mavencentral/net.minidev/json-smart/2.5.2, Apache-2.0, approved, #19431
 maven/mavencentral/net.minidev/json-smart/2.6.0, Apache-2.0, approved, clearlydefined
@@ -744,8 +744,8 @@ maven/mavencentral/org.eclipse.microprofile.openapi/microprofile-openapi-api/3.1
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
 maven/mavencentral/org.eclipse.sisu/org.eclipse.sisu.inject/0.9.0.M4, EPL-1.0, approved, technology.sisu
 maven/mavencentral/org.eclipse.sisu/org.eclipse.sisu.plexus/0.9.0.M4, EPL-1.0, approved, technology.sisu
-maven/mavencentral/org.flywaydb/flyway-core/11.13.1, , restricted, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-postgresql/11.13.1, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/11.13.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-database-postgresql/11.13.1, NOASSERTION, restricted, clearlydefined
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-locator/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
@@ -882,9 +882,9 @@ maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-C
 maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #16046
 maven/mavencentral/org.yaml/snakeyaml/2.4, Apache-2.0, approved, #19469
 maven/mavencentral/org.yaml/snakeyaml/2.5, Apache-2.0, approved, #23100
-maven/mavencentral/software.amazon.awssdk/annotations/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/annotations/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/annotations/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/apache-client/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/apache-client/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/apache-client/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/arns/2.32.12, Apache-2.0, approved, #22919
 maven/mavencentral/software.amazon.awssdk/arns/2.33.0, Apache-2.0, approved, clearlydefined
@@ -898,34 +898,34 @@ maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.32.12, Apache-2.0, 
 maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/checksums-spi/2.32.12, Apache-2.0, approved, #22913
 maven/mavencentral/software.amazon.awssdk/checksums-spi/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/checksums/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/checksums/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/checksums/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/crt-core/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/crt-core/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/crt-core/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.32.12, Apache-2.0, approved, #22927
 maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.32.12, Apache-2.0, approved, #22924
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/http-auth/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.32.12, Apache-2.0, approved, #22914
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/iam/2.32.12, , restricted, clearlydefined
-maven/mavencentral/software.amazon.awssdk/identity-spi/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/iam/2.32.12, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/identity-spi/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/json-utils/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/json-utils/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/json-utils/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/metrics-spi/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/metrics-spi/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.32.12, Apache-2.0, approved, #22920
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/profiles/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/profiles/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/profiles/2.33.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/protocol-core/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/protocol-core/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/regions/2.32.12, Apache-2.0, approved, #22936
 maven/mavencentral/software.amazon.awssdk/regions/2.33.0, Apache-2.0, approved, clearlydefined
@@ -937,10 +937,10 @@ maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.33.0, Apache-2.0
 maven/mavencentral/software.amazon.awssdk/s3/2.32.12, Apache-2.0, approved, #22931
 maven/mavencentral/software.amazon.awssdk/s3/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.32.12, Apache-2.0, approved, #22925
-maven/mavencentral/software.amazon.awssdk/sdk-core/2.33.0, Apache-2.0, restricted, clearlydefined
-maven/mavencentral/software.amazon.awssdk/sts/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sdk-core/2.33.0, Apache-2.0, approved, #23893
+maven/mavencentral/software.amazon.awssdk/sts/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.32.12, Apache-2.0, approved, #22926
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.33.0, Apache-2.0 AND BSD-2-Clause AND MIT, approved, clearlydefined
-maven/mavencentral/software.amazon.awssdk/utils/2.32.12, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/utils/2.32.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/utils/2.33.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, #19691
