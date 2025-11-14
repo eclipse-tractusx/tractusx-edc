@@ -75,9 +75,44 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run Unit tests
-        run: ./gradlew test
+        run: ./gradlew test testCodeCoverage
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
+
+      # uploads the jacoco report as artifact
+      - name: Upload JaCoCo Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: JaCoCo coverage-report
+          path: build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          retention-days: 1
+
+      # generates coverage-report.md
+      - name: JaCoCo Code Coverage Report
+        id: jacoco_reporter
+        uses: PavanMudigonda/jacoco-reporter@v5.0
+        with:
+          coverage_results_path: build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
+          skip_check_run: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Publish Coverage Job Summary
+      - name: Output KPIs from JaCoCo report
+        run: |
+          echo "| Outcome | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Coverage % | ${{ steps.jacoco_reporter.outputs.coverage_percentage }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.jacoco_reporter.outputs.covered_lines }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| :x: Number of Lines Missed | ${{ steps.jacoco_reporter.outputs.missed_lines }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Number of Lines | ${{ steps.jacoco_reporter.outputs.total_lines }} |" >> $GITHUB_STEP_SUMMARY
+
+      # uploads the coverage-report.md artifact
+      - name: Upload Code Coverage Markdown Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report-markdown
+          path: "*/coverage-results.md"
+          retention-days: 1
 
   integration-tests:
     runs-on: ubuntu-latest

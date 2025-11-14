@@ -25,6 +25,7 @@ plugins {
     checkstyle
     `java-library`
     `maven-publish`
+    jacoco
     `jacoco-report-aggregation`
     `java-test-fixtures`
     alias(libs.plugins.shadow)
@@ -61,6 +62,7 @@ val edcBuildId = libs.plugins.edc.build.get().pluginId
 allprojects {
     apply(plugin = edcBuildId)
     apply(plugin = "org.eclipse.edc.autodoc")
+    apply(plugin = "jacoco")
 
     dependencies {
 
