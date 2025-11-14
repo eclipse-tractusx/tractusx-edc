@@ -88,7 +88,7 @@ jobs:
 
       - name: Merge API specs
         run: |
-          ./gradlew mergeOpenApiSpec --inputDir=./resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=./resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml --infoTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" --infoDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" --infoVersion=${{ env.VERSION }}
+          ./gradlew mergeOpenApiSpec --inputDir=${PWD}/resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=${{ matrix.apiGroup.name }}.yaml --infoTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" --infoDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" --infoVersion=${{ env.VERSION }}
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
@@ -96,7 +96,7 @@ jobs:
         uses: Legion2/swagger-ui-action@v1
         with:
           output: dist/${{ env.VERSION }}
-          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+          spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Swagger UI stable version
@@ -104,7 +104,7 @@ jobs:
         if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
         with:
           output: dist
-          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+          spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v5
