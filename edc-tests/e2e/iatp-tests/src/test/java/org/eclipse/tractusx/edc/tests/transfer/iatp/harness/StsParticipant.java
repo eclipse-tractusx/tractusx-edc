@@ -38,9 +38,10 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
  */
 public class StsParticipant extends TractusxParticipantBase {
 
-    protected final LazySupplier<URI> stsUri = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/v1/sts"));
+    protected final LazySupplier<URI> stsUri;
 
     private StsParticipant() {
+        stsUri = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/v1/sts"));
     }
 
     public Config stsConfig(IatpParticipant... participants) {
