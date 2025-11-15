@@ -32,18 +32,22 @@ import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 import org.eclipse.tractusx.edc.edr.spi.testfixtures.index.lock.EndpointDataReferenceLockBaseTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 
-@PostgresqlIntegrationTest
-@ExtendWith(PostgresqlStoreSetupExtension.class)
-class SqlEdrLockTest extends EndpointDataReferenceLockBaseTest {
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
 
+@PostgresqlIntegrationTest
+class SqlEdrLockTest extends EndpointDataReferenceLockBaseTest {
     private SqlEdrLock edrLock;
     private final TypeManager typeManager = new JacksonTypeManager();
     private final PostgresEdrLockStatements statements = new PostgresEdrLockStatements();
     private final EndpointDataReferenceEntryStatements edrEntryStatements = new PostgresDialectStatements();
+
+    @RegisterExtension
+    static PostgresqlStoreSetupExtension extension =
+            new PostgresqlStoreSetupExtension(getPostgresTestContainerName());
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {

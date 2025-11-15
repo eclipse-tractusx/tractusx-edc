@@ -38,4 +38,5 @@ dependencies {
 
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
+    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
 }

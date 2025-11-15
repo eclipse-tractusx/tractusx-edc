@@ -17,24 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `maven-publish`
-}
+package org.eclipse.tractusx.edc.tests.testcontainer;
 
-dependencies {
-    api(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
-    api(libs.edc.spi.core)
-    implementation(libs.edc.spi.transaction.datasource)
-    implementation(libs.edc.spi.transactionspi)
-    implementation(libs.edc.lib.sql)
-    implementation(libs.edc.sql.contract.negotiation)
-    implementation(libs.edc.spi.controlplane)
+import static org.eclipse.tractusx.edc.tests.testcontainer.TestContainerManager.getContainerNameFromDependabotManagedDockerfile;
 
-
-    testImplementation(libs.edc.transaction.local)
-    testImplementation(testFixtures(libs.edc.junit))
-    testImplementation(testFixtures(libs.edc.sql.test.fixtures))
-    testImplementation(testFixtures(project(":edc-extensions:agreements-bpns:bpns-evaluation-core")))
-    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+public class PostgresContainerManager {
+    public static String getPostgresTestContainerName() {
+        return getContainerNameFromDependabotManagedDockerfile(PostgresContainerManager.class);
+    }
 }

@@ -28,18 +28,23 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPar
 import org.eclipse.tractusx.edc.validation.businesspartner.store.BusinessPartnerStoreTestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
+
 @PostgresqlIntegrationTest
-@ExtendWith(PostgresqlStoreSetupExtension.class)
 class SqlBusinessPartnerStoreTest extends BusinessPartnerStoreTestBase {
     private final TypeManager typeManager = new JacksonTypeManager();
     private final BusinessPartnerGroupStatements statements = new PostgresBusinessPartnerGroupStatements();
     private SqlBusinessPartnerStore store;
+
+    @RegisterExtension
+    static PostgresqlStoreSetupExtension extension =
+            new PostgresqlStoreSetupExtension(getPostgresTestContainerName());
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {

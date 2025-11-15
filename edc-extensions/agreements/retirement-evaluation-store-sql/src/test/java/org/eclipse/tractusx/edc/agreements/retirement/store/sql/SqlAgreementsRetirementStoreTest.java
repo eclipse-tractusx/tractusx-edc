@@ -28,19 +28,23 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.store.AgreementsRetire
 import org.eclipse.tractusx.edc.agreements.retirement.store.AgreementsRetirementStoreTestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-@PostgresqlIntegrationTest
-@ExtendWith(PostgresqlStoreSetupExtension.class)
-class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase {
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
 
+@PostgresqlIntegrationTest
+class SqlAgreementsRetirementStoreTest extends AgreementsRetirementStoreTestBase {
     private final TypeManager typeManager = new JacksonTypeManager();
     private final SqlAgreementsRetirementStatements statements = new PostgresAgreementRetirementStatements();
     private SqlAgreementsRetirementStore store;
+
+    @RegisterExtension
+    static PostgresqlStoreSetupExtension extension =
+            new PostgresqlStoreSetupExtension(getPostgresTestContainerName());
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {

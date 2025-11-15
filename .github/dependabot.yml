@@ -53,7 +53,10 @@ updates:
   # Docker
   - package-ecosystem: "docker"
     target-branch: main
-    directory: resources
+    directories:
+      - "resources"
+      - "edc-extensions/bdrs-client/src/test/resources"
+      - "edc-tests/e2e-fixtures/src/testFixtures/resources"
     labels:
       - "dependabot"
       - "docker"
