@@ -90,7 +90,7 @@ jobs:
       # generates coverage-report.md
       - name: JaCoCo Code Coverage Report
         id: jacoco_reporter
-        uses: PavanMudigonda/jacoco-reporter@v5.0
+        uses: PavanMudigonda/jacoco-reporter@v5.1
         with:
           coverage_results_path: build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
           skip_check_run: true
