@@ -43,4 +43,5 @@ dependencies {
     testImplementation(libs.edc.lib.token)
     testImplementation(libs.testcontainers.junit)
     testImplementation(testFixtures(libs.edc.identity.vc.jwt)) // JwtCreationUtils
+    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
 }

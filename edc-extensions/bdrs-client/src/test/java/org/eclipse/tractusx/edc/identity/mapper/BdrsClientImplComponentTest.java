@@ -74,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.verifiablecredentials.jwt.JwtCreationUtils.createJwt;
 import static org.eclipse.tractusx.edc.identity.mapper.TestData.VP_CONTENT_EXAMPLE;
+import static org.eclipse.tractusx.edc.tests.testcontainer.TestContainerManager.getContainerNameFromDependabotManagedDockerfile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -97,7 +98,7 @@ class BdrsClientImplComponentTest {
     private static final Network DOCKER_NETWORK = Network.newNetwork();
 
     @Container
-    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>("tractusx/bdrs-server-memory:0.5.7")
+    private static final GenericContainer<?> BDRS_SERVER_CONTAINER = new GenericContainer<>(getContainerNameFromDependabotManagedDockerfile(BdrsClientImplComponentTest.class))
             .withEnv("EDC_HTTP_MANAGEMENT_AUTH_KEY", "password")
             .withEnv("WEB_HTTP_MANAGEMENT_PATH", "/api/management")
             .withEnv("WEB_HTTP_MANAGEMENT_PORT", "8081")
@@ -111,6 +112,7 @@ class BdrsClientImplComponentTest {
             .withNetwork(DOCKER_NETWORK)
             .withCreateContainerCmdModifier(cmd -> cmd.withName(BDRS_CONTAINER_NAME))
             .withExposedPorts(8080, 8081, 8082);
+
     private static final String SHARED_TEMP_DIR = new File("src/test/resources/dids").getAbsolutePath();
     @Container
     private static final GenericContainer<?> NGINX_CONTAINER = new GenericContainer<>("nginx")

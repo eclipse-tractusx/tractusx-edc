@@ -28,19 +28,23 @@ import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.store.AgreementsBpnsStoreTestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-@PostgresqlIntegrationTest
-@ExtendWith(PostgresqlStoreSetupExtension.class)
-class SqlAgreementsBpnsStoreTest extends AgreementsBpnsStoreTestBase {
+import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
 
+@PostgresqlIntegrationTest
+class SqlAgreementsBpnsStoreTest extends AgreementsBpnsStoreTestBase {
     private final TypeManager typeManager = new JacksonTypeManager();
     private final SqlAgreementsBpnsStatements statements = new PostgresAgreementsBpnsStatements();
     private SqlAgreementsBpnsStore store;
+
+    @RegisterExtension
+    static PostgresqlStoreSetupExtension extension =
+            new PostgresqlStoreSetupExtension(getPostgresTestContainerName());
 
     @BeforeEach
     void setUp(PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor) throws IOException {
