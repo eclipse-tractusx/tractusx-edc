@@ -81,7 +81,7 @@ jobs:
 
       # uploads the jacoco report as artifact
       - name: Upload JaCoCo Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: JaCoCo coverage-report
           path: build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
@@ -108,7 +108,7 @@ jobs:
 
       # uploads the coverage-report.md artifact
       - name: Upload Code Coverage Markdown Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: code-coverage-report-markdown
           path: "*/coverage-results.md"
