@@ -30,12 +30,13 @@ public class LegacyPolicyCheck {
     
     private static final String BPN_LEGACY_LEFT_OPERAND = "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerNumber";
     private static final String BPN_GROUP_LEGACY_LEFT_OPERAND = "https://w3id.org/tractusx/v0.0.1/ns/BusinessPartnerGroup";
-    
+    private static final String IN_FORCE_DATE_LEGACY_LEFT_OPERAND = "https://w3id.org/edc/v0.0.1/ns/inForceDate";
+
     private LegacyPolicyCheck() {}
     
     /**
      * Checks whether a policy is a legacy policy. Returns true, if the legacy namespace is found
-     * or a legacy BPN constraint, which utilizes a different namespace.
+     * or a legacy BPN or inForceDate constraint, which utilizes a different namespace.
      *
      * @param policy the policy
      * @return true, if any legacy reference is encountered; false otherwise
@@ -46,7 +47,9 @@ public class LegacyPolicyCheck {
         if (json.contains(CX_POLICY_NS)) {
             return true;
         } else {
-            return json.contains(BPN_LEGACY_LEFT_OPERAND) || json.contains(BPN_GROUP_LEGACY_LEFT_OPERAND);
+            return json.contains(BPN_LEGACY_LEFT_OPERAND) ||
+                    json.contains(BPN_GROUP_LEGACY_LEFT_OPERAND) ||
+                    json.contains(IN_FORCE_DATE_LEGACY_LEFT_OPERAND);
         }
     }
     

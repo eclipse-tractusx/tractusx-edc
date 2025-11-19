@@ -71,4 +71,14 @@ class LegacyPolicyCheckTest {
         
         assertThat(result).isTrue();
     }
+
+    @Test
+    void legacyInForceDateConstraint_shouldReturnTrue() {
+        var permission = rule(ACTION_USAGE, atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate"));
+        var policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+
+        var result = LegacyPolicyCheck.isLegacy(policy);
+
+        assertThat(result).isTrue();
+    }
 }
