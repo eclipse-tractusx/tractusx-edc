@@ -73,7 +73,6 @@ Content-Type: application/json
 ```json
 {
   "@context": [
-    "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
     "https://w3id.org/catenax/2025/9/policy/context.jsonld",
     {
       "@vocab":"https://w3id.org/edc/v0.0.1/ns/"
