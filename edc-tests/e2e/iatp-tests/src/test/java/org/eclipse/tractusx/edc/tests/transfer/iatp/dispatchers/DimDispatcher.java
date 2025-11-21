@@ -19,13 +19,15 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers;
 
+import com.github.tomakehurst.wiremock.extension.ResponseTransformerV2;
+import com.github.tomakehurst.wiremock.http.HttpHeader;
+import com.github.tomakehurst.wiremock.http.HttpHeaders;
+import com.github.tomakehurst.wiremock.http.Response;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.mockserver.mock.action.ExpectationResponseCallback;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,7 +42,7 @@ import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
 /**
  * Mock service for DIM interaction. Underlying it uses the {@link EmbeddedSecureTokenService} for generating SI tokens
  */
-public class DimDispatcher implements ExpectationResponseCallback {
+public class DimDispatcher implements ResponseTransformerV2 {
 
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private final String path;
@@ -56,26 +58,40 @@ public class DimDispatcher implements ExpectationResponseCallback {
     }
 
     @Override
-    public HttpResponse handle(HttpRequest httpRequest) {
-        if (httpRequest.getPath().getValue().split("\\?")[0].equals(path)) {
+    public String getName() {
+        return "dim-dispatcher";
+    }
 
-            var body = MAPPER.readValue(httpRequest.getBody().getRawBytes(), Map.class);
-
-            var grant = Optional.ofNullable(body.get("grantAccess"))
-                    .map((payload) -> grantAccessHandler((Map<String, Object>) payload));
-
-            var sign = Optional.ofNullable(body.get("signToken"))
-                    .map((payload) -> signTokenHandler((Map<String, Object>) payload));
-
-            return grant.or(() -> sign).orElse(HttpResponse.response().withStatusCode(404));
+    @Override
+    public Response transform(Response response, ServeEvent serveEvent) {
+        var request = serveEvent.getRequest();
+        var reqPathOnly = request.getUrl().split("\\?")[0];
+        if (!reqPathOnly.equals(path)) {
+            return notFound(response);
         }
-        return HttpResponse.response().withStatusCode(404);
+
+        Map<String, Object> body = MAPPER.readValue(request.getBody(), Map.class);
+
+        Optional<Response> grant = Optional.ofNullable(body.get("grantAccess"))
+                .map(payload -> grantAccessHandler((Map<String, Object>) payload, response));
+
+        Optional<Response> sign = Optional.ofNullable(body.get("signToken"))
+                .map(payload -> signTokenHandler((Map<String, Object>) payload, response));
+
+        return grant.or(() -> sign).orElse(notFound(response));
+    }
+
+    @Override
+    public boolean applyGlobally() {
+        return false;
     }
 
     @SuppressWarnings("unchecked")
-    private HttpResponse grantAccessHandler(Map<String, Object> params) {
-        var issuer = params.get("consumerDid").toString();
-        var audience = params.get("providerDid").toString();
+    private Response grantAccessHandler(Map<String, Object> params, Response base) {
+        var issuer = String.valueOf(params.get("consumerDid"));
+        var audience = String.valueOf(params.get("providerDid"));
+
+        @SuppressWarnings("unchecked")
         Collection<String> scopes = (Collection<String>) params.get("credentialTypes");
         var scope = scopes.stream().map("org.eclipse.tractusx.vc.type:%s:read"::formatted).collect(Collectors.joining(" "));
         var claims = Map.of(ISSUER, issuer, SUBJECT, issuer, AUDIENCE, audience);
@@ -83,28 +99,42 @@ public class DimDispatcher implements ExpectationResponseCallback {
         var sts = secureTokenServices.get(issuer);
         var token = sts.createToken(issuer, claims, scope)
                 .map(TokenRepresentation::getToken)
-                .orElseThrow(failure -> new RuntimeException(failure.getFailureDetail()));
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
-        return HttpResponse.response(MAPPER.writeValueAsString(Map.of("jwt", token)));
+        return jsonOk(base, Map.of("jwt", token));
     }
 
-    private HttpResponse signTokenHandler(Map<String, Object> params) {
-        var subject = params.get("subject").toString();
-        var accessToken = params.get("token").toString();
-        var audience = params.get("audience").toString();
-        var issuer = params.get("issuer").toString();
+    private Response signTokenHandler(Map<String, Object> params, Response base) {
+        var subject = String.valueOf(params.get("subject"));
+        var accessToken = String.valueOf(params.get("token"));
+        var audience = String.valueOf(params.get("audience"));
+        var issuer = String.valueOf(params.get("issuer"));
 
-        var claims = Map.of(
-                ISSUER, issuer,
-                SUBJECT, subject,
-                AUDIENCE, audience,
-                PRESENTATION_TOKEN_CLAIM, accessToken);
+        var claims = Map.of(ISSUER, issuer, SUBJECT, subject, AUDIENCE, audience, PRESENTATION_TOKEN_CLAIM, accessToken);
 
         var sts = secureTokenServices.get(issuer);
         var token = sts.createToken(issuer, claims, null)
                 .map(TokenRepresentation::getToken)
-                .orElseThrow(failure -> new RuntimeException(failure.getFailureDetail()));
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
-        return HttpResponse.response(MAPPER.writeValueAsString(Map.of("jwt", token)));
+        return jsonOk(base, Map.of("jwt", token));
+    }
+
+    private Response jsonOk(Response base, Object payload) {
+        var json = MAPPER.writeValueAsString(payload);
+        return Response.Builder.like(base)
+                .but()
+                .status(200)
+                .headers(new HttpHeaders(HttpHeader.httpHeader("Content-Type", "application/json")))
+                .body(json)
+                .build();
+    }
+
+    private Response notFound(Response base) {
+        return Response.Builder.like(base)
+                .but()
+                .status(404)
+                .body("")
+                .build();
     }
 }

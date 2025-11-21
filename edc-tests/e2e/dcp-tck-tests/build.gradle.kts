@@ -22,14 +22,6 @@ plugins {
 }
 
 dependencies {
-
-    constraints {
-        // netty's mockserver depends on an older version of the json schema validator, but TCK needs this:
-        implementation("com.networknt:json-schema-validator:1.5.9") {
-            because("This version is required by the TCK")
-        }
-    }
-
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
     testRuntimeOnly(libs.dcp.testcases)
     testImplementation(libs.edc.junit)
