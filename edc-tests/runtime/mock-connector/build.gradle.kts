@@ -59,8 +59,9 @@ edcBuild {
     publish.set(false)
 }
 
-tasks.withType<ShadowJar> {
+tasks.shadowJar {
     mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     archiveFileName.set("${project.name}.jar")
 }
 
