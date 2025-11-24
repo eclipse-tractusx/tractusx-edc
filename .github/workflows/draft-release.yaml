@@ -40,7 +40,7 @@ jobs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
       is_official_release: ${{ steps.validation.outputs.is_official_release }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - id: validation
@@ -106,7 +106,7 @@ jobs:
       packages: write
       pages: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Create Release branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
       - uses: ./.github/actions/setup-java
