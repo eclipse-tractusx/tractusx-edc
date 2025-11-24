@@ -43,7 +43,6 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
-    private static final String DB_SCHEMA_NAME = "testschema";
     private final PostgreSQLContainer<?> postgreSqlContainer;
     private final String[] databases;
 
@@ -67,15 +66,28 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
         postgreSqlContainer.close();
     }
 
-    public Config getConfig(String databaseName) {
-        var jdbcUrl = baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=" + DB_SCHEMA_NAME;
-        var group = "edc.datasource.default";
+    /**
+     * Return config to setup a connector (control-plane + data-plane) in the same runtime.
+     * Two DataSources are defined: default (used for control-plane) and dataplane
+     *
+     * @param databaseName the name of the database
+     * @return the configuration
+     */
+    public Config getConnectorConfig(String databaseName) {
+        var controlPlaneDataSource = "edc.datasource.default";
+        var dataPlaneDataSource = "edc.datasource.dataplane";
 
         var settings = Map.of(
-                group + ".url", jdbcUrl,
-                group + ".user", USER,
-                group + ".password", PASSWORD,
-                "tx.edc.postgresql.migration.schema", DB_SCHEMA_NAME
+                controlPlaneDataSource + ".url", baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=controlplane",
+                controlPlaneDataSource + ".user", USER,
+                controlPlaneDataSource + ".password", PASSWORD,
+                "tx.edc.postgresql.migration.controlplane.schema", "controlplane",
+                dataPlaneDataSource + ".url", baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=dataplane",
+                dataPlaneDataSource + ".user", USER,
+                dataPlaneDataSource + ".password", PASSWORD,
+                "tx.edc.postgresql.migration.dataplane.schema", "dataplane",
+                "edc.sql.store.dataplane.datasource", "dataplane",
+                "edc.sql.store.accesstokendata.datasource", "dataplane"
         );
 
         return ConfigFactory.fromMap(settings);

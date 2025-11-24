@@ -35,7 +35,8 @@ import java.util.function.Supplier;
 
 import static org.flywaydb.core.api.MigrationVersion.LATEST;
 
-abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension {
+@Deprecated(since = "0.12.0")
+public abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension {
 
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
     @Setting(value = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
