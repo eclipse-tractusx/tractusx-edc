@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,6 +37,7 @@ import java.util.Set;
 import static java.util.Collections.emptySet;
 import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 /**
  * Extract credentials from the policy constraints
@@ -77,8 +79,15 @@ public class CredentialScopeExtractor implements ScopeExtractor {
 
         if (requestContext != null) {
 
-            if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_2025_09_NS) && isMessageSupported(requestContext)) {
-                leftOperand = leftOperand.replace(CX_POLICY_2025_09_NS, "");
+            if (leftValue instanceof String leftOperand && isMessageSupported(requestContext)) {
+                if (leftOperand.startsWith(CX_POLICY_2025_09_NS)) {
+                    leftOperand = leftOperand.replace(CX_POLICY_2025_09_NS, "");
+                } else if (leftOperand.startsWith(CX_POLICY_NS)) {
+                    leftOperand = leftOperand.replace(CX_POLICY_NS, "");
+                } else {
+                    return emptySet();
+                }
+
                 var credentialType = extractCredentialType(leftOperand, rightValue);
                 var scope = SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType)));
                 if (isSupportedScope(scope)) {
