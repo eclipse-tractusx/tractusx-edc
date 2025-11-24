@@ -17,5 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.postgresql.migration.DataPlanePostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.AccessTokenDataPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.dataplane.DataPlanePostgresqlMigration

@@ -19,16 +19,4 @@
 #################################################################################
 
 
-org.eclipse.tractusx.edc.postgresql.migration.AssetPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.AgreementRetirementPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.BusinessGroupPostgresMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.ContractDefinitionPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.DataPlaneInstancePostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.EdrIndexPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.FederatedCatalogCacheMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.JtiValidationPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.PolicyMonitorPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.PolicyPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.TransferProcessPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.AgreementBpnsPostgresqlMigrationExtension
+org.eclipse.tractusx.edc.postgresql.migration.controlplane.ControlPlanePostgresqlMigration
