@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -34,14 +35,14 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createCredential;
-import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPcfCredential;
-import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPlainPcfCredential;
+import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createDataExchangeGovernanceCredential;
+import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPlainDataExchangeGovernanceCredential;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class FrameworkAgreementCredentialConstraintFunctionTest {
+class FrameworkAgreementConstraintFunctionTest {
     private final ParticipantAgent participantAgent = mock();
-    private final FrameworkAgreementCredentialConstraintFunction<ParticipantAgentPolicyContext> function = new FrameworkAgreementCredentialConstraintFunction<>();
+    private final FrameworkAgreementConstraintFunction<ParticipantAgentPolicyContext> function = new FrameworkAgreementConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
@@ -98,10 +99,10 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
     @Test
     void evaluate_rightOperandInvalidFormat() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
-                "vc", List.of(createPcfCredential().build())
+                "vc", List.of(createDataExchangeGovernanceCredential().build())
         ));
 
-        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.pcf", Operator.EQ, "/violate$", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.dataExchangeGovernance", Operator.EQ, "/violate$", null, context);
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).containsOnly("Right-operand must contain the keyword 'active' followed by an optional version string: 'active'[:version], but was '/violate$'.");
@@ -111,8 +112,8 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
     void evaluate_requiredCredentialNotFound() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
                 "vc", List.of(
-                        createCredential(CX_POLICY_2025_09_NS + "PcfCredential", "1.3.0").build(),
-                        createCredential(CX_POLICY_2025_09_NS + "PcfCredential", "1.0.0").build())
+                        createCredential(CX_POLICY_2025_09_NS + "DataExchangeGovernanceCredential", "1.3.0").build(),
+                        createCredential(CX_POLICY_2025_09_NS + "DataExchangeGovernanceCredential", "1.0.0").build())
         ));
 
         var result = function.evaluate("FrameworkAgreement", Operator.EQ, "someOther:1.3.0", null, context);
@@ -125,11 +126,11 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         when(participantAgent.getClaims()).thenReturn(Map.of(
                 "vc", List.of(
                         createCredential("SomeOtherCredential", "2.0.0").build(),
-                        createCredential("PcfCredential", "1.8.0").build(),
-                        createCredential("PcfCredential", "1.0.0").build())
+                        createCredential("DataExchangeGovernanceCredential", "1.8.0").build(),
+                        createCredential("DataExchangeGovernanceCredential", "1.0.0").build())
         ));
 
-        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf:1.3.0", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "dataExchangeGovernance:1.3.0", null, context);
 
         assertThat(result).isFalse();
     }
@@ -138,12 +139,12 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
     void evaluate_requiredCredentialFound() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
                 "vc", List.of(
-                        createCredential("PcfCredential", "6.0.0").build(),
+                        createCredential("DataExchangeGovernanceCredential", "6.0.0").build(),
                         createCredential("SomeOtherType", "3.4.1").build()
                 )
         ));
 
-        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "dataExchangeGovernance", null, context);
 
         assertThat(result).isTrue();
     }
@@ -152,12 +153,12 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
     void evaluate_requiredCredentialFound_withCorrectVersion() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
                 "vc", List.of(
-                        createCredential("PcfCredential", "2.0.0").build(),
-                        createCredential("PcfCredential", "1.3.0").build(),
-                        createCredential("PcfCredential", "1.0.0").build())
+                        createCredential("DataExchangeGovernanceCredential", "2.0.0").build(),
+                        createCredential("DataExchangeGovernanceCredential", "1.3.0").build(),
+                        createCredential("DataExchangeGovernanceCredential", "1.0.0").build())
         ));
 
-        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf:1.3.0", null, context);
+        var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "dataExchangeGovernance:1.3.0", null, context);
 
         assertThat(result).isTrue();
     }
@@ -166,7 +167,7 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
     void evaluate_neq_requiredCredentialFound() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
                 "vc", List.of(
-                        createCredential("PcfCredential", "6.0.0").build(),
+                        createCredential("DataExchangeGovernanceCredential", "6.0.0").build(),
                         createCredential("SomeOtherType", "3.4.1").build()
                 )
         ));
@@ -180,7 +181,7 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
     void evaluate_neq_oneOfManyViolates() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
                 "vc", List.of(
-                        createCredential("PcfCredential", "6.0.0").build(),
+                        createCredential("DataExchangeGovernanceCredential", "6.0.0").build(),
                         createCredential("SustainabilityCredential", "6.0.0").build(),
                         createCredential("SomeOtherType", "3.4.1").build()
                 )
@@ -208,7 +209,7 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
     void evaluate_neq_requiredCredentialFound_withCorrectVersion() {
         when(participantAgent.getClaims()).thenReturn(Map.of(
                 "vc", List.of(
-                        createCredential("PcfCredential", "2.0.0").build(),
+                        createCredential("DataExchangeGovernanceCredential", "2.0.0").build(),
                         createCredential("FooBarCredential", "1.3.0").build(),
                         createCredential("BarBazCredential", "1.0.0").build())
         ));
@@ -224,7 +225,7 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_leftOperand_notContainSubtype() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
             var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.", Operator.EQ, "active:0.4.2", null, context);
@@ -236,10 +237,10 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_leftOperand_notContainFrameworkLiteral() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
-            var result = function.evaluate(CX_POLICY_2025_09_NS + "foobar.pcf", Operator.EQ, "active:0.4.2", null, context);
+            var result = function.evaluate(CX_POLICY_2025_09_NS + "foobar.dataExchangeGovernance", Operator.EQ, "active:0.4.2", null, context);
 
             assertThat(result).isFalse();
             assertThat(context.getProblems()).hasSize(1).allMatch(it -> it.startsWith("Constraint left-operand must start with 'FrameworkAgreement' but was"));
@@ -248,10 +249,10 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_leftOperand_notStartsWithFrameworkLiteral() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
-            var result = function.evaluate(CX_POLICY_2025_09_NS + "foobarFrameworkAgreement.pcf", Operator.EQ, "active:0.4.2", null, context);
+            var result = function.evaluate(CX_POLICY_2025_09_NS + "foobarFrameworkAgreement.dataExchangeGovernance", Operator.EQ, "active:0.4.2", null, context);
 
             assertThat(result).isFalse();
             assertThat(context.getProblems()).hasSize(1).allMatch(it -> it.startsWith("Constraint left-operand must start with 'FrameworkAgreement' but was"));
@@ -260,10 +261,10 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_rightOperand_notStartWithActiveLiteral() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
-            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.pcf", Operator.EQ, "violates", null, context);
+            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.dataExchangeGovernance", Operator.EQ, "violates", null, context);
 
             assertThat(result).isFalse();
             assertThat(context.getProblems()).containsOnly("Right-operand must contain the keyword 'active' followed by an optional version string: 'active'[:version], but was 'violates'.");
@@ -272,19 +273,19 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_rightOperandWithVersion() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
-            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.pcf", Operator.EQ, "active:1.0.0", null, context)).isTrue();
-            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.pcf", Operator.EQ, "active:5.3.1", null, context)).isFalse();
+            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.dataExchangeGovernance", Operator.EQ, "active:1.0.0", null, context)).isTrue();
+            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.dataExchangeGovernance", Operator.EQ, "active:5.3.1", null, context)).isFalse();
         }
 
         @Test
         void evaluate_rightOperand() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
-            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.pcf", Operator.EQ, "active", null, context);
+            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement.dataExchangeGovernance", Operator.EQ, "active", null, context);
 
             assertThat(result).isTrue();
         }
@@ -295,7 +296,7 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_leftOperandNotFrameworkLiteral() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
             var result = function.evaluate("Foobar", Operator.EQ, "active:0.4.2", null, context);
@@ -307,10 +308,10 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_rightOperand_onlySubtype() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
-            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf", null, context);
+            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "dataExchangeGovernance", null, context);
 
             assertThat(result).isTrue();
         }
@@ -318,28 +319,28 @@ class FrameworkAgreementCredentialConstraintFunctionTest {
         @Test
         void evaluate_rightOperand_withVersion() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
-            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf:1.0.0", null, context);
+            var result = function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "DataExchangeGovernance:1.0.0", null, context);
 
             assertThat(result).isTrue();
-            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf:4.2.0", null, context)).isFalse();
+            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "DataExchangeGovernance:4.2.0", null, context)).isFalse();
         }
 
         @Test
         void evaluate_withoutNamespace() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPlainPcfCredential().build())
+                    "vc", List.of(createPlainDataExchangeGovernanceCredential().build())
             ));
-            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf:1.0.0", null, context)).isTrue();
-            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "pcf:4.2.0", null, context)).isFalse();
+            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "DataExchangeGovernance:1.0.0", null, context)).isTrue();
+            assertThat(function.evaluate(CX_POLICY_2025_09_NS + "FrameworkAgreement", Operator.EQ, "DataExchangeGovernance:4.2.0", null, context)).isFalse();
         }
 
         @Test
         void evaluate_rightOperandMissesSubtype() {
             when(participantAgent.getClaims()).thenReturn(Map.of(
-                    "vc", List.of(createPcfCredential().build())
+                    "vc", List.of(createDataExchangeGovernanceCredential().build())
             ));
 
             var result = function.evaluate("FrameworkAgreement", Operator.EQ, ":1.0.0", null, context);

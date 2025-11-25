@@ -50,7 +50,7 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
-import static org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor.FRAMEWORK_CREDENTIAL_PREFIX;
+import static org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor.FRAMEWORK_AGREEMENT_LEFT_OPERAND;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.common.AbstractDynamicCredentialConstraintFunction.ACTIVE;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
@@ -76,7 +76,7 @@ public class CredentialScopeExtractorTest {
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
         var ctx = new TestRequestPolicyContext(requestContext, null);
 
-        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_2025_09_NS + FRAMEWORK_CREDENTIAL_PREFIX, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, ctx);
+        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_2025_09_NS + FRAMEWORK_AGREEMENT_LEFT_OPERAND, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, ctx);
 
         assertThat(scopes).contains(format("%s:%s:read", CREDENTIAL_TYPE_NAMESPACE, DATA_EXCHANGE_GOVERNANCE_CREDENTIAL));
     }
@@ -88,7 +88,7 @@ public class CredentialScopeExtractorTest {
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
         var ctx = new TestRequestPolicyContext(requestContext, null);
 
-        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_2025_09_NS + FRAMEWORK_CREDENTIAL_PREFIX, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, ctx);
+        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_2025_09_NS + FRAMEWORK_AGREEMENT_LEFT_OPERAND, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, ctx);
 
         assertThat(scopes).isEmpty();
     }
@@ -156,7 +156,7 @@ public class CredentialScopeExtractorTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(FRAMEWORK_CREDENTIAL_PREFIX, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, DATA_EXCHANGE_GOVERNANCE_CREDENTIAL),
+                    Arguments.of(FRAMEWORK_AGREEMENT_LEFT_OPERAND, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, DATA_EXCHANGE_GOVERNANCE_CREDENTIAL),
                     Arguments.of(DISMANTLER_LITERAL, Operator.EQ, ACTIVE, "DismantlerCredential"),
                     Arguments.of(MEMBERSHIP_LITERAL, Operator.EQ, ACTIVE, "MembershipCredential")
             );

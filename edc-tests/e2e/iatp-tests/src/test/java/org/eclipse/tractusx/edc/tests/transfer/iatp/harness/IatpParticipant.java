@@ -114,7 +114,6 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
         return List.of(
                 issuer.issueMembershipCredential(getDid(), getBpn()),
                 issuer.issueDismantlerCredential(getDid(), getBpn()),
-                issuer.issueFrameworkCredential(getDid(), getBpn(), "PcfCredential"),
                 issuer.issueFrameworkCredential(getDid(), getBpn(), "BpnCredential"),
                 issuer.issueFrameworkCredential(getDid(), getBpn(), "DataExchangeGovernanceCredential")
         );
