@@ -25,6 +25,7 @@ on:
   push:
     branches:
       - main
+      - release/*
 
 permissions:
   contents: write
@@ -35,15 +36,49 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java
+      - name: Output release type
+        id: release_type
+        shell: bash
+        run: |
+          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION"
+          
+          if [[ ! -z $SNAPSHOT ]] then
+            echo "is_official_release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_official_release=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: ./.github/actions/generate-and-check-dependencies
+        with:
+          run: ${{ steps.release_type.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
       - name: Prepare to publish
+        if: ${{ github.ref_name == 'main' }}
         shell: bash
         run: |
           mkdir public
           cp DEPENDENCIES public/
       - name: Publish to GitHub Pages
+        if: ${{ github.ref_name == 'main' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: public
           keep_files: true
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        if: ${{ startsWith(github.ref_name, 'release/') }}
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
+      - name: Commit DEPENDENCIES changes
+        if: ${{ startsWith(github.ref_name, 'release/') }}
+        shell: bash
+        run: |
+          if git diff --quiet -- DEPENDENCIES; then
+           echo "No changes in DEPENDENCIES, skipping commit."
+           exit 0
+          fi
+          
+          git add DEPENDENCIES
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+          git commit --message "Update DEPENDENCIES file"
+          git push origin ${{ github.ref_name }}
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
