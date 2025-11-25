@@ -51,7 +51,7 @@ public interface Runtimes {
         Function<String, String> didToBpn = did -> BPN_PREFIX + did.replace(DID_PREFIX, "");
         return new ParticipantRuntimeExtension(
                 new EmbeddedRuntime(participant.getName(), ":edc-tests:runtime:runtime-postgresql")
-                        .configurationProvider(() -> participant.getConfig().merge(postgres.getConnectorConfig(participant.getName())))
+                        .configurationProvider(() -> participant.getConfig().merge(postgres.getConfig(participant.getName())))
                         .configurationProvider(configurationProvider)
                         .registerServiceMock(IdentityService.class, new MockVcIdentityService(participant.getBpn(), participant.getDid()))
                         .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))

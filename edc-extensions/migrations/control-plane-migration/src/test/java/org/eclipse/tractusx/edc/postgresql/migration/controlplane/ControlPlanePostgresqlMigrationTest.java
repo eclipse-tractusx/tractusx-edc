@@ -77,7 +77,7 @@ public class ControlPlanePostgresqlMigrationTest {
         newMigrations.prepare();
 
         try (var connection = createDataSource().getConnection()) {
-            var callableStatement = connection.prepareCall("select * from flyway_schema_history;");
+            var callableStatement = connection.prepareCall("select * from flyway_schema_history_control_plane;");
             callableStatement.execute();
             var resultSet = callableStatement.getResultSet();
             resultSet.next();
@@ -121,7 +121,7 @@ public class ControlPlanePostgresqlMigrationTest {
         newMigrations.prepare();
 
         try (var connection = createDataSource().getConnection()) {
-            var callableStatement = connection.prepareCall("select * from flyway_schema_history;");
+            var callableStatement = connection.prepareCall("select * from flyway_schema_history_control_plane;");
             callableStatement.execute();
             var resultSet = callableStatement.getResultSet();
             resultSet.next();
