@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,6 +37,7 @@ import java.util.Set;
 import static java.util.Collections.emptySet;
 import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
 /**
  * Extract credentials from the policy constraints
@@ -44,7 +46,8 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_N
  * The left operand should be bound to the namespace {@link org.eclipse.tractusx.edc.edr.spi.CoreConstants#CX_CREDENTIAL_NS}
  */
 public class CredentialScopeExtractor implements ScopeExtractor {
-    public static final String FRAMEWORK_CREDENTIAL_PREFIX = "FrameworkAgreement";
+    public static final String FRAMEWORK_AGREEMENT_LEFT_OPERAND = "FrameworkAgreement";
+    public static final String DATA_EXCHANGE_GOVERNANCE = "DataExchangeGovernance";
     public static final String SCOPE_FORMAT = "%s:%s:read";
     public static final String CREDENTIAL_FORMAT = "%sCredential";
 
@@ -52,16 +55,7 @@ public class CredentialScopeExtractor implements ScopeExtractor {
     private static final Set<String> CATENA_X_CREDENTIALS = Set.of(
             "MembershipCredential",
             "BpnCredential",
-            "FrameworkAgreementCredential",
             "DismantlerCredential",
-            "TraceabilityCredential",
-            "PcfCredential",
-            "QualityCredential",
-            "CircularEconomyCredential",
-            "DemandCapacityCredential",
-            "PurisCredential",
-            "BusinessPartnerCredential",
-            "BehavioralTwinCredential",
             "DataExchangeGovernanceCredential"
     );
 
@@ -77,9 +71,16 @@ public class CredentialScopeExtractor implements ScopeExtractor {
 
         if (requestContext != null) {
 
-            if (leftValue instanceof String leftOperand && leftOperand.startsWith(CX_POLICY_2025_09_NS) && isMessageSupported(requestContext)) {
-                leftOperand = leftOperand.replace(CX_POLICY_2025_09_NS, "");
-                var credentialType = extractCredentialType(leftOperand, rightValue);
+            if (leftValue instanceof String leftOperand && isMessageSupported(requestContext)) {
+                if (leftOperand.startsWith(CX_POLICY_2025_09_NS)) {
+                    leftOperand = leftOperand.replace(CX_POLICY_2025_09_NS, "");
+                } else if (leftOperand.startsWith(CX_POLICY_NS)) {
+                    leftOperand = leftOperand.replace(CX_POLICY_NS, "");
+                } else {
+                    return emptySet();
+                }
+
+                var credentialType = extractCredentialType(leftOperand);
                 var scope = SCOPE_FORMAT.formatted(CREDENTIAL_TYPE_NAMESPACE, CREDENTIAL_FORMAT.formatted(capitalize(credentialType)));
                 if (isSupportedScope(scope)) {
                     return Set.of(scope);
@@ -110,30 +111,8 @@ public class CredentialScopeExtractor implements ScopeExtractor {
                 .orElse(false);
     }
 
-    /**
-     * Possible values for credential:
-     * <ul>
-     *     <li>FrameworkAgreement -> subtype is encoded in rightValue, return subtype from rightOperand</li>
-     *     <li>FrameworkAgreement.[subtype] -> return subtype </li>
-     *     <li>Dismantler -> return "Dismantler"</li>
-     *     <li>Dismantler.[expr] -> return "Dismantler"</li>
-     *     <li>Membership -> return "Membership"</li>
-     * </ul>
-     */
-    private String extractCredentialType(String leftOperand, Object rightValue) {
-        if (leftOperand.equals(FRAMEWORK_CREDENTIAL_PREFIX)) { //this is the "new" notation, where the subtype is encoded in the right operand
-            var rightOperand = rightValue.toString();
-            var ix = rightOperand.indexOf(":");
-            return ix > 0 ? rightOperand.substring(0, ix) : rightOperand;
-        }
-        // for FrameworkAgreement.xyz we need the "xyz" part
-        if (leftOperand.startsWith(FRAMEWORK_CREDENTIAL_PREFIX + ".")) {
-            leftOperand = leftOperand.replace(FRAMEWORK_CREDENTIAL_PREFIX + ".", "");
-        } else { //for all others, e.g. Dismantler.activityType, we only need the "Dismantler" part
-            var ix = leftOperand.indexOf(".");
-            leftOperand = ix > 0 ? leftOperand.substring(0, ix) : leftOperand;
-        }
-        return leftOperand;
+    private String extractCredentialType(String leftOperand) {
+        return leftOperand.equals(FRAMEWORK_AGREEMENT_LEFT_OPERAND) ? DATA_EXCHANGE_GOVERNANCE : leftOperand;
     }
 
     private String capitalize(String input) {
