@@ -17,13 +17,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.postgresql.migration.controlplane;
+package org.eclipse.tractusx.edc.postgresql.migration.connector;
 
-import org.eclipse.edc.boot.system.DefaultServiceExtensionContext;
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.postgresql.migration.AbstractPostgresqlMigrationExtension;
+import org.eclipse.tractusx.edc.postgresql.migration.AccessTokenDataPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.AgreementBpnsPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.AgreementRetirementPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.AssetPostgresqlMigrationExtension;
@@ -37,7 +38,7 @@ import org.eclipse.tractusx.edc.postgresql.migration.JtiValidationPostgresqlMigr
 import org.eclipse.tractusx.edc.postgresql.migration.PolicyMonitorPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.PolicyPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.TransferProcessPostgresqlMigrationExtension;
-import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.postgresql.ds.PGSimpleDataSource;
@@ -55,29 +56,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
 import static org.flywaydb.core.api.CoreMigrationType.BASELINE;
 import static org.flywaydb.core.api.CoreMigrationType.SQL;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Testcontainers
 @ExtendWith(DependencyInjectionExtension.class)
-public class ControlPlanePostgresqlMigrationTest {
+public class ConnectorPostgresqlMigrationTest {
 
     @Container
     private final PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>(getPostgresTestContainerName());
 
-    @Test
-    void shouldRunOnEmptyDatabase(ObjectFactory objectFactory) {
-        var context = contextWithSettings(Map.of(
+    @BeforeEach
+    void setUp(ServiceExtensionContext context) {
+        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(Map.of(
                 "edc.datasource.default.url", postgresql.getJdbcUrl(),
                 "edc.datasource.default.user", postgresql.getUsername(),
                 "edc.datasource.default.password", postgresql.getPassword()
-        ));
+        )));
+    }
 
-        var newMigrations = objectFactory.constructInstance(ControlPlanePostgresqlMigration.class);
+    @Test
+    void shouldRunOnEmptyDatabase(ObjectFactory objectFactory, ServiceExtensionContext context) {
+        var newMigrations = objectFactory.constructInstance(ConnectorPostgresqlMigration.class);
         newMigrations.initialize(context);
         newMigrations.prepare();
 
         try (var connection = createDataSource().getConnection()) {
-            var callableStatement = connection.prepareCall("select * from flyway_schema_history_control_plane;");
+            var callableStatement = connection.prepareCall("select * from flyway_schema_history;");
             callableStatement.execute();
             var resultSet = callableStatement.getResultSet();
             resultSet.next();
@@ -90,12 +94,8 @@ public class ControlPlanePostgresqlMigrationTest {
     }
 
     @Test
-    void shouldUseMergedMigrationAsBaseline_whenSchemaAlreadyBuilt(ObjectFactory objectFactory) {
-        var context = contextWithSettings(Map.of(
-                "edc.datasource.default.url", postgresql.getJdbcUrl(),
-                "edc.datasource.default.user", postgresql.getUsername(),
-                "edc.datasource.default.password", postgresql.getPassword()
-        ));
+    @Deprecated(since = "0.12.0")
+    void shouldUseMergedMigrationAsBaseline_whenSchemaAlreadyBuilt(ObjectFactory objectFactory, ServiceExtensionContext context) {
         var currentMigrations = List.of(
                 objectFactory.constructInstance(AssetPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(AssetPostgresqlMigrationExtension.class),
@@ -111,17 +111,19 @@ public class ControlPlanePostgresqlMigrationTest {
                 objectFactory.constructInstance(TransferProcessPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(AgreementBpnsPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(AgreementRetirementPostgresqlMigrationExtension.class),
-                objectFactory.constructInstance(BusinessGroupPostgresMigrationExtension.class)
+                objectFactory.constructInstance(BusinessGroupPostgresMigrationExtension.class),
+                objectFactory.constructInstance(AccessTokenDataPostgresqlMigrationExtension.class),
+                objectFactory.constructInstance(DataPlaneInstancePostgresqlMigrationExtension.class)
         );
         currentMigrations.forEach(e -> e.initialize(context));
         currentMigrations.forEach(AbstractPostgresqlMigrationExtension::prepare);
 
-        var newMigrations = objectFactory.constructInstance(ControlPlanePostgresqlMigration.class);
+        var newMigrations = objectFactory.constructInstance(ConnectorPostgresqlMigration.class);
         newMigrations.initialize(context);
         newMigrations.prepare();
 
         try (var connection = createDataSource().getConnection()) {
-            var callableStatement = connection.prepareCall("select * from flyway_schema_history_control_plane;");
+            var callableStatement = connection.prepareCall("select * from flyway_schema_history;");
             callableStatement.execute();
             var resultSet = callableStatement.getResultSet();
             resultSet.next();
@@ -139,11 +141,6 @@ public class ControlPlanePostgresqlMigrationTest {
         dataSource.setUser(postgresql.getUsername());
         dataSource.setPassword(postgresql.getPassword());
         return dataSource;
-    }
-
-    private @NotNull DefaultServiceExtensionContext contextWithSettings(Map<@NotNull String, @NotNull String> settings) {
-        var config = ConfigFactory.fromMap(settings);
-        return new DefaultServiceExtensionContext(mock(), config);
     }
 
     private boolean testMigrationHasBeenApplied(Connection connection) throws SQLException {

@@ -1,5 +1,5 @@
 #################################################################################
-#  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+#  Copyright (c) 2025 Think-it GmbH
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -17,5 +17,5 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.postgresql.migration.DataPlanePostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.AccessTokenDataPostgresqlMigrationExtension
+
+org.eclipse.tractusx.edc.postgresql.migration.connector.ConnectorPostgresqlMigration

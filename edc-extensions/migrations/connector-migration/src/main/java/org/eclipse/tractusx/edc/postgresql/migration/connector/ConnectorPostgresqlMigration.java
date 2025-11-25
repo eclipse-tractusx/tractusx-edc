@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Think-it
+ * Copyright (c) 2025 Think-it GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.postgresql.migration.controlplane;
+package org.eclipse.tractusx.edc.postgresql.migration.connector;
 
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -25,25 +25,22 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.postgresql.migration.DatabaseMigrationConfiguration;
-import org.eclipse.tractusx.edc.postgresql.migration.DatabaseSchemaMigration;
 import org.flywaydb.core.Flyway;
 
-import static org.eclipse.tractusx.edc.postgresql.migration.controlplane.ControlPlanePostgresqlMigration.NAME;
+import static org.eclipse.tractusx.edc.postgresql.migration.connector.ConnectorPostgresqlMigration.NAME;
 import static org.flywaydb.core.api.MigrationVersion.LATEST;
 
 @Extension(NAME)
-public class ControlPlanePostgresqlMigration implements ServiceExtension {
+public class ConnectorPostgresqlMigration implements ServiceExtension {
 
-    public static final String NAME = "Control-plane Postgresql Schema Migration";
+    public static final String NAME = "Connector Postgresql Schema Migration";
 
     @Configuration
     private DatabaseMigrationConfiguration configuration;
 
     @Inject
     private Monitor monitor;
-    private DatabaseSchemaMigration databaseSchemaMigration;
 
     @Override
     public String name() {
@@ -51,39 +48,30 @@ public class ControlPlanePostgresqlMigration implements ServiceExtension {
     }
 
     @Override
-    public void initialize(ServiceExtensionContext context) {
-        databaseSchemaMigration = new DatabaseSchemaMigration(context.getConfig());
-    }
-
-    @Override
     public void prepare() {
         if (!configuration.enabled()) {
-            monitor.info("Migration for control plane disabled");
+            monitor.info("Migration for connector disabled");
             return;
         }
 
-        var dataSource = databaseSchemaMigration.getDataSource();
+        var dataSource = configuration.getDataSource();
 
         var flyway = Flyway.configure()
                 .baselineVersion("1.0.0")
                 .baselineOnMigrate(true)
                 .failOnMissingLocations(true)
                 .dataSource(dataSource)
-                .table("flyway_schema_history_control_plane")
-                .locations("classpath:migrations/control-plane")
+                .table("flyway_schema_history")
+                .locations("classpath:migrations/connector")
                 .defaultSchema(configuration.schema())
                 .target(LATEST)
                 .load();
-
-        if (databaseSchemaMigration.schemaContainsFlywayTable(configuration.schema())) {
-            flyway.baseline();
-        }
 
         var migrateResult = flyway.migrate();
 
         if (!migrateResult.success) {
             throw new EdcPersistenceException(
-                    "Migrating control-plane failed: %s".formatted(String.join(", ", migrateResult.warnings))
+                    "Migrating connector failed: %s".formatted(String.join(", ", migrateResult.warnings))
             );
         }
     }

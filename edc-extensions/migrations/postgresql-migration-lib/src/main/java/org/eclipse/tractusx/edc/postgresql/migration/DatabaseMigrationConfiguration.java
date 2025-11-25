@@ -21,6 +21,11 @@ package org.eclipse.tractusx.edc.postgresql.migration;
 
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.runtime.metamodel.annotation.Settings;
+import org.eclipse.edc.sql.DriverManagerConnectionFactory;
+import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
+
+import java.util.Properties;
+import javax.sql.DataSource;
 
 @Settings
 public record DatabaseMigrationConfiguration(
@@ -28,7 +33,7 @@ public record DatabaseMigrationConfiguration(
         @Setting(
                 key = "tx.edc.postgresql.migration.enabled",
                 description = "Enable/disables data-plane schema migration",
-                defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE)
+                defaultValue = DEFAULT_MIGRATION_ENABLED)
         boolean enabled,
 
         @Setting(
@@ -36,8 +41,40 @@ public record DatabaseMigrationConfiguration(
                 description = "Schema used for the migration",
                 defaultValue = DEFAULT_MIGRATION_SCHEMA
         )
-        String schema
+        String schema,
+
+        @Setting(
+                key = "edc.datasource.default.url",
+                description = "DataSource JDBC url"
+        )
+        String url,
+
+        @Setting(
+                key = "edc.datasource.default.user",
+                description = "DataSource JDBC user"
+        )
+        String user,
+
+        @Setting(
+                key = "edc.datasource.default.password",
+                description = "DataSource JDBC password"
+        )
+        String password
 ) {
-    private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
+    private static final String DEFAULT_MIGRATION_ENABLED = "true";
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
+
+    /**
+     * Instance and return DataSource to be passed to Flyway for schema migrations
+     *
+     * @return the dataSource.
+     */
+    public DataSource getDataSource() {
+        var jdbcProperties = new Properties();
+        jdbcProperties.put("user", user);
+        jdbcProperties.put("password", password);
+        var driverManagerConnectionFactory = new DriverManagerConnectionFactory();
+        return new ConnectionFactoryDataSource(driverManagerConnectionFactory, url, jdbcProperties);
+    }
+
 }
