@@ -30,7 +30,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.policy.cx.legacy.contractreference.ContractReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.legacy.dismantler.DismantlerCredentialConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.legacy.framework.FrameworkAgreementCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.legacy.framework.FrameworkAgreementConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.legacy.membership.MembershipCredentialConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.legacy.usage.UsagePurposeConstraintFunction;
 
@@ -69,8 +69,8 @@ public class CxLegacyPolicyExtension implements ServiceExtension {
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
@@ -84,7 +84,7 @@ public class CxLegacyPolicyExtension implements ServiceExtension {
 
     public static void registerBindings(RuleBindingRegistry registry) {
         registry.dynamicBind(s -> {
-            if (Stream.of(FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL, DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL, MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL)
+            if (Stream.of(FrameworkAgreementConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL, DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL, MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL)
                     .anyMatch(postfix -> s.startsWith(CX_POLICY_NS + postfix))) {
                 return RULE_SCOPES;
             }

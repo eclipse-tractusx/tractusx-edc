@@ -50,7 +50,7 @@ import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConstraintFu
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction;
-import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction;
@@ -94,7 +94,7 @@ import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDateConst
 import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDefinitionConstraintFunction.DATA_USAGE_END_DEFINITION;
 import static org.eclipse.tractusx.edc.policy.cx.datausage.DataUsageEndDurationDaysConstraintFunction.DATA_USAGE_END_DURATION_DAYS;
 import static org.eclipse.tractusx.edc.policy.cx.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementCredentialConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.framework.FrameworkAgreementConstraintFunction.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationConstraintFunction.JURISDICTION_LOCATION;
 import static org.eclipse.tractusx.edc.policy.cx.jurisdictionlocation.JurisdictionLocationReferenceConstraintFunction.JURISDICTION_LOCATION_REFERENCE;
 import static org.eclipse.tractusx.edc.policy.cx.liability.LiabilityConstraintFunction.LIABILITY;
@@ -168,9 +168,9 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementCredentialConstraintFunction<>());
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
 
         engine.registerFunction(CatalogPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());

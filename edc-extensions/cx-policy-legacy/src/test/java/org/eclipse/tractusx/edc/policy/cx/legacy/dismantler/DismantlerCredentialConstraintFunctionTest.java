@@ -89,13 +89,13 @@ class DismantlerCredentialConstraintFunctionTest {
 
         @Test
         void evaluate_eq_notSatisfied() {
-            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createPcfCredential().build())));
+            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of()));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler", Operator.EQ, "active", null, context)).isFalse();
         }
 
         @Test
         void evaluate_neq_satisfied() {
-            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createPcfCredential().build())));
+            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createMembershipCredential().build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler", Operator.NEQ, "active", null, context)).isTrue();
         }
 
@@ -110,7 +110,7 @@ class DismantlerCredentialConstraintFunctionTest {
             var invalidOperators = new ArrayList<>(Arrays.asList(Operator.values()));
             invalidOperators.remove(Operator.EQ);
             invalidOperators.remove(Operator.NEQ);
-            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createPcfCredential().build())));
+            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of()));
 
             assertThat(invalidOperators).allSatisfy(invalidOperator -> assertThat(function.evaluate(CX_POLICY_NS + "Dismantler", invalidOperator, "active", null, context)).isFalse());
 
@@ -118,7 +118,7 @@ class DismantlerCredentialConstraintFunctionTest {
 
         @Test
         void evaluate_rightOperandInvalid() {
-            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createPcfCredential().build())));
+            when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createMembershipCredential().build())));
             assertThat(function.evaluate(CX_POLICY_NS + "Dismantler", Operator.EQ, "invalid", null, context)).isFalse();
             assertThat(context.getProblems()).containsOnly("Right-operand must be equal to 'active', but was 'invalid'");
         }
