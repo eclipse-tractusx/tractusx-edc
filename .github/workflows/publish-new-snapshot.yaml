@@ -123,6 +123,7 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.determine-version.outputs.VERSION }}
+      latest: false
 
   publish-latest-versioned-snapshot:
     name: "Publish latest versioned snapshot in GitHub Pages"
