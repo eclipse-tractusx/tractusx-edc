@@ -28,6 +28,11 @@ on:
         required: false
         description: "Version of the Tractus-X EDC API to be should be published"
         type: string
+      latest:
+        description: "Latest release"
+        required: true
+        type: boolean
+        default: false
 
   workflow_call:
     inputs:
@@ -35,6 +40,11 @@ on:
         required: false
         description: "Version of the Tractus-X EDC API to be should be published"
         type: string
+      latest:
+        description: "Latest release"
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   generate-openapi-spec:
@@ -101,7 +111,7 @@ jobs:
 
       - name: Generate Swagger UI stable version
         uses: Legion2/swagger-ui-action@v1
-        if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
+        if: ${{ inputs.latest }}
         with:
           output: dist
           spec-file: ${{ matrix.apiGroup.name }}.yaml
