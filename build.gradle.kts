@@ -207,10 +207,9 @@ subprojects {
                 .resolve("docs").resolve("openapi")
 
             configurations.asMap.values
-                .asSequence()
                 .filter { it.isCanBeResolved }
-                .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
-                .map { childrenDependencies(it) }.flatten()
+                .flatMap { it.resolvedConfiguration.firstLevelModuleDependencies }
+                .flatMap { childrenDependencies(it) }
                 .distinct()
                 .forEach { dep ->
                     downloadYamlArtifact(dep, "management-api", destinationDirectory)
@@ -241,7 +240,7 @@ tasks.register<Copy>("aggregateAllureResults") {
 
 
 fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependency> {
-    return listOf(dependency) + dependency.children.map { child -> childrenDependencies(child) }.flatten()
+    return listOf(dependency) + dependency.children.flatMap { child -> childrenDependencies(child) }
 }
 
 fun downloadYamlArtifact(dep: ResolvedDependency, classifier: String, destinationDirectory: java.nio.file.Path) {
