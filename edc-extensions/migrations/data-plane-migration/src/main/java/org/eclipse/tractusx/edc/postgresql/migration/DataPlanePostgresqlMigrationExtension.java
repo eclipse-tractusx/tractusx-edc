@@ -19,8 +19,9 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
+@Deprecated(since = "0.12.0")
 public class DataPlanePostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
-    private static final String NAME_SUBSYSTEM = "dataplane";
+    public static final String NAME_SUBSYSTEM = "dataplane";
 
     @Override
     protected String getSubsystemName() {

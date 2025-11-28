@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2024 Contributors to the Eclipse Foundation
+ * Copyright (c) 2025 Think-it GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -39,4 +39,6 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+    testImplementation(project(":edc-extensions:migrations:control-plane-migration"))
+    testImplementation(project(":edc-extensions:migrations:data-plane-migration"))
 }

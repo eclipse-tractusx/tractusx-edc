@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.postgresql.migration;
 
+@Deprecated(since = "0.12.0")
 public class AgreementRetirementPostgresqlMigrationExtension extends AbstractPostgresqlMigrationExtension {
     private static final String NAME_SUBSYSTEM = "agreementretirement";
 
