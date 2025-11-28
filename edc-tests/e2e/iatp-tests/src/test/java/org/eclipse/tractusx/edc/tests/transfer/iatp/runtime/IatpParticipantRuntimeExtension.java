@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -42,6 +43,8 @@ public class IatpParticipantRuntimeExtension extends RuntimePerClassExtension im
         super(runtime);
         registerSystemExtension(ServiceExtension.class, new ServiceExtension() {
 
+            @Setting(key = "edc.participant.id")
+            private String participantContextId;
             @Inject
             private Vault vault;
 
@@ -52,8 +55,8 @@ public class IatpParticipantRuntimeExtension extends RuntimePerClassExtension im
                 var config = context.getConfig();
                 var privateAlias = config.getString("edc.transfer.proxy.token.signer.privatekey.alias");
                 var publicAlias = config.getString("edc.transfer.proxy.token.verifier.publickey.alias");
-                vault.storeSecret(privateAlias, runtimeKeyPair.toJSONString());
-                vault.storeSecret(publicAlias, runtimeKeyPair.toPublicJWK().toJSONString());
+                vault.storeSecret(participantContextId, privateAlias, runtimeKeyPair.toJSONString());
+                vault.storeSecret(participantContextId, publicAlias, runtimeKeyPair.toPublicJWK().toJSONString());
             }
         });
         registerSystemExtension(ServiceExtension.class, new DataWiperExtension(wiper, CredentialWiper::new));

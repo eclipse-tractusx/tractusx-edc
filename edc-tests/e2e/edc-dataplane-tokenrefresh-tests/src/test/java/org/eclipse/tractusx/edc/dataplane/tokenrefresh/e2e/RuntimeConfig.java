@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.e2e;
 
 import io.restassured.specification.RequestSpecification;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 

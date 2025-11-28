@@ -21,7 +21,11 @@ package org.eclipse.tractusx.edc.vault.memory;
 
 import org.eclipse.edc.boot.vault.InMemoryVault;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,13 +44,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 class VaultSeedExtensionTest {
-    private Monitor monitor;
+    private final Monitor monitor = mock();
+    private final SingleParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(
+            ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build()
+    );
 
     @BeforeEach
     void setup(ServiceExtensionContext context) {
-        monitor = mock(Monitor.class);
         context.registerService(Monitor.class, monitor);
         context.registerService(Vault.class, new InMemoryVault(monitor));
+        context.registerService(SingleParticipantContextSupplier.class, participantContextSupplier);
     }
 
     @Test

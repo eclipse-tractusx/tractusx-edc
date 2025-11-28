@@ -33,6 +33,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
@@ -51,8 +52,9 @@ public class EdrCacheApiV2Controller extends BaseEdrCacheApiController implement
                                    TypeTransformerRegistry transformerRegistry,
                                    JsonObjectValidatorRegistry validator,
                                    Monitor monitor,
-                                   EdrService edrService, ContractNegotiationService contractNegotiationService) {
-        super(edrStore, transformerRegistry, validator, monitor, edrService, contractNegotiationService);
+                                   EdrService edrService, ContractNegotiationService contractNegotiationService,
+                                   ParticipantContextSupplier participantContextSupplier) {
+        super(edrStore, transformerRegistry, validator, monitor, edrService, participantContextSupplier, contractNegotiationService);
     }
 
     @POST

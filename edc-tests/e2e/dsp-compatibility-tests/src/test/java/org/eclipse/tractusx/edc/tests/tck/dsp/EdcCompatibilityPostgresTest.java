@@ -61,13 +61,12 @@ public class EdcCompatibilityPostgresTest {
     private static final URI PROTOCOL_URL = URI.create("http://host.docker.internal:8282/protocol");
     private static final URI MANAGEMENT_URL = URI.create("http://localhost:" + getFreePort() + "/management");
     private static final URI CONTROL_URL = URI.create("http://localhost:" + getFreePort() + "/control");
-    private static final URI VERSION_URL = URI.create("http://localhost:" + getFreePort() + "/version");
     private static final URI WEBHOOK_URL = URI.create("http://localhost:8687/tck");
     private static final String API_KEY = "password";
     private static final URI DATA_PLANE_PROXY = URI.create("http://localhost:" + getFreePort());
     private static final URI DATA_PLANE_PUBLIC = URI.create("http://localhost:" + getFreePort() + "/public");
     private static final URI FEDERATED_CATALOG = URI.create("http://localhost:" + getFreePort() + "/api/catalog");
-    private static final String CONNECTOR_UNDER_TEST = "CONNECTOR_UNDER_TEST";
+    private static final String CONNECTOR_UNDER_TEST = "participantContextId";
     
     private static final DataspaceProfileContextRegistry DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY = spy(DataspaceProfileContextRegistryImpl.class);
 
@@ -96,8 +95,6 @@ public class EdcCompatibilityPostgresTest {
                 put("edc.participant.id", CONNECTOR_UNDER_TEST);
                 put("web.http.port", "8080");
                 put("web.http.path", "/api");
-                put("web.http.version.port", String.valueOf(VERSION_URL.getPort()));
-                put("web.http.version.path", VERSION_URL.getPath());
                 put("web.http.control.port", String.valueOf(CONTROL_URL.getPort()));
                 put("web.http.control.path", CONTROL_URL.getPath());
                 put("web.http.management.port", String.valueOf(MANAGEMENT_URL.getPort()));
@@ -140,10 +137,6 @@ public class EdcCompatibilityPostgresTest {
         });
     }
 
-    private static String resourceConfig(String resource) {
-        return Path.of(TestUtils.getResource(resource)).toString();
-    }
-
     @Timeout(500)
     @Test
     void assertDspCompatibility() {
@@ -170,6 +163,10 @@ public class EdcCompatibilityPostgresTest {
         var failures = reporter.failures();
 
         assertThat(failures).isEmpty();
+    }
+
+    private String resourceConfig(String resource) {
+        return Path.of(TestUtils.getResource(resource)).toString();
     }
 }
 

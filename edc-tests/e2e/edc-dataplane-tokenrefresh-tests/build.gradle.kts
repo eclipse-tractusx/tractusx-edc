@@ -29,6 +29,7 @@ dependencies {
     testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
     testImplementation(libs.edc.dpf.http)
     testImplementation(libs.edc.spi.identity.did)
+    testImplementation(libs.edc.spi.participant.context.single)
 
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
     testImplementation(libs.nimbus.jwt)

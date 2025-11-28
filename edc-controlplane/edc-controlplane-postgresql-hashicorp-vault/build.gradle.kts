@@ -32,7 +32,7 @@ configurations.all {
 }
 
 dependencies {
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base"))
+    implementation(project(":edc-controlplane:edc-controlplane-base"))
 
     runtimeOnly(libs.edc.bom.controlplane.feature.sql)
     runtimeOnly(libs.edc.bom.federatedcatalog.feature.sql)

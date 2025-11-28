@@ -20,8 +20,8 @@
 package org.eclipse.tractusx.edc.tests.transfer.extension;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.util.io.Ports;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;

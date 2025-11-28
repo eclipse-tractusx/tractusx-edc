@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -83,9 +84,10 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     private TypeManager typeManager;
     @Inject
     private Hostname hostname;
-
     @Inject
     private JwsSignerProvider jwsSignerProvider;
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
 
@@ -121,7 +123,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(jwsSignerProvider),
                     () -> context.getConfig().getString(TOKEN_SIGNER_PRIVATE_KEY_ALIAS), context.getMonitor(), refreshEndpoint, getOwnDid(context), expiryTolerance, tokenExpiry,
-                    () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper());
+                    () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper(), singleParticipantContextSupplier);
         }
         return tokenRefreshService;
     }

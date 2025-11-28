@@ -24,7 +24,7 @@ plugins {
 
 
 dependencies {
-    runtimeOnly(project(":edc-tests:runtime:runtime-postgresql"))
+    implementation(project(":edc-tests:runtime:runtime-postgresql"))
     runtimeOnly(libs.tck.extension)
 }
 

@@ -29,11 +29,12 @@ dependencies {
     implementation(libs.edc.spi.boot)
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.http)
-    implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.spi.decentralized.claims)
     implementation(libs.edc.spi.identity.did)
     implementation(libs.edc.spi.jwt) //JwtRegisteredClaimNames
+    implementation(libs.edc.spi.participant.context.single)
 
-    implementation(libs.edc.identity.trust.service)
+    implementation(libs.edc.decentralized.claims.service)
 
     testImplementation(libs.wiremock)
     testImplementation(libs.edc.junit)

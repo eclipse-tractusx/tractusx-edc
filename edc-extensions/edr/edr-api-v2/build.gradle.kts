@@ -34,6 +34,7 @@ dependencies {
     }
     implementation(libs.edc.lib.api)
     implementation(libs.edc.lib.validator)
+    implementation(libs.edc.lib.jersey.providers)
     implementation(libs.edc.spi.edrstore)
     implementation(libs.jakarta.rsApi)
 

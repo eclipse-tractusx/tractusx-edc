@@ -24,6 +24,7 @@ plugins {
 
 dependencies {
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+    testImplementation(libs.edc.spi.keypair)
     testImplementation(libs.edc.ih.did)
     testImplementation(libs.edc.ih.spi)
     testImplementation(libs.edc.ih.spi.participant.context)

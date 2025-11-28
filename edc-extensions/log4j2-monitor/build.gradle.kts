@@ -11,5 +11,3 @@ dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.log4j2.core.test)
 }
-
-

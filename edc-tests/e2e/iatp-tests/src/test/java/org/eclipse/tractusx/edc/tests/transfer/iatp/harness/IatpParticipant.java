@@ -19,18 +19,22 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
+import org.eclipse.edc.iam.decentralizedclaims.sts.spi.model.StsAccount;
+import org.eclipse.edc.iam.decentralizedclaims.sts.spi.store.StsAccountStore;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
-import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
-import org.eclipse.edc.iam.identitytrust.sts.spi.store.StsAccountStore;
+import org.eclipse.edc.identityhub.spi.keypair.KeyPairService;
 import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -40,7 +44,10 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import static org.eclipse.edc.identityhub.spi.participantcontext.model.KeyPairUsage.PRESENTATION_SIGNING;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public class IatpParticipant extends TractusxIatpParticipantBase {
@@ -81,13 +88,13 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
                 .build();
 
         var participantManifest = ParticipantManifest.Builder.newInstance()
-                .participantId(getDid())
+                .participantContextId(getDid())
                 .did(getDid())
                 .key(key)
                 .build();
 
         participantContextService.createParticipantContext(participantManifest);
-        vault.storeSecret(getPrivateKeyAlias(), getPrivateKeyAsString());
+        vault.storeSecret(getDid(), getPrivateKeyAlias(), getPrivateKeyAsString());
 
         var credentialStore = runtimeExtension.getService(CredentialStore.class);
         issueCredentials(issuer).forEach(credentialStore::create);
@@ -98,16 +105,31 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
 
         stsRuntimeExtension.getService(Vault.class).storeSecret(verificationId(), getPrivateKeyAsString());
         stsRuntimeExtension.getService(Vault.class).storeSecret(getPrivateKeyAlias(), getPrivateKeyAsString());
+        stsRuntimeExtension.getService(KeyPairService.class).addKeyPair(getDid(), KeyDescriptor.Builder.newInstance()
+                .keyId("test-kid")
+                .usage(Set.of(PRESENTATION_SIGNING))
+                .privateKeyAlias(getPrivateKeyAlias())
+                .publicKeyJwk(createJwk())
+                .build(), true);
+
         var account = StsAccount.Builder.newInstance()
                 .id(getId())
                 .name(getName())
                 .clientId(getDid())
                 .did(getDid())
-                .privateKeyAlias(getPrivateKeyAlias())
-                .publicKeyReference(getFullKeyId())
                 .secretAlias("client_secret_alias")
                 .build();
         stsRuntimeExtension.getService(StsAccountStore.class).create(account);
+    }
+
+    private Map<String, Object> createJwk() {
+        try {
+            return new OctetKeyPairGenerator(Curve.Ed25519)
+                    .generate()
+                    .toJSONObject();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer) {

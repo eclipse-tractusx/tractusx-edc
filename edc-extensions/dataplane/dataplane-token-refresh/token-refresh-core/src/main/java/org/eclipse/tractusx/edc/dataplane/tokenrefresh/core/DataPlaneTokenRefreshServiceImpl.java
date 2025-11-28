@@ -28,6 +28,8 @@ import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
@@ -78,6 +80,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     public static final String TOKEN_ID_CLAIM = "jti";
     private final long tokenExpirySeconds;
     private final List<TokenValidationRule> authenticationTokenValidationRules;
+    private final ParticipantContextSupplier participantContextSupplier;
     private final List<TokenValidationRule> accessTokenAuthorizationRules;
     private final TokenValidationService tokenValidationService;
     private final DidPublicKeyResolver publicKeyResolver;
@@ -108,7 +111,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                                             long tokenExpirySeconds,
                                             Supplier<String> publicKeyIdSupplier,
                                             Vault vault,
-                                            ObjectMapper objectMapper) {
+                                            ObjectMapper objectMapper,
+                                            ParticipantContextSupplier participantContextSupplier) {
         this.tokenValidationService = tokenValidationService;
         this.publicKeyResolver = publicKeyResolver;
         this.localPublicKeyService = localPublicKeyService;
@@ -128,6 +132,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
                 new ClaimIsPresentRule(TOKEN_ID_CLAIM),
                 new AuthTokenAudienceRule(accessTokenDataStore));
+        this.participantContextSupplier = participantContextSupplier;
         accessTokenAuthorizationRules = List.of(new IssuerEqualsSubjectRule(),
                 new ClaimIsPresentRule(AUDIENCE),
                 new ClaimIsPresentRule(TOKEN_ID_CLAIM),
@@ -160,9 +165,16 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             return Result.failure("Authentication token validation failed: %s".formatted(authTokenRes.getFailureDetail()));
         }
 
+        var participantContextServiceResult = participantContextSupplier.get();
+        if (participantContextServiceResult.failed()) {
+            return Result.failure("Cannot retrieve ParticipantContext: " + participantContextServiceResult.getFailureDetail());
+        }
+        var participantContext = participantContextServiceResult.getContent();
+
         // 2. extract access token and validate it
         var accessToken = authTokenRes.getContent().getStringClaim("token");
-        var accessTokenDataResult = tokenValidationService.validate(accessToken, localPublicKeyService, new RefreshTokenValidationRule(vault, refreshToken, objectMapper))
+        var refreshTokenValidationRule = new RefreshTokenValidationRule(vault, refreshToken, objectMapper, participantContext);
+        var accessTokenDataResult = tokenValidationService.validate(accessToken, localPublicKeyService, refreshTokenValidationRule)
                 .map(accessTokenClaims -> accessTokenDataStore.getById(accessTokenClaims.getStringClaim(JwtRegisteredClaimNames.JWT_ID)));
 
         if (accessTokenDataResult.failed()) {
@@ -183,7 +195,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             return Result.failure("Failed to regenerate access/refresh token pair: %s".formatted(errors));
         }
 
-        storeRefreshToken(existingAccessTokenData.id(), new RefreshToken(newRefreshToken.getContent(), tokenExpirySeconds, refreshEndpoint));
+        storeRefreshToken(existingAccessTokenData.id(), new RefreshToken(newRefreshToken.getContent(), tokenExpirySeconds, refreshEndpoint), participantContext);
 
         // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
         var claimToken = ClaimToken.Builder.newInstance().claims(newTokenParams.getClaims()).build();
@@ -223,8 +235,14 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         var accessTokenData = new AccessTokenData(accessTokenResult.getContent().id(), claimToken, backendDataAddress, additionalDataForStorage);
         var storeResult = accessTokenDataStore.store(accessTokenData);
 
+        var participantContextServiceResult = participantContextSupplier.get();
+        if (participantContextServiceResult.failed()) {
+            return Result.failure("Cannot retrieve ParticipantContext: " + participantContextServiceResult.getFailureDetail());
+        }
+        var participantContext = participantContextServiceResult.getContent();
+
         storeRefreshToken(accessTokenResult.getContent().id(), new RefreshToken(refreshTokenResult.getContent().tokenRepresentation().getToken(),
-                tokenExpirySeconds, refreshEndpoint));
+                tokenExpirySeconds, refreshEndpoint), participantContext);
 
         // the refresh token information must be returned in the EDR
         var audience = additionalDataForStorage.get(AUDIENCE_PROPERTY);
@@ -289,7 +307,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
      * Creates a token that has an ID based on the given token parameters. If the token parameters don't contain a "jti" claim, one
      * will be generated at random.
      */
-    private Result<TokenRepresentationWithId> createToken(TokenParameters tokenParameters) {
+    private ServiceResult<TokenRepresentationWithId> createToken(TokenParameters tokenParameters) {
         var claims = new HashMap<>(tokenParameters.getClaims());
         claims.put(JwtRegisteredClaimNames.ISSUED_AT, clock.instant().getEpochSecond()); // iat is millis in upstream -> bug
         var claimDecorators = claims.entrySet().stream().map(e -> (TokenDecorator) claimDecorator -> claimDecorator.claims(e.getKey(), e.getValue()));
@@ -313,13 +331,20 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             allDecorators.add(tp -> tp.claims(JwtRegisteredClaimNames.EXPIRATION_TIME, exp));
         }
 
-        return tokenGenerationService.generate(privateKeyIdSupplier.get(), allDecorators.toArray(new TokenDecorator[0]))
+        return participantContextSupplier.get().map(ParticipantContext::getParticipantContextId)
+                .compose(participantContextId -> tokenGenerationService.generate(participantContextId,
+                        privateKeyIdSupplier.get(), allDecorators.toArray(new TokenDecorator[0])).flatMap(ServiceResult::from))
                 .map(tr -> new TokenRepresentationWithId(tokenId.get(), tr));
     }
 
-    private Result<Void> storeRefreshToken(String id, RefreshToken refreshToken) {
+    private Result<Void> storeRefreshToken(String id, RefreshToken refreshToken, ParticipantContext participantContext) {
+        return toJson(refreshToken)
+                .compose(json -> vault.storeSecret(participantContext.getParticipantContextId(), id, json));
+    }
+
+    private Result<String> toJson(Object object) {
         try {
-            return vault.storeSecret(id, objectMapper.writeValueAsString(refreshToken));
+            return Result.success(objectMapper.writeValueAsString(object));
         } catch (JsonProcessingException e) {
             return Result.failure(e.getMessage());
         }

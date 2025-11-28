@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Test;
 
@@ -35,11 +36,14 @@ class RefreshTokenValidationRuleTest {
     private static final String TEST_TOKEN_ID = "test-jti";
     private static final String TEST_REFRESH_TOKEN = "test-refresh-token";
     private final Vault vault = mock();
-    private final RefreshTokenValidationRule rule = new RefreshTokenValidationRule(vault, TEST_REFRESH_TOKEN, new ObjectMapper());
+    private final String participantContextId = "participantContextId";
+    private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance()
+            .participantContextId(participantContextId).identity("identity").build();
+    private final RefreshTokenValidationRule rule = new RefreshTokenValidationRule(vault, TEST_REFRESH_TOKEN, new ObjectMapper(), participantContext);
 
     @Test
     void checkRule_noAccessTokenDataEntryFound() {
-        when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(null);
+        when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(null);
 
         assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
@@ -49,7 +53,7 @@ class RefreshTokenValidationRuleTest {
 
     @Test
     void checkRule_noRefreshTokenStored() {
-        when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(null);
+        when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(null);
 
         assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isFailed()
@@ -59,7 +63,7 @@ class RefreshTokenValidationRuleTest {
 
     @Test
     void checkRule_refreshTokenNotString() {
-        when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(
+        when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(
                 """
                         {
                           "refreshToken": 42
@@ -74,7 +78,7 @@ class RefreshTokenValidationRuleTest {
 
     @Test
     void checkRule_refreshTokenDoesNotMatch() {
-        when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(
+        when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(
                 """
                         {
                           "refreshToken": "someRefreshToken"
@@ -89,7 +93,7 @@ class RefreshTokenValidationRuleTest {
 
     @Test
     void checkRule_success() {
-        when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(
+        when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(
                 """
                         {
                           "refreshToken": "%s"
@@ -102,7 +106,7 @@ class RefreshTokenValidationRuleTest {
 
     @Test
     void checkRule_invalidJson() {
-        when(vault.resolveSecret(TEST_TOKEN_ID)).thenReturn(
+        when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(
                 "nope-thats-not-json");
 
         assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))

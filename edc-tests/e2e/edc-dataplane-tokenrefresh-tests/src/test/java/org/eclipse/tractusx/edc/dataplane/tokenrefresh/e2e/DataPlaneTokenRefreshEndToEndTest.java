@@ -36,6 +36,8 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -261,7 +263,6 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .body(containsString("Provided refresh token does not match the stored refresh token."));
     }
 
-
     @DisplayName("The authentication token misses required claims: token")
     @Test
     void refresh_invalidAuthenticationToken_missingAccessToken() {
@@ -341,7 +342,6 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var refreshToken = edr.getStringProperty(TX_AUTH_NS + "refreshToken");
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
-
         edrService.revoke(dataFlow, "Revoked");
         var tokenId = getJwtId(accessToken);
 
@@ -368,8 +368,10 @@ public class DataPlaneTokenRefreshEndToEndTest {
 
     private void prepareDataplaneRuntime() {
         var vault = DATAPLANE_RUNTIME.getService(Vault.class);
-        vault.storeSecret(PROVIDER_KEY_ID, providerKey.toJSONString());
-        vault.storeSecret(PROVIDER_KEY_ID_PUBLIC, providerKey.toPublicJWK().toJSONString());
+        var participantContext = DATAPLANE_RUNTIME.getService(SingleParticipantContextSupplier.class).get()
+                .orElseThrow(f -> new EdcException(f.getFailureDetail()));
+        vault.storeSecret(participantContext.getParticipantContextId(), PROVIDER_KEY_ID, providerKey.toJSONString());
+        vault.storeSecret(participantContext.getParticipantContextId(), PROVIDER_KEY_ID_PUBLIC, providerKey.toPublicJWK().toJSONString());
     }
 
     private String createAuthToken(String accessToken, ECKey signerKey) {

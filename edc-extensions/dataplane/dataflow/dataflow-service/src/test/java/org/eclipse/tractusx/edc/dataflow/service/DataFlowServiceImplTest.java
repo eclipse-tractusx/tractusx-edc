@@ -36,7 +36,6 @@ import static org.eclipse.edc.spi.result.ServiceFailure.Reason.CONFLICT;
 import static org.eclipse.edc.spi.result.ServiceFailure.Reason.NOT_FOUND;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PULL;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PUSH;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -129,7 +128,6 @@ class DataFlowServiceImplTest {
 
         when(store.findByIdAndLease(DATAFLOW_ID)).thenReturn(StoreResult.success(dataFlow));
         when(finitenessEvaluator.isNonFinite(dataFlow)).thenReturn(true);
-        doNothing().when(store).save(dataFlow);
 
         var result = service.trigger(DATAFLOW_ID);
 

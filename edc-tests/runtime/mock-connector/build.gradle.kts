@@ -34,6 +34,7 @@ dependencies {
     // runtime dependencies
     runtimeOnly(libs.edc.core.runtime)
     runtimeOnly(libs.edc.core.connector)
+    runtimeOnly(libs.edc.core.participant.context.single)
     runtimeOnly(libs.edc.boot)
     runtimeOnly(libs.edc.api.management) {
         exclude("org.eclipse.edc", "edr-cache-api")

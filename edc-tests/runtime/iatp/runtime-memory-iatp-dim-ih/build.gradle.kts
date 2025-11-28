@@ -35,14 +35,14 @@ dependencies {
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
 
     // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+    implementation(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "api-observability")
         exclude("org.eclipse.edc", "data-plane-selector-client")
     }
 
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.core.did)
-    implementation(libs.edc.identity.trust.transform)
+    implementation(libs.edc.decentralized.claims.transform)
     implementation(libs.edc.auth.oauth2.client)
     implementation(libs.edc.ih.api.presentation)
     implementation(libs.edc.ih.keypairs)

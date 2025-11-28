@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.restassured.http.ContentType.JSON;
 import static org.awaitility.Awaitility.await;
@@ -77,13 +76,10 @@ public class FederatedCatalogTest {
     @Test
     @DisplayName("Consumer gets cached catalog with provider entry")
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
-
-        // arrange
         PROVIDER.createAsset("test-asset");
         var ap = PROVIDER.createPolicyDefinition(noConstraintPolicy());
         var cp = PROVIDER.createPolicyDefinition(noConstraintPolicy());
         PROVIDER.createContractDefinition("test-asset", "test-def", ap, cp);
-
 
         await().pollInterval(ASYNC_POLL_INTERVAL)
                 .atMost(ASYNC_TIMEOUT)
@@ -93,7 +89,7 @@ public class FederatedCatalogTest {
                             .contentType(JSON)
                             .log().ifValidationFails()
                             .body("size()", is(1))
-                            .body("[0].'dcat:dataset'.'@id'", equalTo("test-asset"));
+                            .body("[0].'dataset'[0].'@id'", equalTo("test-asset"));
                 });
     }
 
@@ -108,8 +104,8 @@ public class FederatedCatalogTest {
         @Override
         public List<TargetNode> getAll() {
             return participants.stream()
-                    .map(p -> new TargetNode(p.getDid(), p.getBpn(), p.getProtocolUrl(), List.of("dataspace-protocol-http")))
-                    .collect(Collectors.toList());
+                    .map(p -> new TargetNode(p.getDid(), p.getBpn(), p.getProtocolUrl() + "/2025-1", List.of("dataspace-protocol-http:2025-1")))
+                    .toList();
         }
 
         @Override

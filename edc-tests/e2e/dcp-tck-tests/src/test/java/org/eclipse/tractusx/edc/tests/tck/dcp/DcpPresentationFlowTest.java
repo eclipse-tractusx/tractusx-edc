@@ -35,10 +35,10 @@ import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.dataspacetck.core.system.ConsoleMonitor;
 import org.eclipse.dataspacetck.runtime.TckRuntime;
 import org.eclipse.edc.connector.controlplane.profile.DataspaceProfileContextRegistryImpl;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.validation.TrustedIssuerRegistry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -161,9 +161,9 @@ public class DcpPresentationFlowTest {
     }
 
     private void configureStsMock() {
-        when(STS_MOCK.createToken(anyMap(), isNull()))
+        when(STS_MOCK.createToken(any(), anyMap(), isNull()))
                 .thenAnswer(i -> {
-                    Map<String, Object> claims = new HashMap<>(i.getArgument(0));
+                    Map<String, Object> claims = new HashMap<>(i.getArgument(1));
                     var header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(verifierKey.getKeyID()).build();
                     var claimsSet = new JWTClaimsSet.Builder(JWTClaimsSet.parse(claims))
                             .jwtID(UUID.randomUUID().toString())

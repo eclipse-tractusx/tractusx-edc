@@ -19,11 +19,14 @@
 
 package org.eclipse.tractusx.edc.vault.memory;
 
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.BaseExtension;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -40,6 +43,8 @@ public class VaultSeedExtension implements ServiceExtension {
 
     @Inject
     private Vault vault;
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     @Override
     public String name() {
@@ -51,11 +56,16 @@ public class VaultSeedExtension implements ServiceExtension {
 
         var seedSecrets = context.getSetting(VAULT_MEMORY_SECRETS_PROPERTY, null);
         if (seedSecrets != null) {
-            Stream.of(seedSecrets.split(";"))
-                    .filter(pair -> pair.contains(":"))
-                    .map(kvp -> kvp.split(":", 2))
-                    .filter(kvp -> kvp.length >= 2)
-                    .forEach(pair -> vault.storeSecret(pair[0], pair[1]));
+            singleParticipantContextSupplier.get().map(ParticipantContext::getParticipantContextId)
+                            .onSuccess(participantContextId -> {
+                                Stream.of(seedSecrets.split(";"))
+                                        .filter(pair -> pair.contains(":"))
+                                        .map(kvp -> kvp.split(":", 2))
+                                        .filter(kvp -> kvp.length >= 2)
+                                        .forEach(pair -> vault.storeSecret(participantContextId, pair[0], pair[1]));
+                            })
+                    .orElseThrow(f -> new EdcException("Cannot get the participant context: " + f.getFailureDetail()));
+
         }
         return vault;
     }

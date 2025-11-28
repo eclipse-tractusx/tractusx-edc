@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.command.Termina
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
@@ -66,7 +67,7 @@ public class ContractNegotiationServiceStub extends AbstractServiceStub implemen
     }
 
     @Override
-    public ContractNegotiation initiateNegotiation(ContractRequest request) {
+    public ContractNegotiation initiateNegotiation(ParticipantContext participantContext, ContractRequest request) {
         return responseQueue.getNext(ContractNegotiation.class, "Error initiating ContractNegotiation: %s")
                 .orElseThrow(InvalidRequestException::new);
     }

@@ -22,10 +22,12 @@ plugins {
     `maven-publish`
     id(libs.plugins.swagger.get().pluginId)
 }
+
 dependencies {
 
     implementation(project(":edc-extensions:agreements:retirement-evaluation-spi"))
     implementation(libs.edc.api.management.config)
+    implementation(libs.edc.lib.jersey.providers)
 
     implementation(libs.jakarta.rsApi)
 

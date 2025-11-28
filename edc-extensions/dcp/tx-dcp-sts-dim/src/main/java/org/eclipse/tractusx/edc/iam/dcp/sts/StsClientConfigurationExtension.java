@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.dcp.sts;
 
-import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
+import org.eclipse.edc.iam.decentralizedclaims.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;

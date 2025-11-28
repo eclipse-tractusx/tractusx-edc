@@ -20,14 +20,15 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
-import org.eclipse.edc.iam.identitytrust.sts.service.EmbeddedSecureTokenService;
-import org.eclipse.edc.iam.identitytrust.sts.spi.model.StsAccount;
-import org.eclipse.edc.iam.identitytrust.sts.spi.service.StsAccountService;
+import org.eclipse.edc.iam.decentralizedclaims.sts.service.EmbeddedSecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.sts.spi.model.StsAccount;
+import org.eclipse.edc.iam.decentralizedclaims.sts.spi.service.StsAccountService;
+import org.eclipse.edc.identityhub.spi.keypair.KeyPairService;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -126,8 +127,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
         var providerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(PROVIDER_RUNTIME.getService(PrivateKeyResolver.class)));
 
         var generatorServices = Map.of(
-                CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER),
-                PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER));
+                CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER, CONSUMER_RUNTIME.getService(KeyPairService.class)),
+                PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER, PROVIDER_RUNTIME.getService(KeyPairService.class)));
 
         var stsUri = STS.stsUri().get();
 
@@ -149,7 +150,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
         dimServer.stop();
     }
 
-    private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant participant) {
+    private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant participant,
+                                                              KeyPairService keyPairService) {
         StsAccountService stsAccountService = mock();
         when(stsAccountService.findById(participant.getDid())).thenAnswer(i -> {
             var dummyId = UUID.randomUUID().toString();
@@ -159,8 +161,6 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
                     .name(participant.getName())
                     .did(participant.getDid())
                     .secretAlias(dummyId)
-                    .privateKeyAlias(participant.getPrivateKeyAlias())
-                    .publicKeyReference(participant.verificationId())
                     .build();
 
             return ServiceResult.success(account);
@@ -170,7 +170,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
                 60 * 60,
                 tokenGenerationService,
                 Clock.systemUTC(),
-                stsAccountService
+                stsAccountService,
+                keyPairService
         );
     }
 

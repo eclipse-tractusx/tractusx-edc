@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.edc.spi.jwt)
     implementation(libs.edc.spi.jwt.signer)
     implementation(libs.edc.spi.keys)
+    implementation(libs.edc.spi.participant.context.single)
     implementation(libs.edc.spi.token)
     implementation(libs.edc.core.token)
     implementation(libs.edc.lib.cryptocommon)

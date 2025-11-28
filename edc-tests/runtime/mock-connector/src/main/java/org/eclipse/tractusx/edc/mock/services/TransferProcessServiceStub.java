@@ -24,10 +24,11 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.DeprovisionedRe
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionResponse;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferRequest;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.CompleteProvisionCommand;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.NotifyPreparedCommand;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.ResumeTransferCommand;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.SuspendTransferCommand;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.TerminateTransferCommand;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
@@ -91,13 +92,13 @@ public class TransferProcessServiceStub extends AbstractServiceStub implements T
     }
 
     @Override
-    public @NotNull ServiceResult<TransferProcess> initiateTransfer(TransferRequest request) {
+    public @NotNull ServiceResult<TransferProcess> initiateTransfer(ParticipantContext participantContext, TransferRequest request) {
         return responseQueue.getNext(TransferProcess.class, "Error initiating TransferProcess: %s");
     }
 
     @Override
-    public ServiceResult<Void> completeProvision(CompleteProvisionCommand completeProvisionCommand) {
-        return responseQueue.getNext(Void.class, "Error completing provisioning");
+    public ServiceResult<Void> notifyPrepared(NotifyPreparedCommand command) {
+        return responseQueue.getNext(Void.class, "Error notifying prepared on TransferProcess: %s");
     }
 
     @Override

@@ -19,11 +19,8 @@
 
 package org.eclipse.tractusx.edc.tests.helpers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.http.Request;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -31,16 +28,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.ECGenParameterSpec;
 
 public class Functions {
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    public static ReceivedEvent readEvent(Request request) {
-        try {
-            return MAPPER.readValue(request.getBody(), ReceivedEvent.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static KeyPair generateKeyPair() {
         try {

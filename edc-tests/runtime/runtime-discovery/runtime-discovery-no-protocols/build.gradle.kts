@@ -24,7 +24,7 @@ plugins {
 
 
 dependencies {
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
+    implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "tx-dcp")
         exclude(module = "tx-dcp-sts-dim")
         exclude(module = "dataspace-protocol")
@@ -34,7 +34,7 @@ dependencies {
         exclude(module = "dsp-http-api-configuration-2025")
     }
 
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+    implementation(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "data-plane-selector-client")
     }
 

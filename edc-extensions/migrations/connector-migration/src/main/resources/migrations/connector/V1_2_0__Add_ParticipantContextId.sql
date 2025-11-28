@@ -1,0 +1,9 @@
+ALTER TABLE edc_asset ADD COLUMN participant_context_id varchar;
+ALTER TABLE edc_contract_agreement ADD COLUMN agr_participant_context_id varchar;
+ALTER TABLE edc_contract_definitions ADD COLUMN participant_context_id varchar;
+ALTER TABLE edc_contract_negotiation ADD COLUMN participant_context_id varchar;
+ALTER TABLE edc_edr_entry ADD COLUMN participant_context_id varchar;
+ALTER TABLE edc_policy_monitor ADD COLUMN participant_context_id varchar;
+ALTER TABLE edc_policydefinitions ADD COLUMN participant_context_id varchar;
+ALTER TABLE edc_transfer_process ADD COLUMN participant_context_id varchar;
+ALTER TABLE edc_data_plane ADD COLUMN participant_context_id varchar;

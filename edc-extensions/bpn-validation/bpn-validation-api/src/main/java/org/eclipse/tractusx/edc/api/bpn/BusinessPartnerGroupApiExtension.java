@@ -25,6 +25,8 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.api.bpn.v1.BusinessPartnerGroupApiV1Controller;
@@ -34,16 +36,19 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPar
 
 import java.time.Clock;
 
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
+
 @Extension(value = "Registers the Business Partner Group API")
 public class BusinessPartnerGroupApiExtension implements ServiceExtension {
 
     @Inject
     private WebService webService;
     @Inject
-    private JsonLd jsonLdService;
+    private JsonLd jsonLd;
     @Inject
     private BusinessPartnerStore businessPartnerStore;
-
+    @Inject
+    private TypeManager typeManager;
     @Inject
     private Clock clock;
     @Inject
@@ -57,8 +62,14 @@ public class BusinessPartnerGroupApiExtension implements ServiceExtension {
         webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV1Controller(
                 businessPartnerStore, businessPartnerObservable, context.getMonitor()
         ));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, BusinessPartnerGroupApiV1Controller.class,
+                new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
+
+
         webService.registerResource(ApiContext.MANAGEMENT, new BusinessPartnerGroupApiV3Controller(
                 businessPartnerStore, businessPartnerObservable
         ));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, BusinessPartnerGroupApiV3Controller.class,
+                new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
     }
 }
