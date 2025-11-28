@@ -20,7 +20,7 @@
 
 package org.eclipse.tractusx.edc.identity.mapper;
 
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
+import org.eclipse.edc.spi.types.domain.message.ProtocolRemoteMessage;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
@@ -68,7 +68,13 @@ class BdrsClientAudienceMapperTest {
         assertThat(did).isFailed().detail().contains("exception");
     }
 
-    private record TestMessage(String counterPartyId) implements RemoteMessage {
+    private static final class TestMessage extends ProtocolRemoteMessage {
+        private final String counterPartyId;
+
+        private TestMessage(String counterPartyId) {
+            this.counterPartyId = counterPartyId;
+        }
+
         @Override
         public String getProtocol() {
             return "test-proto";
@@ -83,5 +89,6 @@ class BdrsClientAudienceMapperTest {
         public String getCounterPartyId() {
             return counterPartyId;
         }
+
     }
 }

@@ -26,8 +26,8 @@ import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.Con
 import org.eclipse.edc.connector.controlplane.services.spi.contractdefinition.ContractDefinitionService;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.controlplane.services.spi.policydefinition.PolicyDefinitionService;
-import org.eclipse.edc.connector.controlplane.services.spi.protocol.VersionService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -45,7 +45,6 @@ import org.eclipse.tractusx.edc.mock.services.ContractDefinitionServiceStub;
 import org.eclipse.tractusx.edc.mock.services.ContractNegotiationServiceStub;
 import org.eclipse.tractusx.edc.mock.services.PolicyDefinitionServiceStub;
 import org.eclipse.tractusx.edc.mock.services.TransferProcessServiceStub;
-import org.eclipse.tractusx.edc.mock.services.VersionServiceStub;
 
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -87,14 +86,13 @@ public class MockServiceExtension implements ServiceExtension {
     @Provider
     public CatalogService mockCatalogService() {
         return new CatalogService() {
-
             @Override
-            public CompletableFuture<StatusResult<byte[]>> requestCatalog(String s, String s1, String s2, QuerySpec querySpec, String... strings) {
+            public CompletableFuture<StatusResult<byte[]>> requestCatalog(ParticipantContext participantContext, String counterPartyId, String counterPartyAddress, String protocol, QuerySpec querySpec, String... additionalScopes) {
                 return null;
             }
 
             @Override
-            public CompletableFuture<StatusResult<byte[]>> requestDataset(String s, String s1, String s2, String s3) {
+            public CompletableFuture<StatusResult<byte[]>> requestDataset(ParticipantContext participantContext, String id, String counterPartyId, String counterPartyAddress, String protocol) {
                 return null;
             }
         };
@@ -123,11 +121,6 @@ public class MockServiceExtension implements ServiceExtension {
     @Provider
     public TransferProcessService mockTransferProcessService() {
         return new TransferProcessServiceStub(new ResponseQueue(recordedRequests, monitor));
-    }
-
-    @Provider
-    public VersionService mockVersionService() {
-        return new VersionServiceStub(new ResponseQueue(recordedRequests, monitor));
     }
 
 }

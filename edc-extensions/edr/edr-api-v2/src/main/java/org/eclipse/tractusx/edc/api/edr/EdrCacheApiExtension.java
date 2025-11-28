@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.api.edr;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
-import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -30,7 +30,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
-import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
 import org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiV2Controller;
 import org.eclipse.tractusx.edc.api.edr.v3.EdrCacheApiV3Controller;
@@ -38,36 +37,32 @@ import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
 import java.util.Map;
 
+import static org.eclipse.edc.web.spi.configuration.ApiContext.MANAGEMENT;
+
 public class EdrCacheApiExtension implements ServiceExtension {
 
     @Inject
     private WebService webService;
-
     @Inject
     private EdrService edrService;
-
     @Inject
     private TypeTransformerRegistry transformerRegistry;
-
-    @Inject
-    private JsonLd jsonLdService;
-
     @Inject
     private JsonObjectValidatorRegistry validatorRegistry;
-
     @Inject
     private ContractNegotiationService contractNegotiationService;
-
     @Inject
     private Monitor monitor;
     @Inject
     private EndpointDataReferenceStore edrStore;
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
         mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer(Json.createBuilderFactory(Map.of())));
-        webService.registerResource(ApiContext.MANAGEMENT, new EdrCacheApiV2Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
-        webService.registerResource(ApiContext.MANAGEMENT, new EdrCacheApiV3Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService));
+        webService.registerResource(MANAGEMENT, new EdrCacheApiV2Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService, singleParticipantContextSupplier));
+        webService.registerResource(MANAGEMENT, new EdrCacheApiV3Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService, singleParticipantContextSupplier));
     }
 }

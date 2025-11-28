@@ -46,7 +46,7 @@ import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.http.client.testfixtures.HttpTestUtils.testHttpClient;
-import static org.eclipse.edc.iam.identitytrust.spi.SelfIssuedTokenConstants.PRESENTATION_TOKEN_CLAIM;
+import static org.eclipse.edc.iam.decentralizedclaims.spi.SelfIssuedTokenConstants.PRESENTATION_TOKEN_CLAIM;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
@@ -96,7 +96,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(200, invocation, requestAcceptor, response));
 
         var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
-        var result = client.createToken(input, "namespace:TestCredential:read");
+        var result = client.createToken("ignored", input, "namespace:TestCredential:read");
 
 
         assertThat(result).isSucceeded()
@@ -130,7 +130,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(200, invocation, requestAcceptor, response));
 
         var input = Map.<String, Object>of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "accessToken");
-        var result = client.createToken(input, null);
+        var result = client.createToken("ignored", input, null);
 
         assertThat(result).isSucceeded()
                 .extracting(TokenRepresentation::getToken)
@@ -145,7 +145,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
         var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
-        var result = client.createToken(input, "namespace:TestCredential:read");
+        var result = client.createToken("ignored", input, "namespace:TestCredential:read");
 
         assertThat(result).isFailed()
                 .satisfies(failure -> assertThat(failure.getFailureDetail()).contains("grantAccess"));
@@ -160,7 +160,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
         var input = Map.<String, Object>of("foo", "bar");
-        var result = client.createToken(input, "namespace:TestCredential:read");
+        var result = client.createToken("ignored", input, "namespace:TestCredential:read");
 
         assertThat(result).isFailed()
                 .satisfies(failure -> assertThat(failure.getFailureDetail())
@@ -177,7 +177,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(200, invocation, Map.of()));
 
         var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
-        var result = client.createToken(input, "namespace:TestCredential:read");
+        var result = client.createToken("ignored", input, "namespace:TestCredential:read");
 
         assertThat(result).isFailed()
                 .satisfies(failure -> assertThat(failure.getFailureDetail())
@@ -193,7 +193,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
         var input = Map.<String, Object>of(ISSUER, "issuer", AUDIENCE, "audience");
-        var result = client.createToken(input, "invalidScope");
+        var result = client.createToken("ignored", input, "invalidScope");
 
         assertThat(result).isFailed()
                 .satisfies(failure -> assertThat(failure.getFailureDetail())
@@ -209,7 +209,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
         var input = Map.<String, Object>of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
-        var result = client.createToken(input, null);
+        var result = client.createToken("ignored", input, null);
 
         assertThat(result).isFailed()
                 .satisfies(failure -> assertThat(failure.getFailureDetail()).contains("signToken"));
@@ -224,7 +224,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(200, invocation, Map.of()));
 
         var input = Map.<String, Object>of(ISSUER, "issuer", SUBJECT, "issuer", AUDIENCE, "audience", PRESENTATION_TOKEN_CLAIM, "token");
-        var result = client.createToken(input, null);
+        var result = client.createToken("ignored", input, null);
 
         assertThat(result).isFailed()
                 .satisfies(failure -> assertThat(failure.getFailureDetail())
@@ -240,7 +240,7 @@ public class DimSecureTokenServiceTest {
                 .thenAnswer(invocation -> createResponse(500, invocation));
 
         var input = Map.<String, Object>of("foo", "bar");
-        var result = client.createToken(input, null);
+        var result = client.createToken("ignored", input, null);
 
         assertThat(result).isFailed()
                 .satisfies(failure -> assertThat(failure.getFailureDetail())
@@ -260,7 +260,6 @@ public class DimSecureTokenServiceTest {
         return createResponse(code, invocation, (req) -> {
         }, body);
     }
-
 
     private Response createResponse(int code, InvocationOnMock invocation, Consumer<Request> consumer, Object body) {
         var bodyString = Optional.ofNullable(body).map(this::toJson).orElse("");

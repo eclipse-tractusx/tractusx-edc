@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.iatp;
 
-import org.eclipse.edc.iam.identitytrust.spi.scope.ScopeExtractorRegistry;
+import org.eclipse.edc.iam.decentralizedclaims.spi.scope.ScopeExtractorRegistry;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor;

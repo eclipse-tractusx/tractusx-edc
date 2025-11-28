@@ -32,6 +32,8 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.Contr
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferRequest;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -80,7 +82,10 @@ public class ContractNegotiationCallbackTest {
 
     @BeforeEach
     void setup() {
-        callback = new ContractNegotiationCallback(transferProcessService, monitor);
+        ParticipantContextSupplier participantContextSupplier = mock();
+        var participantContext = ParticipantContext.Builder.newInstance().identity("any").participantContextId("any").build();
+        when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
+        callback = new ContractNegotiationCallback(transferProcessService, monitor, participantContextSupplier);
     }
 
     @Test
@@ -88,7 +93,7 @@ public class ContractNegotiationCallbackTest {
 
         var captor = ArgumentCaptor.forClass(TransferRequest.class);
 
-        when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(TransferProcess.Builder.newInstance().id("test").build()));
+        when(transferProcessService.initiateTransfer(any(), any())).thenReturn(ServiceResult.success(TransferProcess.Builder.newInstance().id("test").build()));
 
         var event = getNegotiationFinalizedEvent();
         var message = remoteMessage(event);
@@ -96,7 +101,7 @@ public class ContractNegotiationCallbackTest {
         var result = callback.invoke(message);
 
         assertThat(result.succeeded()).isTrue();
-        verify(transferProcessService).initiateTransfer(captor.capture());
+        verify(transferProcessService).initiateTransfer(any(), captor.capture());
 
 
         var transferRequest = captor.getValue();
@@ -115,16 +120,14 @@ public class ContractNegotiationCallbackTest {
     @Test
     void invoke_shouldThrowException_whenTransferRequestFails() {
 
-        when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.badRequest("test"));
+        when(transferProcessService.initiateTransfer(any(), any())).thenReturn(ServiceResult.badRequest("test"));
 
         var event = getNegotiationFinalizedEvent();
         var message = remoteMessage(event);
 
-
         var result = callback.invoke(message);
 
         assertThat(result.failed()).isTrue();
-
     }
 
     @ParameterizedTest
@@ -147,10 +150,10 @@ public class ContractNegotiationCallbackTest {
                         .consumerId("test-consumer")
                         .build())).build();
         var message = remoteMessage(evt);
-        when(transferProcessService.initiateTransfer(any())).thenReturn(ServiceResult.success(null));
+        when(transferProcessService.initiateTransfer(any(), any())).thenReturn(ServiceResult.success(null));
 
         callback.invoke(message);
-        verify(transferProcessService).initiateTransfer(any(TransferRequest.class));
+        verify(transferProcessService).initiateTransfer(any(), any(TransferRequest.class));
     }
 
     private static class EventInstances implements ArgumentsProvider {

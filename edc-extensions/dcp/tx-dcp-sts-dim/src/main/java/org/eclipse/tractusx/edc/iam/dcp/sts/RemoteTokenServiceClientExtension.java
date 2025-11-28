@@ -20,9 +20,9 @@
 package org.eclipse.tractusx.edc.iam.dcp.sts;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
-import org.eclipse.edc.iam.identitytrust.sts.remote.RemoteSecureTokenService;
-import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.sts.remote.RemoteSecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -86,7 +86,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
                 })
                 .orElseGet(() -> {
                     monitor.info("DIM URL not configured, will use the standard EDC Remote STS client");
-                    return new RemoteSecureTokenService(oauth2Client, clientConfiguration, vault);
+                    return new RemoteSecureTokenService(oauth2Client, participantContextId -> clientConfiguration, vault);
                 });
     }
 
