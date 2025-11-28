@@ -39,7 +39,8 @@ import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_PATH;
 
 public class DataspaceProtocolExtension implements ServiceExtension {
-    
+
+    @Deprecated(since = "0.12.0")
     @Setting(description = "the BPN of the participant", key = "tractusx.edc.participant.bpn")
     private String bpn;
     
@@ -47,13 +48,13 @@ public class DataspaceProtocolExtension implements ServiceExtension {
     private DataspaceProfileContextRegistry contextRegistry;
     @Inject
     private DspBaseWebhookAddress dspWebhookAddress;
-    
+
     @Override
     public void initialize(ServiceExtensionContext context) {
-        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), bpn, new BpnExtractionFunction()));
-        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2025_1, V_2025_1, () -> dspWebhookAddress.get() + V_2025_1_PATH, context.getParticipantId(), new DidExtractionFunction()));
+        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), new BpnExtractionFunction()));
+        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2025_1, V_2025_1, () -> dspWebhookAddress.get() + V_2025_1_PATH, new DidExtractionFunction()));
         
         // currently required for DCP TCK tests
-        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2024_1, V_2024_1, () -> dspWebhookAddress.get() + V_2024_1_PATH, bpn, new BpnExtractionFunction()));
+        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2024_1, V_2024_1, () -> dspWebhookAddress.get() + V_2024_1_PATH, new BpnExtractionFunction()));
     }
 }

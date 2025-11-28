@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.iatp;
 
-import org.eclipse.edc.iam.identitytrust.spi.scope.ScopeExtractorRegistry;
+import org.eclipse.edc.iam.decentralizedclaims.spi.scope.ScopeExtractorRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;

@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.identity.mapper;
 
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.types.domain.message.ProtocolRemoteMessage;
 import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
@@ -43,7 +44,7 @@ class BdrsClientAudienceMapper implements AudienceResolver {
     }
 
     @Override
-    public Result<String> resolve(RemoteMessage remoteMessage) {
+    public Result<String> resolve(ProtocolRemoteMessage remoteMessage) {
         try {
             var counterPartyId = remoteMessage.getCounterPartyId();
             if (counterPartyId.startsWith(DID_PREFIX)) {

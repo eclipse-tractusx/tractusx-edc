@@ -27,14 +27,14 @@ dependencies {
     implementation(project(":spi:core-spi"))
     implementation(project(":spi:tokenrefresh-spi"))
     implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.decentralized.claims)
     implementation(libs.edc.spi.edrstore)
     implementation(libs.edc.spi.http)
-    implementation(libs.edc.spi.token)
     implementation(libs.edc.spi.jwt)
-    implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.spi.participant.context.single)
+    implementation(libs.edc.spi.token)
     implementation(libs.edc.lib.util)
     implementation(libs.nimbus.jwt)
-
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)

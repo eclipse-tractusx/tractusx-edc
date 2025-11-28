@@ -41,7 +41,7 @@ dependencies {
 
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.core.did)
-    implementation(libs.edc.identity.trust.transform)
+    implementation(libs.edc.decentralized.claims.transform)
     implementation(libs.edc.auth.oauth2.client)
     // IH dependencies
     implementation(libs.edc.ih.api.presentation)

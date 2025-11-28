@@ -24,15 +24,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.failsafe.RetryPolicy;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
-import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.spi.CredentialServiceClient;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentation;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -72,6 +76,7 @@ class BdrsClientImplTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private final SecureTokenService stsMock = mock();
     private final CredentialServiceClient csMock = mock();
+    private final ParticipantContextSupplier participantContextSupplier = mock();
     private BdrsClientImpl client;
     private ClientAndServer bdrsServer;
 
@@ -85,7 +90,8 @@ class BdrsClientImplTest {
                         .withHeader("Content-Encoding", "gzip")
                         .withBody(createGzipStream())
                         .withStatusCode(200));
-
+        var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
+        when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
         client = new BdrsClientImpl("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1,
                 "did:web:self",
                 () -> "http://credential.service",
@@ -93,10 +99,10 @@ class BdrsClientImplTest {
                 monitor,
                 mapper,
                 stsMock,
-                csMock);
+                csMock, participantContextSupplier);
 
         // prime STS and CS
-        when(stsMock.createToken(anyMap(), notNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("my-fancy-sitoken").build()));
+        when(stsMock.createToken(any(), anyMap(), notNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("my-fancy-sitoken").build()));
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(TEST_VP_CONTENT, CredentialFormat.VC1_0_JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
 
@@ -159,7 +165,7 @@ class BdrsClientImplTest {
 
     @Test
     void getData_whenStsFails() {
-        when(stsMock.createToken(anyMap(), notNull())).thenReturn(Result.failure("test-failure"));
+        when(stsMock.createToken(any(), anyMap(), notNull())).thenReturn(Result.failure("test-failure"));
         assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("test-failure");

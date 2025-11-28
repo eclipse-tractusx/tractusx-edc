@@ -36,7 +36,7 @@ dependencies {
     testRuntimeOnly(libs.dsp.tck.transferprocess)
     testRuntimeOnly(libs.dsp.tck.contractnegotiation)
     testImplementation(libs.junit.platform.launcher)
-    testImplementation(libs.edc.spi.identitytrust)
+    testImplementation(libs.edc.spi.decentralized.claims)
     testImplementation(libs.nimbus.jwt)
 }
 

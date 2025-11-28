@@ -42,7 +42,7 @@ dependencies {
 
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.core.did)
-    implementation(libs.edc.identity.trust.transform)
+    implementation(libs.edc.decentralized.claims.transform)
     implementation(libs.edc.auth.oauth2.client)
     implementation(libs.edc.ih.api.presentation)
     implementation(libs.edc.ih.keypairs)

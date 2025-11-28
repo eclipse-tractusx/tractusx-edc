@@ -36,7 +36,6 @@ import org.eclipse.edc.spi.system.Hostname;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
-import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.edc.web.spi.configuration.PortMapping;
 import org.eclipse.edc.web.spi.configuration.PortMappingRegistry;
 import org.eclipse.tractusx.edc.dataplane.proxy.api.controller.DataPlanePublicApiV2Controller;
@@ -56,6 +55,8 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
     private static final int DEFAULT_PUBLIC_PORT = 8185;
     private static final String DEFAULT_PUBLIC_PATH = "/api/public";
     private static final int DEFAULT_THREAD_POOL = 10;
+    private static final String API_CONTEXT = "public";
+
     @Setting(description = "Base url of the public API endpoint without the trailing slash. This should point to the public endpoint configured.",
             required = false,
             key = "edc.dataplane.api.public.baseurl", warnOnMissingConfig = true)
@@ -64,6 +65,7 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
     private String publicApiResponseUrl;
     @Configuration
     private PublicApiConfiguration apiConfiguration;
+
     @Inject
     private PortMappingRegistry portMappingRegistry;
     @Inject
@@ -88,7 +90,7 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var portMapping = new PortMapping(ApiContext.PUBLIC, apiConfiguration.port(), apiConfiguration.path());
+        var portMapping = new PortMapping(API_CONTEXT, apiConfiguration.port(), apiConfiguration.path());
         portMappingRegistry.register(portMapping);
         var executorService = executorInstrumentation.instrument(
                 Executors.newFixedThreadPool(DEFAULT_THREAD_POOL),
@@ -115,14 +117,14 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
         }
         
         var publicApiController = new DataPlanePublicApiV2Controller(pipelineService, executorService, authorizationService);
-        webService.registerResource(ApiContext.PUBLIC, publicApiController);
+        webService.registerResource(API_CONTEXT, publicApiController);
     }
 
     @Settings
     record PublicApiConfiguration(
-            @Setting(key = "web.http." + ApiContext.PUBLIC + ".port", description = "Port for " + ApiContext.PUBLIC + " api context", defaultValue = DEFAULT_PUBLIC_PORT + "")
+            @Setting(key = "web.http." + API_CONTEXT + ".port", description = "Port for " + API_CONTEXT + " api context", defaultValue = DEFAULT_PUBLIC_PORT + "")
             int port,
-            @Setting(key = "web.http." + ApiContext.PUBLIC + ".path", description = "Path for " + ApiContext.PUBLIC + " api context", defaultValue = DEFAULT_PUBLIC_PATH)
+            @Setting(key = "web.http." + API_CONTEXT + ".path", description = "Path for " + API_CONTEXT + " api context", defaultValue = DEFAULT_PUBLIC_PATH)
             String path
     ) {
 

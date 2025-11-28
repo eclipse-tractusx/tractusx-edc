@@ -22,10 +22,11 @@ package org.eclipse.tractusx.edc.tests.runtimes;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
+import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.iam.TokenParameters;
@@ -39,6 +40,7 @@ import org.eclipse.edc.token.spi.TokenDecorator;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.security.PrivateKey;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -81,8 +83,8 @@ public class ParticipantRuntimeExtension extends RuntimePerClassExtension implem
                 KeyPool.register(kid, runtimeKeyPair.toKeyPair());
                 var privateKey = runtimeKeyPair.toPrivateKey();
 
-                var jwtGenerationService = new JwtGenerationService(new DefaultJwsSignerProvider(s -> Result.success(privateKey)));
-                participantRuntimeExtension.registerServiceMock(SecureTokenService.class, (claims, bearerAccessScope) -> {
+                var jwtGenerationService = new JwtGenerationService(new DefaultJwsSignerProvider(new StaticPrivateKeyResolver(privateKey)));
+                participantRuntimeExtension.registerServiceMock(SecureTokenService.class, (participantContextId, claims, bearerAccessScope) -> {
                     var decorator = new TokenDecorator() {
                         @Override
                         public TokenParameters.Builder decorate(TokenParameters.Builder tokenParameters) {
@@ -90,7 +92,7 @@ public class ParticipantRuntimeExtension extends RuntimePerClassExtension implem
                             return tokenParameters;
                         }
                     };
-                    return jwtGenerationService.generate(privateAlias, new KeyIdDecorator(kid), decorator);
+                    return jwtGenerationService.generate(participantContextId, privateAlias, new KeyIdDecorator(kid), decorator);
                 });
 
                 participantRuntimeExtension.registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
@@ -99,6 +101,24 @@ public class ParticipantRuntimeExtension extends RuntimePerClassExtension implem
                 vault.storeSecret(publicAlias, runtimeKeyPair.toPublicJWK().toJSONString());
             } catch (JOSEException e) {
                 throw new RuntimeException(e);
+            }
+        }
+
+        private static class StaticPrivateKeyResolver implements PrivateKeyResolver {
+            private final PrivateKey privateKey;
+
+            public StaticPrivateKeyResolver(PrivateKey privateKey) {
+                this.privateKey = privateKey;
+            }
+
+            @Override
+            public Result<PrivateKey> resolvePrivateKey(String id) {
+                return Result.success(privateKey);
+            }
+
+            @Override
+            public Result<PrivateKey> resolvePrivateKey(String participantContextId, String id) {
+                return Result.success(privateKey);
             }
         }
     }

@@ -19,7 +19,7 @@
 
 package org.eclipse.tractusx.edc.iam.dcp.sts;
 
-import org.eclipse.edc.iam.identitytrust.sts.remote.RemoteSecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.sts.remote.RemoteSecureTokenService;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;

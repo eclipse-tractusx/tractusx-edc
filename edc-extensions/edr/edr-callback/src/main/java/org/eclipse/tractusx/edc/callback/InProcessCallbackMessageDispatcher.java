@@ -32,7 +32,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static java.lang.String.format;
 
-public class InProcessCallbackMessageDispatcher implements RemoteMessageDispatcher {
+public class InProcessCallbackMessageDispatcher implements RemoteMessageDispatcher<RemoteMessage> {
 
     public static final String CALLBACK_EVENT_LOCAL = "callback-event-local";
 
@@ -43,7 +43,7 @@ public class InProcessCallbackMessageDispatcher implements RemoteMessageDispatch
     }
 
     @Override
-    public <T, M extends RemoteMessage> CompletableFuture<StatusResult<T>> dispatch(Class<T> responseType, M message) {
+    public <T, M extends RemoteMessage> CompletableFuture<StatusResult<T>> dispatch(String participantContextId, Class<T> responseType, M message) {
         if (message instanceof CallbackEventRemoteMessage) {
             var result = registry.handleMessage((CallbackEventRemoteMessage<? extends Event>) message);
             if (result.succeeded()) {
@@ -54,4 +54,5 @@ public class InProcessCallbackMessageDispatcher implements RemoteMessageDispatch
         }
         return CompletableFuture.failedFuture(new EdcException(format("Message of type %s not supported", message.getClass().getSimpleName())));
     }
+
 }

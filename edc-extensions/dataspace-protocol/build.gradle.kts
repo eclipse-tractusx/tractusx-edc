@@ -28,7 +28,7 @@ dependencies {
     implementation(libs.edc.spi.boot)
     implementation(libs.edc.spi.core)
     implementation(libs.edc.ih.spi.credentials)
-    implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.spi.decentralized.claims)
 
     implementation(libs.dsp.spi.http)
     implementation(libs.dsp.spi.v08)
