@@ -41,10 +41,10 @@ jobs:
       security-events: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: KICS scan
-        uses: checkmarx/kics-github-action@v2.1.15
+        uses: checkmarx/kics-github-action@v2.1.16
         with:
           path: "."
           fail_on: high

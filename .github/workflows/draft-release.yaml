@@ -40,7 +40,7 @@ jobs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
       is_official_release: ${{ steps.validation.outputs.is_official_release }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - id: validation
@@ -106,16 +106,10 @@ jobs:
       packages: write
       pages: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Create Release branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
       - uses: ./.github/actions/setup-java
-      - name: Check dependencies before release
-        uses: ./.github/actions/generate-and-check-dependencies
-        with:
-          run: ${{ needs.validate-and-prepare.outputs.is_official_release == true && 'strict' || 'standard' }}
-      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
-        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
         with:
@@ -123,3 +117,23 @@ jobs:
           bump_version: "false"
       - name: Push new branch
         run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+      - name: Check dependencies before release
+        uses: ./.github/actions/generate-and-check-dependencies
+        with:
+          run: ${{ needs.validate-and-prepare.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
+      - name: Commit DEPENDENCIES changes
+        shell: bash
+        run: |
+          if git diff --quiet -- DEPENDENCIES; then
+            echo "No changes in DEPENDENCIES, skipping commit."
+            exit 0
+          fi
+          
+          git add DEPENDENCIES
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+          git commit --message "Update DEPENDENCIES file"
+          git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT

@@ -101,7 +101,7 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_whenMultipleCredentialsFound() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createMembershipCredential().build(),
                 CredentialFunctions.createMembershipCredential().build(),
-                CredentialFunctions.createPcfCredential().build())));
+                CredentialFunctions.createDismantlerCredential("Tatra", "Moskvich").build())));
 
         var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
 
@@ -110,7 +110,7 @@ class MembershipCredentialConstraintFunctionTest {
 
     @Test
     void evaluate_whenCredentialNotFound() {
-        when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createPcfCredential().build())));
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(CredentialFunctions.createDismantlerCredential("Tatra", "Moskvich").build())));
 
         var result = function.evaluate(CX_POLICY_NS + "Membership", Operator.EQ, "active", null, context);
 

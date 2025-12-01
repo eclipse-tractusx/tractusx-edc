@@ -52,7 +52,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_N
  * policy is considered <strong>not fulfilled</strong>. Note that if the {@code version} is specified, it <strong>must</strong> be satisfied by the <strong>same</strong>
  * credential that satisfies the {@code subtype} requirement.
  */
-public class FrameworkAgreementCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
+public class FrameworkAgreementConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String CONTRACT_VERSION_LITERAL = "contractVersion";
     public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
 
@@ -116,7 +116,7 @@ public class FrameworkAgreementCredentialConstraintFunction<C extends Participan
     }
 
     /**
-     * Returns {@code true} if the left-operand starts with {@link FrameworkAgreementCredentialConstraintFunction#FRAMEWORK_AGREEMENT_LITERAL}, {@code false} otherwise.
+     * Returns {@code true} if the left-operand starts with {@link FrameworkAgreementConstraintFunction#FRAMEWORK_AGREEMENT_LITERAL}, {@code false} otherwise.
      */
     @Override
     public boolean canHandle(Object leftValue) {

@@ -52,7 +52,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,17 +79,14 @@ class BdrsClientImplTest {
     static WireMockExtension bdrsServer = WireMockExtension.newInstance()
             .options(wireMockConfig().dynamicPort())
             .build();
+
     @BeforeEach
     void setup() {
-        /*bdrsServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/api/bpn-directory"))
-                .respond(HttpResponse.response()
+        bdrsServer.stubFor(get(urlPathEqualTo("/api/bpn-directory"))
+                .willReturn(aResponse()
                         .withHeader("Content-Encoding", "gzip")
                         .withBody(createGzipStream())
-                        .withStatusCode(200));*/
-
-        bdrsServer.stubFor(get("/api/bpn-directory").willReturn(aResponse().withHeader("Content-Encoding", "gzip").withStatus(200).withBody(createGzipStream())));
+                        .withStatus(200)));
         client = new BdrsClientImpl("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1,
                 "did:web:self",
                 () -> "http://credential.service",
@@ -150,13 +147,9 @@ class BdrsClientImplTest {
     @ParameterizedTest(name = "HTTP Status {0}")
     @ValueSource(ints = { 400, 401, 403, 404, 405 })
     void getData_bdrsReturnsError(int code) {
-        /*bdrsServer.reset();
-        bdrsServer.when(request().withPath("/api/bpn-directory").withMethod("GET"))
-                .respond(HttpResponse.response().withStatusCode(code));
-        assertThatThrownBy(() -> client.resolveDid("bpn1")).isInstanceOf(EdcException.class);*/
-
         bdrsServer.resetAll();
-        bdrsServer.stubFor(get("/api/bpn-directory").willReturn(aResponse().withStatus(code)));
+        bdrsServer.stubFor(get(urlPathEqualTo("/api/bpn-directory")).willReturn(aResponse().withStatus(code)));
+        assertThatThrownBy(() -> client.resolveDid("bpn1")).isInstanceOf(EdcException.class);
     }
 
     @Test
@@ -165,7 +158,6 @@ class BdrsClientImplTest {
         assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("test-failure");
-        /*bdrsServer.verify(request(), never());*/
         bdrsServer.verify(0, getRequestedFor(anyUrl()));
     }
 
@@ -176,7 +168,6 @@ class BdrsClientImplTest {
         assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("test-failure");
-        /*bdrsServer.verify(request(), never());*/
         bdrsServer.verify(0, getRequestedFor(anyUrl()));
     }
 
@@ -200,21 +191,13 @@ class BdrsClientImplTest {
         assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("Expected exactly 1 VP, but was empty");
-        /*bdrsServer.verify(request(), never());*/
         bdrsServer.verify(0, getRequestedFor(anyUrl()));
     }
 
     private void verifyBdrsRequest(int count) {
-        /*bdrsServer.verify(request()
-                        .withMethod("GET")
-                        .withPath("/api/bpn-directory")
-                        .withHeader("Authorization", "Bearer " + TEST_VP_CONTENT)
-                        .withHeader("Accept-Encoding", "gzip"),
-                exactly(count));*/
-
-        bdrsServer.verify(getRequestedFor(urlEqualTo("/api/bpn-directory"))
+        bdrsServer.verify(count, getRequestedFor(urlPathEqualTo("/api/bpn-directory"))
                 .withHeader("Authorization", equalTo("Bearer " + TEST_VP_CONTENT))
-                .withHeader("Accept-Encoding",equalTo("gzip")));
+                .withHeader("Accept-Encoding", equalTo("gzip")));
     }
 
     private byte[] createGzipStream() {

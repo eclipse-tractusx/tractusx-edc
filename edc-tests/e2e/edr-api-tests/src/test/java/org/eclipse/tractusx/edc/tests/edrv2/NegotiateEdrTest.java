@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.edrv2;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import jakarta.json.Json;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationAgreed;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
@@ -44,17 +45,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -64,10 +66,10 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEvent;
+import static org.eclipse.tractusx.edc.tests.helpers.Functions.readEvent;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
-import static org.mockserver.model.HttpRequest.request;
 
 @EndToEndTest
 public class NegotiateEdrTest {
@@ -98,11 +100,12 @@ public class NegotiateEdrTest {
     @RegisterExtension
     private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
 
-    private ClientAndServer server;
+    private static WireMockServer server;
 
     @BeforeEach
     void setup() {
-        server = ClientAndServer.startClientAndServer("localhost", getFreePort());
+        server = new WireMockServer(options().bindAddress("localhost").dynamicPort());
+        server.start();
         CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
     }
 
@@ -121,7 +124,7 @@ public class NegotiateEdrTest {
                 createEvent(TransferProcessRequested.class),
                 createEvent(TransferProcessStarted.class));
 
-        var url = "http://%s:%d%s".formatted("localhost", server.getPort(), "/mock/api");
+        var url = "http://%s:%d%s".formatted("localhost", server.port(), "/mock/api");
 
         var assetId = "api-asset-1";
 
@@ -145,13 +148,15 @@ public class NegotiateEdrTest {
 
 
         var events = new ArrayList<ReceivedEvent>();
-        server.when(request().withPath("/mock/api"))
-                .respond(request -> {
-                    var event = readEvent(request);
-                    events.add(event);
-                    return HttpResponse.response().withStatusCode(200);
-                });
+        server.stubFor(
+                any(urlPathEqualTo("/mock/api"))
+                        .willReturn(aResponse().withStatus(200))
+        );
 
+        server.addMockServiceRequestListener((request, response) -> {
+            var event = readEvent(request);
+            events.add(event);
+        });
 
         var callbacks = Json.createArrayBuilder()
                 .add(EdrNegotiationHelperFunctions.createCallback(url, true, Set.of("contract.negotiation", "transfer.process")))
@@ -193,12 +198,10 @@ public class NegotiateEdrTest {
         assertThat(edr.getJsonString("endpoint").getString()).isNotNull();
         assertThat(edr.getJsonString("endpointType").getString()).isEqualTo(edr.getJsonString("type").getString());
         assertThat(edr.getJsonString("authorization").getString()).isNotNull();
-
     }
 
     @AfterEach
     void teardown() {
         server.stop();
     }
-
 }

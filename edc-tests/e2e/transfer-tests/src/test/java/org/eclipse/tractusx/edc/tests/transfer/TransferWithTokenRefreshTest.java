@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.jsonld.spi.JsonLd;
@@ -29,17 +30,20 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.verify.VerificationTimes;
 
 import java.time.Duration;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +51,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -59,8 +62,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 /**
  * this test uses in-mem runtimes to negotiate and perform a data transfer, but the EDR expires before the consumer has a
@@ -104,12 +105,15 @@ public class TransferWithTokenRefreshTest {
             ))))
             .registerServiceMock(BdrsClient.class, new MockBdrsClient((c) -> CONSUMER.getDid(), (c) -> CONSUMER.getBpn()));
 
-    private ClientAndServer server;
+    @RegisterExtension
+    protected static WireMockExtension server = WireMockExtension.newInstance()
+            .options(wireMockConfig().bindAddress(MOCK_BACKEND_REMOTE_HOST).dynamicPort())
+            .build();
+
     private String privateBackendUrl;
 
     @BeforeEach
     void setup() {
-        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTE_HOST, getFreePort());
         privateBackendUrl = "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), MOCK_BACKEND_PATH);
         CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
     }
@@ -136,7 +140,8 @@ public class TransferWithTokenRefreshTest {
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
-        server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
+        server.stubFor(get(urlPathEqualTo(MOCK_BACKEND_PATH))
+                .willReturn(ok("test response")));
 
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -158,7 +163,7 @@ public class TransferWithTokenRefreshTest {
                 });
 
         // assert the data has not been fetched
-        server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.never());
+        server.verify(0, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
 
         // renew EDR explicitly
         var renewedEdr = CONSUMER.edrs().refreshEdr(transferProcessId)
@@ -170,7 +175,7 @@ public class TransferWithTokenRefreshTest {
         var data = CONSUMER.data().pullData(renewedEdr, Map.of());
         assertThat(data).isNotNull().isEqualTo("test response");
 
-        server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.exactly(1));
+        server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
     }
 
     @Test
@@ -194,7 +199,10 @@ public class TransferWithTokenRefreshTest {
         CONSUMER.waitForTransferProcess(transferProcessId, TransferProcessStates.STARTED);
 
         // wait until EDC is available on the consumer side
-        server.when(request().withMethod("GET").withPath(MOCK_BACKEND_PATH)).respond(response().withStatusCode(200).withBody("test response"));
+        server.stubFor(get(urlPathEqualTo(MOCK_BACKEND_PATH))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody("test response")));
 
         var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
@@ -215,7 +223,7 @@ public class TransferWithTokenRefreshTest {
                 });
 
         // assert the data has not been fetched
-        server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.never());
+        server.verify(0, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
 
         // get EDR with automatic refresh
         var renewedEdr = CONSUMER.edrs().getEdrWithRefresh(transferProcessId, true)
@@ -227,7 +235,7 @@ public class TransferWithTokenRefreshTest {
         var data = CONSUMER.data().pullData(renewedEdr, Map.of());
         assertThat(data).isNotNull().isEqualTo("test response");
 
-        server.verify(request().withPath(MOCK_BACKEND_PATH), VerificationTimes.exactly(1));
+        server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
     }
 
     private JsonObject httpDataDestination() {
@@ -238,11 +246,6 @@ public class TransferWithTokenRefreshTest {
                         .add(EDC_NAMESPACE + "baseUrl", "http://localhost:8080")
                         .build())
                 .build();
-    }
-
-    @AfterEach
-    void teardown() {
-        server.stop();
     }
 
     protected JsonObject createAccessPolicy(String bpn) {

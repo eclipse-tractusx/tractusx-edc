@@ -28,6 +28,11 @@ on:
         required: false
         description: "Version of the Tractus-X EDC API to be should be published"
         type: string
+      latest:
+        description: "Latest release"
+        required: true
+        type: boolean
+        default: false
 
   workflow_call:
     inputs:
@@ -35,12 +40,17 @@ on:
         required: false
         description: "Version of the Tractus-X EDC API to be should be published"
         type: string
+      latest:
+        description: "Latest release"
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   generate-openapi-spec:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java
 
       - name: Generate openapi spec
@@ -62,7 +72,7 @@ jobs:
           { name: "data-plane", folder: "edc-dataplane/edc-dataplane-base" }
         ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - uses: actions/download-artifact@v6
         with:
@@ -88,7 +98,7 @@ jobs:
 
       - name: Merge API specs
         run: |
-          ./gradlew -Pversion=${{ env.VERSION }} -PapiTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" -PapiDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" :mergeApiSpec --input=./resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=./resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+          ./gradlew mergeOpenApiSpec --inputDir=${PWD}/resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=${{ matrix.apiGroup.name }}.yaml --infoTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" --infoDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" --infoVersion=${{ env.VERSION }}
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
@@ -96,15 +106,15 @@ jobs:
         uses: Legion2/swagger-ui-action@v1
         with:
           output: dist/${{ env.VERSION }}
-          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+          spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Swagger UI stable version
         uses: Legion2/swagger-ui-action@v1
-        if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
+        if: ${{ inputs.latest }}
         with:
           output: dist
-          spec-file: resources/openapi/yaml/${{ matrix.apiGroup.name }}.yaml
+          spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v5

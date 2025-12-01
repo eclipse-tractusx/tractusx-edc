@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
@@ -29,15 +30,13 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.integration.ClientAndServer;
 
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.STARTED;
@@ -45,7 +44,6 @@ import static org.eclipse.edc.connector.dataplane.spi.DataFlowStates.TERMINATED;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PULL;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PUSH;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
@@ -67,12 +65,10 @@ public class DataFlowApiEndToEndTest {
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = pgRuntime(PARTICIPANT, POSTGRES);
 
-    private ClientAndServer server;
-
-    @BeforeEach
-    void setup() {
-        server = ClientAndServer.startClientAndServer("localhost", getFreePort());
-    }
+    @RegisterExtension
+    protected static WireMockExtension server = WireMockExtension.newInstance()
+            .options(wireMockConfig().bindAddress("localhost").dynamicPort())
+            .build();
 
     @Test
     void triggerDataTransfer_shouldFail_whenDataFlowDoesNotExist() {
@@ -162,11 +158,6 @@ public class DataFlowApiEndToEndTest {
         RUNTIME.getService(DataPlaneStore.class).save(dataFlow);
 
         PARTICIPANT.triggerDataTransfer(dataFlow.getId());
-    }
-
-    @AfterEach
-    void teardown() {
-        server.stop();
     }
 
     @SuppressWarnings("rawtypes")

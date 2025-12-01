@@ -37,17 +37,18 @@ dependencies {
     runtimeOnly(libs.edc.bom.controlplane.feature.sql)
     runtimeOnly(libs.edc.bom.federatedcatalog.feature.sql)
 
-    runtimeOnly(project(":edc-extensions:agreements:retirement-evaluation-store-sql"))
-    runtimeOnly(project(":edc-extensions:agreements-bpns:bpns-evaluation-store-sql"))
-    runtimeOnly(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
-    runtimeOnly(project(":edc-extensions:edr:edr-index-lock-sql"))
-    runtimeOnly(project(":edc-extensions:migrations::control-plane-migration"))
+    implementation(project(":edc-extensions:agreements:retirement-evaluation-store-sql"))
+    implementation(project(":edc-extensions:agreements-bpns:bpns-evaluation-store-sql"))
+    implementation(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
+    implementation(project(":edc-extensions:edr:edr-index-lock-sql"))
+    implementation(project(":edc-extensions:migrations:connector-migration"))
 
     runtimeOnly(libs.edc.vault.hashicorp)
 }
 
-tasks.withType<ShadowJar> {
+tasks.shadowJar {
     mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     archiveFileName.set("${project.name}.jar")
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer())
 }

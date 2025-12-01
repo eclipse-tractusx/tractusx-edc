@@ -42,7 +42,7 @@ runs:
         fi
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
     - name: Bump version in /charts
-      uses: mikefarah/yq@v4.45.2
+      uses: mikefarah/yq@v4.49.2
       with:
         cmd: |
           find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ steps.resolver.outputs.version }}" 

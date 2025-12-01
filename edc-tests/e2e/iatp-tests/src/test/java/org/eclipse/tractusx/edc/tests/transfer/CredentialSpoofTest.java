@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
@@ -39,7 +40,6 @@ import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +51,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -94,7 +98,10 @@ public class CredentialSpoofTest {
             () -> STS.stsConfig(CONSUMER, PROVIDER, MALICIOUS_ACTOR).merge(BDRS_SERVER_EXTENSION.getConfig()));
 
     private static final Integer MOCKED_CS_SERVICE_PORT = getFreePort();
-    protected ClientAndServer server;
+    @RegisterExtension
+    protected static WireMockExtension server = WireMockExtension.newInstance()
+            .options(wireMockConfig().bindAddress("localhost").port(MOCKED_CS_SERVICE_PORT))
+            .build();
 
     private static IatpParticipant participant(String name, String bpn) {
         return IatpParticipant.Builder.newInstance().name(name).id(bpn)
@@ -120,16 +127,9 @@ public class CredentialSpoofTest {
 
     @BeforeEach
     void setup() {
-        server = ClientAndServer.startClientAndServer("localhost", getFreePort(), MOCKED_CS_SERVICE_PORT);
-
         CONSUMER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER_RUNTIME, STS_RUNTIME);
         PROVIDER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER_RUNTIME, STS_RUNTIME);
         MALICIOUS_ACTOR.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR_RUNTIME, STS_RUNTIME);
-    }
-
-    @AfterEach
-    void shutdown() {
-        server.stop();
     }
 
     @Test
@@ -209,15 +209,18 @@ public class CredentialSpoofTest {
         var transformerRegistry = MALICIOUS_ACTOR_RUNTIME.getService(TypeTransformerRegistry.class);
         var jsonLd = MALICIOUS_ACTOR_RUNTIME.getService(JsonLd.class);
 
+        JsonObject json =
+                response.apply(sokratesMembershipCredential)
+                        .compose(p -> transformerRegistry.transform(p, JsonObject.class))
+                        .compose(jsonLd::compact)
+                        .orElseThrow(f -> new EdcException(f.getFailureDetail()));
 
-        server.when(request().withMethod("POST").withPath("/presentations/query")).respond((request -> {
-            var json = response.apply(sokratesMembershipCredential)
-                    .compose(presentation -> transformerRegistry.transform(presentation, JsonObject.class))
-                    .compose(jsonLd::compact)
-                    .orElseThrow(failure -> new EdcException(failure.getFailureDetail()));
 
-            return response().withStatusCode(200).withBody(json.toString());
-        }));
+        server.stubFor(post(urlPathEqualTo("/presentations/query"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(json.toString())));
     }
 
     protected JsonObject createAccessPolicy(String bpn) {

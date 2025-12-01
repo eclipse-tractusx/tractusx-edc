@@ -24,17 +24,15 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-dataplane:edc-dataplane-base"))
-
     runtimeOnly(libs.edc.bom.dataplane.feature.sql)
-
-    runtimeOnly(project(":edc-extensions:migrations::data-plane-migration"))
-
     runtimeOnly(libs.edc.vault.hashicorp)
+    implementation(project(":edc-dataplane:edc-dataplane-base"))
+    implementation(project(":edc-extensions:migrations:connector-migration"))
 }
 
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+tasks.shadowJar {
     mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     archiveFileName.set("${project.name}.jar")
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer())
 }

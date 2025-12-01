@@ -22,6 +22,9 @@ package org.eclipse.tractusx.edc.tests.edrv2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -40,16 +43,11 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.client.MockServerClient;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.Delay;
-import org.mockserver.verify.VerificationTimes;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -59,9 +57,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
@@ -72,16 +75,11 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.matchers.Times.exactly;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.StringBody.exact;
 
 /**
  * This End-To-End test spins up a consumer control plane and verifies that the EDR Cache API
  * performs as expected.
- * The provider data plane is mocked with a {@link ClientAndServer}.
+ * The provider data plane is mocked with a {@link WireMock}.
  */
 @EndToEndTest
 public class EdrCacheApiEndToEndTest {
@@ -99,9 +97,13 @@ public class EdrCacheApiEndToEndTest {
     @RegisterExtension
     private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES);
 
+    @RegisterExtension
+    protected static WireMockExtension mockedRefreshApi = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
+
     private final Random random = new Random();
     private final ObjectMapper mapper = new ObjectMapper();
-    private ClientAndServer mockedRefreshApi;
     private ECKey providerSigningKey;
     private String refreshEndpoint;
     private String refreshAudience;
@@ -109,32 +111,18 @@ public class EdrCacheApiEndToEndTest {
     @BeforeEach
     void setup() throws JOSEException {
         providerSigningKey = new ECKeyGenerator(Curve.P_256).keyID("did:web:provider#key-1").generate();
-        var port = getFreePort();
-        refreshEndpoint = "http://localhost:%s/refresh".formatted(port);
+        refreshEndpoint = "http://localhost:%s/refresh".formatted(mockedRefreshApi.getPort());
         refreshAudience = "did:web:consumer";
-        mockedRefreshApi = startClientAndServer(port);
-    }
-
-    @AfterEach
-    void teardown() {
-        mockedRefreshApi.stop();
     }
 
     @DisplayName("Verify HTTP 200 response and body when refreshing succeeds")
     @Test
     void getEdrWithRefresh_success() {
-
-        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
+        try {
             // mock the provider dataplane's refresh endpoint
-            client.when(request()
-                                    .withMethod("POST")
-                                    .withPath("/refresh/token")
-                                    .withBody(exact("")),
-                            exactly(1))
-                    .respond(response()
-                            .withStatusCode(200)
-                            .withBody(tokenResponseBody())
-                    );
+            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
+                    .willReturn(ok(tokenResponseBody())));
 
             storeEdr("test-id", true);
             var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
@@ -143,12 +131,10 @@ public class EdrCacheApiEndToEndTest {
             assertThat(edr).isNotNull();
 
             // assert the correct endpoint was called
-            client.verify(
-                    request()
-                            .withQueryStringParameter("grant_type", "refresh_token")
-                            .withMethod("POST")
-                            .withPath("/refresh/token"),
-                    VerificationTimes.exactly(1));
+            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        } finally {
+            client.stop();
         }
     }
 
@@ -156,14 +142,18 @@ public class EdrCacheApiEndToEndTest {
     @Test
     void getEdrWithRefresh_subsequentRequestReturn() throws InterruptedException {
 
-        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
+        try {
             var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
             var accessToken = createJwt(providerSigningKey, claims);
             var refreshToken = createJwt(providerSigningKey, new JWTClaimsSet.Builder().build());
             var tokenResponseBodyString = tokenResponseBody(accessToken, refreshToken);
-
-            client.when(request().withMethod("POST").withPath("/refresh/token").withBody(exact("")))
-                    .respond(response().withStatusCode(200).withDelay(Delay.milliseconds(5000)).withBody(tokenResponseBodyString));
+            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
+                    .willReturn(WireMock.aResponse()
+                            .withStatus(200)
+                            .withFixedDelay(5000)
+                            .withBody(tokenResponseBodyString)
+                    ));
 
             storeEdr("test-id-1", true);
             storeEdr("test-id-2", true);
@@ -205,11 +195,10 @@ public class EdrCacheApiEndToEndTest {
             latch.await();
             assertThat(failed.get()).isFalse();
 
-            client.verify(request()
-                    .withQueryStringParameter("grant_type", "refresh_token")
-                    .withMethod("POST")
-                    .withPath("/refresh/token"), VerificationTimes.exactly(2));
-
+            client.verify(2, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        } finally {
+            client.stop();
         }
     }
 
@@ -217,9 +206,9 @@ public class EdrCacheApiEndToEndTest {
     @Test
     void getEdrWithRefresh_notExpired_shouldNotCallEndpoint() {
 
-        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
+        try {
             // mock the provider dataplane's refresh endpoint
-
             storeEdr("test-id", false);
             var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(200)
@@ -227,12 +216,10 @@ public class EdrCacheApiEndToEndTest {
             assertThat(edr).isNotNull();
 
             // assert the correct endpoint was called
-            client.verify(
-                    request()
-                            .withQueryStringParameter("grant_type", "refresh_token")
-                            .withMethod("POST")
-                            .withPath("/refresh/token"),
-                    VerificationTimes.never());
+            client.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        } finally {
+            client.stop();
         }
     }
 
@@ -240,7 +227,8 @@ public class EdrCacheApiEndToEndTest {
     @Test
     void getEdrWithRefresh_whenNotAutorefresh_shouldNotCallEndpoint() {
 
-        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
+        try {
             // mock the provider dataplane's refresh endpoint
 
             storeEdr("test-id", true);
@@ -251,12 +239,10 @@ public class EdrCacheApiEndToEndTest {
             assertThat(edr).isNotNull();
 
             // assert the correct endpoint was called
-            client.verify(
-                    request()
-                            .withQueryStringParameter("grant_type", "refresh_token")
-                            .withMethod("POST")
-                            .withPath("/refresh/token"),
-                    VerificationTimes.never());
+            client.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        } finally {
+            client.stop();
         }
     }
 
@@ -264,45 +250,34 @@ public class EdrCacheApiEndToEndTest {
     @Test
     void getEdrWithRefresh_unauthorized() {
 
-        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
+        try {
             // mock the provider dataplane's refresh endpoint
-            client.when(request()
-                                    .withMethod("POST")
-                                    .withPath("/refresh/token")
-                                    .withBody(exact("")),
-                            exactly(1))
-                    .respond(response()
-                            .withStatusCode(401)
+            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
+                    .willReturn(WireMock.aResponse()
+                            .withStatus(401)
                             .withBody("unauthorized")
-                    );
+                    ));
 
             storeEdr("test-id", true);
             CONSUMER.edrs().getEdrWithRefresh("test-id", true)
                     .statusCode(403);
 
             // assert the correct endpoint was called
-            client.verify(
-                    request()
-                            .withQueryStringParameter("grant_type", "refresh_token")
-                            .withMethod("POST")
-                            .withPath("/refresh/token"),
-                    VerificationTimes.exactly(1));
+            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        } finally {
+            client.stop();
         }
     }
 
     @Test
     void refreshEdr() {
-        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
+        try {
             // mock the provider dataplane's refresh endpoint
-            client.when(request()
-                                    .withMethod("POST")
-                                    .withPath("/refresh/token")
-                                    .withBody(exact("")),
-                            exactly(1))
-                    .respond(response()
-                            .withStatusCode(200)
-                            .withBody(tokenResponseBody())
-                    );
+            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
+                    .willReturn(ok(tokenResponseBody())));
 
             storeEdr("test-id", true);
             var edr = CONSUMER.edrs().refreshEdr("test-id")
@@ -311,13 +286,10 @@ public class EdrCacheApiEndToEndTest {
             assertThat(edr).isNotNull();
 
             // assert the correct endpoint was called
-            client.verify(
-                    request()
-                            .withQueryStringParameter("grant_type", "refresh_token")
-                            .withMethod("POST")
-                            .withPath("/refresh/token"),
-                    VerificationTimes.exactly(1));
-
+            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        } finally {
+            client.stop();
         }
     }
 
@@ -329,29 +301,24 @@ public class EdrCacheApiEndToEndTest {
 
     @Test
     void refreshEdr_whenNotAuthorized() {
-        try (var client = new MockServerClient("localhost", mockedRefreshApi.getPort())) {
+        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
+        try {
             // mock the provider dataplane's refresh endpoint
-            client.when(request()
-                                    .withMethod("POST")
-                                    .withPath("/refresh/token")
-                                    .withBody(exact("")),
-                            exactly(1))
-                    .respond(response()
-                            .withStatusCode(401)
+            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
+                    .willReturn(WireMock.aResponse()
+                            .withStatus(401)
                             .withBody("unauthorized")
-                    );
+                    ));
 
             storeEdr("test-id", true);
             CONSUMER.edrs().refreshEdr("test-id")
                     .statusCode(403);
 
             // assert the correct endpoint was called
-            client.verify(
-                    request()
-                            .withQueryStringParameter("grant_type", "refresh_token")
-                            .withMethod("POST")
-                            .withPath("/refresh/token"),
-                    VerificationTimes.exactly(1));
+            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        } finally {
+            client.stop();
         }
     }
 

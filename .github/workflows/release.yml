@@ -26,6 +26,12 @@ run-name: "Release from ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
+    inputs:
+      latest:
+        description: "Latest release"
+        required: true
+        type: boolean
+        default: false
 
 
 jobs:
@@ -41,7 +47,7 @@ jobs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
       update_main_branch_version: ${{ steps.update-main.outputs.update_main_branch_version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Output release version
         id: release-version
         run: |
@@ -108,7 +114,7 @@ jobs:
 
     if: needs.validation.outputs.RELEASE_VERSION
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-helm
@@ -141,7 +147,7 @@ jobs:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Prepare Git Config
         shell: bash
         run: |
@@ -165,7 +171,7 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
+          makeLatest: ${{ inputs.latest }}
           removeArtifacts: true
 
   # Release: Publish specs to GitHub Pages
@@ -178,6 +184,7 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+      latest: ${{ inputs.latest }}
 
   # Release: Update Release Notes with Allure Report Link
   publish-allure-report-link-to-release:
@@ -188,7 +195,7 @@ jobs:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/github-script@v8
         with:
@@ -223,7 +230,7 @@ jobs:
       pages: write
     steps:
       - name: Checkout main
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: main

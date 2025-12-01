@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.edc.tests.transfer;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.matching.AnythingPattern;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
@@ -51,12 +50,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
@@ -76,7 +78,6 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(ValidContractPolicyProvider.class)
     void transferData_whenContractPolicyFulfilled(JsonObject contractPolicy, String description) {
-        server.resetAll();
         var assetId = "api-asset-1";
 
         var authCodeHeaderName = "test-authkey";
@@ -123,7 +124,8 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         // Prov-DP -> Prov-backend
         assertThat(consumer().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
 
-        server.verify(1, getRequestedFor(urlEqualTo(MOCK_BACKEND_PATH)).withHeader("Edc-Contract-Agreement-Id", new AnythingPattern()).withHeader("Edc-Bpn", equalTo(consumer().getBpn())));
+
+        server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)).withHeader("Edc-Bpn", equalTo(consumer().getBpn())).withHeader("Edc-Contract-Agreement-Id", matching(".+")));
     }
 
     // TODO: Add test for transfer process with a contract policy that is not fulfilled
@@ -225,18 +227,27 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
                         .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
         // return a StatusListCredential, where the credential's status is "revocation"
-        var revocationServer = new WireMockServer(wireMockConfig().dynamicPort());
+        WireMockServer revocationServer = new WireMockServer(options().port(port));
+        try {
+            revocationServer.start();
+
             var slCred = StatusList2021.create(dataspaceIssuer().didUrl(), "revocation")
                     .withStatus(12345, true);
-            revocationServer.stubFor(get("/status/list/7").willReturn(ok(slCred.toJsonObject().toString())));
+
+            revocationServer.stubFor(post(urlPathEqualTo("/status/list/7")).willReturn(aResponse().withStatus(200)
+                    .withBody(slCred.toJsonObject().toString())));
 
             // verify the failed catalog request
             consumer().getCatalog(provider())
                     .log().ifValidationFails()
                     .statusCode(502);
+        } finally {
             // restore the original credential
             store.update(existingCred);
+            revocationServer.stop();
+        }
     }
 
     @Override

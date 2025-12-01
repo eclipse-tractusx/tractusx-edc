@@ -75,7 +75,7 @@ jobs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
       DATED: ${{ steps.get-version.outputs.DATED }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Get version"
         id: get-version
         run: |
@@ -123,6 +123,7 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.determine-version.outputs.VERSION }}
+      latest: false
 
   publish-latest-versioned-snapshot:
     name: "Publish latest versioned snapshot in GitHub Pages"
@@ -132,7 +133,7 @@ jobs:
     needs: [ determine-version ]
     if: ${{ needs.determine-version.outputs.DATED == 'true' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/publish-latest-versioned-snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

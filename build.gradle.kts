@@ -18,18 +18,16 @@
  ********************************************************************************/
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
-import java.time.Duration
 
 plugins {
     checkstyle
     `java-library`
     `maven-publish`
+    jacoco
     `jacoco-report-aggregation`
     `java-test-fixtures`
-    alias(libs.plugins.shadow)
+    alias(libs.plugins.shadow) apply false
     alias(libs.plugins.docker)
-    alias(libs.plugins.nexus)
     alias(libs.plugins.edc.build)
 }
 
@@ -61,6 +59,7 @@ val edcBuildId = libs.plugins.edc.build.get().pluginId
 allprojects {
     apply(plugin = edcBuildId)
     apply(plugin = "org.eclipse.edc.autodoc")
+    apply(plugin = "jacoco")
 
     dependencies {
 
@@ -80,12 +79,6 @@ allprojects {
             implementation("io.netty:netty-codec-http2:4.2.7.Final") {
                 because("Version 4.1.123.Final vulnerability: https://www.cve.org/CVERecord?id=CVE-2025-8916")
             }
-            testImplementation("com.networknt:json-schema-validator:2.0.0") {
-                because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
-            }
-            testFixturesApi("com.networknt:json-schema-validator:2.0.0") {
-                because("There's a conflict between mockserver-netty and identity-hub dependencies for testing, forcing json-schema-validator to 1.5.6 is solving that.")
-            }
         }
     }
 
@@ -96,8 +89,6 @@ allprojects {
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
         pom {
-            // this is actually important, so we can publish under the correct GID
-            groupId = project.group.toString()
             projectName.set(project.name)
             description.set("edc :: ${project.name}")
             projectUrl.set(txWebsiteUrl)
@@ -138,7 +129,7 @@ subprojects {
     afterEvaluate {
         // the "dockerize" task is added to all projects that use the `shadowJar` plugin
         if (project.plugins.hasPlugin(libs.plugins.shadow.get().pluginId)) {
-            val downloadOpentelemetryAgent = tasks.create("downloadOpentelemetryAgent", Copy::class) {
+            val downloadOpentelemetryAgent = tasks.register("downloadOpentelemetryAgent", Copy::class) {
                 val openTelemetry = configurations.create("open-telemetry")
 
                 dependencies {
@@ -150,19 +141,19 @@ subprojects {
                 rename { "opentelemetry-javaagent.jar" }
             }
 
-            val copyLegalDocs = tasks.create("copyLegalDocs", Copy::class) {
+            val copyLegalDocs = tasks.register("copyLegalDocs", Copy::class) {
                 from(project.rootProject.projectDir)
                 into("build/legal")
                 include("SECURITY.md", "NOTICE.md", "DEPENDENCIES", "LICENSE")
             }
 
-            val copyDockerfile = tasks.create("copyDockerfile", Copy::class) {
+            val copyDockerfile = tasks.register("copyDockerfile", Copy::class) {
                 from(rootProject.projectDir.toPath().resolve("resources"))
                 into(project.layout.buildDirectory.dir("resources").get().dir("docker"))
                 include("Dockerfile")
             }
 
-            val shadowJarTask = tasks.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME).get()
+            val shadowJarTask = tasks.named("shadowJar").get()
 
             shadowJarTask
                 .dependsOn(copyDockerfile)
@@ -172,7 +163,7 @@ subprojects {
             //actually apply the plugin to the (sub-)project
             apply(plugin = libs.plugins.docker.get().pluginId)
 
-            val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
+            tasks.register("dockerize", DockerBuildImage::class) {
                 dockerFile.set(File("build/resources/docker/Dockerfile"))
 
                 val dockerContextDir = project.projectDir
@@ -187,9 +178,10 @@ subprojects {
                 buildArgs.put("OTEL_JAR", "build/resources/otel/opentelemetry-javaagent.jar")
                 buildArgs.put("ADDITIONAL_FILES", "build/legal/*")
                 inputDir.set(file(dockerContextDir))
+
+                dependsOn(shadowJarTask)
             }
 
-            dockerTask.dependsOn(shadowJarTask)
         }
 
         if (path.startsWith(":edc-tests")) {
@@ -215,26 +207,18 @@ subprojects {
                 .resolve("docs").resolve("openapi")
 
             configurations.asMap.values
-                .asSequence()
                 .filter { it.isCanBeResolved }
-                .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
-                .map { childrenDependencies(it) }.flatten()
+                .flatMap { it.resolvedConfiguration.firstLevelModuleDependencies }
+                .flatMap { childrenDependencies(it) }
                 .distinct()
                 .forEach { dep ->
-                    downloadYamlArtifact(dep, "management-api", destinationDirectory);
-                    downloadYamlArtifact(dep, "observability-api", destinationDirectory);
-                    downloadYamlArtifact(dep, "public-api", destinationDirectory);
+                    downloadYamlArtifact(dep, "management-api", destinationDirectory)
+                    downloadYamlArtifact(dep, "observability-api", destinationDirectory)
+                    downloadYamlArtifact(dep, "public-api", destinationDirectory)
                 }
         }
     }
 
-}
-
-nexusPublishing {
-    transitionCheckOptions {
-        maxRetries.set(120)
-        delayBetween.set(Duration.ofSeconds(10))
-    }
 }
 
 tasks.check {
@@ -256,7 +240,7 @@ tasks.register<Copy>("aggregateAllureResults") {
 
 
 fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependency> {
-    return listOf(dependency) + dependency.children.map { child -> childrenDependencies(child) }.flatten()
+    return listOf(dependency) + dependency.children.flatMap { child -> childrenDependencies(child) }
 }
 
 fun downloadYamlArtifact(dep: ResolvedDependency, classifier: String, destinationDirectory: java.nio.file.Path) {

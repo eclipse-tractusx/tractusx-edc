@@ -30,8 +30,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
+import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createDataExchangeGovernanceCredential;
 import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createMembershipCredential;
-import static org.eclipse.tractusx.edc.policy.cx.CredentialFunctions.createPcfCredential;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -102,7 +102,7 @@ class MembershipCredentialConstraintFunctionTest {
     void evaluate_whenMultipleCredentialsFound() {
         when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createMembershipCredential().build(),
                 createMembershipCredential().build(),
-                createPcfCredential().build())));
+                createDataExchangeGovernanceCredential().build())));
 
         var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
@@ -111,7 +111,7 @@ class MembershipCredentialConstraintFunctionTest {
 
     @Test
     void evaluate_whenCredentialNotFound() {
-        when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createPcfCredential().build())));
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(createDataExchangeGovernanceCredential().build())));
 
         var result = function.evaluate(CX_POLICY_2025_09_NS + "Membership", Operator.EQ, "active", null, context);
 
