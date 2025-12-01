@@ -22,10 +22,10 @@ to avoid creating duplicate `service` entries and manage itself.
 
 1. Introduce configuration options in application and helm chart.
 2. Create a new SPI including an interface that represents the feature in an abstract manner.
-3. Implement the interface as client for [SAP DIV's write endpoint to the did document](https://api.sap.com/api/DIV/path/CompanyIdentityV2HttpController_updateCompanyIdentity_v2.0.0).
-4. The extension will perform self-cleanup in case the EDC is deprovisioned.
+3. An extension that implements the SPI's interface as client for [SAP DIV's write endpoint to the did document](https://api.sap.com/api/DIV/path/CompanyIdentityV2HttpController_updateCompanyIdentity_v2.0.0).
+4. Another extension that will implement the lifecycle management logic.
 
-The resulting logic shall look like:
+The lifecycle management logic shall look like:
 
 ```mermaid
 flowchart TD
