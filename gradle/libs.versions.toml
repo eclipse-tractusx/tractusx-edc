@@ -4,7 +4,7 @@ format.version = "1.1"
 [versions]
 edc = "0.14.1"
 edc-build = "1.1.2"
-allure = "2.30.0"
+allure = "2.31.0"
 awaitility = "4.3.0"
 aws = "2.39.2"
 azure-storage-blob = "12.32.0"
