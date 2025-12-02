@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.tests.edrv2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.nimbusds.jose.JOSEException;
@@ -57,11 +56,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.absent;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
@@ -118,179 +117,134 @@ public class EdrCacheApiEndToEndTest {
     @DisplayName("Verify HTTP 200 response and body when refreshing succeeds")
     @Test
     void getEdrWithRefresh_success() {
-        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
-        try {
-            // mock the provider dataplane's refresh endpoint
-            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
-                    .willReturn(ok(tokenResponseBody())));
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+                .willReturn(ok(tokenResponseBody())));
 
-            storeEdr("test-id", true);
-            var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
-                    .statusCode(200)
-                    .extract().body().as(JsonObject.class);
-            assertThat(edr).isNotNull();
+        storeEdr("test-id", true);
+        var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
+                .statusCode(200)
+                .extract().body().as(JsonObject.class);
+        assertThat(edr).isNotNull();
 
-            // assert the correct endpoint was called
-            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
-        } finally {
-            client.stop();
-        }
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
     }
 
     @DisplayName("When multiple requests to refresh, to different edrs, verify all return non expired token")
     @Test
     void getEdrWithRefresh_subsequentRequestReturn() throws InterruptedException {
+        var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
+        var accessToken = createJwt(providerSigningKey, claims);
+        var refreshToken = createJwt(providerSigningKey, new JWTClaimsSet.Builder().build());
+        var tokenResponseBodyString = tokenResponseBody(accessToken, refreshToken);
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+                .willReturn(WireMock.aResponse()
+                        .withStatus(200)
+                        .withFixedDelay(5000)
+                        .withBody(tokenResponseBodyString)
+                ));
 
-        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
-        try {
-            var claims = new JWTClaimsSet.Builder().claim("iss", "did:web:provider").build();
-            var accessToken = createJwt(providerSigningKey, claims);
-            var refreshToken = createJwt(providerSigningKey, new JWTClaimsSet.Builder().build());
-            var tokenResponseBodyString = tokenResponseBody(accessToken, refreshToken);
-            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
-                    .willReturn(WireMock.aResponse()
-                            .withStatus(200)
-                            .withFixedDelay(5000)
-                            .withBody(tokenResponseBodyString)
-                    ));
+        storeEdr("test-id-1", true);
+        storeEdr("test-id-2", true);
+        var numThreads = 50;
+        var jitter = 20; // maximum time between threads are spawned
+        var latch = new CountDownLatch(numThreads);
 
-            storeEdr("test-id-1", true);
-            storeEdr("test-id-2", true);
-            var numThreads = 50;
-            var jitter = 20; // maximum time between threads are spawned
-            var latch = new CountDownLatch(numThreads);
+        var failed = new AtomicBoolean(false);
 
-            var failed = new AtomicBoolean(false);
+        IntStream.range(0, numThreads)
+                .parallel()
+                .forEach(i -> {
+                    var wait = random.nextInt(1, jitter);
+                    try {
+                        Thread.sleep(wait);
+                        new Thread(() -> {
+                            var edrNumber = random.nextInt(1, 3);
+                            try {
+                                var tr = CONSUMER.edrs().getEdrWithRefresh("test-id-%s".formatted(edrNumber), true)
+                                        .assertThat()
+                                        .log().ifValidationFails()
+                                        .statusCode(anyOf(equalTo(200), equalTo(409)))
+                                        .extract().asString();
 
-            IntStream.range(0, numThreads)
-                    .parallel()
-                    .forEach(i -> {
-                        var wait = random.nextInt(1, jitter);
-                        try {
-                            Thread.sleep(wait);
-                            new Thread(() -> {
-                                var edrNumber = random.nextInt(1, 3);
-                                try {
-                                    var tr = CONSUMER.edrs().getEdrWithRefresh("test-id-%s".formatted(edrNumber), true)
-                                            .assertThat()
-                                            .log().ifValidationFails()
-                                            .statusCode(anyOf(equalTo(200), equalTo(409)))
-                                            .extract().asString();
-
-                                    assertThat(tr).contains(accessToken);
-                                } catch (AssertionError e) {
-                                    failed.set(true);
-                                } finally {
-                                    latch.countDown();
-                                }
+                                assertThat(tr).contains(accessToken);
+                            } catch (AssertionError e) {
+                                failed.set(true);
+                            } finally {
+                                latch.countDown();
+                            }
 
 
-                            }).start();
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
+                        }).start();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
 
-            latch.await();
-            assertThat(failed.get()).isFalse();
+        latch.await();
+        assertThat(failed.get()).isFalse();
 
-            client.verify(2, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
-        } finally {
-            client.stop();
-        }
+        mockedRefreshApi.verify(2, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
     }
 
     @DisplayName("Verify the refresh endpoint is not called when token not yet expired")
     @Test
     void getEdrWithRefresh_notExpired_shouldNotCallEndpoint() {
+        storeEdr("test-id", false);
+        var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
+                .statusCode(200)
+                .extract().body().as(JsonObject.class);
+        assertThat(edr).isNotNull();
 
-        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
-        try {
-            // mock the provider dataplane's refresh endpoint
-            storeEdr("test-id", false);
-            var edr = CONSUMER.edrs().getEdrWithRefresh("test-id", true)
-                    .statusCode(200)
-                    .extract().body().as(JsonObject.class);
-            assertThat(edr).isNotNull();
-
-            // assert the correct endpoint was called
-            client.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
-        } finally {
-            client.stop();
-        }
+        mockedRefreshApi.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
     }
 
     @DisplayName("Verify the refresh endpoint is not called when auto_refresh=false")
     @Test
     void getEdrWithRefresh_whenNotAutorefresh_shouldNotCallEndpoint() {
+        storeEdr("test-id", true);
+        var edr = CONSUMER.edrs()
+                .getEdrWithRefresh("test-id", false)
+                .statusCode(200)
+                .extract().body().as(JsonObject.class);
+        assertThat(edr).isNotNull();
 
-        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
-        try {
-            // mock the provider dataplane's refresh endpoint
-
-            storeEdr("test-id", true);
-            var edr = CONSUMER.edrs()
-                    .getEdrWithRefresh("test-id", false)
-                    .statusCode(200)
-                    .extract().body().as(JsonObject.class);
-            assertThat(edr).isNotNull();
-
-            // assert the correct endpoint was called
-            client.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
-        } finally {
-            client.stop();
-        }
+        mockedRefreshApi.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
     }
 
     @DisplayName("Verify HTTP 403 response when refreshing the token is not allowed")
     @Test
     void getEdrWithRefresh_unauthorized() {
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+                .willReturn(WireMock.aResponse()
+                        .withStatus(401)
+                        .withBody("unauthorized")
+                ));
 
-        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
-        try {
-            // mock the provider dataplane's refresh endpoint
-            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
-                    .willReturn(WireMock.aResponse()
-                            .withStatus(401)
-                            .withBody("unauthorized")
-                    ));
+        storeEdr("test-id", true);
+        CONSUMER.edrs().getEdrWithRefresh("test-id", true)
+                .statusCode(403);
 
-            storeEdr("test-id", true);
-            CONSUMER.edrs().getEdrWithRefresh("test-id", true)
-                    .statusCode(403);
-
-            // assert the correct endpoint was called
-            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
-        } finally {
-            client.stop();
-        }
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
     }
 
     @Test
     void refreshEdr() {
-        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
-        try {
-            // mock the provider dataplane's refresh endpoint
-            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
-                    .willReturn(ok(tokenResponseBody())));
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+                .willReturn(ok(tokenResponseBody())));
 
-            storeEdr("test-id", true);
-            var edr = CONSUMER.edrs().refreshEdr("test-id")
-                    .statusCode(200)
-                    .extract().body().as(JsonObject.class);
-            assertThat(edr).isNotNull();
+        storeEdr("test-id", true);
+        var edr = CONSUMER.edrs().refreshEdr("test-id")
+                .statusCode(200)
+                .extract().body().as(JsonObject.class);
+        assertThat(edr).isNotNull();
 
-            // assert the correct endpoint was called
-            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
                     .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
-        } finally {
-            client.stop();
-        }
     }
 
     @Test
@@ -301,25 +255,18 @@ public class EdrCacheApiEndToEndTest {
 
     @Test
     void refreshEdr_whenNotAuthorized() {
-        WireMockServer client = new WireMockServer(options().bindAddress("localhost").port(mockedRefreshApi.getPort()));
-        try {
-            // mock the provider dataplane's refresh endpoint
-            client.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(WireMock.equalTo(""))
-                    .willReturn(WireMock.aResponse()
-                            .withStatus(401)
-                            .withBody("unauthorized")
-                    ));
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+                .willReturn(WireMock.aResponse()
+                        .withStatus(401)
+                        .withBody("unauthorized")
+                ));
 
-            storeEdr("test-id", true);
-            CONSUMER.edrs().refreshEdr("test-id")
-                    .statusCode(403);
+        storeEdr("test-id", true);
+        CONSUMER.edrs().refreshEdr("test-id")
+                .statusCode(403);
 
-            // assert the correct endpoint was called
-            client.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
-        } finally {
-            client.stop();
-        }
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
+                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
     }
 
     private String tokenResponseBody() {
