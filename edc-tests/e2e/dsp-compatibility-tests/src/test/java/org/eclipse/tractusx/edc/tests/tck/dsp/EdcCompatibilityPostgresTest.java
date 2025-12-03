@@ -76,7 +76,7 @@ public class EdcCompatibilityPostgresTest {
 
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(CONNECTOR_UNDER_TEST,
-            ":edc-tests:runtime:runtime-dsp")
+            ":edc-tests:runtime:runtime-dsp", ":edc-extensions:single-participant-vault")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient(s -> s, s -> s))
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));

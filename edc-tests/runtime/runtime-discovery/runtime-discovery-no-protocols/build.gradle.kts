@@ -37,6 +37,7 @@ dependencies {
     implementation(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "data-plane-selector-client")
     }
+    implementation(project(":edc-extensions:single-participant-vault"))
 
 }
 

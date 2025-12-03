@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Think-it GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,30 +17,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
+
 plugins {
     `java-library`
-    id("application")
 }
-
 
 dependencies {
-    implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude("org.eclipse.edc", "vault-hashicorp")
-        exclude(module = "tx-dcp")
-        exclude(module = "tx-dcp-sts-dim")
-    }
-
-    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
-        exclude("org.eclipse.edc", "data-plane-selector-client")
-        exclude("org.eclipse.edc", "vault-hashicorp")
-    }
-    implementation(project(":edc-extensions:single-participant-vault"))
-}
-
-application {
-    mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-}
-
-edcBuild {
-    publish.set(false)
+    implementation(libs.edc.spi.core)
 }

@@ -30,6 +30,7 @@ dependencies {
     }
 
     implementation(project(":core:core-utils"))
+    implementation(project(":edc-extensions:single-participant-vault"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.participant.context.single)
 
