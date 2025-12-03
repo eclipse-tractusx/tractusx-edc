@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.transfer;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
@@ -26,17 +27,19 @@ import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
 import org.eclipse.tractusx.edc.tests.RuntimeAwareTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,14 +47,11 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.legacyFrameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.verify.VerificationTimes.exactly;
 
 /**
  * Base tests for Provider PUSH scenario
@@ -63,12 +63,10 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
     public static final String MOCK_BACKEND_DESTINATION_PATH = "/mock/api/consumer";
     public static final Duration POLL_DELAY = ofSeconds(3);
 
-    private ClientAndServer server;
-
-    @BeforeEach
-    void setup() {
-        server = ClientAndServer.startClientAndServer(MOCK_BACKEND_REMOTE_HOST, getFreePort());
-    }
+    @RegisterExtension
+    static WireMockExtension server = WireMockExtension.newInstance()
+            .options(wireMockConfig().bindAddress(MOCK_BACKEND_REMOTE_HOST).dynamicPort())
+            .build();
 
     @Test
     void httpPushDataTransfer() {
@@ -94,8 +92,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 .execute();
 
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> transferProcessIsInState(transferProcessId, COMPLETED));
-        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH));
-        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_SOURCE_PATH)));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_DESTINATION_PATH)));
     }
     
     @Test
@@ -122,8 +120,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 .execute();
         
         await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> transferProcessIsInState(transferProcessId, COMPLETED));
-        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH));
-        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_SOURCE_PATH)));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_DESTINATION_PATH)));
     }
 
     @Test
@@ -157,8 +155,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 POLL_DELAY,
                 () -> transferProcessIsInState(consumerTransferProcessId, TransferProcessStates.STARTED),
                 () -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.STARTED));
-        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH));
-        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_SOURCE_PATH)));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_DESTINATION_PATH)));
 
         provider().triggerDataTransfer(providerTransferProcessId);
 
@@ -166,8 +164,9 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 POLL_DELAY,
                 () -> transferProcessIsInState(consumerTransferProcessId, TransferProcessStates.STARTED),
                 () -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.STARTED));
-        server.verify(request().withPath(MOCK_BACKEND_SOURCE_PATH), exactly(2));
-        server.verify(request().withPath(MOCK_BACKEND_DESTINATION_PATH), exactly(2));
+
+        server.verify(2, anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_SOURCE_PATH)));
+        server.verify(2, anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_DESTINATION_PATH)));
 
         consumer().terminateTransfer(consumerTransferProcessId);
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
@@ -175,15 +174,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 .untilAsserted(() -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.TERMINATED));
     }
 
-    @AfterEach
-    void teardown() {
-        server.stop();
-    }
-
     private void waitAndAssert(Duration duration, Runnable... assertions) {
-        await().pollDelay(duration).atMost(ASYNC_TIMEOUT).untilAsserted(() -> {
-            Stream.of(assertions).forEach(Runnable::run);
-        });
+        await().pollDelay(duration).atMost(ASYNC_TIMEOUT).untilAsserted(() -> Stream.of(assertions).forEach(Runnable::run));
     }
 
     private void transferProcessIsInState(String transferProcessId, TransferProcessStates state) {
@@ -196,8 +188,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
     }
 
     private String createMockHttpDataUrl(String path) {
-        server.when(request().withPath(path))
-                .respond(HttpResponse.response().withStatusCode(200));
+        server.stubFor(any(urlPathEqualTo(path))
+                .willReturn(ok()));
         return "http://%s:%d%s".formatted(MOCK_BACKEND_REMOTE_HOST, server.getPort(), path);
     }
 

@@ -52,7 +52,7 @@ dependencies {
     testFixturesApi(libs.aws.s3)
     testFixturesApi(libs.azure.storage.blob)
     testFixturesApi(libs.jakartaJson)
-    testFixturesApi(libs.netty.mockserver)
+    testFixturesApi(libs.wiremock)
     testFixturesApi(libs.postgres)
     testFixturesApi(libs.restAssured)
     testFixturesApi(libs.testcontainers.junit)

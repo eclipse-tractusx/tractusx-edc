@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.model.HttpStatusCode;
 
 import java.util.Map;
 
@@ -43,6 +42,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static jakarta.ws.rs.core.Response.Status;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
@@ -213,10 +213,10 @@ public class TransferPullEndToEndTest {
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.OK_200.code());
+            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(Status.OK.getStatusCode());
             var header = response.extract().headers().get("to-be-returned");
             assertThat(header).isNull();
-            assertThat(response.extract().statusLine()).contains(HttpStatusCode.OK_200.reasonPhrase());
+            assertThat(response.extract().statusLine()).contains(Status.OK.getReasonPhrase());
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEqualTo("test response");
 
@@ -250,7 +250,7 @@ public class TransferPullEndToEndTest {
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-            CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.INTERNAL_SERVER_ERROR_500.code());
+            CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
             server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
@@ -284,9 +284,9 @@ public class TransferPullEndToEndTest {
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
             // consumer can fetch data with a valid token
-            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.CREATED_201.code());
+            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(Status.CREATED.getStatusCode());
             var header = response.extract().headers().get("to-be-returned");
-            assertThat(response.extract().statusLine()).contains(HttpStatusCode.CREATED_201.reasonPhrase());
+            assertThat(response.extract().statusLine()).contains(Status.CREATED.getReasonPhrase());
             assertThat(header.getValue()).isNotNull().isEqualTo("true");
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEqualTo("test created");
@@ -323,10 +323,10 @@ public class TransferPullEndToEndTest {
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
             // consumer can fetch data with a valid token
-            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.NO_CONTENT_204.code());
+            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(Status.NO_CONTENT.getStatusCode());
             var header = response.extract().headers().get("to-be-returned");
             assertThat(header.getValue()).isNotNull().isEqualTo("true");
-            assertThat(response.extract().statusLine()).contains(HttpStatusCode.NO_CONTENT_204.reasonPhrase());
+            assertThat(response.extract().statusLine()).contains(Status.NO_CONTENT.getReasonPhrase());
             var data = response.extract().body().asString();
             assertThat(data).isEmpty();
 
@@ -360,8 +360,8 @@ public class TransferPullEndToEndTest {
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.EXPECTATION_FAILED_417.code());
-            assertThat(response.extract().statusLine()).contains(HttpStatusCode.EXPECTATION_FAILED_417.reasonPhrase());
+            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(Status.EXPECTATION_FAILED.getStatusCode());
+            assertThat(response.extract().statusLine()).contains(Status.EXPECTATION_FAILED.getReasonPhrase());
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEqualTo("test failed response");
 
@@ -395,8 +395,8 @@ public class TransferPullEndToEndTest {
 
             var edr = CONSUMER.edrs().waitForEdr(transferProcessId);
 
-            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(HttpStatusCode.GATEWAY_TIMEOUT_504.code());
-            assertThat(response.extract().statusLine()).contains(HttpStatusCode.GATEWAY_TIMEOUT_504.reasonPhrase());
+            var response = CONSUMER.data().pullDataRequest(edr, Map.of()).statusCode(Status.GATEWAY_TIMEOUT.getStatusCode());
+            assertThat(response.extract().statusLine()).contains(Status.GATEWAY_TIMEOUT.getReasonPhrase());
             var data = response.extract().body().asString();
             assertThat(data).isNotNull().isEmpty();
 

@@ -152,8 +152,8 @@ different HTTP response code, i.e. 400, and the response body contains an error 
 
 ## 4. Request pipeline and the instrumentation API
 
-The Mock-Connector internally contains a pipeline of "recorded requests", much like mocked HTTP webservers, like Netty
-Mockserver or OkHttp MockWebServer. Out-of-the-box, that pipeline is empty, which means the Management API would always
+The Mock-Connector internally contains a pipeline of "recorded requests", much like mocked HTTP webservers, like 
+WireMock or OkHttp MockWebServer. Out-of-the-box, that pipeline is empty, which means the Management API would always
 respond with an error like the following:
 
 ```json

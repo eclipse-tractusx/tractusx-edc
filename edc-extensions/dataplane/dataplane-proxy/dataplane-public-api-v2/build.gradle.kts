@@ -39,7 +39,6 @@ dependencies {
     testImplementation(libs.edc.core.jersey)
 
     testImplementation(libs.restAssured)
-    testImplementation(libs.netty.mockserver)
     testImplementation(testFixtures(libs.edc.core.jersey))
 }
 edcBuild {

@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.edc.identity.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.failsafe.RetryPolicy;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
@@ -33,13 +34,11 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,12 +47,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -61,9 +66,6 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.verify.VerificationTimes.exactly;
-import static org.mockserver.verify.VerificationTimes.never;
 
 class BdrsClientImplTest {
 
@@ -73,19 +75,18 @@ class BdrsClientImplTest {
     private final SecureTokenService stsMock = mock();
     private final CredentialServiceClient csMock = mock();
     private BdrsClientImpl client;
-    private ClientAndServer bdrsServer;
+    @RegisterExtension
+    static WireMockExtension bdrsServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
     @BeforeEach
     void setup() {
-        bdrsServer = ClientAndServer.startClientAndServer(getFreePort());
-        bdrsServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/api/bpn-directory"))
-                .respond(HttpResponse.response()
+        bdrsServer.stubFor(get(urlPathEqualTo("/api/bpn-directory"))
+                .willReturn(aResponse()
                         .withHeader("Content-Encoding", "gzip")
                         .withBody(createGzipStream())
-                        .withStatusCode(200));
-
+                        .withStatus(200)));
         client = new BdrsClientImpl("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1,
                 "did:web:self",
                 () -> "http://credential.service",
@@ -100,11 +101,6 @@ class BdrsClientImplTest {
         when(csMock.requestPresentation(anyString(), anyString(), anyList()))
                 .thenReturn(Result.success(List.of(new VerifiablePresentationContainer(TEST_VP_CONTENT, CredentialFormat.VC1_0_JWT, VerifiablePresentation.Builder.newInstance().type("VerifiableCredential").build()))));
 
-    }
-
-    @AfterEach
-    void teardown() {
-        bdrsServer.stop();
     }
 
     @Test
@@ -151,9 +147,8 @@ class BdrsClientImplTest {
     @ParameterizedTest(name = "HTTP Status {0}")
     @ValueSource(ints = { 400, 401, 403, 404, 405 })
     void getData_bdrsReturnsError(int code) {
-        bdrsServer.reset();
-        bdrsServer.when(request().withPath("/api/bpn-directory").withMethod("GET"))
-                .respond(HttpResponse.response().withStatusCode(code));
+        bdrsServer.resetAll();
+        bdrsServer.stubFor(get(urlPathEqualTo("/api/bpn-directory")).willReturn(aResponse().withStatus(code)));
         assertThatThrownBy(() -> client.resolveDid("bpn1")).isInstanceOf(EdcException.class);
     }
 
@@ -163,7 +158,7 @@ class BdrsClientImplTest {
         assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("test-failure");
-        bdrsServer.verify(request(), never());
+        bdrsServer.verify(0, getRequestedFor(anyUrl()));
     }
 
     @Test
@@ -173,7 +168,7 @@ class BdrsClientImplTest {
         assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("test-failure");
-        bdrsServer.verify(request(), never());
+        bdrsServer.verify(0, getRequestedFor(anyUrl()));
     }
 
     @Test
@@ -191,22 +186,18 @@ class BdrsClientImplTest {
 
     @Test
     void getData_whenPresentationQueryReturnsEmpty() {
-
         when(csMock.requestPresentation(anyString(), anyString(), anyList())).thenReturn(Result.success(Collections.emptyList()));
 
         assertThatThrownBy(() -> client.resolveDid("bpn1"))
                 .isInstanceOf(EdcException.class)
                 .hasMessage("Expected exactly 1 VP, but was empty");
-        bdrsServer.verify(request(), never());
+        bdrsServer.verify(0, getRequestedFor(anyUrl()));
     }
 
     private void verifyBdrsRequest(int count) {
-        bdrsServer.verify(request()
-                        .withMethod("GET")
-                        .withPath("/api/bpn-directory")
-                        .withHeader("Authorization", "Bearer " + TEST_VP_CONTENT)
-                        .withHeader("Accept-Encoding", "gzip"),
-                exactly(count));
+        bdrsServer.verify(count, getRequestedFor(urlPathEqualTo("/api/bpn-directory"))
+                .withHeader("Authorization", equalTo("Bearer " + TEST_VP_CONTENT))
+                .withHeader("Accept-Encoding", equalTo("gzip")));
     }
 
     private byte[] createGzipStream() {

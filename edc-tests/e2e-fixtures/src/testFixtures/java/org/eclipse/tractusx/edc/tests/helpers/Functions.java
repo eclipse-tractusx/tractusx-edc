@@ -20,8 +20,8 @@
 package org.eclipse.tractusx.edc.tests.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.http.Request;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.mockserver.model.HttpRequest;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -34,9 +34,9 @@ public class Functions {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static ReceivedEvent readEvent(HttpRequest request) {
+    public static ReceivedEvent readEvent(Request request) {
         try {
-            return MAPPER.readValue(request.getBody().getRawBytes(), ReceivedEvent.class);
+            return MAPPER.readValue(request.getBody(), ReceivedEvent.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

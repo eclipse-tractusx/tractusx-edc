@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.tck.dcp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -50,13 +51,11 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.integration.ClientAndServer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +63,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.eclipse.edc.iam.verifiablecredentials.spi.validation.TrustedIssuerRegistry.WILDCARD;
 import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -74,8 +77,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 @EndToEndTest
 public class DcpPresentationFlowTest {
@@ -94,23 +95,19 @@ public class DcpPresentationFlowTest {
                     .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
                     .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
                     .configurationProvider(DcpPresentationFlowTest::runtimeConfiguration));
-    private ClientAndServer didServer;
+    @RegisterExtension
+    protected static WireMockExtension didServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().bindAddress("localhost").port(DID_SERVER_PORT))
+            .build();
     private ECKey verifierKey;
 
     @BeforeEach
     void setUp(TrustedIssuerRegistry trustedIssuerRegistry) throws JOSEException {
         verifierKey = generateEcKey();
         trustedIssuerRegistry.register(new Issuer(formatDid(CALLBACK_PORT, "issuer"), Map.of()),  WILDCARD);
-        startDidServer();
+        configureDidMock();
         configureStsMock();
         configureIdExtractionMock();
-    }
-
-    @AfterEach
-    void teardown() {
-        if (didServer != null && didServer.hasStarted()) {
-            didServer.stop();
-        }
     }
 
     @DisplayName("Run TCK Presentation Flow tests")
@@ -154,16 +151,13 @@ public class DcpPresentationFlowTest {
                 .generate();
     }
 
-    private void startDidServer() {
-        didServer = ClientAndServer.startClientAndServer(DID_SERVER_PORT);
-        didServer.when(
-                request().withMethod("GET").withPath("/verifier/did.json")
-        ).respond(
-                response()
+    private void configureDidMock() {
+        didServer.stubFor(get(urlPathEqualTo("/verifier/did.json"))
+                .willReturn(aResponse()
+                        .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withStatusCode(200)
-                        .withBody(createDidDocumentJson())
-        );
+                        .withBody(createDidDocumentJson()
+        )));
     }
 
     private void configureStsMock() {

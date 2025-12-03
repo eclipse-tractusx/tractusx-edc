@@ -28,7 +28,7 @@ dependencies {
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
     testImplementation(libs.edc.spi.edrstore)
 
-    testImplementation(libs.netty.mockserver)
+    testImplementation(libs.wiremock)
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)

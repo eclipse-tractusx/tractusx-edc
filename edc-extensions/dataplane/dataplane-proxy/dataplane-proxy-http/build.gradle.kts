@@ -28,7 +28,6 @@ dependencies {
     testImplementation(libs.edc.dpf.core)
     testImplementation(libs.edc.ext.jsonld)
     testImplementation(libs.restAssured)
-    testImplementation(libs.netty.mockserver)
 
     testImplementation(testFixtures(libs.edc.lib.http))
     testImplementation(testFixtures(libs.edc.spi.dataplane.dataplane))
