@@ -124,11 +124,16 @@ public class RetireAgreementTest {
                 .until(() -> CONSUMER.edrs().getEdrEntriesByAssetId(assetId), it -> it.size() == 1)
                 .get(0).asJsonObject();
 
-        var agreementId = edrCache.getString("agreementId");
         var transferProcessId = edrCache.getString("transferProcessId");
+        var agreementId = CONSUMER.getTransferProcessField(transferProcessId, "contractId");
 
-        var response = PROVIDER.retireProviderAgreement(agreementId);
-        response.statusCode(204);
+        var providerTransferProcess = PROVIDER.getTransferProcesses().stream()
+                .filter(it -> it.asJsonObject().getString("correlationId").equals(transferProcessId)).findFirst().get();
+
+        await().untilAsserted(() -> {
+            var response = PROVIDER.retireProviderAgreement(providerTransferProcess.asJsonObject().getString("contractId"));
+            response.statusCode(204);
+        });
 
         var event = PROVIDER.waitForEvent("ContractAgreementRetired");
         assertThat(event).isNotNull();
