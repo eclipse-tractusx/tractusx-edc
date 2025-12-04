@@ -24,6 +24,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
+@Deprecated(since = "0.12.0") // can be removed once https://github.com/eclipse-edc/Connector/pull/5396 is merged and released
 public class InMemorySingleParticipantVaultExtension implements ServiceExtension {
 
     @Provider

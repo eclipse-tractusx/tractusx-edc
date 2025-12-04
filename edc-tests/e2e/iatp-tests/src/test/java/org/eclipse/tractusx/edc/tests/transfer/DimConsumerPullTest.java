@@ -24,6 +24,8 @@ import org.eclipse.edc.iam.decentralizedclaims.sts.service.EmbeddedSecureTokenSe
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.service.StsAccountService;
 import org.eclipse.edc.identityhub.spi.keypair.KeyPairService;
+import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantContext;
+import org.eclipse.edc.identityhub.spi.participantcontext.store.ParticipantContextStore;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -31,12 +33,12 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
-import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
@@ -49,6 +51,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.net.URI;
 import java.time.Clock;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,6 +68,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_P
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.transfer.iatp.runtime.Runtimes.dimRuntime;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -116,6 +120,7 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @BeforeAll
     static void prepare() {
+        KeyPool.register(DATASPACE_ISSUER_PARTICIPANT.getFullKeyId(), DATASPACE_ISSUER_PARTICIPANT.getKeyPair());
         DID_SERVER.register(CONSUMER_NAME, CONSUMER.getDidDocument());
         DID_SERVER.register(PROVIDER_NAME, PROVIDER.getDidDocument());
         DID_SERVER.register("issuer", DATASPACE_ISSUER_PARTICIPANT.didDocument());
@@ -127,8 +132,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
         var providerTokenGeneration = new JwtGenerationService(new DefaultJwsSignerProvider(PROVIDER_RUNTIME.getService(PrivateKeyResolver.class)));
 
         var generatorServices = Map.of(
-                CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER, CONSUMER_RUNTIME.getService(KeyPairService.class)),
-                PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER, PROVIDER_RUNTIME.getService(KeyPairService.class)));
+                CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER, CONSUMER_RUNTIME),
+                PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER, PROVIDER_RUNTIME));
 
         var stsUri = STS.stsUri().get();
 
@@ -151,20 +156,35 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
     }
 
     private static EmbeddedSecureTokenService tokenServiceFor(TokenGenerationService tokenGenerationService, IatpParticipant participant,
-                                                              KeyPairService keyPairService) {
+                                                              RuntimeExtension runtime) {
         StsAccountService stsAccountService = mock();
-        when(stsAccountService.findById(participant.getDid())).thenAnswer(i -> {
+        when(stsAccountService.queryAccounts(any())).thenAnswer(i -> {
             var dummyId = UUID.randomUUID().toString();
             var account = StsAccount.Builder.newInstance()
                     .id(dummyId)
+                    .participantContextId(participant.getDid())
                     .clientId(participant.getDid())
                     .name(participant.getName())
                     .did(participant.getDid())
                     .secretAlias(dummyId)
                     .build();
 
-            return ServiceResult.success(account);
+            return List.of(account);
         });
+
+        var participantContextStore = runtime.getService(ParticipantContextStore.class);
+        participantContextStore.create(ParticipantContext.Builder.newInstance()
+                .participantContextId(participant.getDid())
+                .did(participant.getDid())
+                .apiTokenAlias(participant.getDid()).build());
+
+        var keyPairService = runtime.getService(KeyPairService.class);
+        var keyDescriptor = participant.createKeyDescriptor();
+        KeyPool.register(participant.getFullKeyId(), participant.getKeyPair());
+
+        keyPairService.addKeyPair(participant.getDid(), keyDescriptor, true)
+                .orElseThrow(f -> new RuntimeException("Cannot add key pair: " + f.getFailureDetail()));
+
         return new EmbeddedSecureTokenService(
                 new NoopTransactionContext(),
                 60 * 60,
@@ -183,13 +203,8 @@ public class DimConsumerPullTest extends AbstractIatpConsumerPullTest {
     }
 
     @Override
-    protected RuntimeExtension consumerRuntime() {
+    protected RuntimeExtension credentialStoreRuntime() {
         return CONSUMER_RUNTIME;
-    }
-
-    @Override
-    protected RuntimeExtension providerRuntime() {
-        return PROVIDER_RUNTIME;
     }
 
     @Override

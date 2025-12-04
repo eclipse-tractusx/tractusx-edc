@@ -134,7 +134,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     @Test
     void catalogRequest_whenCredentialExpired() {
         //update the membership credential to an expirationDate that is in the past
-        var store = consumerRuntime().getService(CredentialStore.class);
+        var store = credentialStoreRuntime().getService(CredentialStore.class);
 
         var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
@@ -182,10 +182,10 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     @Test
     void catalogRequest_whenCredentialRevoked() {
         //update the membership credential to contain a `credentialStatus` with a revocation
-        var store = consumerRuntime().getService(CredentialStore.class);
+        var store = credentialStoreRuntime().getService(CredentialStore.class);
         var port = getFreePort();
-
-        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+        var isMembershipCredential = new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential");
+        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(isMembershipCredential).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
                 .stream().findFirst()
                 .orElseThrow(RuntimeException::new);
@@ -222,7 +222,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
                         .issuerId(dataspaceIssuer().didUrl())
-                        .participantContextId(did)
+                        .participantContextId(existingCred.getParticipantContextId())
                         .holderId(bpn)
                         .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())
@@ -255,9 +255,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         return frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), CX_POLICY_2025_09_NS + "access");
     }
 
-    protected abstract RuntimeExtension consumerRuntime();
-
-    protected abstract RuntimeExtension providerRuntime();
+    protected abstract RuntimeExtension credentialStoreRuntime();
 
     protected abstract DataspaceIssuer dataspaceIssuer();
 

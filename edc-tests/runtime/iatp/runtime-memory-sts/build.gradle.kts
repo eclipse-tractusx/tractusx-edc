@@ -23,11 +23,12 @@ plugins {
 }
 
 dependencies {
-
     // use basic (all in-mem) control plane
-    implementation(project(":edc-controlplane:edc-controlplane-base"))
+//    implementation(project(":edc-controlplane:edc-controlplane-base"))
+    implementation("org.eclipse.edc:identityhub-bom:0.15.0") // TODO: put in version catalog
     implementation(project(":edc-extensions:single-participant-vault"))
     implementation(project(":core:json-ld-core"))
+    implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
 
     implementation(libs.edc.iam.mock)
     implementation(libs.edc.spi.keys)

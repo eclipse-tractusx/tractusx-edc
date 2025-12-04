@@ -41,7 +41,6 @@ import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -123,10 +122,7 @@ public class CredentialSpoofTest {
 
         BDRS_SERVER_EXTENSION.addMapping(CONSUMER.getBpn(), CONSUMER.getDid());
         BDRS_SERVER_EXTENSION.addMapping(PROVIDER.getBpn(), PROVIDER.getDid());
-    }
 
-    @BeforeEach
-    void setup() {
         CONSUMER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER_RUNTIME, STS_RUNTIME);
         PROVIDER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER_RUNTIME, STS_RUNTIME);
         MALICIOUS_ACTOR.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, MALICIOUS_ACTOR_RUNTIME, STS_RUNTIME);
@@ -143,7 +139,7 @@ public class CredentialSpoofTest {
                 "contentType", "application/json"
         );
 
-        var presentationService = MALICIOUS_ACTOR_RUNTIME.getService(VerifiablePresentationService.class);
+        var presentationService = STS_RUNTIME.getService(VerifiablePresentationService.class);
 
         withMock((membershipCredential) -> presentationService.createPresentation(MALICIOUS_ACTOR.getDid(), List.of(membershipCredential.getVerifiableCredential()), null, PROVIDER.getDid()));
 
@@ -169,7 +165,7 @@ public class CredentialSpoofTest {
                 "contentType", "application/json"
         );
 
-        var presentationService = CONSUMER_RUNTIME.getService(VerifiablePresentationService.class);
+        var presentationService = STS_RUNTIME.getService(VerifiablePresentationService.class);
 
         withMock((membershipCredential) -> presentationService.createPresentation(CONSUMER.getDid(), List.of(membershipCredential.getVerifiableCredential()), null, PROVIDER.getDid()));
 
@@ -199,10 +195,10 @@ public class CredentialSpoofTest {
 
     void withMock(Function<VerifiableCredentialResource, Result<PresentationResponseMessage>> response) {
 
-        var store = CONSUMER_RUNTIME.getService(CredentialStore.class);
+        var store = STS_RUNTIME.getService(CredentialStore.class);
 
-        var sokratesMembershipCredential = store.query(QuerySpec.max()).getContent()
-                .stream().filter(c -> c.getVerifiableCredential().credential().getType().contains("MembershipCredential"))
+        var sokratesMembershipCredential = store.query(QuerySpec.max()).getContent().stream()
+                .filter(c -> c.getVerifiableCredential().credential().getType().contains("MembershipCredential"))
                 .findFirst()
                 .orElseThrow();
 

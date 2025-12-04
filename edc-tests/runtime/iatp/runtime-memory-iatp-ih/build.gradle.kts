@@ -40,6 +40,12 @@ dependencies {
         exclude("org.eclipse.edc", "data-plane-selector-client")
     }
 
+    constraints {
+        implementation("com.networknt:json-schema-validator:2.0.0") {
+            because("older versions cause runtime issues")
+        }
+    }
+
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.core.did)
     implementation(libs.edc.decentralized.claims.transform)

@@ -25,12 +25,12 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.tests.extension.VaultSeedExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
+import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
@@ -57,6 +57,7 @@ public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
             .id(DID_SERVER.didFor(CONSUMER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(CONSUMER_BPN)
+            .credentialServiceUri(STS.credentialServiceUri())
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .bpn(CONSUMER_BPN)
             .protocol(DSP_2025)
@@ -67,6 +68,7 @@ public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
             .id(DID_SERVER.didFor(PROVIDER_NAME))
             .stsUri(STS.stsUri())
             .stsClientId(PROVIDER_BPN)
+            .credentialServiceUri(STS.credentialServiceUri())
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .bpn(PROVIDER_BPN)
             .protocol(DSP_2025)
@@ -92,31 +94,23 @@ public class StsConsumerPullTest extends AbstractIatpConsumerPullTest {
 
     @BeforeAll
     static void beforeAll() {
+        KeyPool.register(DATASPACE_ISSUER_PARTICIPANT.getFullKeyId(), DATASPACE_ISSUER_PARTICIPANT.getKeyPair());
         DID_SERVER.register(CONSUMER_NAME, CONSUMER.getDidDocument());
         DID_SERVER.register(PROVIDER_NAME, PROVIDER.getDidDocument());
         DID_SERVER.register("issuer", DATASPACE_ISSUER_PARTICIPANT.didDocument());
 
         BDRS_SERVER_EXTENSION.addMapping(CONSUMER.getBpn(), CONSUMER.getDid());
         BDRS_SERVER_EXTENSION.addMapping(PROVIDER.getBpn(), PROVIDER.getDid());
-    }
 
-    // credentials etc get wiped after every, so the need to be created before every test
-    @BeforeEach
-    void setUp() {
         CONSUMER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, CONSUMER_RUNTIME, STS_RUNTIME);
         PROVIDER.configureParticipant(DATASPACE_ISSUER_PARTICIPANT, PROVIDER_RUNTIME, STS_RUNTIME);
-        
+
         CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
     }
 
     @Override
-    protected RuntimeExtension consumerRuntime() {
-        return CONSUMER_RUNTIME;
-    }
-
-    @Override
-    protected RuntimeExtension providerRuntime() {
-        return PROVIDER_RUNTIME;
+    protected RuntimeExtension credentialStoreRuntime() {
+        return STS_RUNTIME;
     }
 
     @Override

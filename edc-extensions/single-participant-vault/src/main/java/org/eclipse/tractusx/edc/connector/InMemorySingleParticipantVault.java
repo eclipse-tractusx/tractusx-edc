@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Optional.ofNullable;
 
+@Deprecated(since = "0.12.0") // can be removed once https://github.com/eclipse-edc/Connector/pull/5396 is merged and released
 public class InMemorySingleParticipantVault implements Vault {
     private static final String DEFAULT_PARTITION = "default";
     private final Map<String, Map<String, String>> secrets = new ConcurrentHashMap<>();

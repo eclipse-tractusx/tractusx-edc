@@ -33,7 +33,7 @@ public class VaultSeedExtension implements ServiceExtension {
     private final Map<String, String> secrets;
     @Inject
     private Vault vault;
-    @Inject
+    @Inject(required = false)
     private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     public VaultSeedExtension(Map<String, String> secrets) {
@@ -47,7 +47,11 @@ public class VaultSeedExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var participantContext = singleParticipantContextSupplier.get().orElseThrow(f -> new EdcException(f.getFailureDetail()));
-        secrets.forEach((key, value) -> vault.storeSecret(participantContext.getParticipantContextId(), key, value));
+        if (singleParticipantContextSupplier == null) {
+            secrets.forEach((key, value) -> vault.storeSecret(key, value));
+        } else {
+            var participantContext = singleParticipantContextSupplier.get().orElseThrow(f -> new EdcException(f.getFailureDetail()));
+            secrets.forEach((key, value) -> vault.storeSecret(participantContext.getParticipantContextId(), key, value));
+        }
     }
 }

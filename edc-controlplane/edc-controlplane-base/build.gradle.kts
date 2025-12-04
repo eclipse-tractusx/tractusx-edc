@@ -27,8 +27,8 @@ configurations.all {
     // edr-cache-api excluded due to edr controller signature clash with tx-edr-api-v2 that provides same functionality with token auto_refresh capability
     exclude(group = "org.eclipse.edc", module = "edr-cache-api")
 
-    // identity-trust-sts-remote-client excluded because we have the tx-dcp-sts-dim that takes care to define the correct client in case of DIM
-    exclude("org.eclipse.edc", "identity-trust-sts-remote-client")
+    // decentralized-claims-sts-remote-client excluded because we have the tx-dcp-sts-dim that takes care to define the correct client in case of DIM
+    exclude("org.eclipse.edc", "decentralized-claims-sts-remote-client")
 }
 
 dependencies {
