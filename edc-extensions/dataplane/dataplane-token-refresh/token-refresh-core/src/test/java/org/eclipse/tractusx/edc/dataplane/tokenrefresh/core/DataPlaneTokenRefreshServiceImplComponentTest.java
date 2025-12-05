@@ -38,12 +38,15 @@ import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;
 import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.TokenValidationServiceImpl;
@@ -78,25 +81,22 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     private final DidPublicKeyResolver didPkResolverMock = mock();
     private final LocalPublicKeyService localPublicKeyService = mock();
     private final PrivateKeyResolver privateKeyResolver = mock();
+    private final ParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(
+            ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build()
+    );
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
-    private InMemoryAccessTokenDataStore tokenDataStore;
-    private InMemoryVault vault;
-    private ObjectMapper objectMapper;
+    private final InMemoryAccessTokenDataStore tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
+    private final InMemoryVault vault = new InMemoryVault(mock());
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private ECKey consumerKey;
     private ECKey providerKey;
 
     @BeforeEach
     void setup() throws JOSEException {
-
         var privateKeyAlias = "privateKeyAlias";
         providerKey = new ECKeyGenerator(Curve.P_384).keyID(PROVIDER_BPN + "#provider-key").keyUse(KeyUse.SIGNATURE).generate();
         consumerKey = new ECKeyGenerator(Curve.P_384).keyID(CONSUMER_DID + "#consumer-key").keyUse(KeyUse.SIGNATURE).generate();
 
-        var privateKey = providerKey.toPrivateKey();
-
-        objectMapper = new ObjectMapper();
-        tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
-        vault = new InMemoryVault(mock());
         tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
                 new TokenValidationServiceImpl(),
                 didPkResolverMock,
@@ -111,9 +111,9 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 300L,
                 () -> providerKey.getKeyID(),
                 vault,
-                objectMapper);
+                objectMapper, participantContextSupplier);
 
-        when(privateKeyResolver.resolvePrivateKey(privateKeyAlias)).thenReturn(Result.success(privateKey));
+        when(privateKeyResolver.resolvePrivateKey("participantContextId", privateKeyAlias)).thenReturn(Result.success(providerKey.toPrivateKey()));
         when(localPublicKeyService.resolveKey(eq(consumerKey.getKeyID()))).thenReturn(Result.success(consumerKey.toPublicKey()));
         when(localPublicKeyService.resolveKey(eq(providerKey.getKeyID()))).thenReturn(Result.success(providerKey.toPublicKey()));
 
@@ -147,7 +147,6 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .hasSize(2)
                 .containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID)
                 .containsEntry("authType", "bearer");
-
     }
 
     @DisplayName("Verify that a token can be refreshed")

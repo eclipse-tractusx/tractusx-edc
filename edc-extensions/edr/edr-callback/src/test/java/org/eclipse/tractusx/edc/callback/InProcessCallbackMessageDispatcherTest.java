@@ -21,7 +21,7 @@ package org.eclipse.tractusx.edc.callback;
 
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
+import org.eclipse.edc.spi.types.domain.message.ProtocolRemoteMessage;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,23 +53,20 @@ public class InProcessCallbackMessageDispatcherTest {
 
         var msg = remoteMessage(getNegotiationFinalizedEvent());
         when(callback.invoke(any())).thenReturn(Result.success());
-        dispatcher.dispatch(Object.class, msg).join();
-
+        dispatcher.dispatch("any", Object.class, msg).join();
 
         verify(callback).invoke(msg);
     }
 
     @Test
     void send_shouldNotInvokeRegisteredCallback_whenItsNotCallbackRemoteMessage() {
-
-        assertThatThrownBy(() -> dispatcher.dispatch(Object.class, new TestMessage()).join())
+        assertThatThrownBy(() -> dispatcher.dispatch("any", Object.class, new TestMessage()).join())
                 .hasCauseInstanceOf(EdcException.class);
-
 
         verifyNoInteractions(callback);
     }
 
-    private static class TestMessage implements RemoteMessage {
+    private static class TestMessage extends ProtocolRemoteMessage {
 
         @Override
         public String getProtocol() {

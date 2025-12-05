@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 
 
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
@@ -39,6 +39,7 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 public class StsParticipant extends TractusxParticipantBase {
 
     protected final LazySupplier<URI> stsUri = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/v1/sts"));
+    protected final LazySupplier<URI> credentialServiceUri = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/resolution"));
 
     private StsParticipant() {
     }
@@ -46,7 +47,9 @@ public class StsParticipant extends TractusxParticipantBase {
     public Config stsConfig(IatpParticipant... participants) {
         var additionalSettings = Map.of(
                 "web.http.sts.port", String.valueOf(stsUri.get().getPort()),
-                "web.http.sts.path", stsUri.get().getPath()
+                "web.http.sts.path", stsUri.get().getPath(),
+                "web.http.credentials.port", String.valueOf(credentialServiceUri.get().getPort()),
+                "web.http.credentials.path", credentialServiceUri.get().getPath()
         );
 
         var baseConfig = super.getConfig()
@@ -76,6 +79,10 @@ public class StsParticipant extends TractusxParticipantBase {
 
     public LazySupplier<URI> stsUri() {
         return stsUri;
+    }
+
+    public LazySupplier<URI> credentialServiceUri() {
+        return credentialServiceUri;
     }
 
     public static class Builder extends TractusxParticipantBase.Builder<StsParticipant, Builder> {

@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimNames;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
@@ -43,18 +44,20 @@ public class RefreshTokenValidationRule implements TokenValidationRule {
     private final Vault vault;
     private final String incomingRefreshToken;
     private final ObjectMapper objectMapper;
+    private final ParticipantContext participantContext;
 
-    public RefreshTokenValidationRule(Vault vault, String incomingRefreshToken, ObjectMapper objectMapper) {
+    public RefreshTokenValidationRule(Vault vault, String incomingRefreshToken, ObjectMapper objectMapper, ParticipantContext participantContext) {
         this.vault = vault;
         this.incomingRefreshToken = incomingRefreshToken;
         this.objectMapper = objectMapper;
+        this.participantContext = participantContext;
     }
 
     @Override
     public Result<Void> checkRule(@NotNull ClaimToken accessToken, @Nullable Map<String, Object> additional) {
 
         var tokenId = accessToken.getStringClaim(JWTClaimNames.JWT_ID);
-        var storedRefreshTokenJson = vault.resolveSecret(tokenId);
+        var storedRefreshTokenJson = vault.resolveSecret(participantContext.getParticipantContextId(), tokenId);
         if (storedRefreshTokenJson == null) {
             return failure("No refresh token with the ID '%s' was found in the vault.".formatted(tokenId));
         }

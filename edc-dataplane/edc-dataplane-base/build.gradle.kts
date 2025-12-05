@@ -20,25 +20,26 @@
 
 plugins {
     `java-library`
+    id(libs.plugins.swagger.get().pluginId)
 }
 
 dependencies {
     runtimeOnly(libs.edc.bom.dataplane.base)
 
-    runtimeOnly(project(":core:edr-core"))
-    runtimeOnly(project(":edc-extensions:log4j2-monitor"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
-    runtimeOnly(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
-    runtimeOnly(project(":edc-extensions:tokenrefresh-handler"))
-    runtimeOnly(project(":edc-extensions:event-subscriber"))
-    runtimeOnly(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"))
+    implementation(project(":core:edr-core"))
+    implementation(project(":edc-extensions:log4j2-monitor"))
+    implementation(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http"))
+    implementation(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2"))
+    implementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
+    implementation(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
+    implementation(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
+    implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    implementation(project(":edc-extensions:tokenrefresh-handler"))
+    implementation(project(":edc-extensions:event-subscriber"))
+    implementation(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"))
 
-    runtimeOnly(project(":edc-extensions:dataplane:dataflow:dataflow-api"))
-    runtimeOnly(project(":edc-extensions:dataplane:dataflow:dataflow-service"))
+    implementation(project(":edc-extensions:dataplane:dataflow:dataflow-api"))
+    implementation(project(":edc-extensions:dataplane:dataflow:dataflow-service"))
     runtimeOnly(libs.edc.api.management.config)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.auth.configuration)
@@ -48,6 +49,8 @@ dependencies {
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
     runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.core.participant.context.config)
+    runtimeOnly(libs.edc.core.participant.context.single)
     runtimeOnly(libs.edc.dpf.awss3)
     runtimeOnly(libs.edc.dpf.azblob)
     runtimeOnly(libs.edc.identity.did.web)

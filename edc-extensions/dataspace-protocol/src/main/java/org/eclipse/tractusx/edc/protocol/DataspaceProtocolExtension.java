@@ -19,15 +19,21 @@
 
 package org.eclipse.tractusx.edc.protocol;
 
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.identity.ParticipantIdentityResolver;
 import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContext;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.protocol.identifier.BpnExtractionFunction;
+import org.eclipse.tractusx.edc.protocol.identifier.CatenaxParticipantIdentityResolver;
 import org.eclipse.tractusx.edc.protocol.identifier.DidExtractionFunction;
+
+import java.util.stream.Stream;
 
 import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.V_08;
@@ -39,7 +45,7 @@ import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1_PATH;
 
 public class DataspaceProtocolExtension implements ServiceExtension {
-    
+
     @Setting(description = "the BPN of the participant", key = "tractusx.edc.participant.bpn")
     private String bpn;
     
@@ -47,13 +53,22 @@ public class DataspaceProtocolExtension implements ServiceExtension {
     private DataspaceProfileContextRegistry contextRegistry;
     @Inject
     private DspBaseWebhookAddress dspWebhookAddress;
-    
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
-        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), bpn, new BpnExtractionFunction()));
-        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2025_1, V_2025_1, () -> dspWebhookAddress.get() + V_2025_1_PATH, context.getParticipantId(), new DidExtractionFunction()));
-        
-        // currently required for DCP TCK tests
-        contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2024_1, V_2024_1, () -> dspWebhookAddress.get() + V_2024_1_PATH, bpn, new BpnExtractionFunction()));
+        Stream.of(
+                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), new BpnExtractionFunction()),
+                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2025_1, V_2025_1, () -> dspWebhookAddress.get() + V_2025_1_PATH, new DidExtractionFunction()),
+                // currently required for DCP TCK tests
+                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2024_1, V_2024_1, () -> dspWebhookAddress.get() + V_2024_1_PATH, new BpnExtractionFunction())
+        ).forEach(contextRegistry::register);
     }
+
+    @Provider
+    public ParticipantIdentityResolver participantIdentityResolver() {
+        return new CatenaxParticipantIdentityResolver(bpn, singleParticipantContextSupplier);
+    }
+
 }

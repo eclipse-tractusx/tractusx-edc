@@ -25,7 +25,7 @@ dependencies {
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
     testRuntimeOnly(libs.dcp.testcases)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.spi.identity.trust)
+    testImplementation(libs.edc.spi.decentralized.claims)
     testImplementation(libs.edc.spi.identity.did)
     testImplementation(libs.edc.core.controlplane)
     testImplementation(libs.nimbus.jwt)

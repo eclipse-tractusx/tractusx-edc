@@ -26,6 +26,7 @@ dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base"))
+    implementation(project(":edc-extensions:single-participant-vault"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":core:json-ld-core"))
@@ -34,14 +35,20 @@ dependencies {
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
 
     // use basic (all in-mem) data plane
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+    implementation(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "api-observability")
         exclude("org.eclipse.edc", "data-plane-selector-client")
     }
 
+    constraints {
+        implementation("com.networknt:json-schema-validator:2.0.0") {
+            because("older versions cause runtime issues")
+        }
+    }
+
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.core.did)
-    implementation(libs.edc.identity.trust.transform)
+    implementation(libs.edc.decentralized.claims.transform)
     implementation(libs.edc.auth.oauth2.client)
     // IH dependencies
     implementation(libs.edc.ih.api.presentation)

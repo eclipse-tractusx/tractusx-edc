@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.edc.api.management) {
         exclude("org.eclipse.edc", "edr-cache-api")
     }
+    implementation(libs.edc.lib.jersey.providers)
     implementation(libs.jakarta.rsApi)
 
     testImplementation(testFixtures(libs.edc.core.jersey))

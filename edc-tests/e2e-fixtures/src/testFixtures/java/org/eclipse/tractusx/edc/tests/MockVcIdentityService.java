@@ -56,7 +56,7 @@ public class MockVcIdentityService implements IdentityService {
     }
     
     @Override
-    public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
+    public Result<TokenRepresentation> obtainClientCredentials(String participantContextId, TokenParameters parameters) {
         var credentials = List.of(membershipCredential(), dataExchangeGovernanceCredential());
         var token = Map.of(VC_CLAIM, credentials);
 
@@ -67,7 +67,7 @@ public class MockVcIdentityService implements IdentityService {
     }
     
     @Override
-    public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, VerificationContext verificationContext) {
+    public Result<ClaimToken> verifyJwtToken(String participantContextId, TokenRepresentation tokenRepresentation, VerificationContext verificationContext) {
         var token = tokenRepresentation.getToken().replace("Bearer ", "");
         var tokenParsed = typeManager.readValue(token, Map.class);
 

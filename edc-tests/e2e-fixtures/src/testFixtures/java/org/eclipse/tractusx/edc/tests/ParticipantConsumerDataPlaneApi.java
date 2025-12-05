@@ -20,7 +20,7 @@
 package org.eclipse.tractusx.edc.tests;
 
 import io.restassured.http.ContentType;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
+import org.eclipse.edc.junit.utils.LazySupplier;
 
 import java.net.URI;
 import java.util.Map;

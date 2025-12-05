@@ -30,6 +30,8 @@ import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.C
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
 import org.eclipse.edc.junit.annotations.ApiTest;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
@@ -90,7 +92,7 @@ public abstract class BaseEdrCacheApiControllerTest extends RestControllerTestBa
     protected final EndpointDataReferenceStore edrStore = mock();
     protected final EdrService edrService = mock();
     protected final ContractNegotiationService contractNegotiationService = mock();
-
+    protected final ParticipantContextSupplier participantContextSupplier = mock();
 
     @Test
     void initEdrNegotiation_shouldWork_whenValidRequest() {
@@ -100,8 +102,10 @@ public abstract class BaseEdrCacheApiControllerTest extends RestControllerTestBa
         var responseBody = Json.createObjectBuilder().add(TYPE, ID_RESPONSE_TYPE).add(ID, contractNegotiation.getId()).build();
 
         when(transformerRegistry.transform(any(JsonObject.class), eq(ContractRequest.class))).thenReturn(Result.success(createContractRequest()));
-        when(contractNegotiationService.initiateNegotiation(any())).thenReturn(contractNegotiation);
+        when(contractNegotiationService.initiateNegotiation(any(), any())).thenReturn(contractNegotiation);
         when(transformerRegistry.transform(any(IdResponse.class), eq(JsonObject.class))).thenReturn(Result.success(responseBody));
+        var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
+        when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
 
         var request = negotiationRequest();
 
@@ -127,7 +131,6 @@ public abstract class BaseEdrCacheApiControllerTest extends RestControllerTestBa
                 .post("/edrs")
                 .then()
                 .statusCode(400);
-
     }
 
     @Test

@@ -2,14 +2,14 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.14.1"
+edc = "0.15.0"
 edc-build = "1.1.4"
 allure = "2.31.0"
 awaitility = "4.3.0"
 aws = "2.39.2"
 azure-storage-blob = "12.32.0"
 bouncyCastle-jdk18on = "1.82"
-dcp-tck = "1.0.0-RC4"
+dcp-tck = "1.0.0-SNAPSHOT"
 dsp-tck = "1.0.0-RC4"
 flyway = "11.18.0"
 jackson = "2.20.1"
@@ -41,39 +41,43 @@ edc-bom-federatedcatalog-base = { module = "org.eclipse.edc:federatedcatalog-bas
 edc-bom-federatedcatalog-dcp = { module = "org.eclipse.edc:federatedcatalog-dcp-bom", version.ref = "edc" }
 edc-bom-federatedcatalog-feature-sql = { module = "org.eclipse.edc:federatedcatalog-feature-sql-bom", version.ref = "edc" }
 
-edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
 edc-spi-auth = { module = "org.eclipse.edc:auth-spi", version.ref = "edc" }
-edc-spi-transfer = { module = "org.eclipse.edc:transfer-spi", version.ref = "edc" }
-edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
-edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
-edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
-edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
-edc-spi-protocol = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
-edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
-edc-spi-request-policy-context = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
-edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
-edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
-edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
-edc-spi-protocolversion = { module = "org.eclipse.edc:protocol-version-spi", version.ref = "edc" }
 edc-spi-boot = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
-edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
+edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
+edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
+edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
+edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
+edc-spi-decentralized-claims = { module = "org.eclipse.edc:decentralized-claims-spi", version.ref = "edc" }
+edc-spi-edrstore = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
-edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
+edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-spi-jwt-signer = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = "edc" }
+edc-spi-keypair = { module = "org.eclipse.edc:keypair-spi", version.ref = "edc" }
+edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
+edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
+edc-spi-participant-context-single = { module = "org.eclipse.edc:participant-context-single-spi", version.ref = "edc" }
+edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
+edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
+edc-spi-protocol = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
+edc-spi-request-policy-context = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
 edc-spi-token = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
+edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
+edc-spi-transactionspi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
+edc-spi-transfer = { module = "org.eclipse.edc:transfer-spi", version.ref = "edc" }
 edc-spi-transform = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
-edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
-edc-spi-identity-trust = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-spi-vc = { module = "org.eclipse.edc:verifiable-credentials-spi", version.ref = "edc" }
-edc-spi-edrstore = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
+edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
+
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
+edc-core-participant-context-config = { module = "org.eclipse.edc:participant-context-config-core", version.ref = "edc" }
+edc-core-participant-context-single = { module = "org.eclipse.edc:participant-context-single-core", version.ref = "edc" }
 edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", version.ref = "edc" }
 edc-core-runtime = { module = "org.eclipse.edc:runtime-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
@@ -130,17 +134,16 @@ edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-da
 edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:provision-aws-s3", version.ref = "edc" }
 
 # DCP Modules
-edc-spi-identitytrust = { module = "org.eclipse.edc:identity-trust-spi", version.ref = "edc" }
 edc-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
 
 edc-identity-did-web = { module = "org.eclipse.edc:identity-did-web", version.ref = "edc" }
 edc-identity-vc-ldp = { module = "org.eclipse.edc:ldp-verifiable-credentials", version.ref = "edc" }
 edc-identity-vc-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
-edc-identity-trust-service = { module = "org.eclipse.edc:identity-trust-service", version.ref = "edc" }
-edc-identity-trust-transform = { module = "org.eclipse.edc:identity-trust-transform", version.ref = "edc" }
+edc-decentralized-claims-service = { module = "org.eclipse.edc:decentralized-claims-service", version.ref = "edc" }
+edc-decentralized-claims-transform = { module = "org.eclipse.edc:decentralized-claims-transform", version.ref = "edc" }
 
 # DCP for Testing
-edc-identity-trust-sts-remote-lib = { module = "org.eclipse.edc:identity-trust-sts-remote-lib", version.ref = "edc" }
+edc-decentralized-claims-sts-remote-lib = { module = "org.eclipse.edc:decentralized-claims-sts-remote-lib", version.ref = "edc" }
 edc-sts-core = { module = "org.eclipse.edc:sts-core", version.ref = "edc" }
 edc-sts-api = { module = "org.eclipse.edc:sts-api", version.ref = "edc" }
 edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
@@ -238,5 +241,5 @@ edc-sts = [
 [plugins]
 docker = { id = "com.bmuschko.docker-remote-api", version = "10.0.0" }
 shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.40" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.26" }
 edc-build = { id = "org.eclipse.edc.edc-build", version.ref = "edc-build" }

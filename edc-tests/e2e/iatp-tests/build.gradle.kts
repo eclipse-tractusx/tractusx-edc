@@ -22,9 +22,19 @@ plugins {
     `java-test-fixtures`
 }
 
+configurations.all {
+    exclude("com.networknt", "json-schema-validator")
+}
+
 dependencies {
+    constraints {
+        testImplementation("com.networknt:json-schema-validator:2.0.0") {
+            because("older versions cause runtime issues")
+        }
+    }
+
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
-    testImplementation(libs.edc.ih.did)
+    testImplementation(libs.edc.spi.keypair)
     testImplementation(libs.edc.ih.spi)
     testImplementation(libs.edc.ih.spi.participant.context)
     testImplementation(libs.edc.ih.spi.credentials)
@@ -35,13 +45,16 @@ dependencies {
     testImplementation(libs.edc.sts.core)
     testRuntimeOnly(libs.edc.transaction.local)
 
-    testImplementation(libs.wiremock)
+    testImplementation(libs.wiremock) {
+        exclude("com.networknt", "json-schema-validator")
+    }
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
     testImplementation(libs.bouncyCastle.bcpkixJdk18on)
 
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih"))
     testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-iatp-ih"))
+    testCompileOnly(project(":edc-tests:runtime:iatp:runtime-memory-sts"))
 }
 
 // do not publish

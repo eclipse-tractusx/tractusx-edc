@@ -37,9 +37,12 @@ import okhttp3.ResponseBody;
 import org.assertj.core.api.Assertions;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
@@ -81,6 +84,7 @@ class TokenRefreshHandlerImplTest {
     private final EndpointDataReferenceCache edrCache = mock();
     private final EdcHttpClient mockedHttpClient = mock();
     private final SecureTokenService mockedTokenService = mock();
+    private final ParticipantContextSupplier participantContextSupplier = mock();
     private TokenRefreshHandlerImpl tokenRefreshHandler;
     private ObjectMapper objectMapper;
 
@@ -97,15 +101,17 @@ class TokenRefreshHandlerImplTest {
 
     @BeforeEach
     void setup() {
+        var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
+        when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
         objectMapper = new ObjectMapper();
         tokenRefreshHandler = new TokenRefreshHandlerImpl(edrCache, mockedHttpClient, CONSUMER_DID, mock(),
-                mockedTokenService, objectMapper);
+                mockedTokenService, objectMapper, participantContextSupplier);
     }
 
     @Test
     void refresh_validateCorrectRequest() throws IOException {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
-        when(mockedTokenService.createToken(anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        when(mockedTokenService.createToken(any(), anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
         var tokenResponse = new TokenResponse("new-access-token", "new-refresh-token", 60 * 5L, "bearer");
         var successResponse = createResponse(tokenResponse, 200, "");
         when(mockedHttpClient.execute(any())).thenReturn(successResponse);
@@ -153,7 +159,7 @@ class TokenRefreshHandlerImplTest {
     @Test
     void refresh_endpointReturnsFailure() throws IOException {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
-        when(mockedTokenService.createToken(anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        when(mockedTokenService.createToken(any(), anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
         var response401 = createResponse(null, 401, "Not authorized");
 
         when(mockedHttpClient.execute(any())).thenReturn(response401);
@@ -166,7 +172,7 @@ class TokenRefreshHandlerImplTest {
     @Test
     void refresh_endpointReturnsEmptyBody() throws IOException {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
-        when(mockedTokenService.createToken(anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        when(mockedTokenService.createToken(any(), anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
         var successResponse = createResponse(null, 200, "");
         when(mockedHttpClient.execute(any())).thenReturn(successResponse);
 
@@ -178,7 +184,7 @@ class TokenRefreshHandlerImplTest {
     @Test
     void refresh_ioException() throws IOException {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
-        when(mockedTokenService.createToken(anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
+        when(mockedTokenService.createToken(any(), anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
         when(mockedHttpClient.execute(any())).thenThrow(new IOException("test exception"));
 
         assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
@@ -188,7 +194,7 @@ class TokenRefreshHandlerImplTest {
     @Test
     void refresh_tokenGenerationFailed() {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
-        when(mockedTokenService.createToken(anyMap(), isNull())).thenReturn(Result.failure("foobar"));
+        when(mockedTokenService.createToken(any(), anyMap(), isNull())).thenReturn(Result.failure("foobar"));
         assertThat(tokenRefreshHandler.refreshToken("token-id")).isFailed()
                 .detail().isEqualTo("Could not execute token refresh: foobar");
     }

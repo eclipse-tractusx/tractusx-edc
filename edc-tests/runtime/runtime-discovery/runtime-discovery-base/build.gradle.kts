@@ -24,14 +24,15 @@ plugins {
 
 
 dependencies {
-    runtimeOnly(project(":edc-controlplane:edc-controlplane-base")) {
+    implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "tx-dcp")
         exclude(module = "tx-dcp-sts-dim")
     }
 
-    runtimeOnly(project(":edc-dataplane:edc-dataplane-base")) {
+    implementation(project(":edc-dataplane:edc-dataplane-base")) {
         exclude("org.eclipse.edc", "data-plane-selector-client")
     }
+    implementation(project(":edc-extensions:single-participant-vault"))
 }
 
 application {

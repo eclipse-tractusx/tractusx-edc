@@ -25,7 +25,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -57,28 +59,31 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
     private final Monitor monitor;
     private final SecureTokenService secureTokenService;
     private final ObjectMapper objectMapper;
+    private final ParticipantContextSupplier participantContextSupplier;
 
     /**
      * Creates a new TokenRefreshHandler
      *
-     * @param edrCache           a persistent storage where {@link DataAddress} objects are stored.
-     * @param httpClient         needed to make the actual refresh call against the refresh endpoint
-     * @param ownDid             the DID of this connector
-     * @param secureTokenService Service to generate the authentication token
-     * @param objectMapper       ObjectMapper to interpret JSON responses
+     * @param edrCache                   a persistent storage where {@link DataAddress} objects are stored.
+     * @param httpClient                 needed to make the actual refresh call against the refresh endpoint
+     * @param ownDid                     the DID of this connector
+     * @param secureTokenService         Service to generate the authentication token
+     * @param objectMapper               ObjectMapper to interpret JSON responses
+     * @param participantContextSupplier the participant context supplier.
      */
     public TokenRefreshHandlerImpl(EndpointDataReferenceCache edrCache,
                                    EdcHttpClient httpClient,
                                    String ownDid,
                                    Monitor monitor,
                                    SecureTokenService secureTokenService,
-                                   ObjectMapper objectMapper) {
+                                   ObjectMapper objectMapper, ParticipantContextSupplier participantContextSupplier) {
         this.edrCache = edrCache;
         this.httpClient = httpClient;
         this.ownDid = ownDid;
         this.monitor = monitor;
         this.secureTokenService = secureTokenService;
         this.objectMapper = objectMapper;
+        this.participantContextSupplier = participantContextSupplier;
     }
 
     @Override
@@ -119,14 +124,13 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
                 "token", accessToken
         );
 
-        var result = secureTokenService.createToken(claims, null)
-                .compose(authToken -> createTokenRefreshRequest(refreshEndpoint.toString(), refreshToken.toString(), "Bearer %s".formatted(authToken.getToken())));
-
-        if (result.failed()) {
-            return ServiceResult.badRequest("Could not execute token refresh: " + result.getFailureDetail());
-        }
-
-        return executeRequest(result.getContent())
+        return participantContextSupplier.get().map(ParticipantContext::getParticipantContextId)
+                .compose(participantContextId -> secureTokenService.createToken(participantContextId, claims, null)
+                        .flatMap(ServiceResult::from))
+                .compose(authToken -> createTokenRefreshRequest(refreshEndpoint.toString(), refreshToken.toString(), "Bearer %s".formatted(authToken.getToken()))
+                        .flatMap(ServiceResult::from))
+                .recover(f -> ServiceResult.badRequest("Could not execute token refresh: " + f.getFailureDetail()))
+                .compose(this::executeRequest)
                 .map(tr -> createNewEdr(edr, tr));
     }
 
@@ -143,13 +147,10 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
     private ServiceResult<TokenResponse> executeRequest(Request tokenRefreshRequest) {
         try (var response = httpClient.execute(tokenRefreshRequest)) {
             if (response.isSuccessful()) {
-                if (response.body() != null) {
-
-                    var jsonBody = response.body().string();
-                    if (!StringUtils.isNullOrEmpty(jsonBody)) {
-                        var tokenResponse = objectMapper.readValue(jsonBody, TokenResponse.class);
-                        return ServiceResult.success(tokenResponse);
-                    }
+                var jsonBody = response.body().string();
+                if (!StringUtils.isNullOrEmpty(jsonBody)) {
+                    var tokenResponse = objectMapper.readValue(jsonBody, TokenResponse.class);
+                    return ServiceResult.success(tokenResponse);
                 }
                 return ServiceResult.badRequest("Token refresh successful, but body was empty.");
             }

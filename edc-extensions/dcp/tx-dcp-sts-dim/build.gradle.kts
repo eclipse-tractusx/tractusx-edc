@@ -25,8 +25,9 @@ plugins {
 dependencies {
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
-    implementation(libs.edc.identity.trust.sts.remote.lib)
-    implementation(libs.edc.spi.identitytrust)
+    implementation(libs.edc.decentralized.claims.sts.remote.lib)
+    implementation(libs.edc.spi.decentralized.claims)
+    implementation(libs.edc.spi.participant.context.single)
     implementation(libs.edc.auth.oauth2.client)
 
 

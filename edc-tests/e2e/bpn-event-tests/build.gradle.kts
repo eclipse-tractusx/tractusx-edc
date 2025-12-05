@@ -24,6 +24,8 @@ plugins {
 
 dependencies {
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+
+    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
 }
 
 // do not publish

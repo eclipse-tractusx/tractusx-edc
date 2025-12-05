@@ -31,7 +31,7 @@ public class EdrCacheApiV3ControllerTest extends BaseEdrCacheApiControllerTest {
 
     @Override
     protected Object controller() {
-        return new EdrCacheApiV3Controller(edrStore, transformerRegistry, validator, mock(), edrService, contractNegotiationService);
+        return new EdrCacheApiV3Controller(edrStore, transformerRegistry, validator, mock(), edrService, contractNegotiationService, participantContextSupplier);
     }
 
     protected RequestSpecification baseRequest() {

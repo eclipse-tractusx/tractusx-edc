@@ -35,10 +35,10 @@ import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.dataspacetck.core.system.ConsoleMonitor;
 import org.eclipse.dataspacetck.runtime.TckRuntime;
 import org.eclipse.edc.connector.controlplane.profile.DataspaceProfileContextRegistryImpl;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.validation.TrustedIssuerRegistry;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -51,22 +51,26 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
-import org.junit.jupiter.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.iam.verifiablecredentials.spi.validation.TrustedIssuerRegistry.WILDCARD;
 import static org.eclipse.edc.spi.result.Result.success;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -90,14 +94,14 @@ public class DcpPresentationFlowTest {
     
     @RegisterExtension
     static final RuntimePerClassExtension RUNTIME = new RuntimePerClassExtension(
-            new EmbeddedRuntime("Connector-under-test", ":edc-controlplane:edc-controlplane-base")
+            new EmbeddedRuntime("Connector-under-test", ":edc-controlplane:edc-controlplane-base", ":edc-extensions:single-participant-vault")
                     .registerServiceMock(SecureTokenService.class, STS_MOCK)
                     .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
                     .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
                     .configurationProvider(DcpPresentationFlowTest::runtimeConfiguration));
     @RegisterExtension
     protected static WireMockExtension didServer = WireMockExtension.newInstance()
-            .options(wireMockConfig().bindAddress("localhost").port(DID_SERVER_PORT))
+            .options(wireMockConfig().port(DID_SERVER_PORT))
             .build();
     private ECKey verifierKey;
 
@@ -119,9 +123,12 @@ public class DcpPresentationFlowTest {
         var holderDid = formatDid(CALLBACK_PORT, "holder");
         var thirdPartyDid = formatDid(CALLBACK_PORT, "thirdparty");
         var baseCallbackUrl = "http://localhost:%s".formatted(CALLBACK_PORT);
+        var baseCallbackUri = URI.create(baseCallbackUrl);
         var result = TckRuntime.Builder.newInstance()
                 .properties(Map.of(
                         "dataspacetck.callback.address", baseCallbackUrl,
+                        "dataspacetck.host", baseCallbackUri.getHost(),
+                        "dataspacetck.port", String.valueOf(baseCallbackUri.getPort()),
                         "dataspacetck.launcher", "org.eclipse.dataspacetck.dcp.system.DcpSystemLauncher",
                         "dataspacetck.did.verifier", VERIFIER_DID,
                         "dataspacetck.did.holder", holderDid,
@@ -137,12 +144,13 @@ public class DcpPresentationFlowTest {
                 result.getTestsSucceededCount(), result.getTotalFailureCount()
         )).resetMode();
 
-        if (!result.getFailures().isEmpty()) {
-            var failures = result.getFailures().stream()
-                    .map(f -> "- " + f.getTestIdentifier().getDisplayName() + " (" + f.getException() + ")")
-                    .collect(Collectors.joining("\n"));
-            Assertions.fail(result.getTotalFailureCount() + " TCK test cases failed:\n" + failures);
-        }
+        assertThat(result.getFailures()).withFailMessage(errorMessageSupplier(result)).isEmpty();
+    }
+
+    private @NotNull Supplier<String> errorMessageSupplier(TestExecutionSummary result) {
+        return () -> result.getFailures().stream()
+                .map(f -> "- " + f.getTestIdentifier().getDisplayName() + " (" + f.getException() + ")")
+                .collect(Collectors.joining("\n"));
     }
 
     private ECKey generateEcKey() throws JOSEException {
@@ -161,9 +169,9 @@ public class DcpPresentationFlowTest {
     }
 
     private void configureStsMock() {
-        when(STS_MOCK.createToken(anyMap(), isNull()))
+        when(STS_MOCK.createToken(any(), anyMap(), isNull()))
                 .thenAnswer(i -> {
-                    Map<String, Object> claims = new HashMap<>(i.getArgument(0));
+                    Map<String, Object> claims = new HashMap<>(i.getArgument(1));
                     var header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(verifierKey.getKeyID()).build();
                     var claimsSet = new JWTClaimsSet.Builder(JWTClaimsSet.parse(claims))
                             .jwtID(UUID.randomUUID().toString())

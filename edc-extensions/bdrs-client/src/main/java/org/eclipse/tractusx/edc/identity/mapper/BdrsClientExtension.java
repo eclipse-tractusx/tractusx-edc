@@ -20,10 +20,11 @@
 package org.eclipse.tractusx.edc.identity.mapper;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.decentralizedclaims.service.DidCredentialServiceUrlResolver;
+import org.eclipse.edc.iam.decentralizedclaims.spi.CredentialServiceClient;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
-import org.eclipse.edc.iam.identitytrust.service.DidCredentialServiceUrlResolver;
-import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -57,18 +58,16 @@ public class BdrsClientExtension implements ServiceExtension {
 
     @Inject
     private EdcHttpClient httpClient;
-
     @Inject
     private TypeManager typeManager;
-
     @Inject
     private SecureTokenService secureTokenService;
-
     @Inject
     private CredentialServiceClient credentialServiceClient;
-
     @Inject
     private DidResolverRegistry didResolverRegistry;
+    @Inject
+    private SingleParticipantContextSupplier participantContextSupplier;
 
     @Override
     public String name() {
@@ -105,7 +104,8 @@ public class BdrsClientExtension implements ServiceExtension {
 
         }
 
-        return new BdrsClientImpl(baseUrl, cacheValidity, ownDid, urlSupplier, httpClient, monitor, typeManager.getMapper(), secureTokenService, credentialServiceClient);
+        return new BdrsClientImpl(baseUrl, cacheValidity, ownDid, urlSupplier, httpClient, monitor, typeManager.getMapper(),
+                secureTokenService, credentialServiceClient, participantContextSupplier);
     }
 
 }

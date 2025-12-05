@@ -18,7 +18,7 @@
  */
 
 plugins {
-    "java-library"
+    `java-library`
     id(libs.plugins.swagger.get().pluginId)
 }
 
@@ -32,10 +32,10 @@ dependencies {
     api(libs.edc.spi.http)
     api(libs.edc.spi.jsonld)
     api(libs.edc.spi.controlplane)
-    api(libs.edc.spi.protocolversion)
     api(libs.dsp.spi.v08)
     api(libs.dsp.spi.v2025)
 
+    implementation(libs.edc.lib.jersey.providers)
     implementation(libs.edc.lib.validator)
     implementation(libs.edc.lib.util)
     implementation(libs.edc.boot)

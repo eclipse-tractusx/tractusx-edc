@@ -27,11 +27,13 @@ dependencies {
     implementation(project(":spi:edr-spi"))
     implementation(project(":spi:core-spi"))
 
+    implementation(libs.edc.spi.controlplane)
     implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.participant.context.single)
+    implementation(libs.edc.spi.transactionspi)
     implementation(libs.edc.spi.transfer)
     implementation(libs.edc.spi.transform)
-    implementation(libs.edc.spi.transactionspi)
-    implementation(libs.edc.spi.controlplane)
+
     implementation(libs.nimbus.jwt)
 
     testImplementation(libs.edc.junit)

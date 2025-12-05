@@ -19,7 +19,9 @@
 
 package org.eclipse.tractusx.edc.tests.extension;
 
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -31,6 +33,8 @@ public class VaultSeedExtension implements ServiceExtension {
     private final Map<String, String> secrets;
     @Inject
     private Vault vault;
+    @Inject(required = false)
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     public VaultSeedExtension(Map<String, String> secrets) {
         this.secrets = secrets;
@@ -43,6 +47,11 @@ public class VaultSeedExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        secrets.forEach((key, value) -> vault.storeSecret(key, value));
+        if (singleParticipantContextSupplier == null) {
+            secrets.forEach((key, value) -> vault.storeSecret(key, value));
+        } else {
+            var participantContext = singleParticipantContextSupplier.get().orElseThrow(f -> new EdcException(f.getFailureDetail()));
+            secrets.forEach((key, value) -> vault.storeSecret(participantContext.getParticipantContextId(), key, value));
+        }
     }
 }

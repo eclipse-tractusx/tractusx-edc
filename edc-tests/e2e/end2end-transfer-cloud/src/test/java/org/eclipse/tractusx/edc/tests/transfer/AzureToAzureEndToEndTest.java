@@ -122,10 +122,10 @@ public class AzureToAzureEndToEndTest {
     @BeforeEach
     void setup() {
         PROVIDER_RUNTIME.getService(Vault.class)
-                .storeSecret(PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
+                .storeSecret(PROVIDER_NAME, PROVIDER_KEY_ALIAS, PROVIDER_AZURITE_ACCOUNT.key());
 
         CONSUMER_RUNTIME.getService(Vault.class)
-                .storeSecret("%s-key1".formatted(CONSUMER_AZURITE_ACCOUNT.name()), CONSUMER_AZURITE_ACCOUNT.key());
+                .storeSecret(CONSUMER_NAME, CONSUMER_AZURITE_ACCOUNT.name(), CONSUMER_AZURITE_ACCOUNT.key());
 
         providerBlobHelper = AZURITE_CONTAINER.getClientFor(PROVIDER_AZURITE_ACCOUNT);
         consumerBlobHelper = AZURITE_CONTAINER.getClientFor(CONSUMER_AZURITE_ACCOUNT);

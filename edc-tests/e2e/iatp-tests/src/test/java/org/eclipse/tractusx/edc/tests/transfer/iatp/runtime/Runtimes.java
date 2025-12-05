@@ -19,11 +19,15 @@
 
 package org.eclipse.tractusx.edc.tests.transfer.iatp.runtime;
 
+import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.tractusx.edc.tests.extension.VaultSeedExtension;
+import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 
 import java.security.KeyPair;
 import java.util.Map;
@@ -42,15 +46,16 @@ public interface Runtimes {
     }
 
     static RuntimeExtension stsRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
-        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-sts", keyPair, configurationProvider)
-                .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
+        return new RuntimePerClassExtension(new EmbeddedRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-sts").configurationProvider(configurationProvider)
+                .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret"))))
+                .registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
     }
 
     private static RuntimeExtension genericRuntime(String name, String moduleName, KeyPair keyPair, Supplier<Config> configurationProvider) {
         return new IatpParticipantRuntimeExtension(
                 new EmbeddedRuntime(name, moduleName).configurationProvider(configurationProvider),
                 keyPair
-        );
+        ).registerServiceMock(DidPublicKeyResolver.class, keyId -> Result.success(KeyPool.forId(keyId).getPublic()));
     }
 
 }

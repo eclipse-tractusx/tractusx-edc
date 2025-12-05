@@ -20,13 +20,16 @@
 package org.eclipse.tractusx.edc.agreements.retirement.api;
 
 import jakarta.json.Json;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
+import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.agreements.retirement.api.transform.JsonObjectFromAgreementRetirementTransformer;
@@ -36,6 +39,7 @@ import org.eclipse.tractusx.edc.agreements.retirement.spi.service.AgreementsReti
 
 import java.util.Map;
 
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.tractusx.edc.agreements.retirement.api.AgreementsRetirementApiExtension.NAME;
 
 
@@ -59,6 +63,10 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
     private AgreementsRetirementService agreementsRetirementService;
     @Inject
     private Monitor monitor;
+    @Inject
+    private JsonLd jsonLd;
+    @Inject
+    private TypeManager typeManager;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
@@ -68,7 +76,10 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectFromAgreementRetirementTransformer(jsonFactory));
         managementTypeTransformerRegistry.register(new JsonObjectToAgreementsRetirementEntryTransformer());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(agreementsRetirementService, managementTypeTransformerRegistry, validator, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(agreementsRetirementService,
+                managementTypeTransformerRegistry, validator, monitor));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV3Controller.class,
+                new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
     }
 
 }

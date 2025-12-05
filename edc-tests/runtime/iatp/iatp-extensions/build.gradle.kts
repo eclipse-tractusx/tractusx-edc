@@ -25,6 +25,9 @@ dependencies {
     implementation(libs.edc.ih.spi)
     implementation(libs.edc.spi.jsonld)
     implementation(project(":spi:core-spi"))
+
+    // TODO: test
+    implementation("com.networknt:json-schema-validator:2.0.0")
 }
 
 // do not publish

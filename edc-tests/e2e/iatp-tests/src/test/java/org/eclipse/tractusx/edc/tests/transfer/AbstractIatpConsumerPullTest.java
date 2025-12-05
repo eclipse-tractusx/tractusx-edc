@@ -124,7 +124,6 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         // Prov-DP -> Prov-backend
         assertThat(consumer().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
 
-
         server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)).withHeader("Edc-Bpn", equalTo(consumer().getBpn())).withHeader("Edc-Contract-Agreement-Id", matching(".+")));
     }
 
@@ -134,12 +133,13 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     @Test
     void catalogRequest_whenCredentialExpired() {
         //update the membership credential to an expirationDate that is in the past
-        var store = consumerRuntime().getService(CredentialStore.class);
+        var store = credentialStoreRuntime().getService(CredentialStore.class);
 
-        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+        var existingCred = store.query(QuerySpec.Builder.newInstance()
+                        .filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
-                .stream().findFirst()
-                .orElseThrow(RuntimeException::new);
+                .stream().filter(it -> it.getHolderId().equals(consumer().getBpn()))
+                .findFirst().orElseThrow(RuntimeException::new);
 
         var expirationDate = Instant.now().minus(1, ChronoUnit.DAYS);
         var newCred = VerifiableCredential.Builder.newInstance()
@@ -182,13 +182,13 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     @Test
     void catalogRequest_whenCredentialRevoked() {
         //update the membership credential to contain a `credentialStatus` with a revocation
-        var store = consumerRuntime().getService(CredentialStore.class);
+        var store = credentialStoreRuntime().getService(CredentialStore.class);
         var port = getFreePort();
-
-        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+        var isMembershipCredential = new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential");
+        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(isMembershipCredential).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
-                .stream().findFirst()
-                .orElseThrow(RuntimeException::new);
+                .stream().filter(it -> it.getHolderId().equals(consumer().getBpn()))
+                .findAny().orElseThrow(RuntimeException::new);
 
         var newCred = VerifiableCredential.Builder.newInstance()
                 .id(existingCred.getVerifiableCredential().credential().getId())
@@ -222,7 +222,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         store.update(VerifiableCredentialResource.Builder.newInstance()
                         .id(existingCred.getId())
                         .issuerId(dataspaceIssuer().didUrl())
-                        .participantContextId(did)
+                        .participantContextId(existingCred.getParticipantContextId())
                         .holderId(bpn)
                         .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
                         .build())
@@ -255,9 +255,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         return frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), CX_POLICY_2025_09_NS + "access");
     }
 
-    protected abstract RuntimeExtension consumerRuntime();
-
-    protected abstract RuntimeExtension providerRuntime();
+    protected abstract RuntimeExtension credentialStoreRuntime();
 
     protected abstract DataspaceIssuer dataspaceIssuer();
 

@@ -67,7 +67,7 @@ public class DataWiper {
     }
 
     public void clearAssetIndex() {
-        var index = context.getService(AssetIndex.class);
+        var index = context.getService(AssetIndex.class, true);
         index.queryAssets(QuerySpec.max()).forEach(asset -> index.deleteById(asset.getId()));
     }
 

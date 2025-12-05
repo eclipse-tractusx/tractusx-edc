@@ -24,10 +24,13 @@ import org.eclipse.edc.connector.dataplane.spi.AccessTokenData;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.spi.TokenDecorator;
@@ -66,21 +69,22 @@ class DataPlaneTokenRefreshServiceImplTest {
     private final TokenGenerationService tokenGenService = mock();
     private final TokenValidationService tokenValidationService = mock();
     private final DidPublicKeyResolver didPublicKeyResolver = mock();
-
     private final LocalPublicKeyService localPublicKeyService = mock();
+    private final ParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(
+            ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build()
+    );
 
     private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
             tokenValidationService, didPublicKeyResolver, localPublicKeyService, accessTokenDataStore, tokenGenService, mock(), mock(),
             "https://example.com", "did:web:provider", 1, 300L,
-            () -> "keyid", mock(), new ObjectMapper());
-
+            () -> "keyid", mock(), new ObjectMapper(), participantContextSupplier);
 
     @Test
     void obtainToken() {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
         var result = accessTokenService.obtainToken(params, address, Map.of("fizz", "buzz", "refreshToken", "getsOverwritten", AUDIENCE_PROPERTY, "audience"));
@@ -89,7 +93,7 @@ class DataPlaneTokenRefreshServiceImplTest {
                 .containsKeys("fizz", EDR_PROPERTY_REFRESH_TOKEN, EDR_PROPERTY_EXPIRES_IN, EDR_PROPERTY_REFRESH_ENDPOINT)
                 .containsEntry(EDR_PROPERTY_REFRESH_TOKEN, "foo-token");
 
-        verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).store(any(AccessTokenData.class));
     }
 
@@ -98,13 +102,13 @@ class DataPlaneTokenRefreshServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
         var result = accessTokenService.obtainToken(params, address, Map.of("foo", "bar", AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
 
-        verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).store(argThat(accessTokenData -> accessTokenData.additionalProperties().get("foo").equals("bar")));
     }
 
@@ -122,13 +126,13 @@ class DataPlaneTokenRefreshServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar")/* missing: .claims("jti", "baz")*/.header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
         var result = accessTokenService.obtainToken(params, address, Map.of(AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
 
-        verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).store(argThat(accessTokenData -> UUID_PATTERN.matcher(accessTokenData.id()).matches()));
     }
 
@@ -137,12 +141,12 @@ class DataPlaneTokenRefreshServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.failure("test failure"));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.failure("test failure"));
 
         var result = accessTokenService.obtainToken(params, address, Map.of());
         assertThat(result).isFailed().detail().contains("test failure");
 
-        verify(tokenGenService).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService).generate(any(), any(), any(TokenDecorator[].class));
         verifyNoMoreInteractions(accessTokenDataStore);
     }
 
@@ -151,13 +155,13 @@ class DataPlaneTokenRefreshServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.alreadyExists("test failure"));
 
         var result = accessTokenService.obtainToken(params, address, Map.of(AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isFailed().detail().isEqualTo("test failure");
 
-        verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).store(any(AccessTokenData.class));
     }
 
@@ -179,8 +183,6 @@ class DataPlaneTokenRefreshServiceImplTest {
 
     @Test
     void resolve_whenValidationFails() {
-        var tokenId = "test-id";
-        var claimToken = ClaimToken.Builder.newInstance().claim("jti", tokenId).build();
         when(tokenValidationService.validate(anyString(), any(), anyList()))
                 .thenReturn(Result.failure("test-failure"));
 
@@ -238,7 +240,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(accessTokenDataStore.getById(eq(tokenId))).thenReturn(new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
                 DataAddress.Builder.newInstance().type("type").build(), Map.of("fizz", "buzz")));
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.failure("generator-failure"));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.failure("generator-failure"));
 
 
         assertThat(accessTokenService.refreshToken(refreshToken, authenticationToken))
@@ -249,7 +251,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         verify(tokenValidationService).validate(eq(accessToken), any(), any(TokenValidationRule[].class));
         verify(tokenValidationService).validate(eq(authenticationToken), any(), anyList());
         verify(accessTokenDataStore).getById(tokenId);
-        verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
         verifyNoMoreInteractions(tokenValidationService, tokenGenService, didPublicKeyResolver, accessTokenDataStore);
     }
 
@@ -270,7 +272,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(accessTokenDataStore.getById(eq(tokenId))).thenReturn(new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
                 DataAddress.Builder.newInstance().type("type").build(), Map.of("fizz", "buzz")));
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().build()));
 
         when(accessTokenDataStore.update(any())).thenReturn(StoreResult.alreadyExists("test-failure"));
 
@@ -282,7 +284,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         verify(tokenValidationService).validate(eq(authenticationToken), any(), anyList());
         verify(tokenValidationService).validate(eq(accessToken), any(), any(TokenValidationRule[].class));
         verify(accessTokenDataStore).getById(tokenId);
-        verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).update(any());
         verifyNoMoreInteractions(tokenValidationService, tokenGenService, didPublicKeyResolver, accessTokenDataStore);
     }
@@ -303,7 +305,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(accessTokenDataStore.getById(eq(tokenId))).thenReturn(new AccessTokenData(tokenId, ClaimToken.Builder.newInstance().claim("claim1", "value1").build(),
                 DataAddress.Builder.newInstance().type("type").build(), Map.of("fizz", "buzz")));
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class)))
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class)))
                 .thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("fizz-token").build()))
                 .thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("buzz-token").build()));
 
@@ -319,7 +321,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         verify(tokenValidationService).validate(eq(authenticationToken), any(), anyList());
         verify(tokenValidationService).validate(eq(accessToken), any(), any(TokenValidationRule[].class));
         verify(accessTokenDataStore).getById(tokenId);
-        verify(tokenGenService, times(2)).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).update(any());
         verifyNoMoreInteractions(tokenValidationService, tokenGenService, didPublicKeyResolver, accessTokenDataStore);
     }

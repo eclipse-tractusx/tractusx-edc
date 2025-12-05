@@ -31,6 +31,7 @@ dependencies {
         exclude("org.eclipse.edc", "data-plane-selector-client")
         exclude("org.eclipse.edc", "data-plane-self-registration")
     }
+    implementation(project(":edc-extensions:single-participant-vault"))
 }
 
 application {

@@ -32,6 +32,7 @@ import org.eclipse.tractusx.edc.postgresql.migration.BusinessGroupPostgresMigrat
 import org.eclipse.tractusx.edc.postgresql.migration.ContractDefinitionPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.DataPlaneInstancePostgresqlMigrationExtension;
+import org.eclipse.tractusx.edc.postgresql.migration.DataPlanePostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.EdrIndexPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.FederatedCatalogCacheMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.JtiValidationPostgresqlMigrationExtension;
@@ -113,7 +114,7 @@ public class ConnectorPostgresqlMigrationTest {
                 objectFactory.constructInstance(AgreementRetirementPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(BusinessGroupPostgresMigrationExtension.class),
                 objectFactory.constructInstance(AccessTokenDataPostgresqlMigrationExtension.class),
-                objectFactory.constructInstance(DataPlaneInstancePostgresqlMigrationExtension.class)
+                objectFactory.constructInstance(DataPlanePostgresqlMigrationExtension.class)
         );
         currentMigrations.forEach(e -> e.initialize(context));
         currentMigrations.forEach(AbstractPostgresqlMigrationExtension::prepare);

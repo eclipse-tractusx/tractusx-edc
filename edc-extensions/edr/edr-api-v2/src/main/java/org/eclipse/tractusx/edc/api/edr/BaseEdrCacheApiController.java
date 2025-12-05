@@ -23,9 +23,11 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.api.model.IdResponse;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
@@ -64,6 +66,7 @@ public class BaseEdrCacheApiController {
     private final JsonObjectValidatorRegistry validator;
     protected final Monitor monitor;
     private final EdrService edrService;
+    private final ParticipantContextSupplier participantContextSupplier;
 
     private final ContractNegotiationService contractNegotiationService;
 
@@ -71,12 +74,13 @@ public class BaseEdrCacheApiController {
                                      TypeTransformerRegistry transformerRegistry,
                                      JsonObjectValidatorRegistry validator,
                                      Monitor monitor,
-                                     EdrService edrService, ContractNegotiationService contractNegotiationService) {
+                                     EdrService edrService, ParticipantContextSupplier participantContextSupplier, ContractNegotiationService contractNegotiationService) {
         this.edrStore = edrStore;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
         this.monitor = monitor;
         this.edrService = edrService;
+        this.participantContextSupplier = participantContextSupplier;
         this.contractNegotiationService = contractNegotiationService;
     }
 
@@ -88,7 +92,10 @@ public class BaseEdrCacheApiController {
         var contractRequest = transformerRegistry.transform(requestObject, ContractRequest.class)
                 .orElseThrow(InvalidRequestException::new);
 
-        var contractNegotiation = contractNegotiationService.initiateNegotiation(enrichContractRequest(contractRequest));
+        var participantContext = participantContextSupplier.get()
+                .orElseThrow(exceptionMapper(ContractDefinition.class));
+
+        var contractNegotiation = contractNegotiationService.initiateNegotiation(participantContext, enrichContractRequest(contractRequest));
 
         var idResponse = IdResponse.Builder.newInstance()
                 .id(contractNegotiation.getId())

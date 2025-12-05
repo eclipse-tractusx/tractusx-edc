@@ -21,7 +21,8 @@ package org.eclipse.tractusx.edc.common.tokenrefresh;
 
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -47,6 +48,8 @@ public class TokenRefreshHandlerExtension implements ServiceExtension {
     private SecureTokenService secureTokenService;
     @Inject
     private TypeManager typeManager;
+    @Inject
+    private SingleParticipantContextSupplier participantContextSupplier;
 
     @Override
     public String name() {
@@ -55,7 +58,8 @@ public class TokenRefreshHandlerExtension implements ServiceExtension {
 
     @Provider
     public TokenRefreshHandler createTokenRefreshHander(ServiceExtensionContext context) {
-        return new TokenRefreshHandlerImpl(edrStore, httpClient, getOwnDid(context), context.getMonitor(), secureTokenService, typeManager.getMapper());
+        return new TokenRefreshHandlerImpl(edrStore, httpClient, getOwnDid(context), context.getMonitor(),
+                secureTokenService, typeManager.getMapper(), participantContextSupplier);
     }
 
     private String getOwnDid(ServiceExtensionContext context) {

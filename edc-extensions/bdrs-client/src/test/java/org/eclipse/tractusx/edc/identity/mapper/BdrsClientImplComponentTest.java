@@ -35,16 +35,19 @@ import com.nimbusds.jwt.SignedJWT;
 import dev.failsafe.RetryPolicy;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
-import org.eclipse.edc.iam.identitytrust.spi.CredentialServiceClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.spi.CredentialServiceClient;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentation;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
 import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -137,8 +140,11 @@ class BdrsClientImplComponentTest {
         vpHolderKey = ECKey.parse(Files.readString(Path.of(SHARED_TEMP_DIR, HOLDER_NAME + "/key.json")));
 
         SecureTokenService secureTokenService = mock();
-        when(secureTokenService.createToken(any(), any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
+        when(secureTokenService.createToken(any(), any(), any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
         var directoryPort = BDRS_SERVER_CONTAINER.getMappedPort(8082);
+        ParticipantContextSupplier participantContextSupplier = mock();
+        var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
+        when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
         client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(BDRS_SERVER_CONTAINER.getHost(), directoryPort), 1,
                 "did:web:self",
                 () -> "http://credential.service",
@@ -146,7 +152,7 @@ class BdrsClientImplComponentTest {
                 monitor,
                 mapper,
                 secureTokenService,
-                csMock);
+                csMock, participantContextSupplier);
 
         // need to wait until healthy, otherwise BDRS will respond with a 404
         await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> {

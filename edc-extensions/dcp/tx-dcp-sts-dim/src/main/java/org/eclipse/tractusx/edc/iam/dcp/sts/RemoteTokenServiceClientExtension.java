@@ -20,10 +20,11 @@
 package org.eclipse.tractusx.edc.iam.dcp.sts;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.identitytrust.spi.SecureTokenService;
-import org.eclipse.edc.iam.identitytrust.sts.remote.RemoteSecureTokenService;
-import org.eclipse.edc.iam.identitytrust.sts.remote.StsRemoteClientConfiguration;
+import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.sts.remote.RemoteSecureTokenService;
+import org.eclipse.edc.iam.decentralizedclaims.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -51,24 +52,20 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     @Inject
     private EdcHttpClient httpClient;
-
     @Inject
     private Monitor monitor;
-
     @Inject
     private TypeManager typeManager;
-
     @Inject
     private StsRemoteClientConfiguration clientConfiguration;
-
     @Inject
     private Oauth2Client oauth2Client;
-
     @Inject
     private Vault vault;
-
     @Inject
     private Clock clock;
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     @Override
     public String name() {
@@ -86,12 +83,12 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
                 })
                 .orElseGet(() -> {
                     monitor.info("DIM URL not configured, will use the standard EDC Remote STS client");
-                    return new RemoteSecureTokenService(oauth2Client, clientConfiguration, vault);
+                    return new RemoteSecureTokenService(oauth2Client, participantContextId -> clientConfiguration, vault);
                 });
     }
 
     private DimOauth2Client oauth2Client() {
-        return new DimOauthClientImpl(oauth2Client, vault, clientConfiguration, clock, monitor);
+        return new DimOauthClientImpl(oauth2Client, vault, clientConfiguration, clock, monitor, singleParticipantContextSupplier);
     }
 
 }

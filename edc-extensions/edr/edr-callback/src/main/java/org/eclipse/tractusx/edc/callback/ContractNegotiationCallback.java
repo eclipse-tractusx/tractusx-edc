@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotia
 import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferRequest;
+import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -37,13 +38,16 @@ public class ContractNegotiationCallback implements InProcessCallback {
 
     public static final DataAddress DATA_DESTINATION = DataAddress.Builder.newInstance().type("HttpProxy").build();
     private static final String TRANSFER_TYPE = "HttpData-PULL";
+
     private final TransferProcessService transferProcessService;
-
     private final Monitor monitor;
+    private final ParticipantContextSupplier participantContextSupplier;
 
-    public ContractNegotiationCallback(TransferProcessService transferProcessService, Monitor monitor) {
+    public ContractNegotiationCallback(TransferProcessService transferProcessService, Monitor monitor,
+                                       ParticipantContextSupplier participantContextSupplier) {
         this.transferProcessService = transferProcessService;
         this.monitor = monitor;
+        this.participantContextSupplier = participantContextSupplier;
     }
 
     @Override
@@ -66,7 +70,8 @@ public class ContractNegotiationCallback implements InProcessCallback {
                 .callbackAddresses(negotiationFinalized.getCallbackAddresses())
                 .build();
 
-        var result = transferProcessService.initiateTransfer(transferRequest);
+        var result = participantContextSupplier.get()
+                .compose(participantContext -> transferProcessService.initiateTransfer(participantContext, transferRequest));
 
         if (result.failed()) {
             var msg = format("Failed to initiate a transfer for contract %s and asset %s, error: %s", negotiationFinalized.getContractAgreement().getId(), negotiationFinalized.getContractAgreement().getAssetId(), result.getFailureDetail());

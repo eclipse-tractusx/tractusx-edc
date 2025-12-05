@@ -33,6 +33,8 @@ dependencies {
     testImplementation(libs.edc.aws.s3.core)
     testImplementation(libs.aws.s3)
     testImplementation(libs.aws.s3transfer)
+
+    testCompileOnly(project(":edc-tests:runtime:runtime-postgresql"))
 }
 
 // do not publish

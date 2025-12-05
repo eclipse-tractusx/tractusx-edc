@@ -19,12 +19,15 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha;
 
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
+import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.discovery.v4alpha.api.ConnectorDiscoveryV4AlphaController;
@@ -33,6 +36,7 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRe
 import org.eclipse.tractusx.edc.discovery.v4alpha.transformers.JsonObjectToConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.validators.ConnectorDiscoveryRequestValidator;
 
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.NAME;
 
 @Extension(value = NAME)
@@ -53,6 +57,10 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     private JsonObjectValidatorRegistry validatorRegistry;
     @Inject
     private ConnectorDiscoveryService connectorDiscoveryService;
+    @Inject
+    private JsonLd jsonLd;
+    @Inject
+    private TypeManager typeManager;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
@@ -62,5 +70,6 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         validatorRegistry.register(ConnectorParamsDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
 
         webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, ConnectorDiscoveryV4AlphaController.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
     }
 }

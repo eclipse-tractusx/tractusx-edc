@@ -24,5 +24,6 @@ CREATE TABLE IF NOT EXISTS edc_edr_entry
     asset_id                      VARCHAR NOT NULL,
     provider_id                   VARCHAR NOT NULL,
     contract_negotiation_id       VARCHAR,
-    created_at                    BIGINT  NOT NULL
+    created_at                    BIGINT  NOT NULL,
+    participant_context_id        VARCHAR
 );
