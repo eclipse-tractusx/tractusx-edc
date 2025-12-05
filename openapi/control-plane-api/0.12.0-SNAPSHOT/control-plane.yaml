@@ -28,7 +28,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AssetOutput"
+                  $ref: "#/components/schemas/AssetOutputV3"
         "400":
           description: Request body was malformed
           content:
@@ -37,6 +37,43 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/transferprocesses/{id}/state:
+    get:
+      tags:
+      - Transfer Process v4beta
+      description: Gets the state of a transfer process with the given ID
+      operationId: getTransferProcessStateV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The  transfer process's state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferState"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An  transfer process with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/assets/{id}:
     get:
       tags:
@@ -57,7 +94,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AssetOutput"
+                $ref: "#/components/schemas/AssetOutputV3"
         "400":
           description: "Request was malformed, e.g. id was null"
           content:
@@ -148,6 +185,88 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
       deprecated: true
+  /v4beta/assets/{id}:
+    get:
+      tags:
+      - Asset v4beta
+      description: Gets an asset with the given ID
+      operationId: getAssetV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The asset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/asset-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An asset with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+    delete:
+      tags:
+      - Asset v4beta
+      description: "Removes an asset with the given ID if possible. Deleting an asset\
+        \ is only possible if that asset is not yet referenced by a contract agreement,\
+        \ in which case an error is returned. DANGER ZONE: Note that deleting assets\
+        \ can have unexpected results, especially for contract offers that have been\
+        \ sent out or ongoing or contract negotiations."
+      operationId: removeAssetV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Asset was deleted successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An asset with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "The asset cannot be deleted, because it is referenced by a\
+            \ contract agreement"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/business-partner-groups/groups:
     get:
       tags:
@@ -214,6 +333,34 @@ paths:
         "409":
           description: An entry already exists for that BPN
       deprecated: true
+  /v4beta/contractdefinitions/request:
+    post:
+      tags:
+      - Contract Definition v4beta
+      description: Returns all contract definitions according to a query
+      operationId: queryContractDefinitionsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: The contract definitions matching the query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/contract-definition-schema"
+        "400":
+          description: Request was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractnegotiations/{id}/agreement:
     get:
       tags:
@@ -253,6 +400,45 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/transferprocesses/{id}/resume:
+    post:
+      tags:
+      - Transfer Process v4beta
+      description: "Requests the resumption of a suspended transfer process. Due to\
+        \ the asynchronous nature of transfers, a successful response only indicates\
+        \ that the request was successfully received. This may take a long time, so\
+        \ clients must poll the /{id}/state endpoint to track the state."
+      operationId: resumeTransferProcessV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Request to resume the transfer process was successfully received
+          links:
+            poll-state:
+              operationId: resumeTransferProcessV3
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A transfer process with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractnegotiations:
     post:
       tags:
@@ -266,7 +452,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContractRequest"
+              $ref: "#/components/schemas/ContractRequestV3"
       responses:
         "200":
           description: The negotiation was successfully initiated. Returns the contract
@@ -353,7 +539,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ContractDefinitionOutput"
+                  $ref: "#/components/schemas/ContractDefinitionOutputV3"
         "400":
           description: Request was malformed
           content:
@@ -427,6 +613,68 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/assets:
+    put:
+      tags:
+      - Asset v4beta
+      description: "Updates an asset with the given ID if it exists. If the asset\
+        \ is not found, no further action is taken. DANGER ZONE: Note that updating\
+        \ assets can have unexpected results, especially for contract offers that\
+        \ have been sent out or are ongoing in contract negotiations."
+      operationId: updateAssetV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/asset-schema"
+      responses:
+        "204":
+          description: Asset was updated successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: "Asset could not be updated, because it does not exist."
+    post:
+      tags:
+      - Asset v4beta
+      description: Creates a new asset together with a data address
+      operationId: createAssetV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/asset-schema"
+      responses:
+        "200":
+          description: Asset was created successfully. Returns the asset Id and created
+            timestamp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "Could not create asset, because an asset with that ID already\
+            \ exists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractagreements/retirements/request:
     post:
       tags:
@@ -543,6 +791,45 @@ paths:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
         "404":
           description: No entry for the given BPN was found
+  /v4beta/contractnegotiations/{id}/agreement:
+    get:
+      tags:
+      - Contract Negotiation v4beta
+      description: Gets a contract agreement for a contract negotiation with the given
+        ID
+      operationId: getAgreementForNegotiationV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "The contract agreement that is attached to the negotiation,\
+            \ or null"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contract-agreement-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/edrs:
     post:
       tags:
@@ -593,7 +880,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SuspendTransfer"
+              $ref: "#/components/schemas/SuspendTransferV3"
       responses:
         "204":
           description: Request to suspend the transfer process was successfully received
@@ -625,43 +912,34 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
-  /v4alpha/contractagreements/{id}:
-    get:
+  /v4beta/assets/request:
+    post:
       tags:
-      - Contract Agreement v4alpha
-      description: Gets an contract agreement with the given ID
-      operationId: getAgreementByIdV4Alpha
-      parameters:
-      - name: id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
+      - Asset v4beta
+      description: Request all assets according to a particular query
+      operationId: requestAssetsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
       responses:
         "200":
-          description: The contract agreement
+          description: The assets matching the query
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContractAgreement"
+                type: array
+                items:
+                  $ref: "#/components/schemas/asset-schema"
         "400":
-          description: "Request was malformed, e.g. id was null"
+          description: Request body was malformed
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-        "404":
-          description: An contract agreement with the given ID does not exist
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractdefinitions:
     put:
       tags:
@@ -673,7 +951,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContractDefinitionInput"
+              $ref: "#/components/schemas/ContractDefinitionInputV3"
       responses:
         "204":
           description: Contract definition was updated successfully
@@ -702,7 +980,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContractDefinitionInput"
+              $ref: "#/components/schemas/ContractDefinitionInputV3"
       responses:
         "200":
           description: contract definition was created successfully. Returns the Contract
@@ -747,7 +1025,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PolicyDefinitionOutput"
+                  $ref: "#/components/schemas/PolicyDefinitionOutputV3"
         "400":
           description: Request was malformed
           content:
@@ -770,23 +1048,249 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
-  /v4alpha/protocol-versions/request:
+  /v4beta/transferprocesses:
     post:
       tags:
-      - Protocol Version v4alpha
-      operationId: requestProtocolVersionV4alpha
+      - Transfer Process v4beta
+      description: "Initiates a data transfer with the given parameters. Due to the\
+        \ asynchronous nature of transfers, a successful response only indicates that\
+        \ the request was successfully received. This may take a long time, so clients\
+        \ must poll the /{id}/state endpoint to track the state."
+      operationId: initiateTransferProcessV4
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CatalogRequest"
+              $ref: "#/components/schemas/transfer-request-schema"
       responses:
-        default:
-          description: Gets supported protocol versions of a single connector
+        "200":
+          description: The transfer was successfully initiated. Returns the transfer
+            process ID and created timestamp
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProtocolVersion"
+                $ref: "#/components/schemas/id-response-schema"
+          links:
+            poll-state:
+              operationId: getTransferProcessStateV3
+              parameters:
+                id: $response.body#/id
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/dataplanes:
+    get:
+      tags:
+      - Dataplane Selector v4beta
+      description: Returns a list of all currently registered data plane instances
+      operationId: getAllDataPlaneInstancesV4
+      responses:
+        "200":
+          description: A (potentially empty) list of currently registered data plane
+            instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV4"
+  /v4beta/transferprocesses/request:
+    post:
+      tags:
+      - Transfer Process v4beta
+      description: Returns all transfer process according to a query
+      operationId: queryTransferProcessesV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: The transfer processes matching the query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/transfer-process-schema"
+        "400":
+          description: Request was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/catalog/request:
+    post:
+      tags:
+      - Catalog v4beta
+      operationId: requestCatalogV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/catalog-request-schema"
+      responses:
+        default:
+          description: Gets contract offers (=catalog) of a single connector
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/catalog-schema"
+  /v4beta/policydefinitions/{id}/validate:
+    post:
+      tags:
+      - Policy Definition v4beta
+      description: "Validates an existing Policy, If the Policy is not found, an error\
+        \ is reported"
+      operationId: validatePolicyDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Returns the validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/policy-validation-result-schema"
+        "404":
+          description: "policy definition could not be validated, because it does\
+            \ not exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-error-schema"
+  /v4beta/contractnegotiations/request:
+    post:
+      tags:
+      - Contract Negotiation v4beta
+      description: Returns all contract negotiations according to a query
+      operationId: queryNegotiationsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: The contract negotiations that match the query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/contract-negotiation-schema"
+        "400":
+          description: Request was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/contractnegotiations/{id}/state:
+    get:
+      tags:
+      - Contract Negotiation v4beta
+      description: Gets the state of a contract negotiation with the given ID
+      operationId: getNegotiationStateV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract negotiation's state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NegotiationState"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/transferprocesses/{id}/suspend:
+    post:
+      tags:
+      - Transfer Process v4beta
+      description: "Requests the suspension of a transfer process. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received. This may take a long time, so clients must poll\
+        \ the /{id}/state endpoint to track the state."
+      operationId: suspendTransferProcessV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/transfer-suspend-schema"
+      responses:
+        "204":
+          description: Request to suspend the transfer process was successfully received
+          links:
+            poll-state:
+              operationId: suspendTransferProcessV3
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A transfer process with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "Could not suspend the transfer process, because it is already\
+            \ completed or terminated."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v2/edrs/{transferProcessId}/refresh:
     post:
       tags:
@@ -827,6 +1331,88 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
       deprecated: true
+  /v4beta/contractnegotiations/{id}:
+    get:
+      tags:
+      - Contract Negotiation v4beta
+      description: Gets a contract negotiation with the given ID
+      operationId: getNegotiationV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract negotiation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contract-negotiation-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+    delete:
+      tags:
+      - Contract Negotiation v4beta
+      description: Deletes the contract negotiation with the given ID. Only terminated
+        negotiations without agreement will be deleted
+      operationId: deleteNegotiationV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ContractNegotiation is deleted
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: The given contract negotiation cannot be deleted due to a wrong
+            state or has existing contract agreement
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/assets:
     put:
       tags:
@@ -840,7 +1426,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AssetInput"
+              $ref: "#/components/schemas/AssetInputV3"
       responses:
         "204":
           description: Asset was updated successfully
@@ -863,7 +1449,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AssetInput"
+              $ref: "#/components/schemas/AssetInputV3"
       responses:
         "200":
           description: Asset was created successfully. Returns the asset Id and created
@@ -889,6 +1475,80 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/contractagreements/{id}:
+    get:
+      tags:
+      - Contract Agreement v4beta
+      description: Gets an contract agreement with the given ID
+      operationId: getAgreementByIdV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract agreement
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contract-agreement-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An contract agreement with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/contractagreements/{id}/negotiation:
+    get:
+      tags:
+      - Contract Agreement v4beta
+      description: Gets a contract negotiation with the given contract agreement ID
+      operationId: getNegotiationByAgreementIdV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract negotiation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contract-agreement-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An contract agreement with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /check/health:
     get:
       tags:
@@ -903,6 +1563,78 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /v4beta/contractdefinitions/{id}:
+    get:
+      tags:
+      - Contract Definition v4beta
+      description: Gets an contract definition with the given ID
+      operationId: getContractDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract definition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contract-definition-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An contract agreement with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+    delete:
+      tags:
+      - Contract Definition v4beta
+      description: "Removes a contract definition with the given ID if possible. DANGER\
+        \ ZONE: Note that deleting contract definitions can have unexpected results,\
+        \ especially for contract offers that have been sent out or ongoing or contract\
+        \ negotiations."
+      operationId: deleteContractDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Contract definition was deleted successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A contract definition with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/transferprocesses/{id}/state:
     get:
       tags:
@@ -923,7 +1655,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransferState"
+                $ref: "#/components/schemas/TransferStateV3"
         "400":
           description: "Request was malformed, e.g. id was null"
           content:
@@ -940,6 +1672,47 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/contractnegotiations/{id}/terminate:
+    post:
+      tags:
+      - Contract Negotiation v4beta
+      description: Terminates the contract negotiation.
+      operationId: terminateNegotiationV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contract-terminate-schema"
+      responses:
+        "200":
+          description: ContractNegotiation is terminating
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+        "400":
+          description: Request was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractagreements/retirements/{agreementId}:
     delete:
       tags:
@@ -1131,34 +1904,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
-  /v4alpha/contractagreements/request:
-    post:
-      tags:
-      - Contract Agreement v4alpha
-      description: Gets all contract agreements according to a particular query
-      operationId: queryAgreementsV4Alpha
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/QuerySpec"
-      responses:
-        "200":
-          description: The contract agreements matching the query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ContractAgreement_1"
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/policydefinitions/{id}:
     get:
       tags:
@@ -1179,7 +1924,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PolicyDefinitionOutput"
+                $ref: "#/components/schemas/PolicyDefinitionOutputV3"
         "400":
           description: "Request was malformed, e.g. id was null"
           content:
@@ -1214,7 +1959,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PolicyDefinitionInput"
+              $ref: "#/components/schemas/PolicyDefinitionInputV3"
       responses:
         "204":
           description: policy definition was updated successfully.
@@ -1315,14 +2060,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CatalogRequest"
+              $ref: "#/components/schemas/CatalogRequestV3"
       responses:
         default:
           description: Gets contract offers (=catalog) of a single connector
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Catalog"
+                $ref: "#/components/schemas/CatalogV3"
   /v3/transferprocesses/{id}/terminate:
     post:
       tags:
@@ -1344,7 +2089,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TerminateTransfer"
+              $ref: "#/components/schemas/TerminateTransferV3"
       responses:
         "204":
           description: Request to terminate the transfer process was successfully
@@ -1377,6 +2122,88 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/transferprocesses/{id}/terminate:
+    post:
+      tags:
+      - Transfer Process v4beta
+      description: "Requests the termination of a transfer process. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received. This may take a long time, so clients must poll\
+        \ the /{id}/state endpoint to track the state."
+      operationId: terminateTransferProcessV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/transfer-terminate-schema"
+      responses:
+        "204":
+          description: Request to terminate the transfer process was successfully
+            received
+          links:
+            poll-state:
+              operationId: terminateTransferProcessV3
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A transfer process with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "Could not terminate transfer process, because it is already\
+            \ completed or terminated."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/contractagreements/request:
+    post:
+      tags:
+      - Contract Agreement v4beta
+      description: Gets all contract agreements according to a particular query
+      operationId: queryAgreementsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: The contract agreements matching the query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/contract-agreement-schema"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/policydefinitions/{id}/evaluationplan:
     post:
       tags:
@@ -1396,14 +2223,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PolicyEvaluationPlanRequestSchema"
+              $ref: "#/components/schemas/PolicyEvaluationPlanRequestSchemaV3"
       responses:
         "200":
           description: Returns the evaluation plan
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PolicyEvaluationPlanSchema"
+                $ref: "#/components/schemas/PolicyEvaluationPlanSchemaV3"
         "404":
           description: "An evaluation plan could not be created, because the policy\
             \ definition does not exists"
@@ -1411,12 +2238,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorDetail"
-  /v4alpha/contractagreements/{id}/negotiation:
-    get:
+  /v4beta/transferprocesses/{id}/deprovision:
+    post:
       tags:
-      - Contract Agreement v4alpha
-      description: Gets a contract negotiation with the given contract agreement ID
-      operationId: getNegotiationByAgreementIdV4Alpha
+      - Transfer Process v4beta
+      description: "Requests the deprovisioning of resources associated with a transfer\
+        \ process. Due to the asynchronous nature of transfers, a successful response\
+        \ only indicates that the request was successfully received. This may take\
+        \ a long time, so clients must poll the /{id}/state endpoint to track the\
+        \ state."
+      operationId: deprovisionTransferProcessV4
       parameters:
       - name: id
         in: path
@@ -1426,12 +2257,12 @@ paths:
         schema:
           type: string
       responses:
-        "200":
-          description: The contract negotiation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ContractNegotiation"
+        "204":
+          description: Request to deprovision the transfer process was successfully
+            received
+          links:
+            poll-state:
+              operationId: deprovisionTransferProcessV3
         "400":
           description: "Request was malformed, e.g. id was null"
           content:
@@ -1439,15 +2270,15 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
+                  $ref: "#/components/schemas/api-error-schema"
         "404":
-          description: An contract agreement with the given ID does not exist
+          description: A transfer process with the given ID does not exist
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractnegotiations/{id}/terminate:
     post:
       tags:
@@ -1466,7 +2297,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TerminateNegotiationSchema"
+              $ref: "#/components/schemas/TerminateNegotiationV3"
       responses:
         "200":
           description: ContractNegotiation is terminating
@@ -1489,6 +2320,34 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/policydefinitions/request:
+    post:
+      tags:
+      - Policy Definition v4beta
+      description: Returns all policy definitions according to a query
+      operationId: queryPolicyDefinitionsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: The policy definitions matching the query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/policy-definition-schema"
+        "400":
+          description: Request was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/transferprocesses/{id}/deprovision:
     post:
       tags:
@@ -1546,6 +2405,78 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DataPlaneInstanceSchemaV3"
+  /v4beta/contractnegotiations:
+    post:
+      tags:
+      - Contract Negotiation v4beta
+      description: "Initiates a contract negotiation for a given offer and with the\
+        \ given counter part. Please note that successfully invoking this endpoint\
+        \ only means that the negotiation was initiated. Clients must poll the /{id}/state\
+        \ endpoint to track the state"
+      operationId: initiateContractNegotiationV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contract-request-schema"
+      responses:
+        "200":
+          description: The negotiation was successfully initiated. Returns the contract
+            negotiation ID and created timestamp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+              parameters:
+                id: $response.body#/id
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/transferprocesses/{id}:
+    get:
+      tags:
+      - Transfer Process v4beta
+      description: Gets an transfer process with the given ID
+      operationId: getTransferProcessV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The transfer process
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/transfer-process-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A transfer process with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/catalog/dataset/request:
     post:
       tags:
@@ -1555,14 +2486,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DatasetRequest"
+              $ref: "#/components/schemas/DatasetRequestV3"
       responses:
         default:
           description: Gets single dataset from a connector
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Dataset"
+                $ref: "#/components/schemas/DatasetV3"
   /v2/edrs/{transferProcessId}:
     delete:
       tags:
@@ -1616,7 +2547,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TransferProcess"
+                  $ref: "#/components/schemas/TransferProcessV3"
         "400":
           description: Request was malformed
           content:
@@ -1716,7 +2647,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransferProcess"
+                $ref: "#/components/schemas/TransferProcessV3"
         "400":
           description: "Request was malformed, e.g. id was null"
           content:
@@ -1733,6 +2664,42 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/policydefinitions:
+    post:
+      tags:
+      - Policy Definition v4beta
+      description: Creates a new policy definition
+      operationId: createPolicyDefinitionV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/policy-definition-schema"
+      responses:
+        "200":
+          description: policy definition was created successfully. Returns the Policy
+            Definition Id and created timestamp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "Could not create policy definition, because a contract definition\
+            \ with that ID already exists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractdefinitions/{id}:
     get:
       tags:
@@ -1753,7 +2720,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContractDefinitionOutput"
+                $ref: "#/components/schemas/ContractDefinitionOutputV3"
         "400":
           description: "Request was malformed, e.g. id was null"
           content:
@@ -1805,6 +2772,40 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/policydefinitions/{id}/evaluationplan:
+    post:
+      tags:
+      - Policy Definition v4beta
+      description: "Creates an execution plane for an existing Policy, If the Policy\
+        \ is not found, an error is reported"
+      operationId: createExecutionPlanV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/policy-evaluation-plan-request-schema"
+      responses:
+        "200":
+          description: Returns the evaluation plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/policy-evaluation-plan-schema"
+        "404":
+          description: "An evaluation plan could not be created, because the policy\
+            \ definition does not exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-error-schema"
   /v3/edrs/{transferProcessId}:
     delete:
       tags:
@@ -1887,7 +2888,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PolicyDefinitionInput"
+              $ref: "#/components/schemas/PolicyDefinitionInputV3"
       responses:
         "200":
           description: policy definition was created successfully. Returns the Policy
@@ -1971,7 +2972,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PolicyValidationResultSchema"
+                $ref: "#/components/schemas/PolicyValidationResultSchemaV3"
         "404":
           description: "policy definition could not be validated, because it does\
             \ not exists"
@@ -1979,22 +2980,191 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorDetail"
-  /v4alpha/dataplanes:
-    get:
+  /v4beta/contractdefinitions:
+    put:
       tags:
-      - Dataplane Selector v4alpha
-      description: Returns a list of all currently registered data plane instances
-      operationId: getAllDataPlaneInstancesV4
+      - Contract Definition v4beta
+      description: Updated a contract definition with the given ID. The supplied JSON
+        structure must be a valid JSON-LD object
+      operationId: updateContractDefinitionV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contract-definition-schema"
       responses:
-        "200":
-          description: A (potentially empty) list of currently registered data plane
-            instances
+        "204":
+          description: Contract definition was updated successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV4"
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A contract definition with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+    post:
+      tags:
+      - Contract Definition v4beta
+      description: Creates a new contract definition
+      operationId: createContractDefinitionV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contract-definition-schema"
+      responses:
+        "200":
+          description: contract definition was created successfully. Returns the Contract
+            Definition Id and created timestamp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "Could not create contract definition, because a contract definition\
+            \ with that ID already exists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+  /v4beta/policydefinitions/{id}:
+    get:
+      tags:
+      - Policy Definition v4beta
+      description: Gets a policy definition with the given ID
+      operationId: getPolicyDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The  policy definition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/policy-definition-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An  policy definition with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+    put:
+      tags:
+      - Policy Definition v4beta
+      description: "Updates an existing Policy, If the Policy is not found, an error\
+        \ is reported"
+      operationId: updatePolicyDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/policy-definition-schema"
+      responses:
+        "204":
+          description: policy definition was updated successfully.
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: "policy definition could not be updated, because it does not\
+            \ exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-error-schema"
+    delete:
+      tags:
+      - Policy Definition v4beta
+      description: "Removes a policy definition with the given ID if possible. Deleting\
+        \ a policy definition is only possible if that policy definition is not yet\
+        \ referenced by a contract definition, in which case an error is returned.\
+        \ DANGER ZONE: Note that deleting policy definitions can have unexpected results,\
+        \ do this at your own risk!"
+      operationId: deletePolicyDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Policy definition was deleted successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An policy definition with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "The policy definition cannot be deleted, because it is referenced\
+            \ by a contract definition"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/transferprocesses:
     post:
       tags:
@@ -2008,7 +3178,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TransferRequest"
+              $ref: "#/components/schemas/TransferRequestV3"
       responses:
         "200":
           description: The transfer was successfully initiated. Returns the transfer
@@ -2112,6 +3282,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
+  /v4beta/catalog/dataset/request:
+    post:
+      tags:
+      - Catalog v4beta
+      operationId: getDatasetV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/catalog-request-schema"
+      responses:
+        default:
+          description: Gets single dataset from a connector
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dataset-schema"
   /v3/edrs/{transferProcessId}/refresh:
     post:
       tags:
@@ -2247,7 +3434,7 @@ paths:
                   $ref: "#/components/schemas/ApiErrorDetail"
 components:
   schemas:
-    AssetOutput:
+    AssetOutputV3:
       type: object
       properties:
         '@id':
@@ -2360,6 +3547,60 @@ components:
         operandLeft: fieldName
         operator: =
         operandRight: some value
+    TransferState:
+      required:
+      - '@context'
+      - '@type'
+      - state
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        state:
+          type: string
+      example:
+        state: state
+        '@context':
+        - '@context'
+        - '@context'
+    context-schema:
+      title: ContextSchema
+      type: array
+      items:
+        type: string
+    ContextSchema:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+    api-error-schema:
+      title: ApiErrorSchema
+      type: object
+      example:
+        path: path
+        message: message
+        type: type
+        invalidValue: invalidValue
+      allOf:
+      - $ref: "#/components/schemas/ApiError"
+    ApiError:
+      required:
+      - message
+      - type
+      type: object
+      properties:
+        message:
+          type: string
+        type:
+          type: string
+        path:
+          type: string
+        invalidValue:
+          type: string
     EndpointDataReferenceEntry:
       type: object
       properties:
@@ -2378,6 +3619,93 @@ components:
         assetId: asset-id
         providerId: provider-id
         createdAt: 1688465655
+    asset-schema:
+      title: AssetSchema
+      type: object
+      example:
+        dataAddress:
+          '@type': '@type'
+          type: type
+        '@type': '@type'
+        dataplaneMetadata:
+          '@type': '@type'
+          properties: "{}"
+          labels:
+          - labels
+          - labels
+        '@id': '@id'
+        privateProperties: "{}"
+        '@context':
+        - '@context'
+        - '@context'
+        properties: "{}"
+      allOf:
+      - $ref: "#/components/schemas/Asset"
+    Asset:
+      required:
+      - '@context'
+      - '@type'
+      - dataAddress
+      - properties
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        properties:
+          type: object
+        privateProperties:
+          type: object
+        dataAddress:
+          $ref: "#/components/schemas/data-address-schema"
+        dataplaneMetadata:
+          $ref: "#/components/schemas/dataplane-metadata-schema"
+    data-address-schema:
+      title: DataAddressSchema
+      type: object
+      example:
+        '@type': '@type'
+        type: type
+      allOf:
+      - $ref: "#/components/schemas/DataAddress_1"
+    DataAddress_1:
+      required:
+      - '@type'
+      - type
+      type: object
+      properties:
+        '@type':
+          type: string
+        type:
+          type: string
+    dataplane-metadata-schema:
+      title: DataplaneMetadataSchema
+      type: object
+      example:
+        '@type': '@type'
+        properties: "{}"
+        labels:
+        - labels
+        - labels
+      allOf:
+      - $ref: "#/components/schemas/DataplaneMetadata"
+    DataplaneMetadata:
+      type: object
+      properties:
+        '@type':
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
     ApiErrorDetail_1:
       type: object
       properties:
@@ -2409,6 +3737,115 @@ components:
           tx: https://w3id.org/tractusx/v0.0.1/ns/
         '@id': BPN000001234
         tx:groups: "group1,group2,group3"
+    contract-definition-schema:
+      title: ContractDefinitionSchema
+      type: object
+      example:
+        accessPolicyId: accessPolicyId
+        assetsSelector:
+        - operandRight: ""
+          '@type': '@type'
+          operandLeft: operandLeft
+          operator: operator
+        - operandRight: ""
+          '@type': '@type'
+          operandLeft: operandLeft
+          operator: operator
+        '@type': '@type'
+        contractPolicyId: contractPolicyId
+        '@id': '@id'
+        privateProperties: "{}"
+        '@context':
+        - '@context'
+        - '@context'
+      allOf:
+      - $ref: "#/components/schemas/ContractDefinition"
+    ContractDefinition:
+      required:
+      - '@context'
+      - '@type'
+      - accessPolicyId
+      - contractPolicyId
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        accessPolicyId:
+          type: string
+        contractPolicyId:
+          type: string
+        privateProperties:
+          type: object
+        assetsSelector:
+          type: array
+          items:
+            $ref: "#/components/schemas/Criterion_1"
+    Criterion_1:
+      required:
+      - '@type'
+      - operandLeft
+      - operandRight
+      - operator
+      type: object
+      properties:
+        '@type':
+          type: string
+        operandLeft:
+          type: string
+        operandRight: {}
+        operator:
+          type: string
+      example:
+        operandRight: ""
+        '@type': '@type'
+        operandLeft: operandLeft
+        operator: operator
+    query-spec-schema:
+      title: QuerySpecSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/QuerySpecRoot"
+    QuerySpecRoot:
+      required:
+      - '@context'
+      - '@type'
+      type: object
+      allOf:
+      - properties:
+          '@context':
+            $ref: "#/components/schemas/context-schema"
+      - $ref: "#/components/schemas/QuerySpec_1"
+    QuerySpec_1:
+      required:
+      - '@type'
+      type: object
+      properties:
+        '@type':
+          type: string
+        offset:
+          minimum: 0
+          type: integer
+        limit:
+          minimum: 1
+          type: integer
+        sortField:
+          type: string
+        sortOrder:
+          type: string
+          enum:
+          - ASC
+          - DESC
+        filterExpression:
+          type: array
+          items:
+            $ref: "#/components/schemas/Criterion_1"
     ContractAgreement:
       type: object
       properties:
@@ -2489,7 +3926,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@id': id-value
         createdAt: 1688465655
-    ContractRequest:
+    ContractRequestV3:
       required:
       - '@context'
       - counterPartyAddress
@@ -2509,7 +3946,7 @@ components:
         counterPartyAddress:
           type: string
         policy:
-          $ref: "#/components/schemas/Offer"
+          $ref: "#/components/schemas/OfferV3"
         protocol:
           type: string
       example:
@@ -2554,7 +3991,7 @@ components:
           type: boolean
         uri:
           type: string
-    Offer:
+    OfferV3:
       required:
       - '@id'
       - assigner
@@ -2580,7 +4017,7 @@ components:
         permission: []
         prohibition: []
         obligation: []
-    ContractDefinitionOutput:
+    ContractDefinitionOutputV3:
       type: object
       properties:
         '@id':
@@ -2707,6 +4144,37 @@ components:
           - transfer.process
           authKey: auth-key
           authCodeId: auth-code-id
+    id-response-schema:
+      title: IdResponseSchema
+      type: object
+      example:
+        createdAt: 0.8008281904610115
+        '@type': '@type'
+        '@id': '@id'
+        '@context':
+        - '@context'
+        - '@context'
+      allOf:
+      - $ref: "#/components/schemas/IdResponse_1"
+    IdResponse_1:
+      required:
+      - '@context'
+      - '@id'
+      - '@type'
+      - createdAt
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        createdAt:
+          type: number
     ConnectorDiscoveryResponse:
       type: object
       properties:
@@ -2748,7 +4216,409 @@ components:
         '@type': tx:ConnectorParamsDiscoveryRequest
         tx:bpnl: BPNL1234567890
         edc:counterPartyAddress: https://provider.domain.com/api/dsp
-    ContractRequest_1:
+    contract-agreement-schema:
+      title: ContractAgreementSchema
+      type: object
+      example:
+        contractSigningDate: 0
+        '@type': '@type'
+        assetId: assetId
+        providerId: providerId
+        consumerId: consumerId
+        '@id': '@id'
+        '@context':
+        - '@context'
+        - '@context'
+        policy:
+          obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          '@type': '@type'
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          assigner: assigner
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          '@id': '@id'
+          assignee: assignee
+          target: target
+          timestamp: timestamp
+      allOf:
+      - $ref: "#/components/schemas/ContractAgreement_2"
+    ContractAgreement_2:
+      required:
+      - '@context'
+      - '@id'
+      - '@type'
+      - assetId
+      - consumerId
+      - contractSigningDate
+      - policy
+      - providerId
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        assetId:
+          type: string
+        providerId:
+          type: string
+        consumerId:
+          type: string
+        contractSigningDate:
+          type: integer
+        policy:
+          $ref: "#/components/schemas/Agreement"
+    Agreement:
+      required:
+      - '@type'
+      - assignee
+      - assigner
+      - target
+      type: object
+      example:
+        obligation:
+        - action: null
+          constraint:
+          - null
+          - null
+        - action: null
+          constraint:
+          - null
+          - null
+        '@type': '@type'
+        profile:
+        - PolicyClass_profile
+        - PolicyClass_profile
+        assigner: assigner
+        prohibition:
+        - action: action
+          constraint:
+          - null
+          - null
+        - action: action
+          constraint:
+          - null
+          - null
+        permission:
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        '@id': '@id'
+        assignee: assignee
+        target: target
+        timestamp: timestamp
+      allOf:
+      - $ref: "#/components/schemas/PolicyClass"
+      - properties:
+          '@type':
+            type: string
+          target:
+            type: string
+          assigner:
+            type: string
+          assignee:
+            type: string
+          timestamp:
+            pattern: "-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\\
+              .[0-9]+)?|(24:00:00(\\.0+)?))(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?"
+            type: string
+      - nullable: true
+    PolicyClass:
+      required:
+      - '@id'
+      type: object
+      properties:
+        '@id':
+          type: string
+        profile:
+          $ref: "#/components/schemas/PolicyClass_profile"
+        permission:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Permission"
+        prohibition:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Prohibition"
+        obligation:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Duty"
+    Permission:
+      type: object
+      example:
+        action: action
+        constraint:
+        - or:
+          - null
+          - null
+          andSequence:
+          - null
+          - null
+          and:
+          - null
+          - null
+          xone:
+          - null
+          - null
+        - or:
+          - null
+          - null
+          andSequence:
+          - null
+          - null
+          and:
+          - null
+          - null
+          xone:
+          - null
+          - null
+      allOf:
+      - $ref: "#/components/schemas/Rule"
+    Rule:
+      required:
+      - action
+      type: object
+      properties:
+        action:
+          type: string
+        constraint:
+          type: array
+          items:
+            $ref: "#/components/schemas/Constraint"
+    Action:
+      type: string
+    Constraint:
+      type: object
+      oneOf:
+      - $ref: "#/components/schemas/LogicalConstraint"
+      - $ref: "#/components/schemas/AtomicConstraint"
+    LogicalConstraint:
+      type: object
+      properties:
+        and:
+          type: array
+          items:
+            $ref: "#/components/schemas/Constraint"
+        andSequence:
+          type: array
+          items:
+            $ref: "#/components/schemas/Constraint"
+        or:
+          type: array
+          items:
+            $ref: "#/components/schemas/Constraint"
+        xone:
+          type: array
+          items:
+            $ref: "#/components/schemas/Constraint"
+      nullable: true
+      example:
+        or:
+        - null
+        - null
+        andSequence:
+        - null
+        - null
+        and:
+        - null
+        - null
+        xone:
+        - null
+        - null
+    AtomicConstraint:
+      required:
+      - leftOperand
+      - operator
+      - rightOperand
+      type: object
+      properties:
+        rightOperand:
+          $ref: "#/components/schemas/RightOperand"
+        leftOperand:
+          type: string
+        operator:
+          $ref: "#/components/schemas/Operator"
+    RightOperand:
+      oneOf:
+      - type: string
+      - type: object
+      - type: array
+        items:
+          type: string
+          description: TODO default missing array inner type to string
+    LeftOperand:
+      type: string
+    Operator:
+      type: string
+      enum:
+      - eq
+      - gt
+      - gteq
+      - lteq
+      - hasPart
+      - isA
+      - isAllOf
+      - isAnyOf
+      - isNoneOf
+      - isPartOf
+      - lt
+      - term-lteq
+      - neq
+    Prohibition:
+      type: object
+      example:
+        action: action
+        constraint:
+        - null
+        - null
+      allOf:
+      - $ref: "#/components/schemas/Rule"
+    Duty:
+      type: object
+      example:
+        action: null
+        constraint:
+        - null
+        - null
+      allOf:
+      - required:
+        - action
+        properties:
+          action:
+            $ref: "#/components/schemas/Action"
+          constraint:
+            type: array
+            items:
+              $ref: "#/components/schemas/Constraint"
+    ContractRequestV3_1:
       required:
       - '@context'
       - counterPartyAddress
@@ -2768,7 +4638,7 @@ components:
         counterPartyAddress:
           type: string
         policy:
-          $ref: "#/components/schemas/Offer"
+          $ref: "#/components/schemas/OfferV3"
         protocol:
           type: string
       example:
@@ -2794,7 +4664,7 @@ components:
           - transfer.process
           authKey: auth-key
           authCodeId: auth-code-id
-    SuspendTransfer:
+    SuspendTransferV3:
       type: object
       properties:
         '@type':
@@ -2807,7 +4677,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/SuspendTransfer
         reason: a reason to suspend
-    ContractDefinitionInput:
+    ContractDefinitionInputV3:
       required:
       - '@context'
       - accessPolicyId
@@ -2837,7 +4707,7 @@ components:
         accessPolicyId: asset-policy-id
         contractPolicyId: contract-policy-id
         assetsSelector: []
-    PolicyDefinitionOutput:
+    PolicyDefinitionOutputV3:
       type: object
       properties:
         '@id':
@@ -2936,42 +4806,549 @@ components:
         messages:
         - messages
         - messages
-    ProtocolVersion:
+    transfer-request-schema:
+      title: TransferRequestSchema
       type: object
-      description: Protocol Version
+      allOf:
+      - $ref: "#/components/schemas/TransferRequest"
+    TransferRequest:
+      required:
+      - '@context'
+      - '@type'
+      - contractId
+      - counterPartyAddress
+      - protocol
+      - transferType
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        counterPartyAddress:
+          type: string
+        protocol:
+          type: string
+        contractId:
+          type: string
+        transferType:
+          type: string
+        privateProperties:
+          type: object
+        dataDestination:
+          $ref: "#/components/schemas/data-address-schema"
+        callbackAddresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/callback-address-schema"
+        dataplaneMetadata:
+          $ref: "#/components/schemas/dataplane-metadata-schema"
+    callback-address-schema:
+      title: CallbackAddressSchema
+      type: object
       example:
-        protocolVersions:
-        - version: 2024/1
-          path: /2024/1
-        - version: v0.8
-          path: /
+        authKey: authKey
+        '@type': '@type'
+        authCodeId: authCodeId
+        uri: uri
+        transactional: true
+        events:
+        - events
+        - events
+      allOf:
+      - $ref: "#/components/schemas/CallbackAddress_1"
+    CallbackAddress_1:
+      required:
+      - '@type'
+      - events
+      - transactional
+      - uri
+      type: object
+      properties:
+        '@type':
+          type: string
+        transactional:
+          type: boolean
+        uri:
+          type: string
+        events:
+          type: array
+          items:
+            type: string
+        authKey:
+          type: string
+        authCodeId:
+          type: string
+    DataPlaneInstanceSchemaV4:
+      required:
+      - '@context'
+      - allowedSourceTypes
+      - url
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+        allowedSourceTypes:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        lastActive:
+          type: integer
+          format: int64
+        state:
+          type: string
+        stateTimestamp:
+          type: integer
+          format: int64
+        url:
+          type: string
+          format: url
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+        - source-type1
+        - source-type2
+        allowedTransferTypes:
+        - transfer-type
+        state: AVAILABLE
+        stateTimestamp: 1688465655
+    transfer-process-schema:
+      title: TransferProcessSchema
+      type: object
+      example:
+        stateTimestamp: 0
+        '@type': '@type'
+        type: CONSUMER
+        '@context':
+        - '@context'
+        - '@context'
+        assetId: assetId
+        dataplaneMetadata:
+          '@type': '@type'
+          properties: "{}"
+          labels:
+          - labels
+          - labels
+        callbackAddresses:
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        contractId: contractId
+        transferType: transferType
+        errorDetail: errorDetail
+        dataDestination:
+          '@type': '@type'
+          type: type
+        correlationId: correlationId
+        '@id': '@id'
+        state: state
+      allOf:
+      - $ref: "#/components/schemas/TransferProcess"
+    TransferProcess:
+      required:
+      - '@context'
+      - '@id'
+      - '@type'
+      - state
+      - stateTimestamp
+      - type
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        type:
+          type: string
+          enum:
+          - CONSUMER
+          - PROVIDER
+        state:
+          type: string
+        stateTimestamp:
+          type: integer
+        callbackAddresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/callback-address-schema"
+        correlationId:
+          type: string
+        assetId:
+          type: string
+        contractId:
+          type: string
+        transferType:
+          type: string
+        errorDetail:
+          type: string
+        dataDestination:
+          $ref: "#/components/schemas/data-address-schema"
+        dataplaneMetadata:
+          $ref: "#/components/schemas/dataplane-metadata-schema"
+    catalog-schema:
+      title: CatalogSchema
+      type: object
+      example:
+        participantId: participantId
+        '@context':
+        - '@context'
+        - '@context'
+      allOf:
+      - $ref: "#/components/schemas/RootCatalog"
+    RootCatalog:
+      required:
+      - '@context'
+      - participantId
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        participantId:
+          type: string
+      allOf:
+      - $ref: "#/components/schemas/Catalog"
+    Catalog:
+      required:
+      - '@id'
+      - '@type'
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/AbstractDataset"
+      - properties:
+          '@type':
+            type: string
+          dataset:
+            minItems: 1
+            type: array
+            items:
+              $ref: "#/components/schemas/Dataset"
+          catalog:
+            minItems: 1
+            type: array
+            items:
+              $ref: "#/components/schemas/Catalog"
+          service:
+            minItems: 1
+            type: array
+            items:
+              $ref: "#/components/schemas/DataService"
+      anyOf:
+      - not:
+          required:
+          - hasPolicy
+    AbstractDataset:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Resource"
+      - properties:
+          distribution:
+            minItems: 1
+            type: array
+            items:
+              $ref: "#/components/schemas/Distribution"
+    Resource:
+      required:
+      - '@id'
+      type: object
+      properties:
+        '@id':
+          type: string
+    Distribution:
+      required:
+      - accessService
+      - format
+      type: object
+      properties:
+        hasPolicy:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Offer"
+        accessService:
+          $ref: "#/components/schemas/Distribution_accessService"
+        format:
+          type: string
+    Offer:
+      type: object
+      not:
+        required:
+        - target
+      allOf:
+      - $ref: "#/components/schemas/PolicyClass"
+      - properties:
+          '@type':
+            type: string
+      - nullable: true
+    DataService:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Resource"
+      - required:
+        - '@type'
+        - endpointURL
+        properties:
+          '@type':
+            type: string
+          endpointURL:
+            type: string
+          servesDataset:
+            minItems: 1
+            type: array
+            items:
+              $ref: "#/components/schemas/Dataset"
+    Dataset:
+      required:
+      - distribution
+      - hasPolicy
+      type: object
+      properties:
+        hasPolicy:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Offer"
+      allOf:
+      - $ref: "#/components/schemas/AbstractDataset"
+    context-schema_1:
+      title: ContextSchema
+      type: array
+      items:
+        type: string
+    catalog-request-schema:
+      title: CatalogRequestSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/CatalogRequest"
     CatalogRequest:
       required:
       - '@context'
+      - '@type'
       - counterPartyAddress
       - counterPartyId
       - protocol
       type: object
       properties:
         '@context':
-          type: object
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
-          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+        '@id':
+          type: string
+        protocol:
+          type: string
         counterPartyAddress:
           type: string
         counterPartyId:
           type: string
+        additionalScopes:
+          type: array
+          items:
+            type: string
+        querySpec:
+          $ref: "#/components/schemas/QuerySpec_1"
+    policy-validation-result-schema:
+      title: PolicyValidationResultSchema
+      type: object
+      example:
+        '@type': '@type'
+        isValid: true
+        '@context':
+        - '@context'
+        - '@context'
+        errors:
+        - errors
+        - errors
+      allOf:
+      - $ref: "#/components/schemas/PolicyValidationResult"
+    PolicyValidationResult:
+      required:
+      - '@context'
+      - '@type'
+      - errors
+      - isValid
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        isValid:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+    contract-negotiation-schema:
+      title: ContractNegotiationSchema
+      type: object
+      example:
+        stateTimestamp: 0
+        '@type': '@type'
+        counterPartyId: counterPartyId
+        type: CONSUMER
+        '@context':
+        - '@context'
+        - '@context'
+        counterPartyAddress: counterPartyAddress
+        createdAt: 6
+        protocol: protocol
+        assetId: assetId
+        callbackAddresses:
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        errorDetail: errorDetail
+        contractAgreementId: contractAgreementId
+        correlationId: correlationId
+        '@id': '@id'
+        state: state
+      allOf:
+      - $ref: "#/components/schemas/ContractNegotiation_1"
+    ContractNegotiation_1:
+      required:
+      - '@context'
+      - '@id'
+      - '@type'
+      - counterPartyAddress
+      - counterPartyId
+      - createdAt
+      - protocol
+      - state
+      - type
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        type:
+          type: string
+          enum:
+          - CONSUMER
+          - PROVIDER
+        state:
+          type: string
+        stateTimestamp:
+          type: integer
         protocol:
           type: string
-      example:
+        createdAt:
+          type: integer
+        callbackAddresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/callback-address-schema"
+        counterPartyAddress:
+          type: string
+        counterPartyId:
+          type: string
+        errorDetail:
+          type: string
+        correlationId:
+          type: string
+        assetId:
+          type: string
+        contractAgreementId:
+          type: string
+    NegotiationState:
+      required:
+      - '@context'
+      - '@type'
+      - state
+      type: object
+      properties:
         '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': ProtocolVersionRequest
-        counterPartyAddress: http://provider-address
-        counterPartyId: providerId
-        protocol: dataspace-protocol-http
-    AssetInput:
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        state:
+          type: string
+      example:
+        state: state
+        '@context':
+        - '@context'
+        - '@context'
+    transfer-suspend-schema:
+      title: TransferSuspendSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/SuspendTransfer"
+    SuspendTransfer:
+      required:
+      - '@context'
+      - '@type'
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        reason:
+          type: string
+    AssetInputV3:
       required:
       - '@context'
       - dataAddress
@@ -3002,7 +5379,7 @@ components:
         dataAddress:
           type: HttpData
           baseUrl: https://jsonplaceholder.typicode.com/todos
-    TransferState:
+    TransferStateV3:
       type: object
       properties:
         '@type':
@@ -3015,7 +5392,27 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
         state: STARTED
-    PolicyDefinitionInput:
+    contract-terminate-schema:
+      title: ContractTerminateSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/TerminateNegotiation"
+    TerminateNegotiation:
+      required:
+      - '@context'
+      - '@type'
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        reason:
+          type: string
+    PolicyDefinitionInputV3:
       required:
       - '@context'
       - policy
@@ -3062,7 +5459,7 @@ components:
               operator: eq
               rightOperand: https://www.wikidata.org/wiki/Q183
               comment: i.e Germany
-    Catalog:
+    CatalogV3:
       type: object
       description: DCAT catalog
       example:
@@ -3110,7 +5507,7 @@ components:
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
           dspace: https://w3id.org/dspace/v0.8/
-    CatalogRequest_1:
+    CatalogRequestV3:
       required:
       - '@context'
       - counterPartyAddress
@@ -3150,7 +5547,7 @@ components:
           sortOrder: DESC
           sortField: fieldName
           filterExpression: []
-    TerminateTransfer:
+    TerminateTransferV3:
       type: object
       properties:
         '@type':
@@ -3163,7 +5560,27 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TerminateTransfer
         reason: a reason to terminate
-    PolicyEvaluationPlanSchema:
+    transfer-terminate-schema:
+      title: TransferTerminateSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/TerminateTransfer"
+    TerminateTransfer:
+      required:
+      - '@context'
+      - '@type'
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        reason:
+          type: string
+    PolicyEvaluationPlanSchemaV3:
       type: object
       example:
         '@type': PolicyEvaluationPlan
@@ -3192,7 +5609,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
           edc: https://w3id.org/edc/v0.0.1/ns/
           odrl: http://www.w3.org/ns/odrl/2/
-    PolicyEvaluationPlanRequestSchema:
+    PolicyEvaluationPlanRequestSchemaV3:
       type: object
       properties:
         policyScope:
@@ -3202,7 +5619,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': PolicyEvaluationPlanRequest
         policyScope: catalog
-    TerminateNegotiationSchema:
+    TerminateNegotiationV3:
       type: object
       properties:
         '@id':
@@ -3218,6 +5635,214 @@ components:
         '@type': https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
         '@id': negotiation-id
         reason: a reason to terminate
+    policy-definition-schema:
+      title: PolicyDefinitionSchema
+      type: object
+      example:
+        '@type': '@type'
+        '@id': '@id'
+        privateProperties: "{}"
+        '@context':
+        - '@context'
+        - '@context'
+        policy:
+          '@type': '@type'
+          obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+      allOf:
+      - $ref: "#/components/schemas/PolicyDefinition"
+    PolicyDefinition:
+      required:
+      - '@context'
+      - '@type'
+      - policy
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        policy:
+          $ref: "#/components/schemas/PolicyClass_1"
+        privateProperties:
+          type: object
+    PolicyClass_1:
+      required:
+      - '@type'
+      type: object
+      properties:
+        '@type':
+          type: string
+        profile:
+          $ref: "#/components/schemas/PolicyClass_profile"
+        permission:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Permission"
+        prohibition:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Prohibition"
+        obligation:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/Duty"
+      example:
+        '@type': '@type'
+        obligation:
+        - action: null
+          constraint:
+          - null
+          - null
+        - action: null
+          constraint:
+          - null
+          - null
+        profile:
+        - PolicyClass_profile
+        - PolicyClass_profile
+        prohibition:
+        - action: action
+          constraint:
+          - null
+          - null
+        - action: action
+          constraint:
+          - null
+          - null
+        permission:
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
     DataPlaneInstanceSchemaV3:
       required:
       - '@context'
@@ -3274,7 +5899,67 @@ components:
         - transfer-type
         state: AVAILABLE
         stateTimestamp: 1688465655
-    Dataset:
+    contract-request-schema:
+      title: ContractRequestSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/ContractRequest"
+    ContractRequest:
+      required:
+      - '@context'
+      - '@type'
+      - counterPartyAddress
+      - policy
+      - protocol
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        '@id':
+          type: string
+        counterPartyAddress:
+          type: string
+        protocol:
+          type: string
+        policy:
+          $ref: "#/components/schemas/contract-offer-schema"
+        callbackAddresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/callback-address-schema"
+    contract-offer-schema:
+      title: ContractOfferSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/ContractOffer"
+    ContractOffer:
+      required:
+      - assigner
+      - target
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/MessageOffer"
+      - properties:
+          assigner:
+            type: string
+    MessageOffer:
+      required:
+      - '@type'
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/PolicyClass"
+      - properties:
+          '@type':
+            type: string
+          target:
+            type: string
+      - nullable: true
+    DatasetV3:
       type: object
       description: DCAT dataset
       example:
@@ -3314,7 +5999,7 @@ components:
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
           dspace: https://w3id.org/dspace/v0.8/
-    DatasetRequest:
+    DatasetRequestV3:
       type: object
       properties:
         '@type':
@@ -3336,7 +6021,7 @@ components:
         counterPartyAddress: http://counter-party-address
         counterPartyId: counter-party-id
         protocol: dataspace-protocol-http
-    TransferProcess:
+    TransferProcessV3:
       type: object
       properties:
         '@id':
@@ -3408,7 +6093,383 @@ components:
         edc:agreementId: contract-agreement-id
         tx:reason: This contract agreement was retired since the physical counterpart
           is no longer valid.
-    PolicyValidationResultSchema:
+    policy-evaluation-plan-schema:
+      title: PolicyEvaluationPlanSchema
+      type: object
+      example:
+        '@type': '@type'
+        preValidators:
+        - preValidators
+        - preValidators
+        permissionSteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          dutySteps:
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          isFiltered: true
+          constraintSteps:
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          dutySteps:
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          isFiltered: true
+          constraintSteps:
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+        dutySteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        prohibitionSteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        '@context':
+        - '@context'
+        - '@context'
+        postValidators:
+        - postValidators
+        - postValidators
+      allOf:
+      - $ref: "#/components/schemas/PolicyEvaluationPlan"
+    PolicyEvaluationPlan:
+      required:
+      - '@context'
+      - '@type'
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        preValidators:
+          type: array
+          items:
+            type: string
+        postValidators:
+          type: array
+          items:
+            type: string
+        permissionSteps:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionStep"
+        prohibitionSteps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProhibitionStep"
+        dutySteps:
+          type: array
+          items:
+            $ref: "#/components/schemas/DutyStep"
+    PermissionStep:
+      required:
+      - '@type'
+      type: object
+      example:
+        ruleFunctions:
+        - ruleFunctions
+        - ruleFunctions
+        filteringReasons:
+        - filteringReasons
+        - filteringReasons
+        '@type': '@type'
+        dutySteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        isFiltered: true
+        constraintSteps:
+        - '@type': '@type'
+          constraintSteps:
+          - null
+          - null
+        - '@type': '@type'
+          constraintSteps:
+          - null
+          - null
+      allOf:
+      - $ref: "#/components/schemas/RuleStep"
+      - properties:
+          '@type':
+            type: string
+          dutySteps:
+            type: array
+            items:
+              $ref: "#/components/schemas/DutyStep"
+    RuleStep:
+      type: object
+      properties:
+        isFiltered:
+          type: boolean
+        filteringReasons:
+          type: array
+          items:
+            type: string
+        constraintSteps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintStep"
+        ruleFunctions:
+          type: array
+          items:
+            type: string
+    ConstraintStep:
+      oneOf:
+      - $ref: "#/components/schemas/AndConstraintStep"
+      - $ref: "#/components/schemas/OrConstraintStep"
+      - $ref: "#/components/schemas/XoneConstraintStep"
+      - $ref: "#/components/schemas/AtomicConstraintStep"
+    AndConstraintStep:
+      required:
+      - '@type'
+      type: object
+      example:
+        '@type': '@type'
+        constraintSteps:
+        - null
+        - null
+      allOf:
+      - $ref: "#/components/schemas/MultiplicityConstraintStep"
+      - properties:
+          '@type':
+            type: string
+    MultiplicityConstraintStep:
+      required:
+      - constraintSteps
+      type: object
+      properties:
+        constraintSteps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConstraintStep"
+    OrConstraintStep:
+      required:
+      - '@type'
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/MultiplicityConstraintStep"
+      - properties:
+          '@type':
+            type: string
+    XoneConstraintStep:
+      required:
+      - '@type'
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/MultiplicityConstraintStep"
+      - properties:
+          '@type':
+            type: string
+    AtomicConstraintStep:
+      required:
+      - '@type'
+      type: object
+      properties:
+        '@type':
+          type: string
+        isFiltered:
+          type: boolean
+        filteringReasons:
+          type: array
+          items:
+            type: string
+        functionName:
+          type: string
+        functionParams:
+          type: array
+          items:
+            type: string
+    DutyStep:
+      required:
+      - '@type'
+      type: object
+      example:
+        ruleFunctions:
+        - ruleFunctions
+        - ruleFunctions
+        filteringReasons:
+        - filteringReasons
+        - filteringReasons
+        '@type': '@type'
+        isFiltered: true
+        constraintSteps:
+        - null
+        - null
+      allOf:
+      - $ref: "#/components/schemas/RuleStep"
+      - properties:
+          '@type':
+            type: string
+    ProhibitionStep:
+      required:
+      - '@type'
+      type: object
+      example:
+        ruleFunctions:
+        - ruleFunctions
+        - ruleFunctions
+        filteringReasons:
+        - filteringReasons
+        - filteringReasons
+        '@type': '@type'
+        isFiltered: true
+        constraintSteps:
+        - null
+        - null
+      allOf:
+      - $ref: "#/components/schemas/RuleStep"
+      - properties:
+          '@type':
+            type: string
+    policy-evaluation-plan-request-schema:
+      title: PolicyEvaluationPlanRequestSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/PolicyEvaluationPlanRequest"
+    PolicyEvaluationPlanRequest:
+      required:
+      - '@context'
+      - '@type'
+      - policyScope
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        policyScope:
+          type: string
+    PolicyValidationResultSchemaV3:
       type: object
       properties:
         errors:
@@ -3425,49 +6486,7 @@ components:
         errors:
         - error1
         - error2
-    DataPlaneInstanceSchemaV4:
-      required:
-      - '@context'
-      - allowedSourceTypes
-      - url
-      type: object
-      properties:
-        '@context':
-          type: object
-        '@id':
-          type: string
-        '@type':
-          type: string
-          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
-        allowedSourceTypes:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-        lastActive:
-          type: integer
-          format: int64
-        state:
-          type: string
-        stateTimestamp:
-          type: integer
-          format: int64
-        url:
-          type: string
-          format: url
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': your-dataplane-id
-        url: http://somewhere.com:1234/api/v1
-        allowedSourceTypes:
-        - source-type1
-        - source-type2
-        allowedTransferTypes:
-        - transfer-type
-        state: AVAILABLE
-        stateTimestamp: 1688465655
-    TransferRequest:
+    TransferRequestV3:
       required:
       - '@context'
       - contractId
@@ -3520,13 +6539,32 @@ components:
           - transfer.process
           authKey: auth-key
           authCodeId: auth-code-id
-    NegotiationState:
+    dataset-schema:
+      title: DatasetSchema
+      type: object
+      example:
+        '@context':
+        - '@context'
+        - '@context'
+      allOf:
+      - $ref: "#/components/schemas/RootDataset"
+    RootDataset:
+      required:
+      - '@context'
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+      allOf:
+      - $ref: "#/components/schemas/Dataset"
+    NegotiationState_1:
       type: object
       properties:
         state:
           type: string
-      example:
-        state: state
     initiateEdrNegotiationV3_request:
       type: object
       properties:
@@ -3543,4 +6581,14 @@ components:
           - "FALSE"
           - "NULL"
       additionalProperties:
-        $ref: "#/components/schemas/ContractRequest_1"
+        $ref: "#/components/schemas/ContractRequestV3_1"
+    PolicyClass_profile:
+      oneOf:
+      - type: array
+        items:
+          type: string
+      - type: string
+    Distribution_accessService:
+      oneOf:
+      - type: string
+      - $ref: "#/components/schemas/DataService"
