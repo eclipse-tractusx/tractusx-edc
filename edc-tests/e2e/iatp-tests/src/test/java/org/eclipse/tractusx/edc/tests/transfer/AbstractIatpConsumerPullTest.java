@@ -124,7 +124,6 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         // Prov-DP -> Prov-backend
         assertThat(consumer().data().pullData(edr.get(), Map.of())).isEqualTo("test response");
 
-
         server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)).withHeader("Edc-Bpn", equalTo(consumer().getBpn())).withHeader("Edc-Contract-Agreement-Id", matching(".+")));
     }
 
@@ -136,10 +135,11 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         //update the membership credential to an expirationDate that is in the past
         var store = credentialStoreRuntime().getService(CredentialStore.class);
 
-        var existingCred = store.query(QuerySpec.Builder.newInstance().filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+        var existingCred = store.query(QuerySpec.Builder.newInstance()
+                        .filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
-                .stream().findFirst()
-                .orElseThrow(RuntimeException::new);
+                .stream().filter(it -> it.getHolderId().equals(consumer().getBpn()))
+                .findFirst().orElseThrow(RuntimeException::new);
 
         var expirationDate = Instant.now().minus(1, ChronoUnit.DAYS);
         var newCred = VerifiableCredential.Builder.newInstance()
@@ -187,8 +187,8 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         var isMembershipCredential = new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential");
         var existingCred = store.query(QuerySpec.Builder.newInstance().filter(isMembershipCredential).build())
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
-                .stream().findFirst()
-                .orElseThrow(RuntimeException::new);
+                .stream().filter(it -> it.getHolderId().equals(consumer().getBpn()))
+                .findAny().orElseThrow(RuntimeException::new);
 
         var newCred = VerifiableCredential.Builder.newInstance()
                 .id(existingCred.getVerifiableCredential().credential().getId())

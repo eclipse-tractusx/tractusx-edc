@@ -30,7 +30,7 @@ import java.util.function.Function;
  */
 public class DataWiperExtension implements ServiceExtension {
 
-    private final AtomicReference<DataWiper> wiper; // TODO: is this necessary anymore?
+    private final AtomicReference<DataWiper> wiper;
     private final Function<ServiceExtensionContext, DataWiper> wiperProvider;
 
     public DataWiperExtension(AtomicReference<DataWiper> reference, Function<ServiceExtensionContext, DataWiper> wiperProvider) {
