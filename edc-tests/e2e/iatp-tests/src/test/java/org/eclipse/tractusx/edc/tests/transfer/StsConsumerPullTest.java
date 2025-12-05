@@ -31,7 +31,6 @@ import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
