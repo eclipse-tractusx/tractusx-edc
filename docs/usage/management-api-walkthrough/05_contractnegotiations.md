@@ -30,7 +30,6 @@ Content-Type: application/json
   "counterPartyAddress": "https://provider-control.plane/api/v1/dsp/2025-1",
   "protocol": "dataspace-protocol-http:2025-1",
   "policy": {
-    "@context": "http://www.w3.org/ns/odrl.jsonld",
     "@type": "Offer",
     "@id": "{{OFFER_ID}}",
     "target": "{{ASSET_ID}}",
