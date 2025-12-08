@@ -34,18 +34,9 @@ Content-Type: application/json
     "@id": "{{OFFER_ID}}",
     "target": "{{ASSET_ID}}",
     "assigner": "{{PROVIDER_IDENTIFIER}}",
-    "permission": {
-      "action": "use",
-      "constraint": {
-        "leftOperand": "FrameworkAgreement",
-        "operand": "eq",
-        "rightOperand": "DataExchangeGovernance:1.0"
-      },
-      "prohibition": [],
-      "obligation": []
-    },
-    "prohibition": [],
-    "obligation": []
+    "permission": {{OFFER_ODRL_PERMISSION}},
+    "prohibition": {{OFFER_ODRL_PROHIBITION}},
+    "obligation": {{OFFER_ODRL_OBLIGATION}}
   },
   "callbackAddresses": [
     {
