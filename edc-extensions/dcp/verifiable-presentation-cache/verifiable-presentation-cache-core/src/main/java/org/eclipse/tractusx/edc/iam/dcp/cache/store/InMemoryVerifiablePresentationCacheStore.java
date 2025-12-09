@@ -1,0 +1,80 @@
+package org.eclipse.tractusx.edc.iam.dcp.cache.store;
+
+import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCacheEntry;
+import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCacheStore;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class InMemoryVerifiablePresentationCacheStore implements VerifiablePresentationCacheStore {
+
+    private final Map<CacheEntryId, VerifiablePresentationCacheEntry> cache = new ConcurrentHashMap<>();
+
+    public InMemoryVerifiablePresentationCacheStore() {
+    }
+
+    @Override
+    public StoreResult<Void> store(VerifiablePresentationCacheEntry entry) {
+        var id = new CacheEntryId(entry.getParticipantContextId(), entry.getCounterPartyDid(), entry.getScopes());
+        cache.put(id, entry);
+        return StoreResult.success();
+    }
+
+    @Override
+    public StoreResult<VerifiablePresentationCacheEntry> query(String participantContextId, String counterPartyDid, List<String> scopes) {
+        var id = new CacheEntryId(participantContextId, counterPartyDid, scopes);
+        var entry = cache.get(id);
+        if(entry == null) {
+            return StoreResult.notFound("No entry found in cache for given participant and scopes.");
+        }
+
+        return StoreResult.success(entry);
+    }
+
+    @Override
+    public StoreResult<Void> remove(String participantContextId, String counterPartyDid, List<String> scopes) {
+        var id = new CacheEntryId(participantContextId, counterPartyDid, scopes);
+        cache.remove(id);
+        return StoreResult.success();
+    }
+
+    @Override
+    public StoreResult<Void> remove(String participantContextId, String counterPartyDid) {
+        cache.keySet().stream()
+                .filter(id -> id.participantContextId.equals(participantContextId) && id.counterPartyDid.equals(counterPartyDid))
+                .forEach(id -> cache.remove(id));
+        return StoreResult.success();
+    }
+
+    private static class CacheEntryId {
+        public String participantContextId;
+        public String counterPartyDid;
+        public List<String> scopes;
+
+        public CacheEntryId(String participantContextId, String counterPartyDid, List<String> scopes) {
+            this.participantContextId = participantContextId;
+            this.counterPartyDid = counterPartyDid;
+            this.scopes = scopes;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            var other = (CacheEntryId) o;
+            return this.participantContextId.equals(other.participantContextId)
+                    && this.counterPartyDid.equals(other.counterPartyDid)
+                    && new HashSet<>(this.scopes).equals(new HashSet<>(other.scopes));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(participantContextId, counterPartyDid, scopes);
+        }
+    }
+}

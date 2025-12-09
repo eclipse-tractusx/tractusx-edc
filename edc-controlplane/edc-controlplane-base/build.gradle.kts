@@ -50,6 +50,7 @@ dependencies {
     implementation(project(":edc-extensions:data-flow-properties-provider"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    implementation(project(":edc-extensions:dcp:verifiable-presentation-cache"))
     implementation(project(":edc-extensions:edr:edr-api-v2"))
     implementation(project(":edc-extensions:edr:edr-callback"))
     implementation(project(":edc-extensions:federated-catalog"))
