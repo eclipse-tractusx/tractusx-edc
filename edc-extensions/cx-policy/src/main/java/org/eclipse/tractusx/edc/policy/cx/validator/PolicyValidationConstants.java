@@ -113,10 +113,7 @@ public final class PolicyValidationConstants {
             PRECEDENCE_LITERAL,
             DATA_USAGE_END_DURATION_LITERAL,
             DATA_USAGE_END_DATE_LITERAL,
-            DATA_USAGE_END_DEFINITION_LITERAL,
-            INFORCE_POLICY_LITERAL,
-            BUSINESS_PARTNER_GROUP,
-            BUSINESS_PARTNER_NUMBER
+            DATA_USAGE_END_DEFINITION_LITERAL
     );
     public static final Set<String> USAGE_PROHIBITION_POLICY_ALLOWED_LEFT_OPERANDS = Set.of(
             AFFILIATES_REGION_LITERAL,

@@ -83,8 +83,11 @@
     "Warranty": {
       "@id": "cx-policy:Warranty"
     },
-    "WarrantyDuration": {
-      "@id": "cx-policy:WarrantyDuration"
+    "WarrantyDurationMonths": {
+      "@id": "cx-policy:WarrantyDurationMonths"
+    },
+    "WarrantyDefinition": {
+      "@id": "cx-policy:WarrantyDefinition"
     }
   }
 }
