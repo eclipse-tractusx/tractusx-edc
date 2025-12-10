@@ -111,11 +111,11 @@ public class PolicyDefinitionEndToEndTest {
         assertThat(response.body().jsonPath().getString("[0].type")).isEqualTo("ValidationFailure");
     }
 
-    private abstract static class BaseContractPolicyProvider implements ArgumentsProvider {
+    private abstract static class BasePolicyProvider implements ArgumentsProvider {
 
         protected final String namespace;
 
-        private BaseContractPolicyProvider(String namespace) {
+        private BasePolicyProvider(String namespace) {
             this.namespace = namespace;
         }
 
@@ -146,13 +146,13 @@ public class PolicyDefinitionEndToEndTest {
                     Arguments.of(policyFromRules("permission", namespace, frameworkConstraint(Map.of("ContractTermination", "cx.data.deletion:1"), "use", Operator.EQ, false)), "ContractTermination"),
                     Arguments.of(policyFromRules("permission", namespace, frameworkConstraint(Map.of("ConfidentialInformationMeasures", "cx.confidentiality.measures:1"), "use", Operator.EQ, false)), "Confidential Information Measures"),
                     Arguments.of(policyFromRules("permission", namespace, frameworkConstraint(Map.of("ConfidentialInformationSharing", List.of("cx.sharing.affiliates:1")), "use", Operator.IS_ANY_OF, true)), "Confidential Information Sharing"),
-                    Arguments.of(policyFromRules("permission", namespace, frameworkConstraint(Map.of("BusinessPartnerGroup", List.of("Some-group")), "use", Operator.IS_ANY_OF, true)), "Business Partner Group"),
-                    Arguments.of(policyFromRules("permission", namespace, frameworkConstraint(Map.of("BusinessPartnerNumber", List.of("BPNL00000000001A")), "use", Operator.IS_ANY_OF, true)), "Business Partner Number")
+                    Arguments.of(policyFromRules("permission", namespace, frameworkConstraint(Map.of("BusinessPartnerGroup", List.of("Some-group")), "access", Operator.IS_ANY_OF, true)), "Business Partner Group"),
+                    Arguments.of(policyFromRules("permission", namespace, frameworkConstraint(Map.of("BusinessPartnerNumber", List.of("BPNL00000000001A")), "access", Operator.IS_ANY_OF, true)), "Business Partner Number")
             );
         }
     }
 
-    private static class ValidContractPolicyProvider extends BaseContractPolicyProvider {
+    private static class ValidContractPolicyProvider extends BasePolicyProvider {
 
         private ValidContractPolicyProvider() {
             super(CX_POLICY_2025_09_CONTEXT);
@@ -168,14 +168,14 @@ public class PolicyDefinitionEndToEndTest {
         }
     }
 
-    private static class InValidNamespaceContractPolicyProvider extends BaseContractPolicyProvider {
+    private static class InValidNamespaceContractPolicyProvider extends BasePolicyProvider {
 
         private InValidNamespaceContractPolicyProvider() {
             super("");
         }
     }
 
-    private static class InValidContractPolicyProvider extends BaseContractPolicyProvider {
+    private static class InValidContractPolicyProvider extends BasePolicyProvider {
 
         private InValidContractPolicyProvider() {
             super(CX_POLICY_2025_09_CONTEXT);
