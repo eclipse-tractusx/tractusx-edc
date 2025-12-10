@@ -153,7 +153,7 @@ public class CatalogTest {
         var onlyDiogenesPolicy = frameworkPolicy(
                 Map.of(CX_POLICY_2025_09_NS + "BusinessPartnerNumber", "BPNLAAAAAAAAAAAB"),
                 CX_POLICY_2025_09_NS + "access",
-                "isAnyOf");
+                Operator.IS_ANY_OF);
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
