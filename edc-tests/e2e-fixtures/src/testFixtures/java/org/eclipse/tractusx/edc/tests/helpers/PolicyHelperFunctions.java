@@ -31,10 +31,9 @@ import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.Operator;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,13 +48,11 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONST
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CX_ODRL_CONTEXT;
 
 public class PolicyHelperFunctions {
 
-    private static final String ODRL_JSONLD = "https://w3id.org/catenax/2025/9/policy/odrl.jsonld";
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
-
-    public static final String BUSINESS_PARTNER_LEGACY_EVALUATION_KEY = CX_POLICY_NS + BUSINESS_PARTNER_EVALUATION_KEY;
 
     private static final String BUSINESS_PARTNER_CONSTRAINT_KEY = CX_POLICY_2025_09_NS + "BusinessPartnerGroup";
 
@@ -85,52 +82,31 @@ public class PolicyHelperFunctions {
 
     public static JsonObject frameworkPolicy(Map<String, String> permissions, String action) {
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
-                        .add(frameworkPermission(permissions, action)))
+                        .add(frameworkConstraint(new HashMap<>(permissions), action, Operator.EQ, false)))
                 .build();
     }
 
     public static JsonObject frameworkPolicy(Map<String, String> permissions, String action, String operator) {
+        return frameworkPolicy(permissions, action, Operator.valueOf(operator));
+    }
+
+    public static JsonObject frameworkPolicy(Map<String, String> permissions, String action, Operator operator) {
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
-                        .add(frameworkPermission(permissions, action, operator)))
+                        .add(frameworkConstraint(new HashMap<>(permissions), action, operator, false)))
                 .build();
     }
 
 
     public static JsonObject emptyPolicy() {
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
-                .build();
-    }
-
-    public static JsonObject policyWithEmptyRule(String action) {
-        var rule = Json.createObjectBuilder()
-                .add("action", action)
-                .build();
-        var rulesArrayBuilder = Json.createArrayBuilder();
-        rulesArrayBuilder.add(rule);
-        return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
-                .add(TYPE, "Set")
-                .add("permission", rulesArrayBuilder)
-                .build();
-    }
-
-    public static JsonObject policyFromRules(String ruleType, JsonObject... rules) {
-        var rulesArrayBuilder = Json.createArrayBuilder();
-        for (JsonObject rule : rules) {
-            rulesArrayBuilder.add(rule);
-        }
-        return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
-                .add(TYPE, "Set")
-                .add(ruleType, rulesArrayBuilder)
                 .build();
     }
 
@@ -161,7 +137,7 @@ public class PolicyHelperFunctions {
                 .build();
 
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
@@ -202,7 +178,7 @@ public class PolicyHelperFunctions {
                 .build();
         
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
@@ -225,19 +201,6 @@ public class PolicyHelperFunctions {
                 .build()));
     }
 
-    /**
-     * Creates a {@link PolicyDefinition} using the given ID, that contains equality constraints for each of the given BusinessPartnerNumbers:
-     * each BPN is converted into an {@link AtomicConstraint} {@code BusinessPartnerNumber EQ [BPN]}.
-     */
-    public static JsonObject frameworkTemplatePolicy(String id, String frameworkKind) {
-        var template = fetchFrameworkTemplate().replace("${POLICY_ID}", id).replace("${FRAMEWORK_CREDENTIAL}", frameworkKind);
-        try {
-            return MAPPER.readValue(template, JsonObject.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static JsonObjectBuilder policyDefinitionBuilder() {
         return Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "PolicyDefinitionDto");
@@ -250,7 +213,7 @@ public class PolicyHelperFunctions {
 
     public static JsonObject bpnPolicy(String... bpns) {
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(permission(bpns)))
@@ -276,7 +239,7 @@ public class PolicyHelperFunctions {
                         .build())
                 .build();
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(permission))
@@ -296,19 +259,10 @@ public class PolicyHelperFunctions {
                 .build();
 
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_JSONLD)
+                .add(CONTEXT, CX_ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", permission)
                 .build();
-    }
-
-    private static String fetchFrameworkTemplate() {
-        try (var stream = PolicyHelperFunctions.class.getClassLoader().getResourceAsStream("framework-policy.json")) {
-            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     private static JsonObject permission(String... bpns) {
@@ -326,20 +280,16 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-    public static JsonObject frameworkPermission(Map<String, String> permissions, String action) {
-        return frameworkPermission(permissions, action, "eq");
-    }
-
-    public static JsonObject frameworkPermission(Map<String, String> permissions, String action, String operator) {
-        var constraints = permissions.entrySet().stream()
-                .map(permission -> atomicConstraint(permission.getKey(), operator, permission.getValue(), false))
+    public static JsonObject frameworkConstraint(Map<String, Object> operandMappings, String action, Operator operator, boolean createRightOperandsAsArray) {
+        var constraints = operandMappings.entrySet().stream()
+                .map(constraint -> atomicConstraint(constraint.getKey(), operator.getOdrlRepresentation(), constraint.getValue(), createRightOperandsAsArray))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         if (action.contains("use")) {
-            if (!permissions.containsKey(FRAMEWORK_AGREEMENT_LITERAL)) {
+            if (!operandMappings.containsKey(FRAMEWORK_AGREEMENT_LITERAL)) {
                 constraints.add(frameworkAgreementConstraint());
             }
-            if (!permissions.containsKey(USAGE_PURPOSE_LITERAL)) {
+            if (!operandMappings.containsKey(USAGE_PURPOSE_LITERAL)) {
                 constraints.add(usagePurposeConstraint());
             }
         }
