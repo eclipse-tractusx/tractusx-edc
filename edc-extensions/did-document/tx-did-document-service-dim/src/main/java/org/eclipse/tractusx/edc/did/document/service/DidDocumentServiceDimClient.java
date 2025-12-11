@@ -48,10 +48,10 @@ import static java.lang.String.format;
 import static org.eclipse.edc.http.spi.FallbackFactories.retryWhenStatusIsNotIn;
 
 /**
- * Implementation of {@link DidDocumentServiceClient} that interacts with a DIV (Decentralized Identity
+ * Implementation of {@link DidDocumentServiceClient} that interacts with a DIM (Decentralized Identity
  * Verification) Service to manage services in a DID Document.
  */
-public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
+public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
 
     public static final MediaType TYPE_JSON = MediaType.parse("application/json");
     private static final String DID_DOC_API_PATH = "/api/v2.0.0/companyIdentities";
@@ -65,15 +65,15 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
     private final String didDocApiUrl;
     private String companyIdentity;
 
-    public DidDocumentServiceDivClient(DidResolverRegistry resolverRegistry, EdcHttpClient httpClient,
-                                       DimOauth2Client dimOauth2Client, ObjectMapper mapper, String divUrl, String ownDid, Monitor monitor) {
+    public DidDocumentServiceDimClient(DidResolverRegistry resolverRegistry, EdcHttpClient httpClient,
+                                       DimOauth2Client dimOauth2Client, ObjectMapper mapper, String dimUrl, String ownDid, Monitor monitor) {
         this.resolverRegistry = resolverRegistry;
         this.httpClient = httpClient;
         this.dimOauth2Client = dimOauth2Client;
         this.mapper = mapper;
         this.ownDid = ownDid;
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
-        this.didDocApiUrl = "%s/%s".formatted(divUrl, DID_DOC_API_PATH);
+        this.didDocApiUrl = "%s/%s".formatted(dimUrl, DID_DOC_API_PATH);
     }
 
     /**
@@ -171,7 +171,7 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
     private ServiceResult<Void> updatePatchStatus() {
 
         return resolveCompanyIdentity()
-                .map(companyIdentity -> "%s/status".formatted(companyIdentityUrl(companyIdentity)))
+                .map(companyId -> "%s/status".formatted(companyIdentityUrl(companyId)))
                 .compose(url -> patchRequest(null, url))
                 .map(Request.Builder::build)
                 .compose(request -> this.executeRequest(request, this::handlePatchStatusResponse))
@@ -224,7 +224,7 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
                     .map(success -> Result.success(body))
                     .orElseGet(() -> Result.failure("Failed to Update Did Document, res: %s".formatted(body)));
         } catch (IOException e) {
-            monitor.severe("Failed to parse did update response from DIV");
+            monitor.severe("Failed to parse did update response from DIM");
             return Result.failure(e.getMessage());
         }
     }
@@ -245,7 +245,7 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
                     .map(success -> Result.success(body))
                     .orElseGet(() -> Result.failure("Failed to Update Patch Status, res: %s".formatted(body)));
         } catch (IOException e) {
-            monitor.severe("Failed to parse patch status response from DIV");
+            monitor.severe("Failed to parse patch status response from DIM");
             return Result.failure(e.getMessage());
         }
     }
@@ -267,7 +267,7 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
                     .map(Result::success)
                     .orElseGet(() -> Result.failure("Failed to Resolve Company Identity Response, res: %s".formatted(body)));
         } catch (IOException e) {
-            monitor.severe("Failed to parse company identity response from DIV");
+            monitor.severe("Failed to parse company identity response from DIM");
             return Result.failure(e.getMessage());
         }
     }

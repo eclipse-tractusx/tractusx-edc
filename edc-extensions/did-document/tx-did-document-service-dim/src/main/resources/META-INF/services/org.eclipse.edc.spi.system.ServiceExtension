@@ -17,4 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.did.document.service.DidDocumentServiceDivClientExtension
+org.eclipse.tractusx.edc.did.document.service.DidDocumentServiceDimClientExtension

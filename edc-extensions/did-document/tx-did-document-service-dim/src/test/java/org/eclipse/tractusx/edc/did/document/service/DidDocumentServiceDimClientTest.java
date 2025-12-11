@@ -50,7 +50,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class DidDocumentServiceDivClientTest {
+class DidDocumentServiceDimClientTest {
 
     private static final String COMPANY_ID = "ddfdcbad-44b2-43b5-b49f-6347ec2e586a";
 
@@ -67,15 +67,15 @@ class DidDocumentServiceDivClientTest {
     private final DimOauth2Client dimOauth2Client = mock(DimOauth2Client.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final Monitor monitor = mock(Monitor.class);
-    private final String divUrl = "https://div.example.com";
+    private final String dimUrl = "https://div.example.com";
     private final String ownDid = "did:web:example.com:123";
 
-    private DidDocumentServiceDivClient client;
+    private DidDocumentServiceDimClient client;
 
     @BeforeEach
     void setUp() {
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
-        client = new DidDocumentServiceDivClient(resolverRegistry, httpClient, dimOauth2Client, mapper, divUrl, ownDid, monitor);
+        client = new DidDocumentServiceDimClient(resolverRegistry, httpClient, dimOauth2Client, mapper, dimUrl, ownDid, monitor);
     }
 
     @Test

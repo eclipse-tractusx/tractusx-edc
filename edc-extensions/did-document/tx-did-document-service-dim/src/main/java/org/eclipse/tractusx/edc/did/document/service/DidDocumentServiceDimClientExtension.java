@@ -34,7 +34,7 @@ import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClien
 import java.util.Optional;
 
 @Provides(DidDocumentServiceClient.class)
-public class DidDocumentServiceDivClientExtension implements ServiceExtension {
+public class DidDocumentServiceDimClientExtension implements ServiceExtension {
 
     @Inject
     private DidResolverRegistry resolverRegistry;
@@ -52,7 +52,7 @@ public class DidDocumentServiceDivClientExtension implements ServiceExtension {
     private Monitor monitor;
 
     @Setting(key = "tx.edc.iam.sts.dim.url", description = "STS Dim endpoint", required = false)
-    private String divUrl;
+    private String dimUrlConfig;
 
     @Setting(key = "edc.iam.issuer.id", description = "EDC Issuer Id")
     private String ownDid;
@@ -60,18 +60,18 @@ public class DidDocumentServiceDivClientExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
 
-        Optional.ofNullable(divUrl)
-                .map(divUrl -> new DidDocumentServiceDivClient(
+        Optional.ofNullable(dimUrlConfig)
+                .map(dimUrl -> new DidDocumentServiceDimClient(
                         resolverRegistry,
                         httpClient,
                         dimOauth2Client,
                         typeManager.getMapper(),
-                        divUrl,
+                        dimUrl,
                         ownDid,
                         monitor)
                 ).ifPresentOrElse(client ->
                                 context.registerService(DidDocumentServiceClient.class, client),
-                        () -> monitor.warning("DIV Url not configured, DidDocumentServiceDIVClient will not be registered")
+                        () -> monitor.warning("DIM Url not configured, DidDocumentServiceDIMClient will not be registered")
                 );
     }
 }
