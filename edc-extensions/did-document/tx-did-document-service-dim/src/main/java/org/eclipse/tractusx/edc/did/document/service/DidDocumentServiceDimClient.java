@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static java.lang.String.format;
@@ -63,7 +64,7 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     private final String ownDid;
     private final Monitor monitor;
     private final String didDocApiUrl;
-    private String companyIdentity;
+    private final AtomicReference<String> companyIdentity = new AtomicReference<>();
 
     public DidDocumentServiceDimClient(DidResolverRegistry resolverRegistry, EdcHttpClient httpClient,
                                        DimOauth2Client dimOauth2Client, ObjectMapper mapper, String dimUrl, String ownDid, Monitor monitor) {
@@ -179,15 +180,15 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     }
 
     private Result<String> resolveCompanyIdentity() {
-        if (companyIdentity == null) {
+        if (companyIdentity.get() == null) {
             var url = HttpUrl.parse(didDocApiUrl).newBuilder().addQueryParameter("$filter", "issuerDID eq %s".formatted(ownDid)).build();
-            return getRequest()
+            getRequest()
                     .map(builder -> builder.url(url).build())
                     .compose(request -> this.executeRequest(request, this::handleCompanyIdentityResponse))
-                    .onSuccess(companyIdentity -> this.companyIdentity = companyIdentity)
+                    .onSuccess(companyIdentity::set)
                     .onFailure(f -> monitor.severe("Failed to resolve company identity for DID %s with failure %s".formatted(ownDid, f.getFailureDetail())));
         }
-        return Result.success(companyIdentity);
+        return Result.success(companyIdentity.get());
     }
 
     private Result<Request.Builder> patchRequest(Map<String, Object> body, String url) {
