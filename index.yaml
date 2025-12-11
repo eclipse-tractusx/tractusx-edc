@@ -3,7 +3,7 @@ entries:
   daps:
   - apiVersion: v2
     appVersion: 0.0.1
-    created: "2025-11-18T12:56:36.483641686Z"
+    created: "2025-12-11T07:50:01.746834948Z"
     description: A Helm chart for Kubernetes
     digest: a6ef8f7a86aba987dc64f30cf90572b369292fc540bc5ef77eac0e026bb17b28
     name: daps
@@ -69,8 +69,36 @@ entries:
     version: 0.1.2
   tractusx-connector:
   - apiVersion: v2
+    appVersion: 0.11.2
+    created: "2025-12-11T07:50:01.852010735Z"
+    dependencies:
+    - alias: vault
+      condition: install.vault
+      name: vault
+      repository: https://helm.releases.hashicorp.com
+      version: 0.27.0
+    - alias: postgresql
+      condition: install.postgresql
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.2.1
+    description: 'A Helm chart for Tractus-X Eclipse Data Space Connector. The connector
+      deployment consists of two runtime consists of a Control Plane and a Data Plane.
+      Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp
+      Vault are included.  This chart is intended for use with an _existing_ PostgreSQL
+      database and an _existing_ HashiCorp Vault. '
+    digest: 1fb92b19bb797bf01289d317b79305899fcdaedb0211e41bfa970c61b5d95df8
+    home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+    name: tractusx-connector
+    sources:
+    - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
+    type: application
+    urls:
+    - https://eclipse-tractusx.github.io/tractusx-edc/helm-charts/tractusx-connector-0.11.2.tgz
+    version: 0.11.2
+  - apiVersion: v2
     appVersion: 0.11.1
-    created: "2025-11-18T12:56:36.577497823Z"
+    created: "2025-12-11T07:50:01.842532081Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -98,7 +126,7 @@ entries:
     version: 0.11.1
   - apiVersion: v2
     appVersion: 0.11.0
-    created: "2025-11-18T12:56:36.568171971Z"
+    created: "2025-12-11T07:50:01.83438807Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -126,7 +154,7 @@ entries:
     version: 0.11.0
   - apiVersion: v2
     appVersion: 0.11.0-rc4
-    created: "2025-11-18T12:56:36.55983106Z"
+    created: "2025-12-11T07:50:01.826386955Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -154,7 +182,7 @@ entries:
     version: 0.11.0-rc4
   - apiVersion: v2
     appVersion: 0.11.0-RC3
-    created: "2025-11-18T12:56:36.551300959Z"
+    created: "2025-12-11T07:50:01.816195585Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -182,7 +210,7 @@ entries:
     version: 0.11.0-RC3
   - apiVersion: v2
     appVersion: 0.11.0-RC2
-    created: "2025-11-18T12:56:36.543571532Z"
+    created: "2025-12-11T07:50:01.808399845Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -210,7 +238,7 @@ entries:
     version: 0.11.0-RC2
   - apiVersion: v2
     appVersion: 0.11.0-RC1
-    created: "2025-11-18T12:56:36.534881528Z"
+    created: "2025-12-11T07:50:01.799471656Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -238,7 +266,7 @@ entries:
     version: 0.11.0-RC1
   - apiVersion: v2
     appVersion: 0.10.2
-    created: "2025-11-18T12:56:36.526328473Z"
+    created: "2025-12-11T07:50:01.790739607Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -266,7 +294,7 @@ entries:
     version: 0.10.2
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2025-11-18T12:56:36.517794069Z"
+    created: "2025-12-11T07:50:01.781990297Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -294,7 +322,7 @@ entries:
     version: 0.10.1
   - apiVersion: v2
     appVersion: 0.10.0
-    created: "2025-11-18T12:56:36.509094024Z"
+    created: "2025-12-11T07:50:01.773340014Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -322,7 +350,7 @@ entries:
     version: 0.10.0
   - apiVersion: v2
     appVersion: 0.10.0-rc2
-    created: "2025-11-18T12:56:36.500594248Z"
+    created: "2025-12-11T07:50:01.764517925Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -350,7 +378,7 @@ entries:
     version: 0.10.0-rc2
   - apiVersion: v2
     appVersion: 0.10.0-rc1
-    created: "2025-11-18T12:56:36.492204047Z"
+    created: "2025-12-11T07:50:01.755851739Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -378,7 +406,7 @@ entries:
     version: 0.10.0-rc1
   - apiVersion: v2
     appVersion: 0.9.0
-    created: "2025-11-18T12:56:36.852835775Z"
+    created: "2025-12-11T07:50:02.135433407Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -406,7 +434,7 @@ entries:
     version: 0.9.0
   - apiVersion: v2
     appVersion: 0.9.0-rc2
-    created: "2025-11-18T12:56:36.844225059Z"
+    created: "2025-12-11T07:50:02.126751123Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -434,7 +462,7 @@ entries:
     version: 0.9.0-rc2
   - apiVersion: v2
     appVersion: 0.9.0-rc1
-    created: "2025-11-18T12:56:36.835692085Z"
+    created: "2025-12-11T07:50:02.117710826Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -462,7 +490,7 @@ entries:
     version: 0.9.0-rc1
   - apiVersion: v2
     appVersion: 0.8.1
-    created: "2025-11-18T12:56:36.827465065Z"
+    created: "2025-12-11T07:50:02.109427318Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -490,7 +518,7 @@ entries:
     version: 0.8.1
   - apiVersion: v2
     appVersion: 0.8.0
-    created: "2025-11-18T12:56:36.81895435Z"
+    created: "2025-12-11T07:50:02.100476751Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -518,7 +546,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: 0.8.0-rc6
-    created: "2025-11-18T12:56:36.810647333Z"
+    created: "2025-12-11T07:50:02.092562078Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -546,7 +574,7 @@ entries:
     version: 0.8.0-rc6
   - apiVersion: v2
     appVersion: 0.8.0-rc5
-    created: "2025-11-18T12:56:36.801850966Z"
+    created: "2025-12-11T07:50:02.082913567Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -574,7 +602,7 @@ entries:
     version: 0.8.0-rc5
   - apiVersion: v2
     appVersion: 0.8.0-rc4
-    created: "2025-11-18T12:56:36.793318064Z"
+    created: "2025-12-11T07:50:02.074407624Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -602,7 +630,7 @@ entries:
     version: 0.8.0-rc4
   - apiVersion: v2
     appVersion: 0.8.0-rc3
-    created: "2025-11-18T12:56:36.785070185Z"
+    created: "2025-12-11T07:50:02.064544079Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -630,7 +658,7 @@ entries:
     version: 0.8.0-rc3
   - apiVersion: v2
     appVersion: 0.8.0-rc2
-    created: "2025-11-18T12:56:36.77663357Z"
+    created: "2025-12-11T07:50:02.055319836Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -658,7 +686,7 @@ entries:
     version: 0.8.0-rc2
   - apiVersion: v2
     appVersion: 0.8.0-rc1
-    created: "2025-11-18T12:56:36.768394908Z"
+    created: "2025-12-11T07:50:02.046891015Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -686,7 +714,7 @@ entries:
     version: 0.8.0-rc1
   - apiVersion: v2
     appVersion: 0.7.7
-    created: "2025-11-18T12:56:36.759950247Z"
+    created: "2025-12-11T07:50:02.037683766Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -714,7 +742,7 @@ entries:
     version: 0.7.7
   - apiVersion: v2
     appVersion: 0.7.6
-    created: "2025-11-18T12:56:36.751519117Z"
+    created: "2025-12-11T07:50:02.029041045Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -742,7 +770,7 @@ entries:
     version: 0.7.6
   - apiVersion: v2
     appVersion: 0.7.5
-    created: "2025-11-18T12:56:36.743190905Z"
+    created: "2025-12-11T07:50:02.019716623Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -770,7 +798,7 @@ entries:
     version: 0.7.5
   - apiVersion: v2
     appVersion: 0.7.4
-    created: "2025-11-18T12:56:36.734833283Z"
+    created: "2025-12-11T07:50:02.011375169Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -798,7 +826,7 @@ entries:
     version: 0.7.4
   - apiVersion: v2
     appVersion: 0.7.3
-    created: "2025-11-18T12:56:36.726549147Z"
+    created: "2025-12-11T07:50:02.002352993Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -826,7 +854,7 @@ entries:
     version: 0.7.3
   - apiVersion: v2
     appVersion: 0.7.2
-    created: "2025-11-18T12:56:36.718152364Z"
+    created: "2025-12-11T07:50:01.99366593Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -854,7 +882,7 @@ entries:
     version: 0.7.2
   - apiVersion: v2
     appVersion: 0.7.1
-    created: "2025-11-18T12:56:36.709860737Z"
+    created: "2025-12-11T07:50:01.985945202Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -882,7 +910,7 @@ entries:
     version: 0.7.1
   - apiVersion: v2
     appVersion: 0.7.0
-    created: "2025-11-18T12:56:36.701370449Z"
+    created: "2025-12-11T07:50:01.977201333Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -910,7 +938,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: 0.7.0-rc1
-    created: "2025-11-18T12:56:36.692915973Z"
+    created: "2025-12-11T07:50:01.968507194Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -938,7 +966,7 @@ entries:
     version: 0.7.0-rc1
   - apiVersion: v2
     appVersion: 0.6.0
-    created: "2025-11-18T12:56:36.684826571Z"
+    created: "2025-12-11T07:50:01.959911713Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -966,7 +994,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 0.6.0-rc2
-    created: "2025-11-18T12:56:36.677502703Z"
+    created: "2025-12-11T07:50:01.951793797Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -994,7 +1022,7 @@ entries:
     version: 0.6.0-rc2
   - apiVersion: v2
     appVersion: 0.6.0-rc1
-    created: "2025-11-18T12:56:36.669454802Z"
+    created: "2025-12-11T07:50:01.9439672Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1022,7 +1050,7 @@ entries:
     version: 0.6.0-rc1
   - apiVersion: v2
     appVersion: 0.5.4
-    created: "2025-11-18T12:56:36.661689536Z"
+    created: "2025-12-11T07:50:01.936056355Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1050,7 +1078,7 @@ entries:
     version: 0.5.4
   - apiVersion: v2
     appVersion: 0.5.3
-    created: "2025-11-18T12:56:36.654594218Z"
+    created: "2025-12-11T07:50:01.928355506Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1078,7 +1106,7 @@ entries:
     version: 0.5.3
   - apiVersion: v2
     appVersion: 0.5.2
-    created: "2025-11-18T12:56:36.64503635Z"
+    created: "2025-12-11T07:50:01.921758389Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1106,7 +1134,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: 0.5.1
-    created: "2025-11-18T12:56:36.63827634Z"
+    created: "2025-12-11T07:50:01.914125423Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1134,7 +1162,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: 0.5.0
-    created: "2025-11-18T12:56:36.63107256Z"
+    created: "2025-12-11T07:50:01.90662043Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1162,7 +1190,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 0.5.0-rc5
-    created: "2025-11-18T12:56:36.623836089Z"
+    created: "2025-12-11T07:50:01.899329122Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1190,7 +1218,7 @@ entries:
     version: 0.5.0-rc5
   - apiVersion: v2
     appVersion: 0.5.0-rc4
-    created: "2025-11-18T12:56:36.617477481Z"
+    created: "2025-12-11T07:50:01.892844476Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1218,7 +1246,7 @@ entries:
     version: 0.5.0-rc4
   - apiVersion: v2
     appVersion: 0.5.0-rc3
-    created: "2025-11-18T12:56:36.610250314Z"
+    created: "2025-12-11T07:50:01.885332989Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1246,7 +1274,7 @@ entries:
     version: 0.5.0-rc3
   - apiVersion: v2
     appVersion: 0.5.0-rc2
-    created: "2025-11-18T12:56:36.603021854Z"
+    created: "2025-12-11T07:50:01.877666483Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1274,7 +1302,7 @@ entries:
     version: 0.5.0-rc2
   - apiVersion: v2
     appVersion: 0.5.0-rc1
-    created: "2025-11-18T12:56:36.595949009Z"
+    created: "2025-12-11T07:50:01.870824145Z"
     dependencies:
     - alias: vault
       condition: install.vault
@@ -1302,7 +1330,7 @@ entries:
     version: 0.5.0-rc1
   - apiVersion: v2
     appVersion: 0.4.1
-    created: "2025-11-18T12:56:36.589633722Z"
+    created: "2025-12-11T07:50:01.863535702Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -1335,7 +1363,7 @@ entries:
     version: 0.4.1
   - apiVersion: v2
     appVersion: 0.4.0
-    created: "2025-11-18T12:56:36.581309888Z"
+    created: "2025-12-11T07:50:01.855861221Z"
     description: 'A Helm chart for Tractus-X Eclipse Data Space Connector. The connector
       deployment consists of two runtime consists of a Control Plane and a Data Plane.
       Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp
@@ -1352,7 +1380,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 0.3.4
-    created: "2025-11-18T12:56:36.580048384Z"
+    created: "2025-12-11T07:50:01.854604479Z"
     description: 'A Helm chart for Tractus-X Eclipse Data Space Connector. The connector
       deployment consists of two runtime consists of a Control Plane and a Data Plane.
       Note that _no_ external dependencies such as a PostgreSQL database and HashiCorp
@@ -1369,7 +1397,7 @@ entries:
     version: 0.3.4
   - apiVersion: v2
     appVersion: 0.3.3
-    created: "2025-11-18T12:56:36.578775929Z"
+    created: "2025-12-11T07:50:01.85333317Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector
     digest: 74d55891a0323b4b75b641fecc76473655f8846d425bd0be8d8328e96ad8518e
     home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector
@@ -1396,7 +1424,7 @@ entries:
   tractusx-connector-azure-vault:
   - apiVersion: v2
     appVersion: 0.8.1
-    created: "2025-11-18T12:56:37.024650207Z"
+    created: "2025-12-11T07:50:02.309440377Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1421,7 +1449,7 @@ entries:
     version: 0.8.1
   - apiVersion: v2
     appVersion: 0.8.0
-    created: "2025-11-18T12:56:37.019287506Z"
+    created: "2025-12-11T07:50:02.30327947Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1446,7 +1474,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: 0.8.0-rc6
-    created: "2025-11-18T12:56:37.013412159Z"
+    created: "2025-12-11T07:50:02.298039644Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1471,7 +1499,7 @@ entries:
     version: 0.8.0-rc6
   - apiVersion: v2
     appVersion: 0.8.0-rc5
-    created: "2025-11-18T12:56:37.007457322Z"
+    created: "2025-12-11T07:50:02.291756246Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1496,7 +1524,7 @@ entries:
     version: 0.8.0-rc5
   - apiVersion: v2
     appVersion: 0.8.0-rc4
-    created: "2025-11-18T12:56:37.002221438Z"
+    created: "2025-12-11T07:50:02.286213168Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1519,7 +1547,7 @@ entries:
     version: 0.8.0-rc4
   - apiVersion: v2
     appVersion: 0.8.0-rc3
-    created: "2025-11-18T12:56:36.996101904Z"
+    created: "2025-12-11T07:50:02.280431253Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1542,7 +1570,7 @@ entries:
     version: 0.8.0-rc3
   - apiVersion: v2
     appVersion: 0.8.0-rc2
-    created: "2025-11-18T12:56:36.99043758Z"
+    created: "2025-12-11T07:50:02.274259797Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1565,7 +1593,7 @@ entries:
     version: 0.8.0-rc2
   - apiVersion: v2
     appVersion: 0.8.0-rc1
-    created: "2025-11-18T12:56:36.984820662Z"
+    created: "2025-12-11T07:50:02.268190173Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1588,7 +1616,7 @@ entries:
     version: 0.8.0-rc1
   - apiVersion: v2
     appVersion: 0.7.7
-    created: "2025-11-18T12:56:36.978675931Z"
+    created: "2025-12-11T07:50:02.262907126Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1611,7 +1639,7 @@ entries:
     version: 0.7.7
   - apiVersion: v2
     appVersion: 0.7.6
-    created: "2025-11-18T12:56:36.972443384Z"
+    created: "2025-12-11T07:50:02.256706331Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1634,7 +1662,7 @@ entries:
     version: 0.7.6
   - apiVersion: v2
     appVersion: 0.7.5
-    created: "2025-11-18T12:56:36.96707378Z"
+    created: "2025-12-11T07:50:02.250606301Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1657,7 +1685,7 @@ entries:
     version: 0.7.5
   - apiVersion: v2
     appVersion: 0.7.4
-    created: "2025-11-18T12:56:36.960761116Z"
+    created: "2025-12-11T07:50:02.245341027Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1680,7 +1708,7 @@ entries:
     version: 0.7.4
   - apiVersion: v2
     appVersion: 0.7.3
-    created: "2025-11-18T12:56:36.954775164Z"
+    created: "2025-12-11T07:50:02.239194527Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1703,7 +1731,7 @@ entries:
     version: 0.7.3
   - apiVersion: v2
     appVersion: 0.7.2
-    created: "2025-11-18T12:56:36.948797634Z"
+    created: "2025-12-11T07:50:02.233023761Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1726,7 +1754,7 @@ entries:
     version: 0.7.2
   - apiVersion: v2
     appVersion: 0.7.1
-    created: "2025-11-18T12:56:36.943587489Z"
+    created: "2025-12-11T07:50:02.227814343Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1749,7 +1777,7 @@ entries:
     version: 0.7.1
   - apiVersion: v2
     appVersion: 0.7.0
-    created: "2025-11-18T12:56:36.937379711Z"
+    created: "2025-12-11T07:50:02.221572082Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1772,7 +1800,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: 0.7.0-rc1
-    created: "2025-11-18T12:56:36.931394934Z"
+    created: "2025-12-11T07:50:02.215459164Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1795,7 +1823,7 @@ entries:
     version: 0.7.0-rc1
   - apiVersion: v2
     appVersion: 0.6.0
-    created: "2025-11-18T12:56:36.926019368Z"
+    created: "2025-12-11T07:50:02.209430815Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1818,7 +1846,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 0.6.0-rc2
-    created: "2025-11-18T12:56:36.920148161Z"
+    created: "2025-12-11T07:50:02.204389953Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1841,7 +1869,7 @@ entries:
     version: 0.6.0-rc2
   - apiVersion: v2
     appVersion: 0.6.0-rc1
-    created: "2025-11-18T12:56:36.914268511Z"
+    created: "2025-12-11T07:50:02.198365374Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1864,7 +1892,7 @@ entries:
     version: 0.6.0-rc1
   - apiVersion: v2
     appVersion: 0.5.4
-    created: "2025-11-18T12:56:36.909208477Z"
+    created: "2025-12-11T07:50:02.19285656Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1887,7 +1915,7 @@ entries:
     version: 0.5.4
   - apiVersion: v2
     appVersion: 0.5.3
-    created: "2025-11-18T12:56:36.903780826Z"
+    created: "2025-12-11T07:50:02.187936796Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1910,7 +1938,7 @@ entries:
     version: 0.5.3
   - apiVersion: v2
     appVersion: 0.5.2
-    created: "2025-11-18T12:56:36.898618781Z"
+    created: "2025-12-11T07:50:02.182652278Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1933,7 +1961,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: 0.5.1
-    created: "2025-11-18T12:56:36.894150877Z"
+    created: "2025-12-11T07:50:02.178237452Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1956,7 +1984,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: 0.5.0
-    created: "2025-11-18T12:56:36.889054634Z"
+    created: "2025-12-11T07:50:02.172855977Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -1979,7 +2007,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 0.5.0-rc5
-    created: "2025-11-18T12:56:36.884782617Z"
+    created: "2025-12-11T07:50:02.168519648Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -2002,7 +2030,7 @@ entries:
     version: 0.5.0-rc5
   - apiVersion: v2
     appVersion: 0.5.0-rc4
-    created: "2025-11-18T12:56:36.879715006Z"
+    created: "2025-12-11T07:50:02.163254074Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -2025,7 +2053,7 @@ entries:
     version: 0.5.0-rc4
   - apiVersion: v2
     appVersion: 0.5.0-rc3
-    created: "2025-11-18T12:56:36.875121088Z"
+    created: "2025-12-11T07:50:02.158841322Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -2048,7 +2076,7 @@ entries:
     version: 0.5.0-rc3
   - apiVersion: v2
     appVersion: 0.5.0-rc2
-    created: "2025-11-18T12:56:36.870292648Z"
+    created: "2025-12-11T07:50:02.153430647Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -2071,7 +2099,7 @@ entries:
     version: 0.5.0-rc2
   - apiVersion: v2
     appVersion: 0.5.0-rc1
-    created: "2025-11-18T12:56:36.865221603Z"
+    created: "2025-12-11T07:50:02.148069693Z"
     dependencies:
     - alias: postgresql
       condition: install.postgresql
@@ -2094,7 +2122,7 @@ entries:
     version: 0.5.0-rc1
   - apiVersion: v2
     appVersion: 0.4.1
-    created: "2025-11-18T12:56:36.860896947Z"
+    created: "2025-12-11T07:50:02.143639839Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -2122,7 +2150,7 @@ entries:
     version: 0.4.1
   - apiVersion: v2
     appVersion: 0.4.0
-    created: "2025-11-18T12:56:36.855369334Z"
+    created: "2025-12-11T07:50:02.138001152Z"
     description: 'A Helm chart for Tractus-X Eclipse Data Space Connector. The connector
       deployment consists of two runtime consists of a Control Plane and a Data Plane.
       Note that _no_ external dependencies such as a PostgreSQL database and Azure
@@ -2139,7 +2167,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 0.3.4
-    created: "2025-11-18T12:56:36.854100856Z"
+    created: "2025-12-11T07:50:02.136721998Z"
     description: 'A Helm chart for Tractus-X Eclipse Data Space Connector. The connector
       deployment consists of two runtime consists of a Control Plane and a Data Plane.
       Note that _no_ external dependencies such as a PostgreSQL database and Azure
@@ -2157,7 +2185,7 @@ entries:
   tractusx-connector-legacy:
   - apiVersion: v2
     appVersion: 0.5.0
-    created: "2025-11-18T12:56:37.07111724Z"
+    created: "2025-12-11T07:50:02.356172562Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -2194,7 +2222,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 0.5.0-rc5
-    created: "2025-11-18T12:56:37.063135637Z"
+    created: "2025-12-11T07:50:02.34914136Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -2231,7 +2259,7 @@ entries:
     version: 0.5.0-rc5
   - apiVersion: v2
     appVersion: 0.5.0-rc4
-    created: "2025-11-18T12:56:37.055089741Z"
+    created: "2025-12-11T07:50:02.34095179Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -2268,7 +2296,7 @@ entries:
     version: 0.5.0-rc4
   - apiVersion: v2
     appVersion: 0.5.0-rc3
-    created: "2025-11-18T12:56:37.047249195Z"
+    created: "2025-12-11T07:50:02.332934164Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -2305,7 +2333,7 @@ entries:
     version: 0.5.0-rc3
   - apiVersion: v2
     appVersion: 0.5.0-rc2
-    created: "2025-11-18T12:56:37.039652807Z"
+    created: "2025-12-11T07:50:02.325103317Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -2342,7 +2370,7 @@ entries:
     version: 0.5.0-rc2
   - apiVersion: v2
     appVersion: 0.5.0-rc1
-    created: "2025-11-18T12:56:37.032069852Z"
+    created: "2025-12-11T07:50:02.317306518Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -2379,8 +2407,23 @@ entries:
     version: 0.5.0-rc1
   tractusx-connector-memory:
   - apiVersion: v2
+    appVersion: 0.11.2
+    created: "2025-12-11T07:50:02.37134341Z"
+    description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
+      memory. Please only use this for development or testing purposes, never in production
+      workloads!
+    digest: 4d5546a18ed0bb842f041bb6c6df7f6b556c076c4ffd8f29b33b6f8c45e2728b
+    home: https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory
+    name: tractusx-connector-memory
+    sources:
+    - https://github.com/eclipse-tractusx/tractusx-edc/tree/main/charts/tractusx-connector-memory
+    type: application
+    urls:
+    - https://eclipse-tractusx.github.io/tractusx-edc/helm-charts/tractusx-connector-memory-0.11.2.tgz
+    version: 0.11.2
+  - apiVersion: v2
     appVersion: 0.11.1
-    created: "2025-11-18T12:56:37.084216785Z"
+    created: "2025-12-11T07:50:02.3702312Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2395,7 +2438,7 @@ entries:
     version: 0.11.1
   - apiVersion: v2
     appVersion: 0.11.0
-    created: "2025-11-18T12:56:37.083108628Z"
+    created: "2025-12-11T07:50:02.369123929Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2410,7 +2453,7 @@ entries:
     version: 0.11.0
   - apiVersion: v2
     appVersion: 0.11.0-rc4
-    created: "2025-11-18T12:56:37.081898369Z"
+    created: "2025-12-11T07:50:02.367897364Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2425,7 +2468,7 @@ entries:
     version: 0.11.0-rc4
   - apiVersion: v2
     appVersion: 0.11.0-RC3
-    created: "2025-11-18T12:56:37.080792376Z"
+    created: "2025-12-11T07:50:02.366705194Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2440,7 +2483,7 @@ entries:
     version: 0.11.0-RC3
   - apiVersion: v2
     appVersion: 0.11.0-RC2
-    created: "2025-11-18T12:56:37.079630519Z"
+    created: "2025-12-11T07:50:02.364618871Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2455,7 +2498,7 @@ entries:
     version: 0.11.0-RC2
   - apiVersion: v2
     appVersion: 0.11.0-RC1
-    created: "2025-11-18T12:56:37.077933135Z"
+    created: "2025-12-11T07:50:02.363512272Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2470,7 +2513,7 @@ entries:
     version: 0.11.0-RC1
   - apiVersion: v2
     appVersion: 0.10.2
-    created: "2025-11-18T12:56:37.076498546Z"
+    created: "2025-12-11T07:50:02.362413407Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2485,7 +2528,7 @@ entries:
     version: 0.10.2
   - apiVersion: v2
     appVersion: 0.10.1
-    created: "2025-11-18T12:56:37.075425575Z"
+    created: "2025-12-11T07:50:02.361362392Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2500,7 +2543,7 @@ entries:
     version: 0.10.1
   - apiVersion: v2
     appVersion: 0.10.0
-    created: "2025-11-18T12:56:37.074357633Z"
+    created: "2025-12-11T07:50:02.360308371Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2515,7 +2558,7 @@ entries:
     version: 0.10.0
   - apiVersion: v2
     appVersion: 0.10.0-rc2
-    created: "2025-11-18T12:56:37.073280785Z"
+    created: "2025-12-11T07:50:02.359244482Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2530,7 +2573,7 @@ entries:
     version: 0.10.0-rc2
   - apiVersion: v2
     appVersion: 0.10.0-rc1
-    created: "2025-11-18T12:56:37.072202344Z"
+    created: "2025-12-11T07:50:02.358150857Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2545,7 +2588,7 @@ entries:
     version: 0.10.0-rc1
   - apiVersion: v2
     appVersion: 0.9.0
-    created: "2025-11-18T12:56:37.12585554Z"
+    created: "2025-12-11T07:50:02.41401783Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2560,7 +2603,7 @@ entries:
     version: 0.9.0
   - apiVersion: v2
     appVersion: 0.9.0-rc2
-    created: "2025-11-18T12:56:37.124824958Z"
+    created: "2025-12-11T07:50:02.412970712Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2575,7 +2618,7 @@ entries:
     version: 0.9.0-rc2
   - apiVersion: v2
     appVersion: 0.9.0-rc1
-    created: "2025-11-18T12:56:37.123784628Z"
+    created: "2025-12-11T07:50:02.411906432Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2590,7 +2633,7 @@ entries:
     version: 0.9.0-rc1
   - apiVersion: v2
     appVersion: 0.8.1
-    created: "2025-11-18T12:56:37.122725683Z"
+    created: "2025-12-11T07:50:02.410853263Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2605,7 +2648,7 @@ entries:
     version: 0.8.1
   - apiVersion: v2
     appVersion: 0.8.0
-    created: "2025-11-18T12:56:37.121688028Z"
+    created: "2025-12-11T07:50:02.409790245Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2620,7 +2663,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: 0.8.0-rc6
-    created: "2025-11-18T12:56:37.120622191Z"
+    created: "2025-12-11T07:50:02.408667796Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2635,7 +2678,7 @@ entries:
     version: 0.8.0-rc6
   - apiVersion: v2
     appVersion: 0.8.0-rc5
-    created: "2025-11-18T12:56:37.118665701Z"
+    created: "2025-12-11T07:50:02.40668446Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2650,7 +2693,7 @@ entries:
     version: 0.8.0-rc5
   - apiVersion: v2
     appVersion: 0.8.0-rc4
-    created: "2025-11-18T12:56:37.117633847Z"
+    created: "2025-12-11T07:50:02.405633955Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2665,7 +2708,7 @@ entries:
     version: 0.8.0-rc4
   - apiVersion: v2
     appVersion: 0.8.0-rc3
-    created: "2025-11-18T12:56:37.116576596Z"
+    created: "2025-12-11T07:50:02.40457193Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2680,7 +2723,7 @@ entries:
     version: 0.8.0-rc3
   - apiVersion: v2
     appVersion: 0.8.0-rc2
-    created: "2025-11-18T12:56:37.115516879Z"
+    created: "2025-12-11T07:50:02.403509764Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2695,7 +2738,7 @@ entries:
     version: 0.8.0-rc2
   - apiVersion: v2
     appVersion: 0.8.0-rc1
-    created: "2025-11-18T12:56:37.114456732Z"
+    created: "2025-12-11T07:50:02.40243261Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2710,7 +2753,7 @@ entries:
     version: 0.8.0-rc1
   - apiVersion: v2
     appVersion: 0.7.7
-    created: "2025-11-18T12:56:37.113398198Z"
+    created: "2025-12-11T07:50:02.401348342Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2725,7 +2768,7 @@ entries:
     version: 0.7.7
   - apiVersion: v2
     appVersion: 0.7.6
-    created: "2025-11-18T12:56:37.11230021Z"
+    created: "2025-12-11T07:50:02.400182451Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2740,7 +2783,7 @@ entries:
     version: 0.7.6
   - apiVersion: v2
     appVersion: 0.7.5
-    created: "2025-11-18T12:56:37.110358783Z"
+    created: "2025-12-11T07:50:02.398162185Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2755,7 +2798,7 @@ entries:
     version: 0.7.5
   - apiVersion: v2
     appVersion: 0.7.4
-    created: "2025-11-18T12:56:37.109363678Z"
+    created: "2025-12-11T07:50:02.397136318Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2770,7 +2813,7 @@ entries:
     version: 0.7.4
   - apiVersion: v2
     appVersion: 0.7.3
-    created: "2025-11-18T12:56:37.108364636Z"
+    created: "2025-12-11T07:50:02.396117453Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2785,7 +2828,7 @@ entries:
     version: 0.7.3
   - apiVersion: v2
     appVersion: 0.7.2
-    created: "2025-11-18T12:56:37.107361716Z"
+    created: "2025-12-11T07:50:02.395084231Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2800,7 +2843,7 @@ entries:
     version: 0.7.2
   - apiVersion: v2
     appVersion: 0.7.1
-    created: "2025-11-18T12:56:37.106324773Z"
+    created: "2025-12-11T07:50:02.394054476Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2815,7 +2858,7 @@ entries:
     version: 0.7.1
   - apiVersion: v2
     appVersion: 0.7.0
-    created: "2025-11-18T12:56:37.105288971Z"
+    created: "2025-12-11T07:50:02.393002971Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2830,7 +2873,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: 0.7.0-rc1
-    created: "2025-11-18T12:56:37.104239444Z"
+    created: "2025-12-11T07:50:02.391919705Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2845,7 +2888,7 @@ entries:
     version: 0.7.0-rc1
   - apiVersion: v2
     appVersion: 0.6.0
-    created: "2025-11-18T12:56:37.102739841Z"
+    created: "2025-12-11T07:50:02.39000815Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2860,7 +2903,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 0.6.0-rc2
-    created: "2025-11-18T12:56:37.101479278Z"
+    created: "2025-12-11T07:50:02.389049299Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2875,7 +2918,7 @@ entries:
     version: 0.6.0-rc2
   - apiVersion: v2
     appVersion: 0.6.0-rc1
-    created: "2025-11-18T12:56:37.100508138Z"
+    created: "2025-12-11T07:50:02.388055531Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2890,7 +2933,7 @@ entries:
     version: 0.6.0-rc1
   - apiVersion: v2
     appVersion: 0.5.4
-    created: "2025-11-18T12:56:37.099562746Z"
+    created: "2025-12-11T07:50:02.387103362Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2905,7 +2948,7 @@ entries:
     version: 0.5.4
   - apiVersion: v2
     appVersion: 0.5.3
-    created: "2025-11-18T12:56:37.098570967Z"
+    created: "2025-12-11T07:50:02.386100728Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2920,7 +2963,7 @@ entries:
     version: 0.5.3
   - apiVersion: v2
     appVersion: 0.5.2
-    created: "2025-11-18T12:56:37.097570592Z"
+    created: "2025-12-11T07:50:02.385101701Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2935,7 +2978,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: 0.5.1
-    created: "2025-11-18T12:56:37.096585466Z"
+    created: "2025-12-11T07:50:02.384081163Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2950,7 +2993,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: 0.5.0
-    created: "2025-11-18T12:56:37.095581414Z"
+    created: "2025-12-11T07:50:02.382715858Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2965,7 +3008,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 0.5.0-rc5
-    created: "2025-11-18T12:56:37.094620092Z"
+    created: "2025-12-11T07:50:02.381239614Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2980,7 +3023,7 @@ entries:
     version: 0.5.0-rc5
   - apiVersion: v2
     appVersion: 0.5.0-rc4
-    created: "2025-11-18T12:56:37.092944779Z"
+    created: "2025-12-11T07:50:02.380322912Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -2995,7 +3038,7 @@ entries:
     version: 0.5.0-rc4
   - apiVersion: v2
     appVersion: 0.5.0-rc3
-    created: "2025-11-18T12:56:37.092020707Z"
+    created: "2025-12-11T07:50:02.379403023Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -3010,7 +3053,7 @@ entries:
     version: 0.5.0-rc3
   - apiVersion: v2
     appVersion: 0.5.0-rc2
-    created: "2025-11-18T12:56:37.091101254Z"
+    created: "2025-12-11T07:50:02.378329676Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -3025,7 +3068,7 @@ entries:
     version: 0.5.0-rc2
   - apiVersion: v2
     appVersion: 0.5.0-rc1
-    created: "2025-11-18T12:56:37.09018185Z"
+    created: "2025-12-11T07:50:02.377307766Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -3040,7 +3083,7 @@ entries:
     version: 0.5.0-rc1
   - apiVersion: v2
     appVersion: 0.4.1
-    created: "2025-11-18T12:56:37.089246457Z"
+    created: "2025-12-11T07:50:02.376353843Z"
     dependencies:
     - alias: daps
       condition: install.daps
@@ -3061,7 +3104,7 @@ entries:
     version: 0.4.1
   - apiVersion: v2
     appVersion: 0.4.0
-    created: "2025-11-18T12:56:37.087839891Z"
+    created: "2025-12-11T07:50:02.374901384Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -3076,7 +3119,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 0.3.4
-    created: "2025-11-18T12:56:37.086890952Z"
+    created: "2025-12-11T07:50:02.373096694Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory. Please only use this for development or testing purposes, never in production
       workloads!
@@ -3091,7 +3134,7 @@ entries:
     version: 0.3.4
   - apiVersion: v2
     appVersion: 0.3.3
-    created: "2025-11-18T12:56:37.085085413Z"
+    created: "2025-12-11T07:50:02.372213304Z"
     description: A Helm chart for Tractus-X Eclipse Data Space Connector based on
       memory
     digest: 0d5ad6c439c7ad0dd2e6b1d0adc06a0d8a27b2c5518154bb0dc3e2a9952a89e8
@@ -3103,4 +3146,4 @@ entries:
     urls:
     - https://eclipse-tractusx.github.io/tractusx-edc/helm-charts/tractusx-connector-memory-0.3.3.tgz
     version: 0.3.3
-generated: "2025-11-18T12:56:36.483075004Z"
+generated: "2025-12-11T07:50:01.746240251Z"
