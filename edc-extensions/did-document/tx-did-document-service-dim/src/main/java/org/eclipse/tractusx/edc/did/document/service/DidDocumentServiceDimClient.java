@@ -291,6 +291,7 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
      *   "didDocUpdates": {
      *     "addServices": [
      *       {
+     *         "id": "did:web:example.com:123#DataService",
      *         "serviceEndpoint": "https://edc.com/edc/.well-known/dspace-version",
      *         "type": "DataService"
      *       }
@@ -304,7 +305,7 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
      * @return a map representing the payload for the add service operation
      */
     private Map<String, Object> didDocCreateServicePayload(Service service) {
-        var createPayload = Map.of("type", service.getType(), "serviceEndpoint", service.getServiceEndpoint());
+        var createPayload = Map.of("id", service.getId(), "type", service.getType(), "serviceEndpoint", service.getServiceEndpoint());
         return didDocUpdatePayload(Map.of("addServices", List.of(createPayload)));
     }
 

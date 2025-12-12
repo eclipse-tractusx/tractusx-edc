@@ -258,6 +258,7 @@ class DidDocumentServiceDimClientTest {
                     "didDocUpdates": {
                       "addServices": [
                         {
+                         "id": "did:web:example.com:123#DataService",
                           "serviceEndpoint": "https://edc.com/edc/.well-known/dspace-version",
                           "type": "DataService"
                         }
@@ -284,6 +285,7 @@ class DidDocumentServiceDimClientTest {
                     "didDocUpdates": {
                       "addServices": [
                         {
+                          "id": "did:web:example.com:123#DataService",
                           "serviceEndpoint": "https://edc.com/edc/.well-known/dspace-version",
                           "type": "DataService"
                         }
