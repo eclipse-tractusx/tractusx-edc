@@ -270,6 +270,7 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
 
         var result = client.handleDidUpdateResponse(response);
@@ -297,6 +298,28 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
+        when(response.body()).thenReturn(responseBody);
+
+        var result = client.handleDidUpdateResponse(response);
+        assertThat(result).isFailed();
+    }
+
+    @Test
+    void handleDidUpdateResponse_addService_failureStatusCode() {
+        var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(false);
+
+        var result = client.handleDidUpdateResponse(response);
+        assertThat(result).isFailed();
+    }
+
+    @Test
+    void handleDidUpdateResponse_addService_resBodyParseFailure() {
+        String didUpdateResponse = "<Invalid Response Body>";
+        var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
+        var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
 
         var result = client.handleDidUpdateResponse(response);
@@ -320,6 +343,7 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
 
         var result = client.handleDidUpdateResponse(response);
@@ -343,6 +367,7 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
 
         var result = client.handleDidUpdateResponse(response);
@@ -360,6 +385,7 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
 
         var result = client.handlePatchStatusResponse(response);
@@ -377,7 +403,18 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
+
+        var result = client.handlePatchStatusResponse(response);
+        assertThat(result).isFailed();
+    }
+
+    @Test
+    void handlePatchStatusResponse_failureStatusCode() throws IOException {
+
+        var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(false);
 
         var result = client.handlePatchStatusResponse(response);
         assertThat(result).isFailed();
@@ -412,6 +449,7 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
 
         var result = client.handleCompanyIdentityResponse(response);
@@ -429,7 +467,18 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
+
+        var result = client.handleCompanyIdentityResponse(response);
+        assertThat(result).isFailed();
+    }
+
+    @Test
+    void handleCompanyIdentityResponse_failureStatusCode() throws IOException {
+
+        var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(false);
 
         var result = client.handleCompanyIdentityResponse(response);
         assertThat(result).isFailed();
@@ -481,6 +530,7 @@ class DidDocumentServiceDimClientTest {
                 """;
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(responseBody);
 
         var result = client.handleCompanyIdentityResponse(response);

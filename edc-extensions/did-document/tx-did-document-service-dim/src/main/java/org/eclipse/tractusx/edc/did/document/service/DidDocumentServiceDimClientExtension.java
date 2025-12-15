@@ -54,7 +54,7 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
     @Setting(key = "tx.edc.iam.sts.dim.url", description = "STS Dim endpoint", required = false)
     private String dimUrlConfig;
 
-    @Setting(key = "edc.iam.issuer.id", description = "EDC Issuer Id")
+    @Setting(key = "edc.participant.id", description = "EDC Participant Id")
     private String ownDid;
 
     @Override
@@ -71,7 +71,7 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
                         monitor)
                 ).ifPresentOrElse(client ->
                                 context.registerService(DidDocumentServiceClient.class, client),
-                        () -> monitor.warning("DIM Url not configured, DidDocumentServiceDIMClient will not be registered")
+                        () -> monitor.info("DIM Url not configured, DidDocumentServiceDIMClient will not be registered")
                 );
     }
 }

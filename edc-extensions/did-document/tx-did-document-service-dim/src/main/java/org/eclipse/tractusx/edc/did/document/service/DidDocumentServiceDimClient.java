@@ -141,8 +141,8 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
         }
         return deleteServiceEntry(id)
                 .compose(v -> updatePatchStatus())
-                .onSuccess(v -> monitor.info("Deleted service entry %s in DID Document".formatted(id)))
-                .onFailure(f -> monitor.warning("Failed to delete service entry %s with failure %s".formatted(id, f.getFailureDetail())));
+                .onSuccess(v -> monitor.info("Deletion of service entry %s in DID Document successful".formatted(id)))
+                .onFailure(f -> monitor.severe("Failed to delete service entry %s with failure %s".formatted(id, f.getFailureDetail())));
     }
 
     @Override
@@ -152,8 +152,7 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
 
     private ServiceResult<Void> createServiceEntry(Service service) {
 
-        return resolveCompanyIdentity()
-                .map(this::companyIdentityUrl)
+        return createTenantBaseUrl()
                 .compose(url -> patchRequest(didDocCreateServicePayload(service), url))
                 .map(Request.Builder::build)
                 .compose(request -> this.executeRequest(request, this::handleDidUpdateResponse))
@@ -161,8 +160,7 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     }
 
     private ServiceResult<Void> deleteServiceEntry(String id) {
-        return resolveCompanyIdentity()
-                .map(this::companyIdentityUrl)
+        return createTenantBaseUrl()
                 .compose(url -> patchRequest(didDocDeleteServicePayload(id), url))
                 .map(Request.Builder::build)
                 .compose(request -> this.executeRequest(request, this::handleDidUpdateResponse))
@@ -171,24 +169,25 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
 
     private ServiceResult<Void> updatePatchStatus() {
 
-        return resolveCompanyIdentity()
-                .map(companyId -> "%s/status".formatted(companyIdentityUrl(companyId)))
+        return createTenantBaseUrl()
+                .map("%s/status"::formatted)
                 .compose(url -> patchRequest(null, url))
                 .map(Request.Builder::build)
                 .compose(request -> this.executeRequest(request, this::handlePatchStatusResponse))
                 .flatMap(res -> ServiceResult.success());
     }
 
-    private Result<String> resolveCompanyIdentity() {
+    private Result<String> createTenantBaseUrl() {
         if (companyIdentity.get() == null) {
             var url = HttpUrl.parse(didDocApiUrl).newBuilder().addQueryParameter("$filter", "issuerDID eq %s".formatted(ownDid)).build();
-            getRequest()
+            return getRequest()
                     .map(builder -> builder.url(url).build())
                     .compose(request -> this.executeRequest(request, this::handleCompanyIdentityResponse))
                     .onSuccess(companyIdentity::set)
+                    .compose(companyId -> Result.success(companyIdentityUrl(companyIdentity.get())))
                     .onFailure(f -> monitor.severe("Failed to resolve company identity for DID %s with failure %s".formatted(ownDid, f.getFailureDetail())));
         }
-        return Result.success(companyIdentity.get());
+        return Result.success(companyIdentityUrl(companyIdentity.get()));
     }
 
     private Result<Request.Builder> patchRequest(Map<String, Object> body, String url) {
@@ -211,11 +210,30 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     /**
      * Handles the response for a DID update request.
      * Package Private visibility for testing.
+     * <p>
+     * The expected successful response structure is:
+     * <pre>
+     *  {@code
+     *  {
+     *   "updateDidRequest": {
+     *     "didDocUpdates": {
+     *       "removeServices": [
+     *         "did:web:example.com:123#DataService"
+     *       ]
+     *     },
+     *     "success": true
+     *   }
+     * }
+     * }
+     * </pre>
      *
      * @param response the HTTP response
      * @return a Result containing the response body as a string if successful, or a failure message
      */
     Result<String> handleDidUpdateResponse(Response response) {
+        if (!response.isSuccessful()) {
+            return Result.failure("DID update request failed with status code: %d, message: %s".formatted(response.code(), response.message()));
+        }
         try {
             var body = Objects.requireNonNull(response.body()).string();
             var parsedBody = mapper.readTree(body);
@@ -233,11 +251,23 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     /**
      * Handles the response for a patch status request.
      * Package Private visibility for testing.
+     * <p>
+     * The expected successful response structure is:
+     * <pre>
+     *  {@code
+     *  {
+     *   "operation": "update",
+     *   "status": "successful"
+     * }
+     * }
      *
      * @param response the HTTP response
      * @return a Result containing the response body as a string if successful, or a failure message
      */
     Result<String> handlePatchStatusResponse(Response response) {
+        if (!response.isSuccessful()) {
+            return Result.failure("Failed to update patch status request with status code: %d, message %s".formatted(response.code(), response.message()));
+        }
         try {
             var body = Objects.requireNonNull(response.body()).string();
             var parsedBody = mapper.readTree(body);
@@ -254,11 +284,41 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     /**
      * Handles the response for a company identity resolution request.
      * Package Private visibility for testing.
+     * <p>
+     * The expected successful response structure is:
+     * <pre>
+     *  {@code
+     *  {
+     *   "count": 1,
+     *   "data": [
+     *     {
+     *       "id": "ddfdcbad-44b2-43b5-b49f-6347ec2e586a",
+     *       "issuerDID": "did:web:example.com:ABC123",
+     *       "isPrivate": false,
+     *       "name": "ABC123",
+     *       "lastOperationStatus": {
+     *         "lastChanged": "2025-12-09T10:28:27.828Z",
+     *         "operation": "update",
+     *         "status": "successful"
+     *       },
+     *       "allOperationStatuses": [],
+     *       "downloadURL": "https://div.example.com/did-document/91f6954d-b3c8-474a-ad97-59b52cff1f60/did-web/bf618a73df14b6da49c41215fcd920516ad2dbab6922568dc78c59100ec98d9b",
+     *       "application": [
+     *         "provider"
+     *       ],
+     *       "isSelfHosted": true
+     *     }
+     *   ]
+     * }
+     * }
      *
      * @param response the HTTP response
      * @return a Result containing the company identity ID if successful, or a failure message
      */
     Result<String> handleCompanyIdentityResponse(Response response) {
+        if (!response.isSuccessful()) {
+            return Result.failure("Company identity resolution request failed with status code: %d, message: %s".formatted(response.code(), response.message()));
+        }
         try {
             var body = Objects.requireNonNull(response.body()).string();
             var parsedBody = mapper.readTree(body);
