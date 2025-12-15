@@ -6,7 +6,7 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
-import org.eclipse.tractusx.edc.iam.dcp.api.v3.VerifiablePresentationCacheApiController;
+import org.eclipse.tractusx.edc.iam.dcp.api.v3.VerifiablePresentationCacheApiV3Controller;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCache;
 
 public class VerifiablePresentationCacheApiExtension implements ServiceExtension {
@@ -20,7 +20,7 @@ public class VerifiablePresentationCacheApiExtension implements ServiceExtension
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerResource(ApiContext.MANAGEMENT, new VerifiablePresentationCacheApiController(cache,  participantContextSupplier));
+        webService.registerResource(ApiContext.MANAGEMENT, new VerifiablePresentationCacheApiV3Controller(cache,  participantContextSupplier));
     }
 
 }

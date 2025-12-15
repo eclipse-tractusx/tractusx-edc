@@ -32,4 +32,6 @@ dependencies {
     implementation(libs.jakarta.rsApi)
 
     testImplementation(libs.edc.junit)
+    testImplementation(libs.restAssured)
+    testImplementation((testFixtures(libs.edc.core.jersey)))
 }
