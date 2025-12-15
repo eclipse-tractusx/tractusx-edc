@@ -116,3 +116,5 @@ buildNumber.properties
 bin/
 
 edc-tests/miw-tests/src/test/resources/docker-environment/postgres_data/
+
+.env
