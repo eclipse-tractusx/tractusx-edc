@@ -24,6 +24,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCache;
 
 import static java.lang.String.format;
@@ -33,10 +34,12 @@ public class VerifiablePresentationCacheApiV3Controller implements VerifiablePre
 
     private final VerifiablePresentationCache cache;
     private final SingleParticipantContextSupplier participantContextSupplier;
+    private final Monitor monitor;
 
-    public VerifiablePresentationCacheApiV3Controller(VerifiablePresentationCache cache, SingleParticipantContextSupplier participantContextSupplier) {
+    public VerifiablePresentationCacheApiV3Controller(VerifiablePresentationCache cache, SingleParticipantContextSupplier participantContextSupplier, Monitor monitor) {
         this.cache = cache;
         this.participantContextSupplier = participantContextSupplier;
+        this.monitor = monitor;
     }
 
     @DELETE
@@ -46,7 +49,10 @@ public class VerifiablePresentationCacheApiV3Controller implements VerifiablePre
         var participantContext = participantContextSupplier.get()
                 .orElseThrow(ignore -> new EdcException("Failed to resolve participant context."));
 
-        cache.remove(participantContext.getParticipantContextId(), participantId)
-                .orElseThrow(result -> new EdcException(format("Failed to remove entries from cache: %s.", result.getFailureDetail())));
+        var result = cache.remove(participantContext.getParticipantContextId(), participantId);
+        if (result.failed()) {
+            monitor.severe(format("Failed to remove entries from cache for %s: %s.", participantId, result.getFailureDetail()));
+            throw new EdcException(format("Failed to remove entries from cache for %s: %s.", participantId, result.getFailureDetail()));
+        }
     }
 }

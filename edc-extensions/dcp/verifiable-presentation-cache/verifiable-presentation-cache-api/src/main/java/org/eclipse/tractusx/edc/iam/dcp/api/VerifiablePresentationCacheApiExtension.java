@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.iam.dcp.api;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
@@ -38,9 +39,11 @@ public class VerifiablePresentationCacheApiExtension implements ServiceExtension
     private VerifiablePresentationCache cache;
     @Inject
     private SingleParticipantContextSupplier participantContextSupplier;
+    @Inject
+    private Monitor monitor;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerResource(ApiContext.MANAGEMENT, new VerifiablePresentationCacheApiV3Controller(cache,  participantContextSupplier));
+        webService.registerResource(ApiContext.MANAGEMENT, new VerifiablePresentationCacheApiV3Controller(cache,  participantContextSupplier, monitor));
     }
 }

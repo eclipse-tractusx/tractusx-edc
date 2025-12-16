@@ -60,7 +60,7 @@ class VerifiablePresentationCacheImplTest {
     private final VerifiableCredentialValidationService validationService = mock();
     private final Function<String, String> didResolver = pcId -> ownDid;
 
-    private final VerifiablePresentationCacheImpl cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, didResolver);
+    private final VerifiablePresentationCacheImpl cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, didResolver, mock());
 
     @Test
     void store_success_returnSuccess() {

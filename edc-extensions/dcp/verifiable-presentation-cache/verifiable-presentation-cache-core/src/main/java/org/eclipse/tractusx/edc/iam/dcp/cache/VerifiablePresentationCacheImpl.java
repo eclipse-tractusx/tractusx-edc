@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.iam.dcp.cache;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.VerifiableCredentialValidationService;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCache;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCacheEntry;
@@ -31,6 +32,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.function.Function;
+
+import static java.lang.String.format;
 
 /**
  * Implementation of the {@link VerifiablePresentationCache}. Performs common tasks like checking
@@ -47,15 +50,17 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
     private final VerifiablePresentationCacheStore store;
     private final VerifiableCredentialValidationService credentialValidationService;
     private final Function<String, String> didResolver;
+    private final Monitor monitor;
 
     public VerifiablePresentationCacheImpl(long cacheValidity, Clock clock, VerifiablePresentationCacheStore store,
                                            VerifiableCredentialValidationService credentialValidationService,
-                                           Function<String, String> didResolver) {
+                                           Function<String, String> didResolver, Monitor monitor) {
         this.cacheValidity = cacheValidity;
         this.clock = clock;
         this.store = store;
         this.credentialValidationService = credentialValidationService;
         this.didResolver = didResolver;
+        this.monitor = monitor;
     }
 
     public StoreResult<Void> store(String participantContextId, String counterPartyDid, List<String> scopes,
@@ -72,7 +77,10 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
         }
 
         if (isExpired(cacheResult.getContent()) || !areCredentialsValid(cacheResult.getContent().getPresentations(), participantContextId)) {
-            store.remove(participantContextId, counterPartyDid, scopes);
+            var removeResult = store.remove(participantContextId, counterPartyDid, scopes);
+            if (removeResult.failed()) {
+                monitor.warning(format("Failed to remove expired or invalid entry from cache for %s: %s", counterPartyDid, removeResult.getFailureDetail()));
+            }
             return StoreResult.notFound("No cached entry found for given participant and scopes.");
         }
 

@@ -86,7 +86,7 @@ public class CachePresentationRequestExtension implements ServiceExtension {
         }
 
         var validationService = new VerifiableCredentialValidationServiceImpl(presentationVerifier, trustedIssuerRegistry, revocationServiceRegistry, clock, typeManager.getMapper());
-        var cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, this::resolveOwnDid);
+        var cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, this::resolveOwnDid, monitor);
 
         return new CachePresentationRequestService(secureTokenService, credentialServiceUrlResolver, credentialServiceClient, cache, monitor);
     }

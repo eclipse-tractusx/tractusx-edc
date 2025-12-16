@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.iam.dcp.api.v3;
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
@@ -29,8 +30,10 @@ import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCache;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 public class VerifiablePresentationCacheApiV3ControllerTest extends RestControllerTestBase {
@@ -41,6 +44,7 @@ public class VerifiablePresentationCacheApiV3ControllerTest extends RestControll
             .identity("participantId")
             .build();
     private final SingleParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(participantContext);
+    private Monitor monitor = mock();
     private final String counterPartyDid = "did:web:counterparty";
 
     @Test
@@ -54,6 +58,7 @@ public class VerifiablePresentationCacheApiV3ControllerTest extends RestControll
                 .statusCode(204);
 
         verify(cache).remove(participantContext.getParticipantContextId(), counterPartyDid);
+        verifyNoInteractions(monitor);
     }
 
     @Test
@@ -68,11 +73,12 @@ public class VerifiablePresentationCacheApiV3ControllerTest extends RestControll
                 .statusCode(500);
 
         verify(cache).remove(participantContext.getParticipantContextId(), counterPartyDid);
+        verify(monitor).severe(any());
     }
 
     @Override
     protected Object controller() {
-        return new VerifiablePresentationCacheApiV3Controller(cache, participantContextSupplier);
+        return new VerifiablePresentationCacheApiV3Controller(cache, participantContextSupplier, monitor);
     }
 
     private RequestSpecification baseRequest() {
