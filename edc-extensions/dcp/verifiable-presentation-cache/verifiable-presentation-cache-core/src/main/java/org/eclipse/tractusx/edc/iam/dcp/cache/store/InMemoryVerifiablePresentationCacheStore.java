@@ -31,6 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
 
+/**
+ * In-memory implementation of the {@link VerifiablePresentationCacheStore}. Stores all entries
+ * in a concurrent map.
+ */
 public class InMemoryVerifiablePresentationCacheStore implements VerifiablePresentationCacheStore {
 
     private final Map<CacheEntryId, VerifiablePresentationCacheEntry> cache = new ConcurrentHashMap<>();
@@ -92,6 +96,9 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
         return String.join(", ",  failureMessages);
     }
 
+    /**
+     * Compound ID for cache entries. Comprises participant context ID, participant DID and scopes.
+     */
     private static class CacheEntryId {
         public String participantContextId;
         public String counterPartyDid;

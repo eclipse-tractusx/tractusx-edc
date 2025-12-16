@@ -24,11 +24,43 @@ import org.eclipse.edc.spi.result.StoreResult;
 
 import java.util.List;
 
+/**
+ * A cache for Verifiable Presentations (VP), so that they can be reused during the DCP presentation
+ * flow after initial request. As a VP is always requested for a specific participant and a
+ * specific set of scopes, both of these need to be used for caching. Additionally, the ID of the
+ * participant context is passed through to the cache for cases where multiple participant contexts
+ * may be used within a connector.
+ */
 public interface VerifiablePresentationCache {
 
+    /**
+     * Stores a new entry in the cache.
+     *
+     * @param participantContextId ID of the participant context
+     * @param counterPartyDid DID of the participant the VPs were requested for
+     * @param scopes scopes used for the presentation request
+     * @param presentations the VPs to cache
+     * @return successful result, if the VPs were stored in the cache; failed result otherwise
+     */
     StoreResult<Void> store(String participantContextId, String counterPartyDid, List<String> scopes, List<VerifiablePresentationContainer> presentations);
 
+    /**
+     * Queries the cache for an existing entry for a given participant context, participant and set
+     * of scopes.
+     *
+     * @param participantContextId ID of the participant context
+     * @param counterPartyDid DID of the participant to request the VPs for
+     * @param scopes scopes to request
+     * @return successful result containing the cached entry, if present; failed result otherwise
+     */
     StoreResult<List<VerifiablePresentationContainer>> query(String participantContextId, String counterPartyDid, List<String> scopes);
 
+    /**
+     * Removes all cached entries for a given participant context and participant.
+     *
+     * @param participantContextId ID of the participant context
+     * @param counterPartyDid DID of the participant for which the cached entries should be deleted
+     * @return successful result, if all entries were deleted; failed result otherwise
+     */
     StoreResult<Void> remove(String participantContextId, String counterPartyDid);
 }

@@ -24,6 +24,10 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentatio
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Model class for an entry in the {@link VerifiablePresentationCacheStore}. Comprises all
+ * information to be cached including an instant when the cache entry was created.
+ */
 public class VerifiablePresentationCacheEntry {
 
     private final String participantContextId;

@@ -40,9 +40,9 @@ public class VerifiablePresentationCacheApiV3Controller implements VerifiablePre
     }
 
     @DELETE
-    @Path("{counterPartyDid}/remove")
+    @Path("{participantId}/remove")
     @Override
-    public void removeCacheEntries(@PathParam("counterPartyDid") String participantId) {
+    public void removeCacheEntries(@PathParam("participantId") String participantId) {
         var participantContext = participantContextSupplier.get()
                 .orElseThrow(ignore -> new EdcException("Failed to resolve participant context."));
 

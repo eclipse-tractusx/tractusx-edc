@@ -32,6 +32,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * Implementation of the {@link VerifiablePresentationCache}. Performs common tasks like checking
+ * cache entries for expiry and validating Verifiable Credentials before returning the corresponding
+ * Verifiable Presentations. For the actual storing of cache entries, an implementation of
+ * {@link VerifiablePresentationCacheStore} is used.
+ */
 public class VerifiablePresentationCacheImpl implements VerifiablePresentationCache {
 
     public static final long DEFAULT_VP_CACHE_VALIDITY_SECONDS = 86400;

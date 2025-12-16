@@ -30,6 +30,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.validation.PresentationVeri
 import org.eclipse.edc.iam.verifiablecredentials.spi.validation.TrustedIssuerRegistry;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -44,6 +45,7 @@ import java.time.Clock;
 
 import static org.eclipse.tractusx.edc.iam.dcp.cache.VerifiablePresentationCacheImpl.DEFAULT_VP_CACHE_VALIDITY_SECONDS;
 
+@Extension("Verifiable Presentation Cache")
 public class CachePresentationRequestExtension implements ServiceExtension {
 
     @Setting(key = "tx.edc.dcp.cache.enabled", defaultValue = "true", description = "Defines whether the Verifiable Presentation Cache is enabled.")
@@ -79,6 +81,7 @@ public class CachePresentationRequestExtension implements ServiceExtension {
     @Provider
     public PresentationRequestService cachePresentationRequestService() {
         if (!cacheEnabled) {
+            monitor.info("Verifiable Presentation Cache is disabled. Will not cache any VPs.");
             return new DefaultPresentationRequestService(secureTokenService, credentialServiceUrlResolver, credentialServiceClient);
         }
 
