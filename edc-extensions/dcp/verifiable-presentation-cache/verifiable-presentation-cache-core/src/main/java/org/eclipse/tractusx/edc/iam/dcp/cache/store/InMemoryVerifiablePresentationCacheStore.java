@@ -104,7 +104,7 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
         public String counterPartyDid;
         public List<String> scopes;
 
-        public CacheEntryId(String participantContextId, String counterPartyDid, List<String> scopes) {
+        CacheEntryId(String participantContextId, String counterPartyDid, List<String> scopes) {
             this.participantContextId = participantContextId;
             this.counterPartyDid = counterPartyDid;
             this.scopes = scopes;
@@ -116,9 +116,9 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
             if (o == null || getClass() != o.getClass()) return false;
 
             var other = (CacheEntryId) o;
-            return this.participantContextId.equals(other.participantContextId)
-                    && this.counterPartyDid.equals(other.counterPartyDid)
-                    && new HashSet<>(this.scopes).equals(new HashSet<>(other.scopes));
+            return this.participantContextId.equals(other.participantContextId) &&
+                    this.counterPartyDid.equals(other.counterPartyDid) &&
+                    new HashSet<>(this.scopes).equals(new HashSet<>(other.scopes));
         }
 
         @Override
