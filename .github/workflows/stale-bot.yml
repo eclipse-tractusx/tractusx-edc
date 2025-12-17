@@ -1,6 +1,7 @@
 #################################################################################
 #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 #  Copyright (c) 2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2025 Cofinity-X GmbH
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -29,27 +30,6 @@ on:
   workflow_dispatch: # allow manual trigger
 
 jobs:
-  close-issues-in-triage:
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-
-    steps:
-      - uses: actions/stale@v10
-        with:
-          operations-per-run: 1000
-          days-before-issue-stale: 32 # 4 weeks
-          days-before-issue-close: 14
-          stale-issue-label: "stale"
-          stale-issue-message: "This issue is stale because it has been open for 4 weeks with no activity."
-          close-issue-message: "This issue was closed because it has been inactive for 14 days since being marked as stale."
-          close-issue-reason: 'not_planned'
-          days-before-pr-stale: -1 # ignore PRs (overwrite default days-before-stale)
-          days-before-pr-close: -1 # ignore PRs (overwrite default days-before-close)
-          remove-issue-stale-when-updated: true
-          only-labels: 'triage'
-          repo-token: ${{ github.token }}
-
   close-issues-with-assignee:
     runs-on: ubuntu-latest
     permissions:
@@ -59,52 +39,13 @@ jobs:
         with:
           operations-per-run: 1000
           days-before-issue-stale: 32
-          days-before-issue-close: 7
+          days-before-issue-close: 10 # 10 days to ensure a preparation for the weekly phase being in the period
           stale-issue-label: "stale"
           stale-issue-message: "This issue is stale because it has been open for 4 weeks with no activity."
-          close-issue-message: "This issue was closed because it has been inactive for 7 days since being marked as stale."
+          close-issue-message: "This issue was closed because it has been inactive for 10 days since being marked as stale."
           close-issue-reason: 'not_planned'
           days-before-pr-stale: -1 # ignore PRs (overwrite default days-before-stale)
           days-before-pr-close: -1 # ignore PRs (overwrite default days-before-close)
           remove-issue-stale-when-updated: true
-          exempt-issue-labels: bug # ignore issues labelled as bug
-          repo-token: ${{ github.token }}
-
-  close-issues-without-assignee:
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-    steps:
-      - uses: actions/stale@v10
-        with:
-          operations-per-run: 1000
-          days-before-issue-stale: 14
-          days-before-issue-close: 7
-          stale-issue-label: "stale"
-          stale-issue-message: "This issue is stale because it has been open for 2 weeks with no activity."
-          close-issue-message: "This issue was closed because it has been inactive for 7 days since being marked as stale."
-          close-issue-reason: 'not_planned'
-          days-before-pr-stale: -1 # ignore PRs (overwrite default days-before-stale)
-          days-before-pr-close: -1 # ignore PRs (overwrite default days-before-close)
-          remove-issue-stale-when-updated: true
-          exempt-all-issue-assignees: true # issues with assignees will be ignored
-          exempt-issue-labels: bug,triage # ignore issues labelled as bug or triage
-          repo-token: ${{ github.token }}
-
-  close-inactive-pull-requests:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:
-      - uses: actions/stale@v10
-        with:
-          operations-per-run: 1000
-          days-before-issue-stale: -1 # ignore issues (overwrite default days-before-stale)
-          days-before-issue-close: -1 # ignore issues (overwrite default days-before-close)
-          stale-pr-label: "stale"
-          stale-pr-message: "This pull request is stale because it has been open for 7 days with no activity."
-          close-pr-message: "This pull request was closed because it has been inactive for 7 days since being marked as stale."
-          days-before-pr-stale: 7
-          days-before-pr-close: 7
-          remove-pr-stale-when-updated: true
+          exempt-issue-labels: bug,later # ignore issues labelled as bug
           repo-token: ${{ github.token }}
