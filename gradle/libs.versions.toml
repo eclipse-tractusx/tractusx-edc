@@ -116,7 +116,7 @@ edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-lib-dsp-catalog-http-api= { module = "org.eclipse.edc:dsp-catalog-http-api-lib", version.ref = "edc" }
 edc-lib-dsp-negotiation-http-api= { module = "org.eclipse.edc:dsp-negotiation-http-api-lib", version.ref = "edc" }
 edc-lib-dsp-transfer-http-api= { module = "org.eclipse.edc:dsp-transfer-process-http-api-lib", version.ref = "edc" }
-edc-lib-dcp= { module = "org.eclipse.edc:decentralized-claims-lib", version.ref = "edc" }
+edc-lib-dcp = { module = "org.eclipse.edc:decentralized-claims-lib", version.ref = "edc" }
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }

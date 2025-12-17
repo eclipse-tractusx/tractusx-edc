@@ -175,8 +175,6 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
                 .map(credential -> checks.stream()
                         .reduce(t -> success(), CredentialValidationRule::and)
                         .apply(credential))
-                .reduce(Result::merge)
-                .filter(Result::failed)
-                .isPresent();
+                .anyMatch(Result::failed);
     }
 }

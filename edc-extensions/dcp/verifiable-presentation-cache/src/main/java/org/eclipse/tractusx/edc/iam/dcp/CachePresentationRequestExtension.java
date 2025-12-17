@@ -49,7 +49,6 @@ import org.eclipse.edc.verifiablecredentials.jwt.JwtPresentationVerifier;
 import org.eclipse.edc.verifiablecredentials.linkeddata.DidMethodResolver;
 import org.eclipse.edc.verifiablecredentials.linkeddata.LdpVerifier;
 import org.eclipse.tractusx.edc.iam.dcp.cache.VerifiablePresentationCacheImpl;
-import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCache;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCacheStore;
 
 import java.time.Clock;
@@ -98,8 +97,6 @@ public class CachePresentationRequestExtension implements ServiceExtension {
     @Inject
     private Monitor monitor;
 
-    private VerifiablePresentationCache cache;
-
     @Provider
     public PresentationRequestService cachePresentationRequestService() {
         var credentialServiceUrlResolver = new DidCredentialServiceUrlResolver(didResolverRegistry);
@@ -109,16 +106,9 @@ public class CachePresentationRequestExtension implements ServiceExtension {
             return new DefaultPresentationRequestService(secureTokenService, credentialServiceUrlResolver, credentialServiceClient);
         }
 
-        return new CachePresentationRequestService(secureTokenService, credentialServiceUrlResolver, credentialServiceClient, verifiablePresentationCache(), monitor);
-    }
-
-    @Provider
-    public VerifiablePresentationCache verifiablePresentationCache() {
-        if (cache == null) {
-            var validationService = new VerifiableCredentialValidationServiceImpl(presentationVerifier(), trustedIssuerRegistry, revocationServiceRegistry, clock, typeManager.getMapper());
-            cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, this::resolveOwnDid, revocationServiceRegistry, monitor);
-        }
-        return cache;
+        var validationService = new VerifiableCredentialValidationServiceImpl(presentationVerifier(), trustedIssuerRegistry, revocationServiceRegistry, clock, typeManager.getMapper());
+        var cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, this::resolveOwnDid, revocationServiceRegistry, monitor);
+        return new CachePresentationRequestService(secureTokenService, credentialServiceUrlResolver, credentialServiceClient, cache, monitor);
     }
 
     private PresentationVerifier presentationVerifier() {

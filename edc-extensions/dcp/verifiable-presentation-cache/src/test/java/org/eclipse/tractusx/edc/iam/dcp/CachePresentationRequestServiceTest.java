@@ -39,25 +39,25 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class CachePresentationRequestServiceTest {
 
-    private String participantContextId = "participantContextId";
-    private String ownDid = "did:web:me";
-    private String counterPartyDid = "did:web:other";
-    private String counterPartyToken = "abc123";
-    private List<String> scopes = List.of("scope1", "scope2");
+    private final String participantContextId = "participantContextId";
+    private final String ownDid = "did:web:me";
+    private final String counterPartyDid = "did:web:other";
+    private final String counterPartyToken = "abc123";
+    private final List<String> scopes = List.of("scope1", "scope2");
 
-    private SecureTokenService secureTokenService = mock();
-    private CredentialServiceUrlResolver credentialServiceUrlResolver = mock();
-    private CredentialServiceClient credentialServiceClient = mock();
-    private VerifiablePresentationCache cache = mock();
-    private Monitor monitor = mock();
+    private final SecureTokenService secureTokenService = mock();
+    private final CredentialServiceUrlResolver credentialServiceUrlResolver = mock();
+    private final CredentialServiceClient credentialServiceClient = mock();
+    private final VerifiablePresentationCache cache = mock();
+    private final Monitor monitor = mock();
 
-    private CachePresentationRequestService service = new CachePresentationRequestService(secureTokenService,
+    private final CachePresentationRequestService service = new CachePresentationRequestService(secureTokenService,
             credentialServiceUrlResolver, credentialServiceClient, cache, monitor);
 
     @Test
@@ -69,9 +69,10 @@ class CachePresentationRequestServiceTest {
 
         assertThat(result).isSucceeded();
         assertThat(result.getContent()).isEqualTo(cacheResult.getContent());
-        verify(secureTokenService, never()).createToken(any(), any(), any());
-        verify(credentialServiceUrlResolver, never()).resolve(any());
-        verify(credentialServiceClient, never()).requestPresentation(any(), any(), isA(List.class));
+
+        verifyNoInteractions(secureTokenService);
+        verifyNoInteractions(credentialServiceUrlResolver);
+        verifyNoInteractions(credentialServiceClient);
     }
 
     @Test
@@ -87,6 +88,7 @@ class CachePresentationRequestServiceTest {
         var result = service.requestPresentation(participantContextId, ownDid, counterPartyDid, counterPartyToken, scopes);
 
         assertThat(result).isSucceeded();
+
         verify(secureTokenService).createToken(eq(participantContextId), any(), eq(null));
         verify(credentialServiceUrlResolver).resolve(counterPartyDid);
         verify(credentialServiceClient).requestPresentation(eq(credentialServiceUrl), any(), eq(scopes));
@@ -106,6 +108,7 @@ class CachePresentationRequestServiceTest {
         var result = service.requestPresentation(participantContextId, ownDid, counterPartyDid, counterPartyToken, scopes);
 
         assertThat(result).isSucceeded();
+
         verify(secureTokenService).createToken(eq(participantContextId), any(), eq(null));
         verify(credentialServiceUrlResolver).resolve(counterPartyDid);
         verify(credentialServiceClient).requestPresentation(eq(credentialServiceUrl), any(), eq(scopes));

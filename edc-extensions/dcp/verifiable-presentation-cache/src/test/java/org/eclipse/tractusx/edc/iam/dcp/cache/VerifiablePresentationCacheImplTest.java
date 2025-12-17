@@ -29,6 +29,7 @@ import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCacheEntry;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCacheStore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -92,150 +93,157 @@ class VerifiablePresentationCacheImplTest {
         when(revocationServiceRegistry.checkValidity(vc)).thenReturn(Result.success());
     }
 
-    @Test
-    void store_validPresentations_returnSuccess() {
-        when(store.store(any())).thenReturn(StoreResult.success());
+    @Nested
+    public class Store {
+        @Test
+        void store_validPresentations_returnSuccess() {
+            when(store.store(any())).thenReturn(StoreResult.success());
 
-        var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+            var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
 
-        assertThat(result).isSucceeded();
+            assertThat(result).isSucceeded();
+        }
+
+        @Test
+        void store_credentialsDoNotMatchScopes_returnFailure() {
+            when(store.store(any())).thenReturn(StoreResult.success());
+            when(vc.getType()).thenReturn(List.of("SomeOtherCredential"));
+
+            var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+
+            assertThat(result).isFailed();
+        }
+
+        @Test
+        void store_presentationIssuerInvalid_returnFailure() {
+            when(store.store(any())).thenReturn(StoreResult.success());
+            when(vp.getHolder()).thenReturn("did:web:notTheSame");
+
+            var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+
+            assertThat(result).isFailed();
+        }
+
+        @Test
+        void store_credentialValidationFails_returnFailure() {
+            when(store.store(any())).thenReturn(StoreResult.success());
+            when(validationService.validate(eq(List.of(vpContainer)), eq(ownDid), eq(emptyList()))).thenReturn(Result.failure("error"));
+
+            var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+
+            assertThat(result).isFailed();
+        }
+
+        @Test
+        void store_storingFails_returnFailure() {
+            when(store.store(any())).thenReturn(StoreResult.generalError("error"));
+
+            var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+
+            assertThat(result).isFailed();
+        }
     }
 
-    @Test
-    void store_credentialsDoNotMatchScopes_returnFailure() {
-        when(store.store(any())).thenReturn(StoreResult.generalError("error"));
-        when(vc.getType()).thenReturn(List.of("SomeOtherCredential"));
+    @Nested
+    public class Query {
+        @Test
+        void query_validCachedEntry_returnFromStore() {
+            var entry = cacheEntry();
+            var storeResult = StoreResult.success(entry);
+            when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
 
-        var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+            var result = cache.query(participantContextId, counterPartyDid, scopes);
 
-        assertThat(result).isFailed();
+            assertThat(result).isSucceeded();
+            assertThat(result.getContent())
+                    .hasSize(1)
+                    .isEqualTo(entry.getPresentations());
+        }
+
+        @Test
+        void query_noCachedEntry_returnNotFound() {
+            StoreResult<VerifiablePresentationCacheEntry> storeResult = StoreResult.notFound("404");
+            when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
+
+            var result =  cache.query(participantContextId, counterPartyDid, scopes);
+
+            assertThat(result).isFailed();
+            assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
+        }
+
+        @Test
+        void query_errorQueryingCacheStore_returnNotFound() {
+            StoreResult<VerifiablePresentationCacheEntry> storeResult = StoreResult.generalError("error");
+            when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
+
+            var result =  cache.query(participantContextId, counterPartyDid, scopes);
+
+            assertThat(result).isFailed();
+            assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
+        }
+
+        @Test
+        void query_cachedEntryExpired_returnNotFound() {
+            var storeResult = StoreResult.success(cacheEntry());
+            when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
+            when(expiresAt.isBefore(any())).thenReturn(true);
+
+            var result =  cache.query(participantContextId, counterPartyDid, scopes);
+
+            assertThat(result).isFailed();
+            assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
+
+            verify(store).remove(participantContextId, counterPartyDid, scopes);
+        }
+
+        @Test
+        void query_cachedCredentialExpired_returnNotFound() {
+            var storeResult = StoreResult.success(cacheEntry());
+            when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
+            when(vcExpiresAt.isBefore(any())).thenReturn(true);
+
+            var result =  cache.query(participantContextId, counterPartyDid, scopes);
+
+            assertThat(result).isFailed();
+            assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
+
+            verify(store).remove(participantContextId, counterPartyDid, scopes);
+        }
+
+        @Test
+        void query_cachedCredentialRevoked_returnNotFound() {
+            var storeResult = StoreResult.success(cacheEntry());
+            when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
+            when(revocationServiceRegistry.checkValidity(vc)).thenReturn(Result.failure("revoked"));
+
+            var result =  cache.query(participantContextId, counterPartyDid, scopes);
+
+            assertThat(result).isFailed();
+            assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
+
+            verify(store).remove(participantContextId, counterPartyDid, scopes);
+        }
     }
 
-    @Test
-    void store_presentationIssuerInvalid_returnFailure() {
-        when(store.store(any())).thenReturn(StoreResult.generalError("error"));
-        when(vp.getHolder()).thenReturn("did:web:notTheSame");
+    @Nested
+    public class Remove {
+        @Test
+        void remove_removingFromStoreSuccessful_returnSuccess() {
+            when(store.remove(any(), any())).thenReturn(StoreResult.success());
 
-        var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+            var result = cache.remove(participantContextId, counterPartyDid);
 
-        assertThat(result).isFailed();
-    }
+            assertThat(result).isSucceeded();
+        }
 
-    @Test
-    void store_credentialValidationFails_returnFailure() {
-        when(store.store(any())).thenReturn(StoreResult.generalError("error"));
-        when(validationService.validate(eq(List.of(vpContainer)), eq(ownDid), eq(emptyList()))).thenReturn(Result.failure("error"));
+        @Test
+        void remove_removingFromStoreFails_returnSuccess() {
+            when(store.remove(any(), any())).thenReturn(StoreResult.generalError("error"));
 
-        var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
+            var result = cache.remove(participantContextId, counterPartyDid);
 
-        assertThat(result).isFailed();
-    }
-
-    @Test
-    void store_storingFails_returnFailure() {
-        when(store.store(any())).thenReturn(StoreResult.generalError("error"));
-
-        var result = cache.store(participantContextId, counterPartyDid, scopes, List.of(vpContainer));
-
-        assertThat(result).isFailed();
-    }
-
-    @Test
-    void query_validCachedEntry_returnFromStore() {
-        var entry = cacheEntry();
-        var storeResult = StoreResult.success(entry);
-        when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
-
-        var result = cache.query(participantContextId, counterPartyDid, scopes);
-
-        assertThat(result).isSucceeded();
-        assertThat(result.getContent())
-                .hasSize(1)
-                .isEqualTo(entry.getPresentations());
-    }
-
-    @Test
-    void query_noCachedEntry_returnNotFound() {
-        StoreResult<VerifiablePresentationCacheEntry> storeResult = StoreResult.notFound("404");
-        when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
-
-        var result =  cache.query(participantContextId, counterPartyDid, scopes);
-
-        assertThat(result).isFailed();
-        assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
-    }
-
-    @Test
-    void query_errorQueryingCacheStore_returnNotFound() {
-        StoreResult<VerifiablePresentationCacheEntry> storeResult = StoreResult.generalError("error");
-        when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
-
-        var result =  cache.query(participantContextId, counterPartyDid, scopes);
-
-        assertThat(result).isFailed();
-        assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
-    }
-
-    @Test
-    void query_cachedEntryExpired_returnNotFound() {
-        var storeResult = StoreResult.success(cacheEntry());
-        when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
-        when(expiresAt.isBefore(any())).thenReturn(true);
-
-        var result =  cache.query(participantContextId, counterPartyDid, scopes);
-
-        assertThat(result).isFailed();
-        assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
-
-        verify(store).remove(participantContextId, counterPartyDid, scopes);
-    }
-
-    @Test
-    void query_cachedCredentialExpired_returnNotFound() {
-        var entry = cacheEntry();
-        var storeResult = StoreResult.success(entry);
-        when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
-        when(vcExpiresAt.isBefore(any())).thenReturn(true);
-
-        var result =  cache.query(participantContextId, counterPartyDid, scopes);
-
-        assertThat(result).isFailed();
-        assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
-
-        verify(store).remove(participantContextId, counterPartyDid, scopes);
-    }
-
-    @Test
-    void query_cachedCredentialRevoked_returnNotFound() {
-        var entry = cacheEntry();
-        var storeResult = StoreResult.success(entry);
-        when(store.query(participantContextId, counterPartyDid, scopes)).thenReturn(storeResult);
-        when(revocationServiceRegistry.checkValidity(vc)).thenReturn(Result.failure("revoked"));
-
-        var result =  cache.query(participantContextId, counterPartyDid, scopes);
-
-        assertThat(result).isFailed();
-        assertThat(result.getFailure().getReason()).isEqualTo(NOT_FOUND);
-
-        verify(store).remove(participantContextId, counterPartyDid, scopes);
-    }
-
-    @Test
-    void remove_removingFromStoreSuccessful_returnSuccess() {
-        when(store.remove(any(), any())).thenReturn(StoreResult.success());
-
-        var result = cache.remove(participantContextId, counterPartyDid);
-
-        assertThat(result).isSucceeded();
-    }
-
-    @Test
-    void remove_removingFromStoreFails_returnSuccess() {
-        when(store.remove(any(), any())).thenReturn(StoreResult.generalError("error"));
-
-        var result = cache.remove(participantContextId, counterPartyDid);
-
-        assertThat(result).isFailed();
+            assertThat(result).isFailed();
+        }
     }
 
     private VerifiablePresentationCacheEntry cacheEntry() {

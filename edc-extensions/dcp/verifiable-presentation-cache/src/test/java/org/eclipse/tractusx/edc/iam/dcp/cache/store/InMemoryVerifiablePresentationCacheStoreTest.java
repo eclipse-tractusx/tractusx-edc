@@ -59,25 +59,26 @@ class InMemoryVerifiablePresentationCacheStoreTest {
 
             var queryResult = store.query(participantContextId, counterPartyDid, scopes);
             assertThat(queryResult).isSucceeded();
-
             assertThat(queryResult.getContent()).isEqualTo(entry);
         }
 
         @Test
         void shouldOverrideEntry_whenIdAlreadyExists() {
-            var entry = cacheEntry();
-            store.store(entry);
+            var entry1 = cacheEntry();
+            store.store(entry1);
 
             var queryResult = store.query(participantContextId, counterPartyDid, scopes);
             assertThat(queryResult).isSucceeded();
-            assertThat(queryResult.getContent()).isEqualTo(entry);
+            assertThat(queryResult.getContent()).isEqualTo(entry1);
 
             var entry2 = cacheEntry(List.of());
             store.store(entry2);
 
             queryResult = store.query(participantContextId, counterPartyDid, scopes);
             assertThat(queryResult).isSucceeded();
-            assertThat(queryResult.getContent()).isEqualTo(entry2);
+            assertThat(queryResult.getContent())
+                    .isEqualTo(entry2)
+                    .isNotEqualTo(entry1);
         }
     }
 
