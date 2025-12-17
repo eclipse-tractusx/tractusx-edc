@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.lang.String.format;
-
 /**
  * In-memory implementation of the {@link VerifiablePresentationCacheStore}. Stores all entries
  * in a concurrent map.
@@ -42,12 +40,8 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
     @Override
     public StoreResult<Void> store(VerifiablePresentationCacheEntry entry) {
         var id = new CacheEntryId(entry.getParticipantContextId(), entry.getCounterPartyDid(), entry.getScopes());
-        try {
-            cache.put(id, entry);
-            return StoreResult.success();
-        } catch (Exception e) {
-            return StoreResult.generalError(format("Failed to store cache entry: %s", e.getMessage()));
-        }
+        cache.put(id, entry);
+        return StoreResult.success();
     }
 
     @Override
@@ -64,33 +58,17 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
     @Override
     public StoreResult<Void> remove(String participantContextId, String counterPartyDid, List<String> scopes) {
         var id = new CacheEntryId(participantContextId, counterPartyDid, scopes);
-        try {
-            cache.remove(id);
-            return StoreResult.success();
-        } catch (Exception e) {
-            return StoreResult.generalError(format("Failed to remove cached entry for: %s", e.getMessage()));
-        }
+        cache.remove(id);
+        return StoreResult.success();
     }
 
     @Override
     public StoreResult<Void> remove(String participantContextId, String counterPartyDid) {
-        var notRemoved = cache.keySet().stream()
+        cache.keySet().stream()
                 .filter(id -> id.participantContextId.equals(participantContextId) && id.counterPartyDid.equals(counterPartyDid))
-                .map(id -> remove(id.participantContextId, id.counterPartyDid, id.scopes))
-                .filter(StoreResult::failed)
-                .toList();
+                .forEach(cache::remove);
 
-        return notRemoved.isEmpty() ?
-                StoreResult.success() :
-                StoreResult.generalError(format("Failed to delete all cache entries for participant %s: %s",
-                        counterPartyDid, errorMessageFromMultipleResults(notRemoved)));
-    }
-
-    private String errorMessageFromMultipleResults(List<StoreResult<Void>> results) {
-        var failureMessages = results.stream()
-                .flatMap(result -> result.getFailureMessages().stream())
-                .toList();
-        return String.join(", ",  failureMessages);
+        return StoreResult.success();
     }
 
     /**
@@ -99,12 +77,12 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
     private static class CacheEntryId {
         private final String participantContextId;
         private final String counterPartyDid;
-        private final List<String> scopes;
+        private final HashSet<String> scopes;
 
         CacheEntryId(String participantContextId, String counterPartyDid, List<String> scopes) {
             this.participantContextId = participantContextId;
             this.counterPartyDid = counterPartyDid;
-            this.scopes = scopes;
+            this.scopes = new HashSet<>(scopes);
         }
 
         @Override
@@ -115,7 +93,7 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
             var other = (CacheEntryId) o;
             return this.participantContextId.equals(other.participantContextId) &&
                     this.counterPartyDid.equals(other.counterPartyDid) &&
-                    new HashSet<>(this.scopes).equals(new HashSet<>(other.scopes));
+                    this.scopes.equals(other.scopes);
         }
 
         @Override

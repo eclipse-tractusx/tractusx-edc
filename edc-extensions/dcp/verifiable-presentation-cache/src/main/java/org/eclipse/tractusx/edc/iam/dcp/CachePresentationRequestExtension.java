@@ -107,7 +107,7 @@ public class CachePresentationRequestExtension implements ServiceExtension {
         }
 
         var validationService = new VerifiableCredentialValidationServiceImpl(presentationVerifier(), trustedIssuerRegistry, revocationServiceRegistry, clock, typeManager.getMapper());
-        var cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, this::resolveOwnDid, revocationServiceRegistry, monitor);
+        var cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, pcId -> resolveOwnDid(), revocationServiceRegistry, monitor);
         return new CachePresentationRequestService(secureTokenService, credentialServiceUrlResolver, credentialServiceClient, cache, monitor);
     }
 
@@ -124,7 +124,7 @@ public class CachePresentationRequestExtension implements ServiceExtension {
         return new MultiFormatPresentationVerifier(jwtVerifier, ldpVerifier);
     }
 
-    private String resolveOwnDid(String participantContextId) {
+    private String resolveOwnDid() {
         return singleParticipantContextSupplier.get().map(ParticipantContext::getIdentity)
                 .orElseThrow(f -> new EdcException("Cannot get the participant context: " + f.getFailureDetail()));
     }

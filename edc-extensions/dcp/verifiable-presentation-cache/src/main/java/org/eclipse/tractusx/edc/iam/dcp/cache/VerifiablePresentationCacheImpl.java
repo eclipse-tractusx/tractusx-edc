@@ -53,7 +53,7 @@ import static org.eclipse.edc.spi.result.Result.success;
  */
 public class VerifiablePresentationCacheImpl implements VerifiablePresentationCache {
 
-    public static final long DEFAULT_VP_CACHE_VALIDITY_SECONDS = 86400;
+    public static final long DEFAULT_VP_CACHE_VALIDITY_SECONDS = 86400; //24h
 
     private final long cacheValidity;
     private final Clock clock;

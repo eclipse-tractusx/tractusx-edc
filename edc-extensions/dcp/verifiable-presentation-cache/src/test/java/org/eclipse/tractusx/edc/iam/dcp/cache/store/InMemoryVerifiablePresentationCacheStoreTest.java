@@ -26,8 +26,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.reverse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.spi.result.StoreFailure.Reason.NOT_FOUND;
@@ -90,6 +92,21 @@ class InMemoryVerifiablePresentationCacheStoreTest {
             store.store(entry);
 
             var queryResult = store.query(participantContextId, counterPartyDid, scopes);
+
+            assertThat(queryResult).isSucceeded();
+            assertThat(queryResult.getContent()).isEqualTo(entry);
+        }
+
+        @Test
+        void shouldReturnEntry_whenScopesInDifferentOrder() {
+            var scopeList = new ArrayList<String>();
+            scopeList.add("scope1");
+            scopeList.add("scope2");
+            var entry = new VerifiablePresentationCacheEntry(participantContextId, counterPartyDid, scopeList, List.of(vp), cachedAt);
+            store.store(entry);
+
+            reverse(scopeList);
+            var queryResult = store.query(participantContextId, counterPartyDid, scopeList);
 
             assertThat(queryResult).isSucceeded();
             assertThat(queryResult.getContent()).isEqualTo(entry);
