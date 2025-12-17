@@ -36,7 +36,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +68,7 @@ class VerifiablePresentationCacheImplTest {
     private final Clock clock = mock();
     private final VerifiablePresentationCacheStore store = mock();
     private final VerifiableCredentialValidationService validationService = mock();
-    private final Function<String, String> didResolver = pcId -> ownDid;
+    private final UnaryOperator<String> didResolver = pcId -> ownDid;
     private final RevocationServiceRegistry revocationServiceRegistry = mock();
 
     private final VerifiablePresentationCacheImpl cache = new VerifiablePresentationCacheImpl(cacheValidity,

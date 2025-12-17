@@ -39,9 +39,6 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
 
     private final Map<CacheEntryId, VerifiablePresentationCacheEntry> cache = new ConcurrentHashMap<>();
 
-    public InMemoryVerifiablePresentationCacheStore() {
-    }
-
     @Override
     public StoreResult<Void> store(VerifiablePresentationCacheEntry entry) {
         var id = new CacheEntryId(entry.getParticipantContextId(), entry.getCounterPartyDid(), entry.getScopes());
@@ -100,9 +97,9 @@ public class InMemoryVerifiablePresentationCacheStore implements VerifiablePrese
      * Compound ID for cache entries. Comprises participant context ID, participant DID and scopes.
      */
     private static class CacheEntryId {
-        public String participantContextId;
-        public String counterPartyDid;
-        public List<String> scopes;
+        private final String participantContextId;
+        private final String counterPartyDid;
+        private final List<String> scopes;
 
         CacheEntryId(String participantContextId, String counterPartyDid, List<String> scopes) {
             this.participantContextId = participantContextId;

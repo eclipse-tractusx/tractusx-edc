@@ -40,7 +40,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static java.lang.String.format;
 import static org.eclipse.edc.spi.result.Result.success;
@@ -59,13 +59,13 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
     private final Clock clock;
     private final VerifiablePresentationCacheStore store;
     private final VerifiableCredentialValidationService credentialValidationService;
-    private final Function<String, String> didResolver;
+    private final UnaryOperator<String> didResolver;
     private final RevocationServiceRegistry revocationServiceRegistry;
     private final Monitor monitor;
 
     public VerifiablePresentationCacheImpl(long cacheValidity, Clock clock, VerifiablePresentationCacheStore store,
                                            VerifiableCredentialValidationService credentialValidationService,
-                                           Function<String, String> didResolver, RevocationServiceRegistry revocationServiceRegistry,
+                                           UnaryOperator<String> didResolver, RevocationServiceRegistry revocationServiceRegistry,
                                            Monitor monitor) {
         this.cacheValidity = cacheValidity;
         this.clock = clock;
