@@ -34,7 +34,8 @@ import java.util.List;
 public interface VerifiablePresentationCache {
 
     /**
-     * Stores a new entry in the cache.
+     * Stores a new entry in the cache. This method should also make sure that received VPs and VCs
+     * are valid before caching them to ensure that no invalid entries are cached.
      *
      * @param participantContextId ID of the participant context
      * @param counterPartyDid DID of the participant the VPs were requested for
@@ -46,7 +47,8 @@ public interface VerifiablePresentationCache {
 
     /**
      * Queries the cache for an existing entry for a given participant context, participant and set
-     * of scopes.
+     * of scopes. This method should also make sure to check any VCs for expiry or revocation
+     * before returning them to ensure that no invalid entries are returned from the cache.
      *
      * @param participantContextId ID of the participant context
      * @param counterPartyDid DID of the participant to request the VPs for

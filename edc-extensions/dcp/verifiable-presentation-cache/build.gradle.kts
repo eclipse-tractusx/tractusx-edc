@@ -20,9 +20,19 @@
 plugins {
     `java-library`
     `maven-publish`
+    id(libs.plugins.swagger.get().pluginId)
 }
 
 dependencies {
-    api(project(":edc-extensions:dcp:verifiable-presentation-cache:verifiable-presentation-cache-core"))
-    api(project(":edc-extensions:dcp:verifiable-presentation-cache:verifiable-presentation-cache-api"))
+    implementation(libs.edc.spi.decentralized.claims)
+    implementation(libs.edc.spi.participant.context.single)
+    implementation(libs.edc.lib.dcp)
+    implementation(libs.edc.verifiable.credentials)
+    implementation(libs.edc.identity.vc.ldp)
+    implementation(libs.edc.identity.vc.jwt)
+    implementation(libs.edc.decentralized.claims.service)
+
+    implementation(project(":spi:dcp-spi"))
+
+    testImplementation(libs.edc.junit)
 }
