@@ -89,7 +89,7 @@ public class ConsumerAssetRequestController implements ConsumerAssetRequestApi {
         this.edrService = edrService;
         this.transferService = transferService;
         this.executorService = executorService;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @POST

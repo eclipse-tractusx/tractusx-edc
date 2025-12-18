@@ -43,7 +43,7 @@ public class ResponseQueue {
 
     public ResponseQueue(Queue<RecordedRequest<?, ?>> recordedRequests, Monitor monitor) {
         this.recordedRequests = recordedRequests;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     public <T> ServiceResult<T> getNext(Class<T> outputClass, String errorMessageTemplate) {

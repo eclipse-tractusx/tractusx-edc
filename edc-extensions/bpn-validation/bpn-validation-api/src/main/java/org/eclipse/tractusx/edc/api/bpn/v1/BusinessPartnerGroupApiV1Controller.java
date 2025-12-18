@@ -49,7 +49,7 @@ public class BusinessPartnerGroupApiV1Controller extends BaseBusinessPartnerGrou
     public BusinessPartnerGroupApiV1Controller(BusinessPartnerStore businessPartnerService,
                                                BusinessPartnerObservable businessPartnerObservable, Monitor monitor) {
         super(businessPartnerService, businessPartnerObservable);
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @GET

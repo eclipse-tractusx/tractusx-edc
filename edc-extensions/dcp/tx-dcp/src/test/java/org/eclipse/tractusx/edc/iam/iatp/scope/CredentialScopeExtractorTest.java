@@ -54,7 +54,9 @@ import static org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor.F
 import static org.eclipse.tractusx.edc.policy.cx.legacy.common.AbstractDynamicCredentialConstraintFunction.ACTIVE;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CredentialScopeExtractorTest {
 
@@ -66,6 +68,7 @@ public class CredentialScopeExtractorTest {
 
     @BeforeEach
     void setup() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         extractor = new CredentialScopeExtractor(monitor);
     }
 

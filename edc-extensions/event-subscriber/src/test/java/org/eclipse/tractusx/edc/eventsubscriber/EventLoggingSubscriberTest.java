@@ -67,6 +67,7 @@ class EventLoggingSubscriberTest {
 
     @BeforeEach
     void setup() {
+        when(mockedMonitor.withPrefix(anyString())).thenReturn(mockedMonitor);
         eventLoggingSubscriber = new EventLoggingSubscriber(typeManager, mockedMonitor, mockedHttpClient, "http://uri.com", "unknown_service");
     }
 

@@ -31,6 +31,7 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -48,13 +49,15 @@ import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.fail
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.util.async.AsyncUtils.asyncAllOf;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class NonFiniteCapablePipelineServiceIntegrationTest {
 
     private final Monitor monitor = mock();
     private final FinitenessEvaluator finitenessEvaluator = mock();
-    private final NonFiniteCapablePipelineService pipelineService = new NonFiniteCapablePipelineService(monitor, finitenessEvaluator);
+    private NonFiniteCapablePipelineService pipelineService;
 
     private static class InputStreamDataSourceFactory implements DataSourceFactory {
 
@@ -137,6 +140,12 @@ class NonFiniteCapablePipelineServiceIntegrationTest {
                 .sourceDataAddress(DataAddress.Builder.newInstance().type("any").build())
                 .destinationDataAddress(DataAddress.Builder.newInstance().type("any").build())
                 .build();
+    }
+
+    @BeforeEach
+    void setUp() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        pipelineService = new NonFiniteCapablePipelineService(monitor, finitenessEvaluator);
     }
 
     @Test

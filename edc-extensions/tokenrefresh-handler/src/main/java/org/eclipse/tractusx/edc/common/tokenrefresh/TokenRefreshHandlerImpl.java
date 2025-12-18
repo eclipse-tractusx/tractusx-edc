@@ -80,7 +80,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         this.edrCache = edrCache;
         this.httpClient = httpClient;
         this.ownDid = ownDid;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.secureTokenService = secureTokenService;
         this.objectMapper = objectMapper;
         this.participantContextSupplier = participantContextSupplier;

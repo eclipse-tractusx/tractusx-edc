@@ -41,7 +41,7 @@ public class TokenBasedAuthenticationService implements AuthenticationService {
     private final String hardCodedApiKey; //todo: have a list of API keys?
 
     public TokenBasedAuthenticationService(Monitor monitor, String hardCodedApiKey) {
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.hardCodedApiKey = hardCodedApiKey;
         monitor.warning(TEMPORARY_USE_WARNING);
     }
