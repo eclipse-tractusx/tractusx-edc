@@ -21,17 +21,22 @@ package org.eclipse.tractusx.edc.api.bpn.v1;
 
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.junit.annotations.ApiTest;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiControllerTest;
 
 import static io.restassured.RestAssured.given;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ApiTest
 class BusinessPartnerGroupApiV1ControllerTest extends BaseBusinessPartnerGroupApiControllerTest {
 
     @Override
     protected Object controller() {
-        return new BusinessPartnerGroupApiV1Controller(businessPartnerStore, mock(), mock());
+        var monitor = mock(Monitor.class);
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        return new BusinessPartnerGroupApiV1Controller(businessPartnerStore, mock(), monitor);
     }
 
     @Override

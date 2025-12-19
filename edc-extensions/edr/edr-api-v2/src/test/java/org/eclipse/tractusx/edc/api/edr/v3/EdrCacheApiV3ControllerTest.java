@@ -21,17 +21,22 @@ package org.eclipse.tractusx.edc.api.edr.v3;
 
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.junit.annotations.ApiTest;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.api.edr.BaseEdrCacheApiControllerTest;
 
 import static io.restassured.RestAssured.given;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ApiTest
 public class EdrCacheApiV3ControllerTest extends BaseEdrCacheApiControllerTest {
 
     @Override
     protected Object controller() {
-        return new EdrCacheApiV3Controller(edrStore, transformerRegistry, validator, mock(), edrService, contractNegotiationService, participantContextSupplier);
+        var monitor = mock(Monitor.class);
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        return new EdrCacheApiV3Controller(edrStore, transformerRegistry, validator, monitor, edrService, contractNegotiationService, participantContextSupplier);
     }
 
     protected RequestSpecification baseRequest() {
