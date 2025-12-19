@@ -2,5 +2,11 @@ product: "Tractus-X EDC"
 leadingRepository: "https://github.com/eclipse-tractusx/tractusx-edc"
 repositories: []
 openApiSpecs:
-- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/control-plane.yaml"
-- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/data-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.11.2/control-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/0.11.2/data-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.10.2/control-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/0.10.2/data-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.9.0/control-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/0.9.0/data-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/0.8.1/control-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/0.8.1/data-plane.yaml"
