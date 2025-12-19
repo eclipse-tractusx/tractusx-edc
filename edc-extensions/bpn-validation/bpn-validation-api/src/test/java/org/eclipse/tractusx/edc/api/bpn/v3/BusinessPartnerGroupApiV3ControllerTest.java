@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.api.bpn.v3;
 
 import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.junit.annotations.ApiTest;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.api.bpn.BaseBusinessPartnerGroupApiControllerTest;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
