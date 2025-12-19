@@ -37,6 +37,7 @@ include(":spi:core-spi")
 include(":spi:tokenrefresh-spi")
 include(":spi:bdrs-client-spi")
 include(":spi:dataflow-spi")
+include(":spi:dcp-spi")
 
 
 // core modules
@@ -66,6 +67,7 @@ include(":edc-extensions:cx-policy")
 include(":edc-extensions:cx-policy-legacy")
 include(":edc-extensions:dcp:tx-dcp")
 include(":edc-extensions:dcp:tx-dcp-sts-dim")
+include(":edc-extensions:dcp:verifiable-presentation-cache")
 include(":edc-extensions:data-flow-properties-provider")
 include(":edc-extensions:validators:empty-asset-selector")
 include(":edc-extensions:log4j2-monitor")
