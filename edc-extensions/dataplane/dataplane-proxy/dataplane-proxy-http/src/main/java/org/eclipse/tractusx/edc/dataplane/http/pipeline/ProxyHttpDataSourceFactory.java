@@ -47,7 +47,7 @@ public class ProxyHttpDataSourceFactory implements DataSourceFactory {
     public ProxyHttpDataSourceFactory(EdcHttpClient httpClient, HttpRequestParamsProvider requestParamsProvider, Monitor monitor, HttpRequestFactory requestFactory) {
         this.httpClient = httpClient;
         this.requestParamsProvider = requestParamsProvider;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.requestFactory = requestFactory;
     }
 

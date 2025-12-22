@@ -52,6 +52,7 @@ import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Rea
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -71,10 +72,12 @@ class NonFiniteCapablePipelineServiceTest {
 
     private final Monitor monitor = mock();
     private final FinitenessEvaluator finitenessEvaluator = mock();
-    private final NonFiniteCapablePipelineService service = new NonFiniteCapablePipelineService(monitor, finitenessEvaluator);
+    private NonFiniteCapablePipelineService service;
 
     @BeforeEach
     void setUp() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        service = new NonFiniteCapablePipelineService(monitor, finitenessEvaluator);
         service.registerFactory(sourceFactory);
         service.registerFactory(sinkFactory);
     }

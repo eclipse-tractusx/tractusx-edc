@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +42,7 @@ class DataFlowApiControllerTest extends RestControllerTestBase {
 
     @Override
     protected Object controller() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         return new DataFlowApiController(monitor, service);
     }
 

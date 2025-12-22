@@ -45,6 +45,7 @@ import org.eclipse.edc.security.token.jwt.CryptoConverter;
 import org.eclipse.edc.security.token.jwt.DefaultJwsSignerProvider;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -66,6 +67,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,6 +88,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     );
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private final InMemoryAccessTokenDataStore tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
+    private final Monitor monitor = mock();
     private final InMemoryVault vault = new InMemoryVault(mock(), null);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private ECKey consumerKey;
@@ -97,6 +100,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         providerKey = new ECKeyGenerator(Curve.P_384).keyID(PROVIDER_BPN + "#provider-key").keyUse(KeyUse.SIGNATURE).generate();
         consumerKey = new ECKeyGenerator(Curve.P_384).keyID(CONSUMER_DID + "#consumer-key").keyUse(KeyUse.SIGNATURE).generate();
 
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
                 new TokenValidationServiceImpl(),
                 didPkResolverMock,
@@ -104,7 +108,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 tokenDataStore,
                 new JwtGenerationService(new DefaultJwsSignerProvider(privateKeyResolver)),
                 () -> privateKeyAlias,
-                mock(),
+                monitor,
                 TEST_REFRESH_ENDPOINT,
                 PROVIDER_DID,
                 1,

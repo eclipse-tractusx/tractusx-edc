@@ -78,7 +78,7 @@ public class BaseEdrCacheApiController {
         this.edrStore = edrStore;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.edrService = edrService;
         this.participantContextSupplier = participantContextSupplier;
         this.contractNegotiationService = contractNegotiationService;

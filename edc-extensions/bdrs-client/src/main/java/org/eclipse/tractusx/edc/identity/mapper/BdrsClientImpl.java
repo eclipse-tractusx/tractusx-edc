@@ -85,7 +85,7 @@ class BdrsClientImpl implements BdrsClient {
         this.serverUrl = baseUrl;
         this.cacheValidity = cacheValidity;
         this.httpClient = httpClient;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.mapper = mapper;
         this.secureTokenService = secureTokenService;
         this.ownDid = ownDid;

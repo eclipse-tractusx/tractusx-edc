@@ -56,6 +56,7 @@ import static org.eclipse.tractusx.edc.callback.ContractNegotiationCallback.DATA
 import static org.eclipse.tractusx.edc.callback.TestFunctions.getNegotiationFinalizedEvent;
 import static org.eclipse.tractusx.edc.callback.TestFunctions.remoteMessage;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -85,6 +86,7 @@ public class ContractNegotiationCallbackTest {
         ParticipantContextSupplier participantContextSupplier = mock();
         var participantContext = ParticipantContext.Builder.newInstance().identity("any").participantContextId("any").build();
         when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         callback = new ContractNegotiationCallback(transferProcessService, monitor, participantContextSupplier);
     }
 

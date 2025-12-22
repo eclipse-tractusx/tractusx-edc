@@ -94,6 +94,7 @@ class BdrsClientImplTest {
                         .withStatus(200)));
         var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
         when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
+        when(monitor.withPrefix(anyString())).thenCallRealMethod();
         client = new BdrsClientImpl("http://localhost:%d/api".formatted(bdrsServer.getPort()), 1,
                 "did:web:self",
                 () -> "http://credential.service",
@@ -188,7 +189,7 @@ class BdrsClientImplTest {
 
         assertThatNoException().isThrownBy(() -> client.resolveDid("bpn1"));
         verifyBdrsRequest(1);
-        verify(monitor).warning("Expected exactly 1 VP, but found 2.");
+        verify(monitor).warning("[BdrsClientImpl] Expected exactly 1 VP, but found 2.");
     }
 
     @Test

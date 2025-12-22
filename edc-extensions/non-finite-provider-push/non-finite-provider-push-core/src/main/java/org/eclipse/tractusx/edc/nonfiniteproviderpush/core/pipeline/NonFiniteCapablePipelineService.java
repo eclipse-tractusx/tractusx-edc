@@ -60,7 +60,7 @@ public class NonFiniteCapablePipelineService implements PipelineService {
     private final FinitenessEvaluator finitenessEvaluator;
 
     public NonFiniteCapablePipelineService(Monitor monitor, FinitenessEvaluator finitenessEvaluator) {
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.finitenessEvaluator = finitenessEvaluator;
     }
 

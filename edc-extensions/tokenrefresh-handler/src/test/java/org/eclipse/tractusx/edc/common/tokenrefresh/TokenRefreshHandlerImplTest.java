@@ -41,6 +41,7 @@ import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -83,6 +84,7 @@ class TokenRefreshHandlerImplTest {
     private static final String PROVIDER_DID = "did:web:alice";
     private final EndpointDataReferenceCache edrCache = mock();
     private final EdcHttpClient mockedHttpClient = mock();
+    private final Monitor monitor = mock();
     private final SecureTokenService mockedTokenService = mock();
     private final ParticipantContextSupplier participantContextSupplier = mock();
     private TokenRefreshHandlerImpl tokenRefreshHandler;
@@ -104,7 +106,8 @@ class TokenRefreshHandlerImplTest {
         var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
         when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
         objectMapper = new ObjectMapper();
-        tokenRefreshHandler = new TokenRefreshHandlerImpl(edrCache, mockedHttpClient, CONSUMER_DID, mock(),
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        tokenRefreshHandler = new TokenRefreshHandlerImpl(edrCache, mockedHttpClient, CONSUMER_DID, monitor,
                 mockedTokenService, objectMapper, participantContextSupplier);
     }
 

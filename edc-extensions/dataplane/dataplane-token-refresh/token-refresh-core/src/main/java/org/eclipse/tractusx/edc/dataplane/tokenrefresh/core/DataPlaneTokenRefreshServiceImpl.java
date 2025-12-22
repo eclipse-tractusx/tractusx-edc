@@ -119,7 +119,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         this.accessTokenDataStore = accessTokenDataStore;
         this.tokenGenerationService = tokenGenerationService;
         this.privateKeyIdSupplier = privateKeyIdSupplier;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.refreshEndpoint = refreshEndpoint;
         this.clock = clock;
         this.publicKeyIdSupplier = publicKeyIdSupplier;

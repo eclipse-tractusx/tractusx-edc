@@ -36,7 +36,7 @@ public class EventContractNegotiationSubscriber implements EventSubscriber {
 
     public EventContractNegotiationSubscriber(AgreementsBpnsStore store, Monitor monitor, BdrsClient bdrsClient) {
         this.store = store;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.bdrsClient = bdrsClient;
     }
 

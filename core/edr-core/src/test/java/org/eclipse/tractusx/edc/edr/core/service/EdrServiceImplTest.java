@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.edr.core.service;
 import org.assertj.core.api.Assertions;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
 import org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -43,6 +44,7 @@ import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.AUTO_REFRESH;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.FORCE_REFRESH;
 import static org.eclipse.tractusx.edc.edr.spi.types.RefreshMode.NO_REFRESH;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -55,12 +57,14 @@ class EdrServiceImplTest {
 
     private final TokenRefreshHandler tokenRefreshHandler = mock();
     private final EndpointDataReferenceStore edrStore = mock();
+    private final Monitor monitor = mock();
     private final EndpointDataReferenceLock edrLock = mock();
     private EdrServiceImpl edrService;
 
     @BeforeEach
     void setup() {
-        edrService = new EdrServiceImpl(edrStore, tokenRefreshHandler, new NoopTransactionContext(), mock(), edrLock);
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        edrService = new EdrServiceImpl(edrStore, tokenRefreshHandler, new NoopTransactionContext(), monitor, edrLock);
     }
 
     @Test

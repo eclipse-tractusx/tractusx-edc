@@ -29,6 +29,7 @@ import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -37,6 +38,7 @@ import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.edc.token.spi.TokenValidationService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -67,6 +69,7 @@ class DataPlaneTokenRefreshServiceImplTest {
     private static final Pattern UUID_PATTERN = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
     private final AccessTokenDataStore accessTokenDataStore = mock();
     private final TokenGenerationService tokenGenService = mock();
+    private final Monitor monitor = mock();
     private final TokenValidationService tokenValidationService = mock();
     private final DidPublicKeyResolver didPublicKeyResolver = mock();
     private final LocalPublicKeyService localPublicKeyService = mock();
@@ -74,10 +77,16 @@ class DataPlaneTokenRefreshServiceImplTest {
             ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build()
     );
 
-    private final DataPlaneTokenRefreshServiceImpl accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
-            tokenValidationService, didPublicKeyResolver, localPublicKeyService, accessTokenDataStore, tokenGenService, mock(), mock(),
-            "https://example.com", "did:web:provider", 1, 300L,
-            () -> "keyid", mock(), new ObjectMapper(), participantContextSupplier);
+    private DataPlaneTokenRefreshServiceImpl accessTokenService;
+
+    @BeforeEach
+    void setUp() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
+                tokenValidationService, didPublicKeyResolver, localPublicKeyService, accessTokenDataStore, tokenGenService, mock(), monitor,
+                "https://example.com", "did:web:provider", 1, 300L,
+                () -> "keyid", mock(), new ObjectMapper(), participantContextSupplier);
+    }
 
     @Test
     void obtainToken() {

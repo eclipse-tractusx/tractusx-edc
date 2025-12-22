@@ -59,7 +59,7 @@ public class AgreementsRetirementApiV3Controller implements AgreementsRetirement
         this.service = service;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @POST

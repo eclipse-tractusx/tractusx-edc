@@ -54,7 +54,7 @@ public class DimOauthClientImpl implements DimOauth2Client {
         this.oauth2Client = oauth2Client;
         this.vault = vault;
         this.clock = clock;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.participantContextSupplier = participantContextSupplier;
     }
 

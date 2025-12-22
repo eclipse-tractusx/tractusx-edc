@@ -91,7 +91,7 @@ public class DimSecureTokenService implements SecureTokenService {
         this.dimUrl = dimUrl;
         this.dimOauth2Client = dimOauth2Client;
         this.mapper = mapper;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
