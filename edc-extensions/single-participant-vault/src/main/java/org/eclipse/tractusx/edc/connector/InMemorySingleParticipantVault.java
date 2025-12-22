@@ -36,7 +36,7 @@ public class InMemorySingleParticipantVault implements Vault {
     private final Monitor monitor;
 
     public InMemorySingleParticipantVault(Monitor monitor) {
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override

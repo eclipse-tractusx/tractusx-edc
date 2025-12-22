@@ -46,7 +46,7 @@ public class ContractNegotiationCallback implements InProcessCallback {
     public ContractNegotiationCallback(TransferProcessService transferProcessService, Monitor monitor,
                                        ParticipantContextSupplier participantContextSupplier) {
         this.transferProcessService = transferProcessService;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.participantContextSupplier = participantContextSupplier;
     }
 
