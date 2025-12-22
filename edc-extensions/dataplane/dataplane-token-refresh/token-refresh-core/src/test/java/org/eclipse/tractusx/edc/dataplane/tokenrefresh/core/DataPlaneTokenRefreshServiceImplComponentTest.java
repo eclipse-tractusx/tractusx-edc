@@ -89,7 +89,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private final InMemoryAccessTokenDataStore tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
     private final Monitor monitor = mock();
-    private final InMemoryVault vault = new InMemoryVault(mock());
+    private final InMemoryVault vault = new InMemoryVault(mock(), null);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private ECKey consumerKey;
     private ECKey providerKey;
