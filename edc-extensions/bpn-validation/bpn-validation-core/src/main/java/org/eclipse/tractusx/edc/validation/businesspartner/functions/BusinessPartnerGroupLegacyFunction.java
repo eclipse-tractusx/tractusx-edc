@@ -96,7 +96,7 @@ public class BusinessPartnerGroupLegacyFunction<C extends ParticipantAgentPolicy
     public BusinessPartnerGroupLegacyFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
         this.store = store;
         this.bdrsClient = bdrsClient;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         OPERATOR_EVALUATOR_MAP.put(EQ, this::evaluateEquals);
         OPERATOR_EVALUATOR_MAP.put(NEQ, this::evaluateNotEquals);
         OPERATOR_EVALUATOR_MAP.put(IN, this::evaluateIsAnyOf);

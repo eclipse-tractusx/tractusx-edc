@@ -33,8 +33,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class FileBasedTargetNodeDirectoryTest {
 
@@ -55,6 +57,7 @@ class FileBasedTargetNodeDirectoryTest {
     @Test
     void insert() {
         var monitor = mock(Monitor.class);
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         var nodeDir = new FileBasedTargetNodeDirectory(new File("not-exist.json"), monitor, new ObjectMapper());
 
         assertThatNoException().isThrownBy(() -> nodeDir.insert(new TargetNode("foo", "bar", "https://foobar.com", List.of())));

@@ -57,7 +57,7 @@ public class EventLoggingSubscriber implements EventSubscriber {
 
     public EventLoggingSubscriber(TypeManager typeManager, Monitor monitor, EdcHttpClient httpClient, String otelLogsEndpoint, String serviceName) {
         this.typeManager = typeManager;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.httpClient = httpClient;
         this.otelLogsEndpoint = otelLogsEndpoint;
         this.serviceName = serviceName;

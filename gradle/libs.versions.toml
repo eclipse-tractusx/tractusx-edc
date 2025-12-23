@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.15.0"
+edc = "0.15.1"
 edc-build = "1.1.4"
 allure = "2.32.0"
 awaitility = "4.3.0"
@@ -11,7 +11,7 @@ azure-storage-blob = "12.32.0"
 bouncyCastle-jdk18on = "1.83"
 dcp-tck = "1.0.0-SNAPSHOT"
 dsp-tck = "1.0.0-RC4"
-flyway = "11.19.0"
+flyway = "11.19.1"
 jackson = "2.20.1"
 jakarta-json = "2.0.1"
 junit = "6.0.1"
@@ -21,9 +21,9 @@ opentelemetry = "2.22.0"
 opentelemetry-instrumentation = "2.23.0"
 opentelemetry-log4j-appender = "2.22.0-alpha"
 postgres = "42.7.8"
-restAssured = "5.5.6"
+restAssured = "6.0.0"
 rsApi = "4.0.0"
-testcontainers = "2.0.2"
+testcontainers = "2.0.3"
 testcontainers-keycloak = "4.0.1"
 titanium = "1.7.0"
 log4j2 = "2.25.2"
@@ -97,6 +97,7 @@ edc-ext-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-data-address-http-data", version.ref = "edc" }
 edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
+edc-verifiable-credentials = { module = "org.eclipse.edc:verifiable-credentials", version.ref = "edc" }
 
 # EDC lib dependencies
 edc-lib-api = { module = "org.eclipse.edc:api-lib", version.ref = "edc" }
@@ -115,6 +116,7 @@ edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-lib-dsp-catalog-http-api= { module = "org.eclipse.edc:dsp-catalog-http-api-lib", version.ref = "edc" }
 edc-lib-dsp-negotiation-http-api= { module = "org.eclipse.edc:dsp-negotiation-http-api-lib", version.ref = "edc" }
 edc-lib-dsp-transfer-http-api= { module = "org.eclipse.edc:dsp-transfer-process-http-api-lib", version.ref = "edc" }
+edc-lib-dcp = { module = "org.eclipse.edc:decentralized-claims-lib", version.ref = "edc" }
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }

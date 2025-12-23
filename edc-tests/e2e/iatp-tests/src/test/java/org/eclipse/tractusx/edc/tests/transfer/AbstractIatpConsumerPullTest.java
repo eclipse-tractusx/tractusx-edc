@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +27,7 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialFormat;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialStatus;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
@@ -37,7 +39,10 @@ import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StatusList2021;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -46,6 +51,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -67,6 +73,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_N
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest {
 
     protected static final StsParticipant STS = StsParticipant.Builder.newInstance()
@@ -77,6 +84,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     @DisplayName("Contract policy is fulfilled")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(ValidContractPolicyProvider.class)
+    @Order(5)
     void transferData_whenContractPolicyFulfilled(JsonObject contractPolicy, String description) {
         var assetId = "api-asset-1";
 
@@ -131,6 +139,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
     @DisplayName("Expect the Catalog request to fail if a credential is expired")
     @Test
+    @Order(1)
     void catalogRequest_whenCredentialExpired() {
         //update the membership credential to an expirationDate that is in the past
         var store = credentialStoreRuntime().getService(CredentialStore.class);
@@ -180,6 +189,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
     @DisplayName("Expect the Catalog request to fail if a credential is revoked")
     @Test
+    @Order(2)
     void catalogRequest_whenCredentialRevoked() {
         //update the membership credential to contain a `credentialStatus` with a revocation
         var store = credentialStoreRuntime().getService(CredentialStore.class);
@@ -247,6 +257,80 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
             // restore the original credential
             store.update(existingCred);
             revocationServer.stop();
+        }
+    }
+
+    @DisplayName("Expect the Catalog request to fail if a credential has an invalid credential subject id")
+    @Test
+    @Order(3)
+    void catalogRequest_whenCredentialSubjectIdIsInvalid() {
+        //update the membership credential to an expirationDate that is in the past
+        var store = credentialStoreRuntime().getService(CredentialStore.class);
+
+        var existingCred = store.query(QuerySpec.Builder.newInstance()
+                        .filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
+                .stream().filter(it -> it.getHolderId().equals(consumer().getBpn()))
+                .findFirst().orElseThrow(RuntimeException::new);
+
+        var credentialSubject = CredentialSubject.Builder.newInstance()
+                .id("did:web:invalid")
+                .claim("holderIdentifier", "invalid")
+                .build();
+        var newCred = VerifiableCredential.Builder.newInstance()
+                .id(existingCred.getVerifiableCredential().credential().getId())
+                .types(existingCred.getVerifiableCredential().credential().getType())
+                .credentialSubjects(List.of(credentialSubject))
+                .issuer(existingCred.getVerifiableCredential().credential().getIssuer())
+                .issuanceDate(existingCred.getVerifiableCredential().credential().getIssuanceDate())
+                .build();
+
+        var did = consumer().getDid();
+        var bpn = consumer().getBpn();
+        var newRawVc = dataspaceIssuer().membershipRawVc(did, bpn).build();
+
+        var newVcString = dataspaceIssuer().createJwtVc(newRawVc, did);
+
+        store.update(VerifiableCredentialResource.Builder.newInstance()
+                        .id(existingCred.getId())
+                        .issuerId(dataspaceIssuer().didUrl())
+                        .holderId(bpn)
+                        .credential(new VerifiableCredentialContainer(newVcString, CredentialFormat.VC1_0_JWT, newCred))
+                        .build())
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        try {
+            consumer().getCatalog(provider())
+                    .log().ifError()
+                    .statusCode(502);
+        } finally {
+            // restore the original credential
+            store.update(existingCred);
+        }
+    }
+
+    @DisplayName("Expect the Catalog request to fail if a requested credential is missing")
+    @Test
+    @Order(4)
+    void catalogRequest_whenRequestedCredentialMissing() {
+        //update the membership credential to an expirationDate that is in the past
+        var store = credentialStoreRuntime().getService(CredentialStore.class);
+
+        var existingCred = store.query(QuerySpec.Builder.newInstance()
+                        .filter(new Criterion("verifiableCredential.credential.type", "contains", "MembershipCredential")).build())
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()))
+                .stream().filter(it -> it.getHolderId().equals(consumer().getBpn()))
+                .findFirst().orElseThrow(RuntimeException::new);
+
+        store.deleteById(existingCred.getId());
+
+        try {
+            consumer().getCatalog(provider())
+                    .log().ifError()
+                    .statusCode(502);
+        } finally {
+            // restore the original credential
+            store.create(existingCred);
         }
     }
 

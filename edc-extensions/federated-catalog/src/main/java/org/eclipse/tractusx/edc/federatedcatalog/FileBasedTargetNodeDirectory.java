@@ -47,7 +47,7 @@ class FileBasedTargetNodeDirectory implements TargetNodeDirectory {
     FileBasedTargetNodeDirectory(File nodeFile, Monitor monitor, ObjectMapper objectMapper) {
 
         this.nodeFile = nodeFile;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.objectMapper = objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
     }
 

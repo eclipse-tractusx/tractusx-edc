@@ -37,6 +37,7 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +52,7 @@ class ProxyHttpDataSourceFactoryTest {
 
     @BeforeEach
     void setUp() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         factory = new ProxyHttpDataSourceFactory(httpClient, provider, monitor, requestFactory);
     }
 

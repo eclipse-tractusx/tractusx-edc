@@ -64,6 +64,12 @@ iatp:
       # -- Unique id of connector to be used for register / unregister service inside did document (must be valid URI)
       id: "did:web:changeme"
 
+  # - Configures the Verifiable Presentation Ccache
+  cache:
+    # -- Whether the Verifiable Presentation cache is enabled
+    enabled: true
+    # -- Validity of the Verifiable Presentation cache in seconds
+    validity: 86400
 
 # -- Add custom ca certificates to the truststore
 customCaCerts: {}

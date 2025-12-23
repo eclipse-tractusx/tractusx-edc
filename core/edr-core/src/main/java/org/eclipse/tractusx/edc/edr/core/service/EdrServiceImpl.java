@@ -45,7 +45,7 @@ public class EdrServiceImpl implements EdrService {
         this.edrStore = edrStore;
         this.tokenRefreshHandler = tokenRefreshHandler;
         this.transactionContext = transactionContext;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.edrLock = edrLock;
     }
 

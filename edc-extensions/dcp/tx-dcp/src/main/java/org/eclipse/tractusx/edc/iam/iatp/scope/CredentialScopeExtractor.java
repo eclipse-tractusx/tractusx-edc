@@ -62,7 +62,7 @@ public class CredentialScopeExtractor implements ScopeExtractor {
     private final Monitor monitor;
 
     public CredentialScopeExtractor(Monitor monitor) {
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override

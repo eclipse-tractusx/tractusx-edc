@@ -41,7 +41,7 @@ public class DataFlowApiController implements DataFlowApi {
     private final DataFlowService service;
 
     public DataFlowApiController(Monitor monitor, DataFlowService service) {
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.service = service;
     }
 

@@ -260,6 +260,10 @@ spec:
             - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID"
               value: {{ .Values.iatp.did.service_self_registration.id | required ".Values.iatp.did.service-self-registration.id is required" | quote }}
             {{- end }}
+            - name: "TX_EDC_DCP_CACHE_ENABLED"
+              value: {{ .Values.iatp.cache.enabled | quote }}
+            - name: "TX_EDC_DCP_CACHE_VALIDITY_SECONDS"
+              value: {{ .Values.iatp.cache.validity | quote }}
 
             #################
             ## BDRS CLIENT ##
