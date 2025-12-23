@@ -267,10 +267,10 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.12.0-SNAPSHO
 | dataplane.volumeMounts | string | `nil` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
 | dataplane.volumes | string | `nil` | [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories |
 | fullnameOverride | string | `""` |  |
-| iatp.did.service_self_registration.enabled | bool | `false` | Whether Service Self Registration is enabled |
-| iatp.did.service_self_registration.id | string | `"did:web:changeme"` | Unique id of connector to be used for register / unregister service inside did document (must be valid URI) |
 | iatp.cache.enabled | bool | `true` | Whether the Verifiable Presentation cache is enabled |
 | iatp.cache.validity | int | `86400` | Validity of the Verifiable Presentation cache in seconds |
+| iatp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
+| iatp.didService.selfRegistration.id | string | `"did:web:changeme"` | Unique id of connector to be used for register / unregister service inside did document (must be valid URI) |
 | iatp.id | string | `"did:web:changeme"` | Decentralized IDentifier (DID) of the connector |
 | iatp.sts.dim.url | string | `nil` | URL where connectors can request SI tokens |
 | iatp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIM access |

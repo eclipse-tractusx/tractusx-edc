@@ -22,6 +22,8 @@ package org.eclipse.tractusx.edc.did.document.service.self.registration;
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -30,9 +32,13 @@ import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClien
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.tractusx.edc.did.document.service.self.registration.DidDocumentServiceSelfRegistrationExtension.DATA_SERVICE_TYPE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,19 +56,21 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
     private static final String DSP_URL = "https://protocol.edc.com/api/v1/dsp";
 
     private final Monitor monitor = mock(Monitor.class);
+    private final DspBaseWebhookAddress dspBaseAddress = mock(DspBaseWebhookAddress.class);
     private final DidDocumentServiceClient didDocumentServiceClient = mock(DidDocumentServiceClient.class);
 
     @BeforeEach
     void setup(ServiceExtensionContext context) {
         context.registerService(Monitor.class, monitor);
+        context.registerService(DspBaseWebhookAddress.class, dspBaseAddress);
+        when(dspBaseAddress.get()).thenReturn(DSP_URL);
     }
 
     @Test
     void start_shouldSelfRegister_whenEnabledAndClientPresent(ServiceExtensionContext context, ObjectFactory objectFactory) {
 
         var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
-                "tx.edc.did.service.self.registration.id", SERVICE_ID,
-                "edc.dsp.callback.address", DSP_URL);
+                "tx.edc.did.service.self.registration.id", SERVICE_ID);
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
         context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
         when(didDocumentServiceClient.update(any(Service.class))).thenReturn(ServiceResult.success());
@@ -87,8 +95,7 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
     void start_selfRegister_whenEnabledAndClientReturnsFailure(ServiceExtensionContext context, ObjectFactory objectFactory) {
 
         var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
-                "tx.edc.did.service.self.registration.id", SERVICE_ID,
-                "edc.dsp.callback.address", DSP_URL);
+                "tx.edc.did.service.self.registration.id", SERVICE_ID);
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
         context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
         when(didDocumentServiceClient.update(any(Service.class))).thenReturn(ServiceResult.unexpected());
@@ -137,5 +144,57 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
 
         extension.shutdown();
         verify(didDocumentServiceClient, never()).deleteById(anyString());
+    }
+
+    @Test
+    void start_shouldThrowException_whenEnabledAndServiceIdMissing(ServiceExtensionContext context, ObjectFactory objectFactory) {
+
+        var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true");
+        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
+        context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
+
+        var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
+
+        assertThatThrownBy(extension::start)
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("Service ID for DID Document Service self-registration is not configured");
+
+        verify(didDocumentServiceClient, never()).update(any(Service.class));
+    }
+
+    @ParameterizedTest
+    @EmptySource
+    @ValueSource(strings = {"   "})
+    void start_shouldThrowException_whenEnabledAndServiceIdEmptyOrBlank(String serviceId, ServiceExtensionContext context, ObjectFactory objectFactory) {
+
+        var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
+                "tx.edc.did.service.self.registration.id", serviceId);
+        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
+        context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
+
+        var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
+
+        assertThatThrownBy(extension::start)
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("Service ID for DID Document Service self-registration is not configured");
+
+        verify(didDocumentServiceClient, never()).update(any(Service.class));
+    }
+
+    @Test
+    void start_shouldThrowException_whenEnabledAndServiceIdInvalid(ServiceExtensionContext context, ObjectFactory objectFactory) {
+
+        var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
+                "tx.edc.did.service.self.registration.id", "invalid uri");
+        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
+        context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
+
+        var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
+
+        assertThatThrownBy(extension::start)
+                .isInstanceOf(EdcException.class)
+                .hasMessageContaining("does not contain a valid URI");
+
+        verify(didDocumentServiceClient, never()).update(any(Service.class));
     }
 }

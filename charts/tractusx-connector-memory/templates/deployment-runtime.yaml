@@ -257,10 +257,10 @@ spec:
             {{- end }}
             {{- end }}
             - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED"
-              value: {{ .Values.iatp.did.service_self_registration.enabled | quote}}
-            {{- if .Values.iatp.did.service_self_registration.enabled }}
+              value: {{ .Values.iatp.didService.selfRegistration.enabled | quote}}
+            {{- if .Values.iatp.didService.selfRegistration.enabled }}
             - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID"
-              value: {{ .Values.iatp.did.service_self_registration.id | required ".Values.iatp.did.service-self-registration.id is required" | quote }}
+              value: {{ .Values.iatp.didService.selfRegistration.id | required ".Values.iatp.didService.selfRegistration.id is required" | quote }}
             {{- end }}
             - name: "TX_EDC_DCP_CACHE_ENABLED"
               value: {{ .Values.iatp.cache.enabled | quote }}

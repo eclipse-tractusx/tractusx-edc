@@ -57,8 +57,8 @@ iatp:
         id:
         # -- Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIM access
         secret_alias:
-  did:
-    service_self_registration:
+  didService:
+    selfRegistration:
       # -- Whether Service Self Registration is enabled
       enabled: false
       # -- Unique id of connector to be used for register / unregister service inside did document (must be valid URI)

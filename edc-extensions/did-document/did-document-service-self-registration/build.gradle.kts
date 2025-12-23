@@ -26,6 +26,7 @@ dependencies {
     implementation(project(":spi:did-document-service-spi"))
     implementation(libs.edc.runtime.metamodel)
     implementation(libs.edc.spi.identity.did)
+    implementation(libs.dsp.spi.http)
 
     testImplementation(libs.edc.junit)
 }

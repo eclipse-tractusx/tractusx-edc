@@ -23,8 +23,6 @@ import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.result.ServiceResult;
 
-import java.util.List;
-
 /**
  * Service Provider Interface (SPI) for managing the dynamic service entries in a DID (Decentralized Identifier Document).
  * <p>
@@ -71,9 +69,5 @@ public interface DidDocumentServiceClient {
      */
     ServiceResult<Void> update(Service service);
 
-    ServiceResult<Service> getById(String id);
-
     ServiceResult<Void> deleteById(String id);
-
-    ServiceResult<List<Service>> findAll();
 }
