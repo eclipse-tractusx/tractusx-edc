@@ -23,7 +23,6 @@ import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -38,7 +37,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.tractusx.edc.did.document.service.self.registration.DidDocumentServiceSelfRegistrationExtension.DATA_SERVICE_TYPE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -147,25 +145,26 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
     }
 
     @Test
-    void start_shouldThrowException_whenEnabledAndServiceIdMissing(ServiceExtensionContext context, ObjectFactory objectFactory) {
+    void start_shouldNotSelfRegister_whenEnabledAndServiceIdMissing(ServiceExtensionContext context, ObjectFactory objectFactory) {
 
         var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true");
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
         context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
 
         var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
-
-        assertThatThrownBy(extension::start)
-                .isInstanceOf(EdcException.class)
-                .hasMessageContaining("Service ID for DID Document Service self-registration is not configured");
+        extension.start();
 
         verify(didDocumentServiceClient, never()).update(any(Service.class));
+        verify(monitor).severe(contains("is missing or blank but self-registration is enabled"));
+
+        extension.shutdown();
+        verify(didDocumentServiceClient, never()).deleteById(anyString());
     }
 
     @ParameterizedTest
     @EmptySource
     @ValueSource(strings = {"   "})
-    void start_shouldThrowException_whenEnabledAndServiceIdEmptyOrBlank(String serviceId, ServiceExtensionContext context, ObjectFactory objectFactory) {
+    void start_shouldNotSelfRegister_whenEnabledAndServiceIdEmptyOrBlank(String serviceId, ServiceExtensionContext context, ObjectFactory objectFactory) {
 
         var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
                 "tx.edc.did.service.self.registration.id", serviceId);
@@ -173,16 +172,17 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
         context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
 
         var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
-
-        assertThatThrownBy(extension::start)
-                .isInstanceOf(EdcException.class)
-                .hasMessageContaining("Service ID for DID Document Service self-registration is not configured");
+        extension.start();
 
         verify(didDocumentServiceClient, never()).update(any(Service.class));
+        verify(monitor).severe(contains("is missing or blank but self-registration is enabled"));
+
+        extension.shutdown();
+        verify(didDocumentServiceClient, never()).deleteById(anyString());
     }
 
     @Test
-    void start_shouldThrowException_whenEnabledAndServiceIdInvalid(ServiceExtensionContext context, ObjectFactory objectFactory) {
+    void start_shouldNotSelfRegister_whenEnabledAndServiceIdInvalid(ServiceExtensionContext context, ObjectFactory objectFactory) {
 
         var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
                 "tx.edc.did.service.self.registration.id", "invalid uri");
@@ -190,11 +190,12 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
         context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
 
         var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
-
-        assertThatThrownBy(extension::start)
-                .isInstanceOf(EdcException.class)
-                .hasMessageContaining("does not contain a valid URI");
+        extension.start();
 
         verify(didDocumentServiceClient, never()).update(any(Service.class));
+        verify(monitor).severe(contains("does not contain a valid URI"));
+
+        extension.shutdown();
+        verify(didDocumentServiceClient, never()).deleteById(anyString());
     }
 }

@@ -23,8 +23,8 @@ import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClient;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +40,7 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
 
     public static final String DATA_SERVICE_TYPE = "DataService";
     private static final String DATA_SERVICE_ID_WITH_TYPE_TEMPLATE = "%s#%s";
+    public static final String VERSION_METADATA_ENDPOINT_PATH = "/.well-known/dspace-version";
 
     @Inject
     private Monitor monitor;
@@ -73,32 +74,40 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
 
     private void selfRegisterDidDocumentService(@NotNull DidDocumentServiceClient client) {
 
-        var wellKnownUrl = "%s/.well-known/dspace-version".formatted(dspBaseAddress.get());
-        var serviceIdWithType = DATA_SERVICE_ID_WITH_TYPE_TEMPLATE.formatted(validatedServiceId(serviceId), DATA_SERVICE_TYPE);
-        var service = new Service(serviceIdWithType, DATA_SERVICE_TYPE, wellKnownUrl);
-        client.update(service)
-                .onFailure(failure -> monitor.severe("Failed to self-register DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
-                .onSuccess(result -> monitor.info("Self Registration of DID Document service successful"));
+        var wellKnownUrl = String.join("", dspBaseAddress.get(), VERSION_METADATA_ENDPOINT_PATH);
+        validatedServiceId(serviceId)
+                .onFailure(failure -> monitor.severe(failure.getFailureDetail()))
+                .map(id -> DATA_SERVICE_ID_WITH_TYPE_TEMPLATE.formatted(id, DATA_SERVICE_TYPE))
+                .map(serviceIdWithType -> new Service(serviceIdWithType, DATA_SERVICE_TYPE, wellKnownUrl))
+                .onSuccess(service ->
+                        client.update(service)
+                                .onFailure(failure -> monitor.severe("Failed to self-register DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
+                                .onSuccess(result -> monitor.info("Self Registration of DID Document service successful"))
+                );
     }
 
     private void selfUnregisterDidDocumentService(@NotNull DidDocumentServiceClient client) {
 
-        var serviceIdWithType = DATA_SERVICE_ID_WITH_TYPE_TEMPLATE.formatted(serviceId, DATA_SERVICE_TYPE);
-        client.deleteById(serviceIdWithType)
-                .onFailure(failure -> monitor.severe("Failed to unregister DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
-                .onSuccess(result -> monitor.info("Successfully unregistered DID Document service"));
+        validatedServiceId(serviceId)
+                .map(id -> DATA_SERVICE_ID_WITH_TYPE_TEMPLATE.formatted(id, DATA_SERVICE_TYPE))
+                .onSuccess(serviceIdWithType ->
+                        client.deleteById(serviceIdWithType)
+                                .onFailure(failure -> monitor.severe("Failed to unregister DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
+                                .onSuccess(result -> monitor.info("Successfully unregistered DID Document service"))
+                );
     }
 
-    private String validatedServiceId(String serviceId) {
+    private Result<String> validatedServiceId(String serviceId) {
 
         if (serviceId == null || serviceId.isBlank()) {
-            throw new EdcException("Service ID for DID Document Service self-registration is not configured via Property '%s' but self-registration is enabled.".formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID));
+            return Result.failure("Service ID for DID Document Service self-registration configured via Property '%s' is missing or blank but self-registration is enabled.".formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID));
         }
         try {
             new URI(serviceId);
         } catch (URISyntaxException ex) {
-            throw new EdcException("Property '%s' does not contain a valid URI".formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID), ex);
+            return Result.failure("Service ID for DID Document Service self-registration configured via Property '%s' does not contain a valid URI (%s) but self-registration is enabled.'"
+                    .formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID, ex.getMessage()));
         }
-        return serviceId;
+        return Result.success(serviceId);
     }
 }
