@@ -37,6 +37,7 @@ include(":spi:core-spi")
 include(":spi:tokenrefresh-spi")
 include(":spi:bdrs-client-spi")
 include(":spi:dataflow-spi")
+include(":spi:did-document-service-spi")
 include(":spi:dcp-spi")
 
 
@@ -73,6 +74,7 @@ include(":edc-extensions:validators:empty-asset-selector")
 include(":edc-extensions:log4j2-monitor")
 include("edc-extensions:connector-discovery:connector-discovery-api")
 include(":edc-extensions:dataspace-protocol")
+include(":edc-extensions:did-document:did-document-service-self-registration")
 
 include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
