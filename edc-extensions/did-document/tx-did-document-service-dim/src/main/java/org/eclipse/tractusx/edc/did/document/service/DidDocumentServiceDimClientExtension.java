@@ -38,7 +38,7 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
     @Inject
     private EdcHttpClient httpClient;
 
-    @Inject
+    @Inject(required = false)
     private DimOauth2Client dimOauth2Client;
 
     @Inject

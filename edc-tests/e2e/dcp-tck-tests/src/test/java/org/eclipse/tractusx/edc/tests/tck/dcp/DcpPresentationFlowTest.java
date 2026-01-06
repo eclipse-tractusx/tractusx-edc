@@ -230,6 +230,7 @@ public class DcpPresentationFlowTest {
                 put("web.http.port", String.valueOf(getFreePort()));
                 put("web.http.protocol.path", PROTOCOL_API_PATH);
                 put("web.http.protocol.port", String.valueOf(PROTOCOL_API_PORT));
+                put("edc.participant.id", "id");
                 put("edc.iam.issuer.id", VERIFIER_DID);
                 put("edc.iam.sts.oauth.token.url", "https://example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-client-id");

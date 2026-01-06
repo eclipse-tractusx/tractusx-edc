@@ -25,7 +25,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -35,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
@@ -94,9 +92,6 @@ class DidDocumentServiceDimClientTest {
 
     @Test
     void deleteById_success() {
-        var dataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(dataService)).build();
-
         when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
         when(httpClient.execute(any(Request.class), anyList(), any()))
                 .thenReturn(Result.success(COMPANY_ID)) // resolve company id
