@@ -62,6 +62,7 @@ dependencies {
     implementation(project(":edc-extensions:token-interceptor"))
     implementation(project(":edc-extensions:event-subscriber"))
     implementation(project(":edc-extensions:did-document:did-document-service-self-registration"))
+    implementation(project(":edc-extensions:did-document:tx-did-document-service-dim"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)

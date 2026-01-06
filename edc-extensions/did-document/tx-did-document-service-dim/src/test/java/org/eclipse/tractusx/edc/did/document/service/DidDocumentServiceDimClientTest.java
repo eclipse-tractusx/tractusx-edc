@@ -27,11 +27,9 @@ import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
-import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.result.ServiceFailure;
 import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauth2Client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +43,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,7 +59,6 @@ class DidDocumentServiceDimClientTest {
     private static final String CREDENTIAL_SERVICE_TYPE = "CredentialService";
     private static final String CREDENTIAL_SERVICE_ENDPOINT = "https://div.example.com/api/holder";
 
-    private final DidResolverRegistry resolverRegistry = mock(DidResolverRegistry.class);
     private final EdcHttpClient httpClient = mock(EdcHttpClient.class);
     private final DimOauth2Client dimOauth2Client = mock(DimOauth2Client.class);
     private final ObjectMapper mapper = new ObjectMapper();
@@ -75,83 +71,12 @@ class DidDocumentServiceDimClientTest {
     @BeforeEach
     void setUp() {
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
-        client = new DidDocumentServiceDimClient(resolverRegistry, httpClient, dimOauth2Client, mapper, dimUrl, ownDid, monitor);
+        client = new DidDocumentServiceDimClient(httpClient, dimOauth2Client, mapper, dimUrl, ownDid, monitor);
     }
 
     @Test
-    void create_serviceAlreadyExists() {
-        var service = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(service)).build();
+    void update_service_success() {
 
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-
-        var result = client.create(service);
-
-        assertThat(result).isFailed().satisfies(failure -> {
-                    assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.CONFLICT);
-                    assertThat(failure.getMessages().stream().anyMatch(msg -> msg.contains("already exists"))).isTrue();
-                }
-        );
-    }
-
-    @Test
-    void create_service_success() {
-        var credentialService = new Service(CREDENTIAL_SERVICE_ID, CREDENTIAL_SERVICE_TYPE, CREDENTIAL_SERVICE_ENDPOINT);
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(credentialService)).build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-        when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
-        when(httpClient.execute(any(Request.class), anyList(), any()))
-                .thenReturn(Result.success(COMPANY_ID)) // resolve company id
-                .thenReturn(Result.success("")) // create service
-                .thenReturn(Result.success("")); // update patch status
-
-        var dataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        var result = client.create(dataService);
-
-        assertThat(result).isSucceeded();
-        verify(httpClient, times(3)).execute(any(Request.class), anyList(), any());
-    }
-
-    @Test
-    void update_serviceDoesNotExist() {
-        var credentialService = new Service(CREDENTIAL_SERVICE_ID, CREDENTIAL_SERVICE_TYPE, CREDENTIAL_SERVICE_ENDPOINT);
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(credentialService)).build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-        when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
-        when(httpClient.execute(any(Request.class), anyList(), any()))
-                .thenReturn(Result.success(COMPANY_ID)) // resolve company id
-                .thenReturn(Result.success("")) // create service
-                .thenReturn(Result.success("")); // update patch status
-
-        var dataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        var result = client.update(dataService);
-
-        assertThat(result).isSucceeded();
-        verify(httpClient, times(3)).execute(any(Request.class), anyList(), any());
-    }
-
-    @Test
-    void update_serviceAlreadyExists() {
-        var dataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(dataService)).build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-        when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
-
-        var result = client.update(dataService);
-
-        assertThat(result).isSucceeded();
-        verify(httpClient, never()).execute(any(Request.class), anyList(), any());
-    }
-
-    @Test
-    void update_serviceAlreadyExistsWithDifferentUrl() {
-        var oldDataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, "https://edc.com/edc/.well-known/dspace-version-old");
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(oldDataService)).build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
         when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
         when(httpClient.execute(any(Request.class), anyList(), any()))
                 .thenReturn(Result.success(COMPANY_ID)) // resolve company id
@@ -160,51 +85,11 @@ class DidDocumentServiceDimClientTest {
                 .thenReturn(Result.success("")) //  create service
                 .thenReturn(Result.success("")); // update patch status
 
-        var newDataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        var result = client.update(newDataService);
+        var dataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
+        var result = client.update(dataService);
 
         assertThat(result).isSucceeded();
         verify(httpClient, times(5)).execute(any(Request.class), anyList(), any());
-    }
-
-    @Test
-    void getById_ServiceExists() {
-        var dataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(dataService)).build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-
-        var result = client.getById(DATA_SERVICE_ID);
-
-        assertThat(result).isSucceeded().satisfies(service -> assertThat(service).isEqualTo(dataService));
-    }
-
-    @Test
-    void getById_ServiceNotFound() {
-        DidDocument didDocument = DidDocument.Builder.newInstance().build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-
-        var result = client.getById(DATA_SERVICE_ID);
-
-        assertThat(result).isFailed().satisfies(failure -> {
-            assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.NOT_FOUND);
-            assertThat(failure.getMessages().stream().anyMatch(msg -> msg.contains("not found"))).isTrue();
-        });
-    }
-
-    @Test
-    void deleteById_ServiceNotFound() {
-        DidDocument didDocument = DidDocument.Builder.newInstance().build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-
-        var result = client.deleteById(DATA_SERVICE_ID);
-
-        assertThat(result).isFailed().satisfies(failure -> {
-            assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.NOT_FOUND);
-            assertThat(failure.getMessages().stream().anyMatch(msg -> msg.contains("not found"))).isTrue();
-        });
     }
 
     @Test
@@ -212,7 +97,6 @@ class DidDocumentServiceDimClientTest {
         var dataService = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
         DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(dataService)).build();
 
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
         when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
         when(httpClient.execute(any(Request.class), anyList(), any()))
                 .thenReturn(Result.success(COMPANY_ID)) // resolve company id
@@ -224,29 +108,6 @@ class DidDocumentServiceDimClientTest {
         assertThat(result).isSucceeded();
         verify(httpClient, times(3)).execute(any(Request.class), anyList(), any());
 
-    }
-
-    @Test
-    void findAll_shouldReturnServices_whenDidDocumentResolved() {
-        var service = new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT);
-        DidDocument didDocument = DidDocument.Builder.newInstance().service(List.of(service)).build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-
-        var result = client.findAll();
-
-        assertThat(result).isSucceeded().satisfies(services -> assertThat(services).containsExactly(service));
-    }
-
-    @Test
-    void findAll_shouldReturnEmpty_whenNoServices() {
-        DidDocument didDocument = DidDocument.Builder.newInstance().build();
-
-        when(resolverRegistry.resolve(ownDid)).thenReturn(Result.success(didDocument));
-
-        var result = client.findAll();
-
-        assertThat(result).isSucceeded().satisfies(services -> assertThat(services).isEmpty());
     }
 
     @Test
@@ -421,6 +282,18 @@ class DidDocumentServiceDimClientTest {
     }
 
     @Test
+    void handlePatchStatusResponse_resBodyParseFailure() {
+        String didUpdateResponse = "<Invalid Response Body>";
+        var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
+        var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
+        when(response.body()).thenReturn(responseBody);
+
+        var result = client.handlePatchStatusResponse(response);
+        assertThat(result).isFailed();
+    }
+
+    @Test
     void handleCompanyIdentityResponse_success() throws IOException {
 
         String didUpdateResponse = """
@@ -528,6 +401,18 @@ class DidDocumentServiceDimClientTest {
                   ]
                 }
                 """;
+        var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
+        var response = mock(Response.class);
+        when(response.isSuccessful()).thenReturn(true);
+        when(response.body()).thenReturn(responseBody);
+
+        var result = client.handleCompanyIdentityResponse(response);
+        assertThat(result).isFailed();
+    }
+
+    @Test
+    void handleCompanyIdentityResponse_resBodyParseFailure() {
+        String didUpdateResponse = "<Invalid Response Body>";
         var responseBody = ResponseBody.create(didUpdateResponse, MediaType.parse("application/json"));
         var response = mock(Response.class);
         when(response.isSuccessful()).thenReturn(true);

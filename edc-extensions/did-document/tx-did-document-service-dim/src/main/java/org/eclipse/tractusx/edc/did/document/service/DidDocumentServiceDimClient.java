@@ -27,9 +27,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
-import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -51,13 +49,37 @@ import static org.eclipse.edc.http.spi.FallbackFactories.retryWhenStatusIsNotIn;
 /**
  * Implementation of {@link DidDocumentServiceClient} that interacts with a DIM (Decentralized Identity
  * Verification) Service to manage services in a DID Document.
+ *
+ * Did Document is tied to a company identity in DIM, which is resolved using the own DID. Company identity is needed
+ * to perform any updates to the DID Document.
+ *
+ * <p>
+ * Did document update is a two-step process in DIM:
+ * 1. A PATCH request is sent to add or remove services.
+ * Sample payload to add a service:
+ * <pre>
+ *  {@code
+ * {
+ *   "didDocUpdates": {
+ *     "addServices": [
+ *       {
+ *         "id": "did:web:example.com:123#DataService",
+ *         "serviceEndpoint": "https://edc.com/edc/.well-known/dspace-version",
+ *         "type": "DataService"
+ *       }
+ *     ]
+ *   }
+ * }
+ * }
+ * </pre>
+ * 2. A subsequent PATCH request is sent to the /status endpoint to finalize the update.
+ *     PATCH {dimUrl}/companyIdentities/{companyIdentityId}/status
  */
 public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
 
     public static final MediaType TYPE_JSON = MediaType.parse("application/json");
     private static final String DID_DOC_API_PATH = "/api/v2.0.0/companyIdentities";
 
-    private final DidResolverRegistry resolverRegistry;
     private final EdcHttpClient httpClient;
     private final DimOauth2Client dimOauth2Client;
     private final ObjectMapper mapper;
@@ -66,9 +88,8 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     private final String didDocApiUrl;
     private final AtomicReference<String> companyIdentity = new AtomicReference<>();
 
-    public DidDocumentServiceDimClient(DidResolverRegistry resolverRegistry, EdcHttpClient httpClient,
+    public DidDocumentServiceDimClient(EdcHttpClient httpClient,
                                        DimOauth2Client dimOauth2Client, ObjectMapper mapper, String dimUrl, String ownDid, Monitor monitor) {
-        this.resolverRegistry = resolverRegistry;
         this.httpClient = httpClient;
         this.dimOauth2Client = dimOauth2Client;
         this.mapper = mapper;
@@ -77,53 +98,13 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
         this.didDocApiUrl = "%s/%s".formatted(dimUrl, DID_DOC_API_PATH);
     }
 
-    /**
-     * Creates a new service entry in the DID Document.
-     * It requires two API calls: one to add the service and another to update the patch status.
-     *
-     * @param service the service to create
-     * @return a ServiceResult indicating success or failure
-     */
-    @Override
-    public ServiceResult<Void> create(Service service) {
-
-        var existingService = this.getById(service.getId());
-        if (existingService.succeeded()) {
-            return ServiceResult.conflict("%s already exists".formatted(asString(existingService.getContent())));
-        }
-        return createServiceEntry(service)
-                .compose(v -> updatePatchStatus())
-                .onSuccess(v -> monitor.info("Created service entry %s in DID Document".formatted(asString(service))))
-                .onFailure(f -> monitor.warning("Failed to create service entry %s with failure %s".formatted(asString(service), f.getFailureDetail())));
-    }
-
     @Override
     public ServiceResult<Void> update(Service service) {
-        var existingService = this.getById(service.getId());
-        if (existingService.failed()) {
-            return create(service);
-        }
-
-        if (isEquals(service, existingService.getContent())) {
-            // no need to update, same entry already exists
-            return ServiceResult.success();
-        } else {
-            return deleteById(service.getId())
-                    .compose(v -> createServiceEntry(service))
-                    .compose(v -> updatePatchStatus())
-                    .onSuccess(v -> monitor.info("Updated service entry %s in DID Document".formatted(asString(service))))
-                    .onFailure(f -> monitor.warning("Failed to update service entry %s with failure %s".formatted(asString(service), f.getFailureDetail())));
-        }
-    }
-
-    @Override
-    public ServiceResult<Service> getById(String id) {
-        return findAll()
-                .compose(services -> services.stream()
-                        .filter(service -> service.getId().equals(id))
-                        .findFirst()
-                        .map(ServiceResult::success)
-                        .orElse(ServiceResult.notFound("Service with id %s not found".formatted(id))));
+        return deleteById(service.getId())
+                .compose(v -> createServiceEntry(service))
+                .compose(v -> updatePatchStatus())
+                .onSuccess(v -> monitor.info("Updated service entry %s in DID Document".formatted(asString(service))))
+                .onFailure(f -> monitor.warning("Failed to update service entry %s with failure %s".formatted(asString(service), f.getFailureDetail())));
     }
 
     /**
@@ -135,19 +116,10 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
      */
     @Override
     public ServiceResult<Void> deleteById(String id) {
-        var existingService = this.getById(id);
-        if (existingService.failed()) {
-            return ServiceResult.notFound("Service with id %s not found".formatted(id));
-        }
         return deleteServiceEntry(id)
                 .compose(v -> updatePatchStatus())
                 .onSuccess(v -> monitor.info("Deletion of service entry %s in DID Document successful".formatted(id)))
                 .onFailure(f -> monitor.severe("Failed to delete service entry %s with failure %s".formatted(id, f.getFailureDetail())));
-    }
-
-    @Override
-    public ServiceResult<List<Service>> findAll() {
-        return ServiceResult.from(resolverRegistry.resolve(ownDid).map(DidDocument::getService));
     }
 
     private ServiceResult<Void> createServiceEntry(Service service) {
@@ -285,6 +257,9 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
      * Handles the response for a company identity resolution request.
      * Package Private visibility for testing.
      * <p>
+     * It is expected that DIM returns exactly one company identity for the given DID.
+     * If none or multiple are returned, it is considered a failure.
+     * <p>
      * The expected successful response structure is:
      * <pre>
      *  {@code
@@ -394,13 +369,6 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
 
     private Map<String, Object> didDocUpdatePayload(Map<String, Object> operationPayload) {
         return Map.of("didDocUpdates", operationPayload);
-    }
-
-    private boolean isEquals(Service service1, Service service2) {
-
-        return Objects.equals(service1.getId(), service2.getId()) &&
-               Objects.equals(service1.getType(), service2.getType()) &&
-               Objects.equals(service1.getServiceEndpoint(), service2.getServiceEndpoint());
     }
 
     String asString(Service service) {

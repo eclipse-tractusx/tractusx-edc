@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.did.document.service;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -35,9 +34,6 @@ import java.util.Optional;
 
 @Provides(DidDocumentServiceClient.class)
 public class DidDocumentServiceDimClientExtension implements ServiceExtension {
-
-    @Inject
-    private DidResolverRegistry resolverRegistry;
 
     @Inject
     private EdcHttpClient httpClient;
@@ -62,7 +58,6 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
 
         Optional.ofNullable(dimUrlConfig)
                 .map(dimUrl -> new DidDocumentServiceDimClient(
-                        resolverRegistry,
                         httpClient,
                         dimOauth2Client,
                         typeManager.getMapper(),
