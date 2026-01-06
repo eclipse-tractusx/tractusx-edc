@@ -56,30 +56,18 @@ them the version discovery can be executed and the right management api paramete
 Consequently, the response has a body like this:
 
 ```json
-{
-  "connectors": [
-    {
-      "counterPartyAddress": "https://first.provider-domain/somepath/dsp/v1/api/2025-1",
-      "counterPartyId": "did:web:...",
-      "protocol": "dataspace-protocol-http:2025-1"
-    },
-    {
-      "counterPartyAddress": "https://first.provider-domain/otherpath/dsp/v1/api",
-      "counterPartyId": "BPNL...",
-      "protocol": "dataspace-protocol-http"
-    },
-    {
-      "counterPartyAddress": "https://second.provider-domain.com/dsp/v1/api",
-      "counterPartyId": "BPNL...",
-      "protocol": "dataspace-protocol-http"
-    },
-    {
-      "counterPartyAddress": "https://third.provider-domain.com/dsp/v1/api/2025-1",
-      "counterPartyId": "did:web:...",
-      "protocol": "dataspace-protocol-http:2025-1"
-    }
-  ]
-}
+[
+  {
+    "counterPartyAddress": "https://provider-domain/somepath/dsp/v1/api/2025-1",
+    "counterPartyId": "did:web:...",
+    "protocol": "dataspace-protocol-http:2025-1"
+  },
+  {
+    "counterPartyAddress": "https://other-provider-domain/otherpath/dsp/v1/api",
+    "counterPartyId": "BPNL...",
+    "protocol": "dataspace-protocol-http"
+  }
+]
 ```
 
 So it returns a list of parameter sets for the listed connectors in the DID document. It adds the known connectors
