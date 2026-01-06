@@ -76,3 +76,11 @@ given as input and also requests the central discovery for now and provides the 
 The algorithm will make use of the existing features to download the DID document as well as the `dspace-version`
 endpoint and processes the information. In case of a BPNL provided, it makes use of the BDRS client to translate
 the BPNL to the DID.
+
+## NOTICE
+
+This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+- SPDX-License-Identifier: CC-BY-4.0
+- SPDX-FileCopyrightText: 2026 Cofinity-X GmbH
+- Source URL: [https://github.com/eclipse-tractusx/tractusx-edc](https://github.com/eclipse-tractusx/tractusx-edc)
