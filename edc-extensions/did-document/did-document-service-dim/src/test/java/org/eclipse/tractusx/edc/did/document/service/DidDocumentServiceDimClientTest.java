@@ -19,21 +19,37 @@
 
 package org.eclipse.tractusx.edc.did.document.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.Buffer;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceFailure;
 import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauth2Client;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
+import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
@@ -53,15 +69,14 @@ class DidDocumentServiceDimClientTest {
     private static final String DATA_SERVICE_TYPE = "DataService";
     private static final String DATA_SERVICE_ENDPOINT = "https://edc.com/edc/.well-known/dspace-version";
 
-    private static final String CREDENTIAL_SERVICE_ID = "did:web:example.com:123#CredentialService";
-    private static final String CREDENTIAL_SERVICE_TYPE = "CredentialService";
-    private static final String CREDENTIAL_SERVICE_ENDPOINT = "https://div.example.com/api/holder";
-
     private final EdcHttpClient httpClient = mock(EdcHttpClient.class);
     private final DimOauth2Client dimOauth2Client = mock(DimOauth2Client.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final Monitor monitor = mock(Monitor.class);
     private final String dimUrl = "https://div.example.com";
+    private final String didDocApiUrl = String.join("", dimUrl, "/api/v2.0.0/companyIdentities");
+    private final String tenantBaseUrl = String.join("/", didDocApiUrl, COMPANY_ID);
+    private final String didUpdateStatusUrl = String.join("", tenantBaseUrl + "/status");
     private final String ownDid = "did:web:example.com:123";
 
     private DidDocumentServiceDimClient client;
@@ -87,7 +102,75 @@ class DidDocumentServiceDimClientTest {
         var result = client.update(dataService);
 
         assertThat(result).isSucceeded();
-        verify(httpClient, times(5)).execute(any(Request.class), anyList(), any());
+        var requestCaptor = ArgumentCaptor.forClass(Request.class);
+        verify(httpClient, times(5)).execute(requestCaptor.capture(), anyList(), any());
+
+        var requests = requestCaptor.getAllValues();
+
+        // assert resolve company id
+        var expectedCompanyIdUrl = HttpUrl.parse(didDocApiUrl).newBuilder().addQueryParameter("$filter", "issuerDID eq \"%s\"".formatted(ownDid)).build().toString();
+        assertRequest(requests.get(0), "GET", expectedCompanyIdUrl, null);
+
+        // assert delete service
+        var expectedDeleteServiceBody = """
+                {
+                   "didDocUpdates": {
+                    "removeServices": [
+                      "%s"
+                    ]
+                  }
+                }
+                """.formatted(dataService.getId());
+        assertRequest(requests.get(1), "PATCH", tenantBaseUrl, expectedDeleteServiceBody);
+
+        // assert delete service patch status
+        assertRequest(requests.get(2), "PATCH", didUpdateStatusUrl, "{}");
+
+        // assert create service
+        var expectedCreateServiceBody = """
+                {
+                  "didDocUpdates": {
+                    "addServices": [
+                      {
+                        "id": "%s",
+                        "serviceEndpoint": "%s",
+                        "type": "%s"
+                      }
+                    ]
+                  }
+                }
+                """.formatted(dataService.getId(), dataService.getServiceEndpoint(), dataService.getType());
+        assertRequest(requests.get(3), "PATCH", tenantBaseUrl, expectedCreateServiceBody);
+
+        // assert create service patch status
+        assertRequest(requests.get(4), "PATCH", didUpdateStatusUrl, "{}");
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(InvalidServiceProvider.class)
+    void update_service_failure(Service service) {
+
+        var result = client.update(service);
+        assertThat(result).isFailed().satisfies(failure -> {
+            assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.UNEXPECTED);
+            assertThat(failure.getFailureDetail()).contains("Validation Failure");
+        });
+    }
+
+    private static class InvalidServiceProvider implements ArgumentsProvider {
+        @Override
+        public @NotNull Stream<? extends Arguments> provideArguments(@NotNull ParameterDeclarations parameters, @NotNull ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of(new Service(null, null, null)),
+                    Arguments.of(new Service(DATA_SERVICE_ID, null, null)),
+                    Arguments.of(new Service(null, DATA_SERVICE_ID, null)),
+                    Arguments.of(new Service(null, null, DATA_SERVICE_ENDPOINT)),
+                    Arguments.of(new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, null)),
+                    Arguments.of(new Service(DATA_SERVICE_ID, null, DATA_SERVICE_ENDPOINT)),
+                    Arguments.of(new Service(null, DATA_SERVICE_ID, DATA_SERVICE_ENDPOINT)),
+                    Arguments.of(new Service("invalid uri", DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT))
+            );
+        }
     }
 
     @Test
@@ -101,8 +184,42 @@ class DidDocumentServiceDimClientTest {
         var result = client.deleteById(DATA_SERVICE_ID);
 
         assertThat(result).isSucceeded();
-        verify(httpClient, times(3)).execute(any(Request.class), anyList(), any());
+        var requestCaptor = ArgumentCaptor.forClass(Request.class);
+        verify(httpClient, times(3)).execute(requestCaptor.capture(), anyList(), any());
 
+        var requests = requestCaptor.getAllValues();
+
+        // assert resolve company id
+        var expectedCompanyIdUrl = HttpUrl.parse(didDocApiUrl).newBuilder().addQueryParameter("$filter", "issuerDID eq \"%s\"".formatted(ownDid)).build().toString();
+        assertRequest(requests.get(0), "GET", expectedCompanyIdUrl, null);
+
+        // assert delete service
+        var expectedDeleteServiceBody = """
+                {
+                   "didDocUpdates": {
+                    "removeServices": [
+                      "%s"
+                    ]
+                  }
+                }
+                """.formatted(DATA_SERVICE_ID);
+        assertRequest(requests.get(1), "PATCH", tenantBaseUrl, expectedDeleteServiceBody);
+
+        // assert delete service patch status
+        assertRequest(requests.get(2), "PATCH", didUpdateStatusUrl, "{}");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @EmptySource
+    @ValueSource(strings = {" ", "invalid uri"})
+    void deleteById_failure(String serviceId) {
+
+        var result = client.deleteById(serviceId);
+        assertThat(result).isFailed().satisfies(failure -> {
+            assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.UNEXPECTED);
+            assertThat(failure.getFailureDetail()).contains("Validation Failure");
+        });
     }
 
     @Test
@@ -415,5 +532,34 @@ class DidDocumentServiceDimClientTest {
 
         var result = client.handleCompanyIdentityResponse(response);
         assertThat(result).isFailed();
+    }
+
+    private void assertRequest(Request request, String expectedMethod, String expectedUrl, String expectedJsonBody) {
+
+        assertThat(request.url().toString()).isEqualTo(expectedUrl);
+        assertThat(request.method()).isEqualTo(expectedMethod);
+
+        try {
+            JsonNode expectedJsonNode = expectedJsonBody != null ? mapper.readTree(expectedJsonBody) : null;
+            var actualJsonNode = request.body() != null ? mapper.readTree(stringifyRequestBody(request)) : null;
+            assertThat(actualJsonNode).isEqualTo(expectedJsonNode);
+        } catch (IOException e) {
+            throw new RuntimeException("Invalid expectedJsonBody provided", e);
+        }
+    }
+
+    private String stringifyRequestBody(Request request) {
+        try {
+            final Request copy = request.newBuilder().build();
+            final Buffer buffer = new Buffer();
+            if (copy.body() != null) {
+                copy.body().writeTo(buffer);
+            } else {
+                return null;
+            }
+            return buffer.readUtf8();
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

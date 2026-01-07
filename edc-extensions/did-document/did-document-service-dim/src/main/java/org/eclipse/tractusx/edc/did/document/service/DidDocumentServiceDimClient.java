@@ -36,6 +36,8 @@ import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauth2Client;
 import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClient;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -95,31 +97,37 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
         this.mapper = mapper;
         this.ownDid = ownDid;
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
-        this.didDocApiUrl = "%s/%s".formatted(dimUrl, DID_DOC_API_PATH);
+        this.didDocApiUrl = String.join("", dimUrl, DID_DOC_API_PATH);
     }
 
     @Override
     public ServiceResult<Void> update(Service service) {
-        return deleteById(service.getId())
+        return validateService(service)
+                .compose(v -> deleteById(service.getId()))
                 .compose(v -> createServiceEntry(service))
                 .compose(v -> updatePatchStatus())
                 .onSuccess(v -> monitor.info("Updated service entry %s in DID Document".formatted(asString(service))))
                 .onFailure(f -> monitor.warning("Failed to update service entry %s with failure %s".formatted(asString(service), f.getFailureDetail())));
     }
 
-    /**
-     * Deletes a service entry from the DID Document.
-     * It requires two API calls: one to remove the service and another to update the patch status.
-     *
-     * @param id the ID of the service to delete
-     * @return a ServiceResult indicating success or failure
-     */
-    @Override
-    public ServiceResult<Void> deleteById(String id) {
-        return deleteServiceEntry(id)
-                .compose(v -> updatePatchStatus())
-                .onSuccess(v -> monitor.info("Deletion of service entry %s in DID Document successful".formatted(id)))
-                .onFailure(f -> monitor.severe("Failed to delete service entry %s with failure %s".formatted(id, f.getFailureDetail())));
+    private ServiceResult<Void> validateService(Service service) {
+        if (isBlank(service.getServiceEndpoint()) || isBlank(service.getType())) {
+            return ServiceResult.unexpected("Validation Failure: Service id, type and serviceEndpoint must be provided and non-blank");
+        }
+        return validateServiceId(service.getId());
+    }
+
+    private ServiceResult<Void> validateServiceId(String serviceId) {
+
+        if (isBlank(serviceId)) {
+            return ServiceResult.unexpected("Validation Failure: Service ID must be provided and non-blank");
+        }
+        try {
+            new URI(serviceId);
+        } catch (URISyntaxException ex) {
+            return ServiceResult.unexpected("Validation Failure: Service ID must be a valid URI: %s'".formatted(serviceId));
+        }
+        return ServiceResult.success();
     }
 
     private ServiceResult<Void> createServiceEntry(Service service) {
@@ -131,52 +139,32 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
                 .flatMap(res -> ServiceResult.success());
     }
 
-    private ServiceResult<Void> deleteServiceEntry(String id) {
-        return createTenantBaseUrl()
-                .compose(url -> patchRequest(didDocDeleteServicePayload(id), url))
-                .map(Request.Builder::build)
-                .compose(request -> this.executeRequest(request, this::handleDidUpdateResponse))
-                .flatMap(res -> ServiceResult.success());
-    }
-
-    private ServiceResult<Void> updatePatchStatus() {
-
-        return createTenantBaseUrl()
-                .map("%s/status"::formatted)
-                .compose(url -> patchRequest(null, url))
-                .map(Request.Builder::build)
-                .compose(request -> this.executeRequest(request, this::handlePatchStatusResponse))
-                .flatMap(res -> ServiceResult.success());
-    }
-
-    private Result<String> createTenantBaseUrl() {
-        if (companyIdentity.get() == null) {
-            var url = HttpUrl.parse(didDocApiUrl).newBuilder().addQueryParameter("$filter", "issuerDID eq %s".formatted(ownDid)).build();
-            return getRequest()
-                    .map(builder -> builder.url(url).build())
-                    .compose(request -> this.executeRequest(request, this::handleCompanyIdentityResponse))
-                    .onSuccess(companyIdentity::set)
-                    .compose(companyId -> Result.success(companyIdentityUrl(companyIdentity.get())))
-                    .onFailure(f -> monitor.severe("Failed to resolve company identity for DID %s with failure %s".formatted(ownDid, f.getFailureDetail())));
-        }
-        return Result.success(companyIdentityUrl(companyIdentity.get()));
-    }
-
-    private Result<Request.Builder> patchRequest(Map<String, Object> body, String url) {
-        try {
-            var requestBody = RequestBody.create(mapper.writeValueAsString(body), TYPE_JSON);
-            return baseRequestWithToken().map(builder -> builder.patch(requestBody).url(url));
-        } catch (JsonProcessingException e) {
-            return Result.failure(e.getMessage());
-        }
-    }
-
-    private Result<Request.Builder> getRequest() {
-        return baseRequestWithToken().map(Request.Builder::get);
-    }
-
-    private Result<String> executeRequest(Request request, Function<Response, Result<String>> responseMapping) {
-        return httpClient.execute(request, List.of(retryWhenStatusIsNotIn(200, 201)), responseMapping);
+    /**
+     * Constructs the payload for adding a service to the DID Document.
+     * <p>
+     * The resulting JSON structure is:
+     * <pre>
+     *  {@code
+     * {
+     *   "didDocUpdates": {
+     *     "addServices": [
+     *       {
+     *         "id": "did:web:example.com:123#DataService",
+     *         "serviceEndpoint": "https://edc.com/edc/.well-known/dspace-version",
+     *         "type": "DataService"
+     *       }
+     *     ]
+     *   }
+     * }
+     * }
+     * </pre>
+     *
+     * @param service the service to add to the DID Document
+     * @return a map representing the payload for the add service operation
+     */
+    private Map<String, Object> didDocCreateServicePayload(Service service) {
+        var createPayload = Map.of("id", service.getId(), "type", service.getType(), "serviceEndpoint", service.getServiceEndpoint());
+        return didDocUpdatePayload(Map.of("addServices", List.of(createPayload)));
     }
 
     /**
@@ -210,14 +198,71 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
             var body = Objects.requireNonNull(response.body()).string();
             var parsedBody = mapper.readTree(body);
             return Optional.ofNullable(parsedBody.get("updateDidRequest"))
-                    .map(updateDidRequest -> updateDidRequest.get("success").asBoolean())
+                    .map(updateDidRequest -> updateDidRequest.path("success").asBoolean(false))
                     .filter(Boolean.TRUE::equals)
                     .map(success -> Result.success(body))
                     .orElseGet(() -> Result.failure("Failed to Update Did Document, res: %s".formatted(body)));
         } catch (IOException e) {
-            monitor.severe("Failed to parse did update response from DIM");
+            monitor.severe("Failed to parse did update response from DIM", e);
             return Result.failure(e.getMessage());
         }
+    }
+
+    /**
+     * Deletes a service entry from the DID Document.
+     * It requires two API calls: one to remove the service and another to update the patch status.
+     *
+     * @param id the ID of the service to delete
+     * @return a ServiceResult indicating success or failure
+     */
+    @Override
+    public ServiceResult<Void> deleteById(String id) {
+        return validateServiceId(id)
+                .compose(v -> deleteServiceEntry(id))
+                .compose(v -> updatePatchStatus())
+                .onSuccess(v -> monitor.info("Deletion of service entry %s in DID Document successful".formatted(id)))
+                .onFailure(f -> monitor.severe("Failed to delete service entry %s with failure %s".formatted(id, f.getFailureDetail())));
+    }
+
+    private ServiceResult<Void> deleteServiceEntry(String id) {
+        return createTenantBaseUrl()
+                .compose(url -> patchRequest(didDocDeleteServicePayload(id), url))
+                .map(Request.Builder::build)
+                .compose(request -> this.executeRequest(request, this::handleDidUpdateResponse))
+                .flatMap(res -> ServiceResult.success());
+    }
+
+    /**
+     * Constructs the payload for removing a service from the DID Document.
+     * <p>
+     * The resulting JSON structure is:
+     * <pre>
+     *  {@code
+     * {
+     *   "didDocUpdates": {
+     *     "removeServices": [
+     *       "did:web:example.com:123#DataService"
+     *     ]
+     *   }
+     * }
+     * }
+     * </pre>
+     *
+     * @param id the ID of the service to remove from the DID Document
+     * @return a map representing the payload for the remove service operation
+     */
+    private Map<String, Object> didDocDeleteServicePayload(String id) {
+        return didDocUpdatePayload(Map.of("removeServices", List.of(id)));
+    }
+
+    private ServiceResult<Void> updatePatchStatus() {
+
+        return createTenantBaseUrl()
+                .map("%s/status"::formatted)
+                .compose(url -> patchRequest(Map.of(), url))
+                .map(Request.Builder::build)
+                .compose(request -> this.executeRequest(request, this::handlePatchStatusResponse))
+                .flatMap(res -> ServiceResult.success());
     }
 
     /**
@@ -243,14 +288,27 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
         try {
             var body = Objects.requireNonNull(response.body()).string();
             var parsedBody = mapper.readTree(body);
-            return Optional.ofNullable(parsedBody.get("status").asText())
+            return Optional.ofNullable(parsedBody.path("status").asText(null))
                     .filter("successful"::equalsIgnoreCase)
                     .map(success -> Result.success(body))
                     .orElseGet(() -> Result.failure("Failed to Update Patch Status, res: %s".formatted(body)));
         } catch (IOException e) {
-            monitor.severe("Failed to parse patch status response from DIM");
+            monitor.severe("Failed to parse patch status response from DIM", e);
             return Result.failure(e.getMessage());
         }
+    }
+
+    private Result<String> createTenantBaseUrl() {
+        if (companyIdentity.get() == null) {
+            var url = HttpUrl.parse(didDocApiUrl).newBuilder().addQueryParameter("$filter", "issuerDID eq \"%s\"".formatted(ownDid)).build();
+            return getRequest()
+                    .map(builder -> builder.url(url).build())
+                    .compose(request -> this.executeRequest(request, this::handleCompanyIdentityResponse))
+                    .onSuccess(companyIdentity::set)
+                    .compose(companyId -> Result.success(companyIdentityUrl(companyIdentity.get())))
+                    .onFailure(f -> monitor.severe("Failed to resolve company identity for DID %s with failure %s".formatted(ownDid, f.getFailureDetail())));
+        }
+        return Result.success(companyIdentityUrl(companyIdentity.get()));
     }
 
     /**
@@ -298,14 +356,31 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
             var body = Objects.requireNonNull(response.body()).string();
             var parsedBody = mapper.readTree(body);
             return Optional.of(parsedBody)
-                    .filter(data -> data.get("count").asInt() == 1)
-                    .map(data -> data.get("data").get(0).get("id").asText())
+                    .filter(data -> data.path("count").asInt(0) == 1)
+                    .map(data -> data.path("data").path(0).path("id").asText(null))
                     .map(Result::success)
                     .orElseGet(() -> Result.failure("Failed to Resolve Company Identity Response, res: %s".formatted(body)));
         } catch (IOException e) {
-            monitor.severe("Failed to parse company identity response from DIM");
+            monitor.severe("Failed to parse company identity response from DIM", e);
             return Result.failure(e.getMessage());
         }
+    }
+
+    private Result<Request.Builder> patchRequest(Map<String, Object> body, String url) {
+        try {
+            var requestBody = RequestBody.create(mapper.writeValueAsString(body), TYPE_JSON);
+            return baseRequestWithToken().map(builder -> builder.patch(requestBody).url(url));
+        } catch (JsonProcessingException e) {
+            return Result.failure(e.getMessage());
+        }
+    }
+
+    private Result<Request.Builder> getRequest() {
+        return baseRequestWithToken().map(Request.Builder::get);
+    }
+
+    private Result<String> executeRequest(Request request, Function<Response, Result<String>> responseMapping) {
+        return httpClient.execute(request, List.of(retryWhenStatusIsNotIn(200, 201)), responseMapping);
     }
 
     private Result<Request.Builder> baseRequestWithToken() {
@@ -314,57 +389,6 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
 
     private Request.Builder baseRequestWithToken(TokenRepresentation tokenRepresentation) {
         return new Request.Builder().addHeader("Authorization", format("Bearer %s", tokenRepresentation.getToken()));
-    }
-
-    /**
-     * Constructs the payload for adding a service to the DID Document.
-     * <p>
-     * The resulting JSON structure is:
-     * <pre>
-     *  {@code
-     * {
-     *   "didDocUpdates": {
-     *     "addServices": [
-     *       {
-     *         "id": "did:web:example.com:123#DataService",
-     *         "serviceEndpoint": "https://edc.com/edc/.well-known/dspace-version",
-     *         "type": "DataService"
-     *       }
-     *     ]
-     *   }
-     * }
-     * }
-     * </pre>
-     *
-     * @param service the service to add to the DID Document
-     * @return a map representing the payload for the add service operation
-     */
-    private Map<String, Object> didDocCreateServicePayload(Service service) {
-        var createPayload = Map.of("id", service.getId(), "type", service.getType(), "serviceEndpoint", service.getServiceEndpoint());
-        return didDocUpdatePayload(Map.of("addServices", List.of(createPayload)));
-    }
-
-    /**
-     * Constructs the payload for removing a service from the DID Document.
-     * <p>
-     * The resulting JSON structure is:
-     * <pre>
-     *  {@code
-     * {
-     *   "didDocUpdates": {
-     *     "removeServices": [
-     *       "did:web:example.com:123#DataService"
-     *     ]
-     *   }
-     * }
-     * }
-     * </pre>
-     *
-     * @param id the ID of the service to remove from the DID Document
-     * @return a map representing the payload for the remove service operation
-     */
-    private Map<String, Object> didDocDeleteServicePayload(String id) {
-        return didDocUpdatePayload(Map.of("removeServices", List.of(id)));
     }
 
     private Map<String, Object> didDocUpdatePayload(Map<String, Object> operationPayload) {
@@ -377,5 +401,9 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
 
     private String companyIdentityUrl(String companyIdentity) {
         return "%s/%s".formatted(didDocApiUrl, companyIdentity);
+    }
+
+    private boolean isBlank(String str) {
+        return str == null || str.trim().isEmpty();
     }
 }
