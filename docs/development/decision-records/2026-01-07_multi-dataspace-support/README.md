@@ -11,6 +11,7 @@ The Tractus-X EDC was one of the first production-ready Connector implementation
 ## Approach
 
 ## Runtimes Concept & Structure
+
 **Create one `core` configuration for all data spaces and specific configuration flavors like `catena-x`, `factory-x`, and `construct-x`.**
 
 Currently, there are two runtime configurations available: the [`edc-controlplane-base`](https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-controlplane/edc-controlplane-base) and the [`edc-dataplane-base`](https://github.com/eclipse-tractusx/tractusx-edc/tree/main/edc-dataplane/edc-dataplane-base). These configurations will be renamed with a `-catena-x` suffix, and a new `-core` configuration will be created, only containing all necessary extensions used by all data spaces. The other data spaces create their own configurations and runtimes based on the `-core` in their own folders. Afterward, the `-catena-x` configuration will be changed so that it also depends fully on the core.
@@ -33,6 +34,7 @@ tractusx-edc/
 ```
 
 ## Extensions
+
 **Keep all extensions in the `edc-extensions` folder in this repo. Refactor some existing extensions that are needed across multiple data spaces (`core`) to be Catena-X-independent.** 
 
 Currently, the `edc-extensions` folder contains different extensions. They can be categorized into three categories:
@@ -55,6 +57,7 @@ Those listed extensions will be split into parts, such as splitting `dcp` into `
 Further, the Factory-X project [published their extensions in another repository](https://github.com/factory-x-contributions/factoryx-edc/tree/main/edc-extensions). These extensions will be integrated and merged into this Eclipse Tractus-X EDC repository, providing a single place for all extensions.
 
 ## Releases, Backward Compatibility
+
 **Create a silent transition with minimal impact for existing Catena-X users.**
 
 Since this repository is only used by the Catena-X data space participants, the overall goal is to implement these new configuration flavors and extensions without breaking changes, so that existing users will not notice them or only notice them slightly.
