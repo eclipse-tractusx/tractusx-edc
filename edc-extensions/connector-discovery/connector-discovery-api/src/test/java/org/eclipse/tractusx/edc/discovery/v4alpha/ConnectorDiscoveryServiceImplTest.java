@@ -222,8 +222,4 @@ class ConnectorDiscoveryServiceImplTest {
                 .protocol(Protocol.HTTP_1_1)
                 .request(new Request.Builder().url("http://any").build());
     }
-
-
-
-
 }

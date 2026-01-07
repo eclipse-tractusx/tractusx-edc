@@ -47,7 +47,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 
 @EndToEndTest
-public class DiscoveryTest {
+public class ConnectorParameterDiscoveryTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
@@ -78,7 +78,7 @@ public class DiscoveryTest {
 
     @RegisterExtension
     static final RuntimeExtension CONSUMER_RUNTIME = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
-            .registerServiceMock(BdrsClient.class, new MockBdrsClient(DiscoveryTest::resolveProviderDid, (s) -> s));
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient(ConnectorParameterDiscoveryTest::resolveProviderDid, (s) -> s));
 
 
     @RegisterExtension

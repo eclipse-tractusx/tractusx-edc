@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +20,7 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha.api;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -28,6 +30,7 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 
@@ -64,5 +67,17 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
                 .orElseThrow(failure -> new UnexpectedResultApiException(failure.getFailureDetail()));
     }
 
+    @Path("/connectors")
+    @POST
+    @Override
+    public JsonArray discoverConnectorServicesV4Alpha(JsonObject inputJson) {
+        validator.validate(ConnectorDiscoveryRequest.TYPE, inputJson)
+                .orElseThrow((ValidationFailureException::new));
+
+        var request = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class);
+
+        return connectorDiscoveryService.discoverConnectors(request.getContent())
+                .orElseThrow(failure -> new UnexpectedResultApiException((failure.getFailureDetail())));
+    }
 }
 

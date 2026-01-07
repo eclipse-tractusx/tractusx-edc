@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,7 +32,8 @@ import org.eclipse.edc.validator.spi.Violation;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.api.ConnectorDiscoveryV4AlphaController;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.ConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.junit.jupiter.api.Test;
 
@@ -47,8 +49,7 @@ import static org.mockito.Mockito.when;
 
 class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
 
-
-    private final ConnectorDiscoveryServiceImpl connectorService = mock();
+    private final ConnectorDiscoveryService connectorService = mock();
     private final TypeTransformerRegistry transformerRegistry = mock();
     private final JsonObjectValidatorRegistry validator = mock();
 
@@ -58,7 +59,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
     }
 
     @Test
-    void shouldReturnSuccess() {
+    void connectorParamsDiscovery_shouldReturnSuccess() {
         var input = Json.createObjectBuilder().build();
         var expectedJson = Json.createObjectBuilder()
                 .add("counterPartyId", "did:web:provider")
@@ -89,7 +90,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
     }
 
     @Test
-    void shouldReturnFailure_whenServiceFails() {
+    void connectorParamsDiscovery_shouldReturnFailure_whenServiceFails() {
 
         var input = Json.createObjectBuilder().build();
         var discoveryRequest = new ConnectorParamsDiscoveryRequest("test", "test");
@@ -111,7 +112,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
     }
 
     @Test
-    void shouldReturnValidationFailure_whenValidationFails() {
+    void connectorParamsDiscovery_shouldReturnValidationFailure_whenValidationFails() {
 
         when(validator.validate(eq(ConnectorParamsDiscoveryRequest.TYPE), any()))
                 .thenThrow(new ValidationFailureException(List.of(new Violation("invalidField", "invalidField", "Invalid field"))));
@@ -123,6 +124,38 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
                 .then()
                 .log().ifError()
                 .statusCode(400);
+    }
+
+    @Test
+    void connectorServiceDiscovery_shouldReturnSuccess() {
+        var input = Json.createObjectBuilder().build();
+        var expectedJson = Json.createArrayBuilder().add(Json.createObjectBuilder()
+                        .add("counterPartyAddress", "https://example.com/api/v1/dsp/2025-1")
+                        .add("counterPartyId", "did:web:provider")
+                        .add("protocol", "dataspace-protocol-http:2025-1"))
+                .build();
+
+        var discoveryRequest = new ConnectorDiscoveryRequest("test", List.of("https://example.com/api/v1/dsp"));
+
+        when(validator.validate(ConnectorDiscoveryRequest.TYPE, input))
+                .thenReturn(ValidationResult.success());
+        when(transformerRegistry.transform(input, ConnectorDiscoveryRequest.class))
+                .thenReturn(Result.success(discoveryRequest));
+        when(connectorService.discoverConnectors(discoveryRequest))
+                .thenReturn(ServiceResult.success(expectedJson));
+
+        var resultString = baseRequest("/connectors")
+                .contentType(ContentType.JSON)
+                .body(input)
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(200)
+                .extract().body().asString();
+
+        var resultJson = Json.createReader(new StringReader(resultString)).readArray();
+
+        assertThat(resultJson).isEqualTo(expectedJson);
     }
 
     private RequestSpecification baseRequest(String path) {

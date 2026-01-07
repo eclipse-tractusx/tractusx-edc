@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.discovery.v4alpha.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import okhttp3.Request;
@@ -32,6 +33,7 @@ import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
 import org.eclipse.edc.protocol.spi.ProtocolVersion;
 import org.eclipse.edc.protocol.spi.ProtocolVersions;
 import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
@@ -102,6 +104,11 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
                 "not support any of the expected protocol versions (" + Dsp08Constants.V_08_VERSION + ", " + Dsp2025Constants.V_2025_1_VERSION + ")");
     }
 
+    @Override
+    public ServiceResult<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request) {
+        return ServiceResult.unexpected("Call not expected");
+    }
+
     private String removeTrailingSlash(String path) {
         if (path.endsWith("/")) {
             return path.substring(0, path.length() - 1);
@@ -123,6 +130,4 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
         versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, address);
         versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ID, counterPartyId);
     }
-
-
 }

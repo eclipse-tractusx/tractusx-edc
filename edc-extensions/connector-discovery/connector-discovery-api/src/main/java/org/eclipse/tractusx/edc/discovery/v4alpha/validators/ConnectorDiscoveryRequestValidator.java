@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,20 +20,66 @@
 package org.eclipse.tractusx.edc.discovery.v4alpha.validators;
 
 import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
+import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
+import static java.lang.String.format;
+import static org.eclipse.edc.validator.spi.Violation.violation;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE;
 
 public class ConnectorDiscoveryRequestValidator {
-
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()
-                .verify(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, MandatoryValue::new)
-                .verify(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, MandatoryValue::new)
+                .verify(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, MandatoryValue::new)
+                .verify(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, KnownsValue::new)
                 .build();
     }
+
+    private static class KnownsValue implements Validator<JsonObject> {
+        private final JsonLdPath path;
+
+        public KnownsValue(JsonLdPath path) {
+            this.path = path;
+        }
+
+        @Override
+        public ValidationResult validate(JsonObject input) {
+            var providedObject = input.getJsonArray(path.last());
+            if (providedObject == null) {
+                return ValidationResult.success();
+            }
+
+            var issues = new ArrayList<String>();
+            for (JsonValue value : providedObject) {
+                if (value.getValueType() != JsonValue.ValueType.STRING) {
+                    issues.add(format("value '%s' is not of type STRING, it is of type %s", value.toString(), value.getValueType()));
+                    continue;
+                }
+                var content = ((JsonString) value).getString();
+                try {
+                    new URL(content);
+                } catch (MalformedURLException e) {
+                    issues.add(format("value '%s' is not a valid url", content));
+                    continue;
+                }
+            }
+
+            if (!issues.isEmpty()) {
+                return ValidationResult.failure(violation(format("Validation issues for field '%s': %s", path, issues), path.toString()));
+            }
+
+            return ValidationResult.success();
+        }
+    }
+
 }
