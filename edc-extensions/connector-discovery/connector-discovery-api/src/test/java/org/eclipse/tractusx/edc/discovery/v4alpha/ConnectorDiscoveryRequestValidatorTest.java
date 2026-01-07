@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,22 +26,51 @@ import org.eclipse.edc.validator.spi.Validator;
 import org.eclipse.tractusx.edc.discovery.v4alpha.validators.ConnectorDiscoveryRequestValidator;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE;
 
-class ConnectorDiscoveryRequestValidatorTest {
+public class ConnectorDiscoveryRequestValidatorTest {
 
     private final Validator<JsonObject> validator = ConnectorDiscoveryRequestValidator.instance();
 
     @Test
-    void shouldSucceed_whenRequestIsValid() {
+    void shouldSucceed_whenRequestUsesBPNLAndNoKnowns() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, value("BPNL1234567890"))
-                .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value("https://provider.domain.com/api/dsp"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("BPNL1234567890"))
+                .build();
+
+        var result = validator.validate(validRequest);
+
+        assertThat(result).isSucceeded();
+    }
+
+    @Test
+    void shouldSucceed_whenRequestUsesDIDAndEmptyKnowns() {
+        JsonObject validRequest = Json.createObjectBuilder()
+                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, arrayValue(Collections.emptyList()))
+                .build();
+
+        var result = validator.validate(validRequest);
+
+        assertThat(result).isSucceeded();
+    }
+
+    @Test
+    void shouldSucceed_whenRequestUsesDIDAndKnowns() {
+        JsonObject validRequest = Json.createObjectBuilder()
+                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                        arrayValue(List.of("https://example.com/c1/api/v1/dsp", "https://example.com/c2/api/v1/dsp")))
                 .build();
 
         var result = validator.validate(validRequest);
@@ -52,9 +81,10 @@ class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldSucceed_whenRequestHasOtherProps() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, value("BPNL1234567890"))
-                .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value("https://provider.domain.com/api/dsp"))
-                .add("additionalProperty", value("someValue"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                        arrayValue(List.of("https://example.com/c1/api/v1/dsp", "https://example.com/c2/api/v1/dsp")))
+                .add("additionalProperty", "someValue")
                 .build();
 
         var result = validator.validate(validRequest);
@@ -63,29 +93,68 @@ class ConnectorDiscoveryRequestValidatorTest {
     }
 
     @Test
-    void shouldFail_whenBpnlIsMissing() {
-        JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value("https://provider.domain.com/api/dsp"))
+    void shouldFail_whenIdentifierIsMissing() {
+        JsonObject invalidRequest = Json.createObjectBuilder()
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                        arrayValue(List.of("https://example.com/c1/api/v1/dsp", "https://example.com/c2/api/v1/dsp")))
                 .build();
 
-        var result = validator.validate(validRequest);
+        var result = validator.validate(invalidRequest);
 
         assertThat(result).isFailed();
     }
 
     @Test
-    void shouldFail_whenCounterPartyAddressIsMissing() {
-        JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, value("BPNL1234567890"))
+    void shouldFail_whenKnownsIsNotArray() {
+        JsonObject invalidRequest = Json.createObjectBuilder()
+                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, value("https://example.com/c1/api/v1/dsp"))
                 .build();
 
-        var result = validator.validate(validRequest);
+        var result = validator.validate(invalidRequest);
 
         assertThat(result).isFailed();
+        assertThat(result.getFailureDetail()).contains("is not of type STRING");
+    }
+
+    @Test
+    void shouldFail_whenKnownsContainsNonUrls() {
+        JsonObject invalidRequest = Json.createObjectBuilder()
+                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                        arrayValue(List.of("foo", "bar")))
+                .build();
+
+        var result = validator.validate(invalidRequest);
+
+        assertThat(result).isFailed();
+        assertThat(result.getFailureDetail()).contains("foo").contains("bar");
+    }
+
+    @Test
+    void shouldFail_whenKnownsContainsNonStrings() {
+        JsonObject invalidRequest = createObjectBuilder()
+                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, createArrayBuilder()
+                        .add(3)
+                        .add(createObjectBuilder().add("key", "value")))
+                .build();
+
+        var result = validator.validate(invalidRequest);
+
+        assertThat(result).isFailed();
+        assertThat(result.getFailureDetail()).contains("3").contains("key").contains("value");
     }
 
     private JsonArrayBuilder value(String value) {
         return createArrayBuilder().add(createObjectBuilder().add(VALUE, value));
     }
 
+    private JsonArrayBuilder arrayValue(Collection<String> values) {
+        JsonArrayBuilder builder = createArrayBuilder();
+        for (String value: values) {
+            builder.add(value);
+        }
+        return builder;
+    }
 }

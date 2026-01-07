@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -311,6 +312,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .body(requestBody)
                 .when()
                 .post("/v4alpha/connectordiscovery/dspversionparams")
+                .then();
+    }
+
+    public ValidatableResponse discoverConnectorServices(JsonObject requestBody) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(requestBody)
+                .when()
+                .post("/v4alpha/connectordiscovery/connectors")
                 .then();
     }
 

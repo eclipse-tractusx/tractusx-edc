@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,10 +32,13 @@ import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.discovery.v4alpha.api.ConnectorDiscoveryV4AlphaController;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.transformers.JsonObjectToConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.v4alpha.transformers.JsonObjectToConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.validators.ConnectorDiscoveryRequestValidator;
+import org.eclipse.tractusx.edc.discovery.v4alpha.validators.ConnectorParamsDiscoveryRequestValidator;
 
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.NAME;
@@ -66,8 +70,11 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var managementTypeTransformerRegistry = transformerRegistry.forContext("management-api");
 
+        managementTypeTransformerRegistry.register(new JsonObjectToConnectorParamsDiscoveryRequest());
+        validatorRegistry.register(ConnectorParamsDiscoveryRequest.TYPE, ConnectorParamsDiscoveryRequestValidator.instance());
+
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
-        validatorRegistry.register(ConnectorParamsDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
+        validatorRegistry.register(ConnectorDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
 
         webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry));
         webService.registerDynamicResource(ApiContext.MANAGEMENT, ConnectorDiscoveryV4AlphaController.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
