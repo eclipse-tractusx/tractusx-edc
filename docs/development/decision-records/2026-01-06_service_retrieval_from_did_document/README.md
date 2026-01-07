@@ -31,7 +31,7 @@ parameters for a single connector endpoint provided as parameter. There is a sec
 a default implementation of the defined api.
 
 As the intended api is related to this functionality, the approach is, to add another management api endpoint
-called `/connectordiscovery` in this management api section that takes the following input parameters:
+called `/connectors` in this management api section that takes the following input parameters:
 
 ```json
 {
