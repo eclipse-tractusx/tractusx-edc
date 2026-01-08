@@ -45,6 +45,8 @@ public class ConnectorDiscoveryRequestValidator {
                 .build();
     }
 
+    private ConnectorDiscoveryRequestValidator() {}
+
     private static class KnownConnectorValidator implements Validator<JsonObject> {
         private final JsonLdPath path;
 
@@ -63,14 +65,13 @@ public class ConnectorDiscoveryRequestValidator {
             for (JsonValue value : providedObject) {
                 if (value.getValueType() != JsonValue.ValueType.STRING) {
                     issues.add(format("value '%s' is not of type STRING, it is of type %s", value.toString(), value.getValueType()));
-                    continue;
-                }
-                var content = ((JsonString) value).getString();
-                try {
-                    new URL(content);
-                } catch (MalformedURLException e) {
-                    issues.add(format("value '%s' is not a valid url", content));
-                    continue;
+                } else {
+                    var content = ((JsonString) value).getString();
+                    try {
+                        new URL(content);
+                    } catch (MalformedURLException e) {
+                        issues.add(format("value '%s' is not a valid url", content));
+                    }
                 }
             }
 
