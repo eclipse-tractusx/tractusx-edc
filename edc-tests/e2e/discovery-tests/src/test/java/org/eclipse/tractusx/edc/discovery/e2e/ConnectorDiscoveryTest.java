@@ -111,120 +111,120 @@ public class ConnectorDiscoveryTest {
         assertThat(body)
                 .isNotNull();
     }
-//
-//    @Test
-//    void discoveryShouldReturn08DspParams_whenDidNotResolvable() {
-//
-//        var requestBody = createRequestBody("unresolvableBpnl", PROVIDER_FULL_DSP.getProtocolUrl());
-//
-//        var response = CONSUMER.discoverDspParameters(requestBody);
-//
-//        var body = response.statusCode(200)
-//                .extract().body().asString();
-//
-//        assertThat(body)
-//                .isNotNull()
-//                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl())
-//                .contains("\"counterPartyId\":\"" + "unresolvableBpnl" + "\"")
-//                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
-//
-//    }
-//
-//    @Test
-//    void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable() {
-//
-//        var requestBody = createRequestBody(PROVIDER_DSP_V08.getBpn(), PROVIDER_DSP_V08.getProtocolUrl());
-//
-//        var response = CONSUMER.discoverDspParameters(requestBody);
-//
-//        var body = response.statusCode(200)
-//                .extract().body().asString();
-//
-//        assertThat(body)
-//                .isNotNull()
-//                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
-//                .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
-//                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
-//
-//    }
-//
-//    @Test
-//    void discoveryShouldReturn400_ifRequestHasMissingProps() {
-//
-//        var requestBody = createObjectBuilder()
-//                .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
-//                .add(TYPE, "tx:ConnectorDiscoveryRequest")
-//                .add("edc:counterPartyAddress", PROVIDER_FULL_DSP.getProtocolUrl())
-//                .build();
-//
-//        var response = CONSUMER.discoverDspParameters(requestBody);
-//
-//        var body = response.statusCode(400)
-//                .extract().body().asString();
-//
-//        assertThat(body)
-//                .isNotNull()
-//                .contains("mandatory value 'https://w3id.org/tractusx/v0.0.1/ns/bpnl' is missing or it is blank");
-//
-//    }
-//
-//    @Test
-//    void discoveryShouldReturn500_ifMetadaEndpointNotReachable() {
-//
-//        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl() + "/not-existing");
-//
-//        var response = CONSUMER.discoverDspParameters(requestBody);
-//
-//        var body = response.statusCode(500)
-//                .extract().body().asString();
-//
-//        assertThat(body)
-//                .isNotNull()
-//                .contains("Counter party well-known endpoint has failed with status 404 and message: Not Found");
-//
-//    }
-//
-//    @Test
-//    void discoveryShouldReturn500_whenProviderEndpointNotReachable() {
-//
-//        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), "http://non-existing-provider.com");
-//
-//        var response = CONSUMER.discoverDspParameters(requestBody);
-//
-//        var body = response.statusCode(500)
-//                .extract().body().asString();
-//
-//        assertThat(body)
-//                .isNotNull()
-//                .contains("An exception with the following message occurred while executing dsp version request:");
-//
-//    }
-//
-//    @Test
-//    void discoveryShouldReturn500_whenNoProtocolsAvailable() {
-//
-//        var requestBody = createRequestBody(PROVIDER_NO_PROTOCOLS.getBpn(), PROVIDER_NO_PROTOCOLS.getProtocolUrl());
-//
-//        var response = CONSUMER.discoverDspParameters(requestBody);
-//
-//
-//        var body = response.statusCode(500)
-//                .extract().body().asString();
-//
-//        assertThat(body)
-//                .isNotNull()
-//                .contains("No valid protocol version found for the counter party.");
-//
-//    }
-//
-    private JsonObject createRequestBody(String identifier, List<String> knowns) {
+
+    //    @Test
+    //    void discoveryShouldReturn08DspParams_whenDidNotResolvable() {
+    //
+    //        var requestBody = createRequestBody("unresolvableBpnl", PROVIDER_FULL_DSP.getProtocolUrl());
+    //
+    //        var response = CONSUMER.discoverDspParameters(requestBody);
+    //
+    //        var body = response.statusCode(200)
+    //                .extract().body().asString();
+    //
+    //        assertThat(body)
+    //                .isNotNull()
+    //                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl())
+    //                .contains("\"counterPartyId\":\"" + "unresolvableBpnl" + "\"")
+    //                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
+    //
+    //    }
+    //
+    //    @Test
+    //    void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable() {
+    //
+    //        var requestBody = createRequestBody(PROVIDER_DSP_V08.getBpn(), PROVIDER_DSP_V08.getProtocolUrl());
+    //
+    //        var response = CONSUMER.discoverDspParameters(requestBody);
+    //
+    //        var body = response.statusCode(200)
+    //                .extract().body().asString();
+    //
+    //        assertThat(body)
+    //                .isNotNull()
+    //                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
+    //                .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
+    //                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
+    //
+    //    }
+    //
+    //    @Test
+    //    void discoveryShouldReturn400_ifRequestHasMissingProps() {
+    //
+    //        var requestBody = createObjectBuilder()
+    //                .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
+    //                .add(TYPE, "tx:ConnectorDiscoveryRequest")
+    //                .add("edc:counterPartyAddress", PROVIDER_FULL_DSP.getProtocolUrl())
+    //                .build();
+    //
+    //        var response = CONSUMER.discoverDspParameters(requestBody);
+    //
+    //        var body = response.statusCode(400)
+    //                .extract().body().asString();
+    //
+    //        assertThat(body)
+    //                .isNotNull()
+    //                .contains("mandatory value 'https://w3id.org/tractusx/v0.0.1/ns/bpnl' is missing or it is blank");
+    //
+    //    }
+    //
+    //    @Test
+    //    void discoveryShouldReturn500_ifMetadaEndpointNotReachable() {
+    //
+    //        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl() + "/not-existing");
+    //
+    //        var response = CONSUMER.discoverDspParameters(requestBody);
+    //
+    //        var body = response.statusCode(500)
+    //                .extract().body().asString();
+    //
+    //        assertThat(body)
+    //                .isNotNull()
+    //                .contains("Counter party well-known endpoint has failed with status 404 and message: Not Found");
+    //
+    //    }
+    //
+    //    @Test
+    //    void discoveryShouldReturn500_whenProviderEndpointNotReachable() {
+    //
+    //        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), "http://non-existing-provider.com");
+    //
+    //        var response = CONSUMER.discoverDspParameters(requestBody);
+    //
+    //        var body = response.statusCode(500)
+    //                .extract().body().asString();
+    //
+    //        assertThat(body)
+    //                .isNotNull()
+    //                .contains("An exception with the following message occurred while executing dsp version request:");
+    //
+    //    }
+    //
+    //    @Test
+    //    void discoveryShouldReturn500_whenNoProtocolsAvailable() {
+    //
+    //        var requestBody = createRequestBody(PROVIDER_NO_PROTOCOLS.getBpn(), PROVIDER_NO_PROTOCOLS.getProtocolUrl());
+    //
+    //        var response = CONSUMER.discoverDspParameters(requestBody);
+    //
+    //
+    //        var body = response.statusCode(500)
+    //                .extract().body().asString();
+    //
+    //        assertThat(body)
+    //                .isNotNull()
+    //                .contains("No valid protocol version found for the counter party.");
+    //
+    //    }
+    
+    private JsonObject createRequestBody(String counterPartyId, List<String> knownConnectors) {
         var builder = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add("tx", TX_NAMESPACE))
                 .add(TYPE, "tx:ConnectorServiceDiscoveryRequest")
-                .add("edc:counterPartyId", identifier);
-        if (knowns != null) {
+                .add("edc:counterPartyId", counterPartyId);
+        if (knownConnectors != null) {
             var arrayBuilder = createArrayBuilder();
-            for (String known : knowns) {
+            for (String known : knownConnectors) {
                 arrayBuilder.add(known);
             }
             builder.add("tx:knownConnectors", arrayBuilder);

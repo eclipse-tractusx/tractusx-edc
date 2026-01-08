@@ -43,7 +43,7 @@ public class ConnectorDiscoveryRequestValidatorTest {
     private final Validator<JsonObject> validator = ConnectorDiscoveryRequestValidator.instance();
 
     @Test
-    void shouldSucceed_whenRequestUsesBPNLAndNoKnowns() {
+    void shouldSucceed_whenRequestUsesBpnlAndNoKnowns() {
         JsonObject validRequest = Json.createObjectBuilder()
                 .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("BPNL1234567890"))
                 .build();
@@ -54,7 +54,7 @@ public class ConnectorDiscoveryRequestValidatorTest {
     }
 
     @Test
-    void shouldSucceed_whenRequestUsesDIDAndEmptyKnowns() {
+    void shouldSucceed_whenRequestUsesDidAndEmptyKnowns() {
         JsonObject validRequest = Json.createObjectBuilder()
                 .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
                 .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, arrayValue(Collections.emptyList()))
@@ -66,7 +66,7 @@ public class ConnectorDiscoveryRequestValidatorTest {
     }
 
     @Test
-    void shouldSucceed_whenRequestUsesDIDAndKnowns() {
+    void shouldSucceed_whenRequestUsesDidAndKnowns() {
         JsonObject validRequest = Json.createObjectBuilder()
                 .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
                 .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE,
@@ -152,7 +152,7 @@ public class ConnectorDiscoveryRequestValidatorTest {
 
     private JsonArrayBuilder arrayValue(Collection<String> values) {
         JsonArrayBuilder builder = createArrayBuilder();
-        for (String value: values) {
+        for (String value : values) {
             builder.add(value);
         }
         return builder;
