@@ -21,10 +21,11 @@ package org.eclipse.tractusx.edc.discovery.v4alpha.spi;
 
 import java.util.Collection;
 
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
-public record ConnectorDiscoveryRequest(String identifier, Collection<String> knowns) {
+public record ConnectorDiscoveryRequest(String counterPartyId, Collection<String> knownConnectors) {
     public static final String TYPE = TX_NAMESPACE +  "ConnectorServiceDiscoveryRequest";
-    public static final String CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE = TX_NAMESPACE + "identifier";
-    public static final String CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE = TX_NAMESPACE + "knowns";
+    public static final String CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE = EDC_NAMESPACE + "counterPartyId";
+    public static final String CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE = TX_NAMESPACE + "knownConnectors";
 }

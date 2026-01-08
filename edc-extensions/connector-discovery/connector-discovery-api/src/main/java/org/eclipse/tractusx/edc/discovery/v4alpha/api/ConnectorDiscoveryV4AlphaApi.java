@@ -65,7 +65,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
                             content = @Content(array = @ArraySchema(schema = @Schema(name = "Service Discovery Response", implementation = ConnectorParamsDiscoveryResponse.class)))),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
-                    @ApiResponse(responseCode = "404", description = "Given identifier could not be resolved",
+                    @ApiResponse(responseCode = "404", description = "Given Id could not be resolved to a DID document",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "500", description = "Discovery failed due to an internal error",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
@@ -126,18 +126,19 @@ public interface ConnectorDiscoveryV4AlphaApi {
             @Schema(name = JsonLdKeywords.TYPE, example = ConnectorDiscoveryRequest.TYPE)
             String type,
             @Schema(requiredMode = REQUIRED)
-            String identifier,
+            String counterPartyId,
             @Schema(requiredMode = NOT_REQUIRED)
-            String[] knowns
+            String[] knownConnectors
     ) {
         public static final String EXAMPLE = """
                     {
                         "@context": {
+                            "edc": "https://w3id.org/edc/v0.0.1/ns/",
                             "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
                         },
                         "@type": "tx:ConnectorParamsDiscoveryRequest",
-                        "tx:identifier": "did:web:one-example.com",
-                        "tx:knowns": [
+                        "edc:counterPartyId": "did:web:one-example.com",
+                        "tx:knownConnectors": [
                             "https://provider.domain.com/conn1/api/dsp",
                             "https://provider.domain.com/conn2/api/v1/dsp",
                         ]

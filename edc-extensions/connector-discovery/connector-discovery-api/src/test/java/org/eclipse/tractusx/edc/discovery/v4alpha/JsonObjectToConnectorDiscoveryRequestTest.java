@@ -25,8 +25,8 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.transformers.JsonObjectToConne
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -38,55 +38,55 @@ public class JsonObjectToConnectorDiscoveryRequestTest {
     @Test
     void testTransform() {
         var jsonObject = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, "testIdentifier")
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, "testIdentifier")
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE,
                         Json.createArrayBuilder().add("testKnownAddress"))
                 .build();
 
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNotNull();
-        assertThat(request.identifier()).isEqualTo("testIdentifier");
-        assertThat(request.knowns().size()).isEqualTo(1);
-        assertThat(request.knowns().iterator().next()).isEqualTo("testKnownAddress");
+        assertThat(request.counterPartyId()).isEqualTo("testIdentifier");
+        assertThat(request.knownConnectors().size()).isEqualTo(1);
+        assertThat(request.knownConnectors().iterator().next()).isEqualTo("testKnownAddress");
     }
 
     @Test
     void testTransformNoKnowns() {
         var jsonObject = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, "testIdentifier")
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, "testIdentifier")
                 .build();
 
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNotNull();
-        assertThat(request.identifier()).isEqualTo("testIdentifier");
-        assertThat(request.knowns()).isNull();
+        assertThat(request.counterPartyId()).isEqualTo("testIdentifier");
+        assertThat(request.knownConnectors()).isNull();
     }
 
     @Test
     void testTransformEmptyKnowns() {
         var jsonObject = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, "testIdentifier")
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, Json.createArrayBuilder())
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, "testIdentifier")
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, Json.createArrayBuilder())
                 .build();
 
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNotNull();
-        assertThat(request.identifier()).isEqualTo("testIdentifier");
-        assertThat(request.knowns()).isNull();
+        assertThat(request.counterPartyId()).isEqualTo("testIdentifier");
+        assertThat(request.knownConnectors()).isNull();
     }
 
     @Test
     void testTransformMissingAttribute() {
         var jsonObject = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, Json.createArrayBuilder().add("testKnownAddress"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, Json.createArrayBuilder().add("testKnownAddress"))
                 .build();
 
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNull();
-        verify(transformerContext).reportProblem("Missing required attribute in ConnectorDiscoveryRequest: tx:identifier");
+        verify(transformerContext).reportProblem("Missing required attribute in ConnectorDiscoveryRequest: tx:counterPartyId");
     }
 }

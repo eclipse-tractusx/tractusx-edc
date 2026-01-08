@@ -27,7 +27,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
  * Contains the necessary information to identify and locate a counterparty connector
  * for DSP (Dataspace Protocol) communication.
  *
- * @param bpnl the Business Partner Number Legal (BPNL) identifier of the counterparty
+ * @param bpnl the Business Partner Number Legal (BPNL) counterPartyId of the counterparty
  * @param counterPartyAddress the base address/URL of the counterparty's DSP endpoint
  */
 public record ConnectorParamsDiscoveryRequest(String bpnl, String counterPartyAddress) {
