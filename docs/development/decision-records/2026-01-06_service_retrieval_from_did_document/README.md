@@ -36,7 +36,7 @@ called `/connectors` in this management api section that takes the following inp
 ```json
 {
   "counterPartyId": "did:web:",
-  "knowns": [
+  "knownConnectors": [
     "https://first.provider-domain.com/somepath/dsp/v1/api",
     "https://first.provider-domain.com/otherpath/dsp/v1/api",
     "https://second.provider-domain.com/dsp/v1/api"
@@ -44,13 +44,13 @@ called `/connectors` in this management api section that takes the following inp
 }
 ```
 
-The counterPartId field is type-neutral, in order to support different identifier types. The service will interpret
+The `counterPartId` field is type-neutral, in order to support different identifier types. The service will interpret
 the identifier based on properties of the identifier, for now, DIDs and BPNLs will be supported. The mechanism
 will be implemented in an extensible fashion, so that a general mapping from any identifier to a DID can be added.
 The default implementation will detect DIDs and map them to themselves. A second extension will allow to handle
 BPNLs and map them to the DID using the BDRS client.
 
-The second input parameter `knowns` is optional and allows to add additional known connector endpoints. This is a
+The second input parameter `knownConnectors` is optional and allows to add additional known connector endpoints. This is a
 convenience addition that allows to use one service call to retrieve version information for all relevant
 connectors. The idea is, that this method can be used for any provider and it returns a complete list of connector
 endpoints.
