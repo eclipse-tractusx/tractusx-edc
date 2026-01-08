@@ -34,21 +34,21 @@ import java.util.ArrayList;
 
 import static java.lang.String.format;
 import static org.eclipse.edc.validator.spi.Violation.violation;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 
 public class ConnectorDiscoveryRequestValidator {
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()
-                .verify(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, MandatoryValue::new)
-                .verify(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, KnownsValue::new)
+                .verify(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, MandatoryValue::new)
+                .verify(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, KnownConnectorValidator::new)
                 .build();
     }
 
-    private static class KnownsValue implements Validator<JsonObject> {
+    private static class KnownConnectorValidator implements Validator<JsonObject> {
         private final JsonLdPath path;
 
-        public KnownsValue(JsonLdPath path) {
+        public KnownConnectorValidator(JsonLdPath path) {
             this.path = path;
         }
 

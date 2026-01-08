@@ -35,8 +35,8 @@ import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 
 public class ConnectorDiscoveryRequestValidatorTest {
 
@@ -45,7 +45,7 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldSucceed_whenRequestUsesBPNLAndNoKnowns() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("BPNL1234567890"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("BPNL1234567890"))
                 .build();
 
         var result = validator.validate(validRequest);
@@ -56,8 +56,8 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldSucceed_whenRequestUsesDIDAndEmptyKnowns() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, arrayValue(Collections.emptyList()))
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, arrayValue(Collections.emptyList()))
                 .build();
 
         var result = validator.validate(validRequest);
@@ -68,8 +68,8 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldSucceed_whenRequestUsesDIDAndKnowns() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE,
                         arrayValue(List.of("https://example.com/c1/api/v1/dsp", "https://example.com/c2/api/v1/dsp")))
                 .build();
 
@@ -81,8 +81,8 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldSucceed_whenRequestHasOtherProps() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE,
                         arrayValue(List.of("https://example.com/c1/api/v1/dsp", "https://example.com/c2/api/v1/dsp")))
                 .add("additionalProperty", "someValue")
                 .build();
@@ -95,7 +95,7 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldFail_whenIdentifierIsMissing() {
         JsonObject invalidRequest = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE,
                         arrayValue(List.of("https://example.com/c1/api/v1/dsp", "https://example.com/c2/api/v1/dsp")))
                 .build();
 
@@ -107,8 +107,8 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldFail_whenKnownsIsNotArray() {
         JsonObject invalidRequest = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, value("https://example.com/c1/api/v1/dsp"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, value("https://example.com/c1/api/v1/dsp"))
                 .build();
 
         var result = validator.validate(invalidRequest);
@@ -120,8 +120,8 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldFail_whenKnownsContainsNonUrls() {
         JsonObject invalidRequest = Json.createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE,
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE,
                         arrayValue(List.of("foo", "bar")))
                 .build();
 
@@ -134,8 +134,8 @@ public class ConnectorDiscoveryRequestValidatorTest {
     @Test
     void shouldFail_whenKnownsContainsNonStrings() {
         JsonObject invalidRequest = createObjectBuilder()
-                .add(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE, value("did:web:example.com"))
-                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE, createArrayBuilder()
+                .add(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, value("did:web:example.com"))
+                .add(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, createArrayBuilder()
                         .add(3)
                         .add(createObjectBuilder().add("key", "value")))
                 .build();

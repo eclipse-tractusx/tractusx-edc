@@ -30,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 
 public class JsonObjectToConnectorDiscoveryRequest extends AbstractJsonLdTransformer<JsonObject, ConnectorDiscoveryRequest> {
     public JsonObjectToConnectorDiscoveryRequest() {
@@ -40,20 +40,20 @@ public class JsonObjectToConnectorDiscoveryRequest extends AbstractJsonLdTransfo
 
     @Override
     public @Nullable ConnectorDiscoveryRequest transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
-        var identifier = transformString(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_IDENTIFIER_ATTRIBUTE), transformerContext);
-        var knowns = Optional.ofNullable(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_KNOWNS_ATTRIBUTE))
+        var counterPartyId = transformString(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE), transformerContext);
+        var knownConnectors = Optional.ofNullable(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE))
                 .map(JsonValue::asJsonArray)
-                .map(knownsArray -> knownsArray.stream()
-                        .map(value -> ((JsonString)value).getString())
+                .map(a -> a.stream()
+                        .map(v -> ((JsonString)v).getString())
                         .collect(toList()))
                 .filter(list -> !list.isEmpty())
                 .orElse(null);
 
-        if (identifier == null) {
-            transformerContext.reportProblem("Missing required attribute in ConnectorDiscoveryRequest: tx:identifier");
+        if (counterPartyId == null) {
+            transformerContext.reportProblem("Missing required attribute in ConnectorDiscoveryRequest: tx:counterPartyId");
             return null;
         }
 
-        return new ConnectorDiscoveryRequest(identifier, knowns);
+        return new ConnectorDiscoveryRequest(counterPartyId, knownConnectors);
     }
 }
