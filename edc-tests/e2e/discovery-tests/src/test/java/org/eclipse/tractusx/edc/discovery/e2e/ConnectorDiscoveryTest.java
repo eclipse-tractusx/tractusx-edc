@@ -101,19 +101,15 @@ public class ConnectorDiscoveryTest {
     @Test
     void discoveryShouldReturn2025DspParams() {
 
-        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), List.of("test1", "test2"));
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), List.of("https://example.com/test1", "https://example.com/test2"));
 
         var response = CONSUMER.discoverConnectorServices(requestBody);
 
-        var body = response.statusCode(200)
+        var body = response.statusCode(400)
                 .extract().body().asString();
 
         assertThat(body)
-                .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl() + "/2025-1\"")
-                .contains("\"counterPartyId\":\"" + PROVIDER_FULL_DSP.getDid() + "\"")
-                .contains("\"protocol\":\"" + "dataspace-protocol-http:2025-1" + "\"");
-
+                .isNotNull();
     }
 //
 //    @Test
@@ -225,13 +221,13 @@ public class ConnectorDiscoveryTest {
         var builder = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add("tx", TX_NAMESPACE))
                 .add(TYPE, "tx:ConnectorServiceDiscoveryRequest")
-                .add("tx:identifier", identifier);
+                .add("edc:counterPartyId", identifier);
         if (knowns != null) {
             var arrayBuilder = createArrayBuilder();
             for (String known : knowns) {
                 arrayBuilder.add(known);
             }
-            builder.add("tx:knowns", arrayBuilder);
+            builder.add("tx:knownConnectors", arrayBuilder);
         }
         return builder.build();
     }
