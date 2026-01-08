@@ -26,7 +26,10 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.AggregatedIdentifierMapper;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.ConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.DidMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
@@ -49,7 +52,8 @@ class ConnectorDiscoveryServiceImplTest {
     private final ObjectMapper mapper = new ObjectMapper().configure(
             com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final EdcHttpClient httpClient = mock();
-    private final ConnectorDiscoveryServiceImpl service = new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, mapper);
+    private final ConnectorDiscoveryServiceImpl service =
+            new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, mapper, new AggregatedIdentifierMapper(new DidMapper(), new BpnMapper(bdrsClient)));
 
     @Test
     void discoverVersionParams_shouldReturnDsp2025_whenDsp2025AvailableAndDidResolvable() throws IOException {
