@@ -36,6 +36,7 @@ import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.io.IOException;
@@ -49,12 +50,13 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
     private final BdrsClient bdrsClient;
     private final EdcHttpClient httpClient;
     private final ObjectMapper mapper;
+    private final IdentifierToDidMapper identifierMapper;
 
-    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, EdcHttpClient httpClient, ObjectMapper mapper) {
+    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, EdcHttpClient httpClient, ObjectMapper mapper, IdentifierToDidMapper identifierMapper) {
         this.bdrsClient = bdrsClient;
         this.httpClient = httpClient;
         this.mapper = mapper;
-
+        this.identifierMapper = identifierMapper;
     }
 
     @Override
