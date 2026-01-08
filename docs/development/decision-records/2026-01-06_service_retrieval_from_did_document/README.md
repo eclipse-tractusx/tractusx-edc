@@ -50,8 +50,8 @@ will be implemented in an extensible fashion, so that a general mapping from any
 The default implementation will detect DIDs and map them to themselves. A second extension will allow to handle
 BPNLs and map them to the DID using the BDRS client.
 
-The second input parameter `knowns` allows to add already known connector endpoints, so that also for such
-them the version discovery can be executed and the right management api parameters are determined.
+The second input parameter `knowns` is optional and allows to add already known connector endpoints, so that also
+for such them the version discovery can be executed and the right management api parameters are determined.
 
 Consequently, the response has a body like this:
 
