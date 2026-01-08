@@ -4,7 +4,7 @@
 
 We will implement an additional endpoint in the connector discovery endpoint family. The endpoint will, based on a
 DID retrieves the DID document, parses the service section for `DataService` entries, and retrieves for the detected
-connector endpoints the dsp version parameters. It returns a list of version parameter sets for all found connectors
+connector endpoints the dsp version parameters. It returns a list of version parameter sets one for each found connector
 in the DID document. There will be a general support for other identifiers, using BPNLs as a second supported
 identifier type.
 
@@ -35,7 +35,7 @@ called `/connectors` in this management api section that takes the following inp
 
 ```json
 {
-  "identifier": "did:web:",
+  "counterPartyId": "did:web:",
   "knowns": [
     "https://first.provider-domain.com/somepath/dsp/v1/api",
     "https://first.provider-domain.com/otherpath/dsp/v1/api",
@@ -44,14 +44,16 @@ called `/connectors` in this management api section that takes the following inp
 }
 ```
 
-The identifier field is kept neutral, in order to support different identifier types. The service will interpret
+The counterPartId field is type-neutral, in order to support different identifier types. The service will interpret
 the identifier based on properties of the identifier, for now, DIDs and BPNLs will be supported. The mechanism
 will be implemented in an extensible fashion, so that a general mapping from any identifier to a DID can be added.
 The default implementation will detect DIDs and map them to themselves. A second extension will allow to handle
 BPNLs and map them to the DID using the BDRS client.
 
-The second input parameter `knowns` is optional and allows to add already known connector endpoints, so that also
-for such them the version discovery can be executed and the right management api parameters are determined.
+The second input parameter `knowns` is optional and allows to add additional known connector endpoints. This is a
+convenience addition that allows to use one service call to retrieve version information for all relevant
+connectors. The idea is, that this method can be used for any provider and it returns a complete list of connector
+endpoints.
 
 Consequently, the response has a body like this:
 
