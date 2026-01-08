@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
 import org.eclipse.tractusx.edc.spi.dataflow.DataFlowService;
@@ -43,9 +44,12 @@ public class DataFlowServiceExtension implements ServiceExtension {
         return NAME;
     }
 
+    @Inject
+    private Monitor monitor;
+
     @Provider
     public DataFlowService dataFlowService() {
-        return new DataFlowServiceImpl(dataPlaneStore, finitenessEvaluator);
+        return new DataFlowServiceImpl(dataPlaneStore, finitenessEvaluator, monitor);
     }
 
 }

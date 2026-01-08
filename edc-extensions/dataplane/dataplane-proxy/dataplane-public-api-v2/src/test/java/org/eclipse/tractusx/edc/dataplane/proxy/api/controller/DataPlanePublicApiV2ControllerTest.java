@@ -196,7 +196,7 @@ class DataPlanePublicApiV2ControllerTest extends RestControllerTestBase {
 
     @Override
     protected Object controller() {
-        return new DataPlanePublicApiV2Controller(pipelineService, Executors.newSingleThreadExecutor(), authorizationService);
+        return new DataPlanePublicApiV2Controller(mock(), pipelineService, Executors.newSingleThreadExecutor(), authorizationService);
     }
 
     private RequestSpecification baseRequest() {

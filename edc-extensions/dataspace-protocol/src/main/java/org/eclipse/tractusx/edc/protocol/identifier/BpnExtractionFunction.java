@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.protocol.identifier;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.spi.monitor.Monitor;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +32,11 @@ import java.util.Optional;
 public class BpnExtractionFunction extends MembershipCredentialIdExtractionFunction {
     
     private static final String IDENTITY_PROPERTY = "holderIdentifier";
-    
+
+    public BpnExtractionFunction(Monitor monitor) {
+        super(monitor);
+    }
+
     @Override
     String identityProperty() {
         return IDENTITY_PROPERTY;

@@ -19,10 +19,12 @@
 
 package org.eclipse.tractusx.edc.protocol.identifier;
 
+import static org.mockito.Mockito.mock;
+
 public class DidExtractionFunctionTest extends MembershipCredentialIdExtractionFunctionTest {
     @Override
     protected MembershipCredentialIdExtractionFunction extractionFunction() {
-        return new DidExtractionFunction();
+        return new DidExtractionFunction(mock());
     }
     
     @Override

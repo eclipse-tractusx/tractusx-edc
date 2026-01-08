@@ -23,6 +23,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.iam.AudienceResolver;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
@@ -34,6 +35,9 @@ public class BdrsClientMapperExtension implements ServiceExtension {
     @Inject
     private BdrsClient bdrsClient;
 
+    @Inject
+    private Monitor monitor;
+
     @Override
     public String name() {
         return NAME;
@@ -41,7 +45,7 @@ public class BdrsClientMapperExtension implements ServiceExtension {
 
     @Provider
     public AudienceResolver getBdrsAudienceResolver() {
-        return new BdrsClientAudienceMapper(bdrsClient);
+        return new BdrsClientAudienceMapper(bdrsClient, monitor);
     }
 
 }

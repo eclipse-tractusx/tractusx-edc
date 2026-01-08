@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 class BdrsClientAudienceMapperTest {
 
     private final BdrsClient bdrsClient = mock();
-    private final BdrsClientAudienceMapper clientAudienceMapper = new BdrsClientAudienceMapper(bdrsClient);
+    private final BdrsClientAudienceMapper clientAudienceMapper = new BdrsClientAudienceMapper(bdrsClient, mock());
     
     @Test
     void shouldReturnDid_whenCounterPartyIdIsDid() {

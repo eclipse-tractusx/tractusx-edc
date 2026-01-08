@@ -75,11 +75,14 @@ public class NonFiniteCapablePipelineService implements PipelineService {
         if (sourceFactory == null) {
             // NB: do not include the source type as that can possibly leak internal
             // information
-            return Result.failure("Data source not supported for: " + request.getId());
+            var msg = "Data source not supported for: " + request.getId();
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
 
         var sourceValidation = sourceFactory.validateRequest(request);
         if (sourceValidation.failed()) {
+            monitor.severe("Data source validation fails: " + String.join(", ", sourceValidation.getFailureMessages()));
             return Result.failure(sourceValidation.getFailureMessages());
         }
 
@@ -87,11 +90,14 @@ public class NonFiniteCapablePipelineService implements PipelineService {
         if (sinkFactory == null) {
             // NB: do not include the target type as that can possibly leak internal
             // information
-            return Result.failure("Data sink not supported for: " + request.getId());
+            var msg = "Data sink not supported for: " + request.getId();
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
 
         var sinkValidation = sinkFactory.validateRequest(request);
         if (sinkValidation.failed()) {
+            monitor.severe("Data sink validation fails: " + String.join(", ", sinkValidation.getFailureMessages()));
             return Result.failure(sinkValidation.getFailureMessages());
         }
 
@@ -196,7 +202,9 @@ public class NonFiniteCapablePipelineService implements PipelineService {
             try {
                 source.close();
             } catch (Exception e) {
-                return StreamResult.error("Cannot terminate DataFlow %s: %s".formatted(dataFlowId, e.getMessage()));
+                var msg = "Cannot terminate DataFlow %s: %s".formatted(dataFlowId, e.getMessage());
+                monitor.severe(msg, e);
+                return StreamResult.error(msg);
             }
         }
         return StreamResult.success();

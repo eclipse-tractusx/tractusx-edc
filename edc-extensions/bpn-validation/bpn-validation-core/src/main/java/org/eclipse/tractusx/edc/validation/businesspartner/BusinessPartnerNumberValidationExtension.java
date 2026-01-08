@@ -29,6 +29,7 @@ import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
@@ -70,6 +71,8 @@ public class BusinessPartnerNumberValidationExtension implements ServiceExtensio
     private PolicyEngine policyEngine;
     @Inject
     private BdrsClient bdrsClient;
+    @Inject
+    private Monitor monitor;
 
     @Override
     public String name() {
@@ -78,9 +81,9 @@ public class BusinessPartnerNumberValidationExtension implements ServiceExtensio
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        bindToLegacyScope(TransferProcessPolicyContext.class, new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient), TRANSFER_SCOPE);
-        bindToLegacyScope(ContractNegotiationPolicyContext.class, new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient), NEGOTIATION_SCOPE);
-        bindToLegacyScope(CatalogPolicyContext.class, new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient), CATALOG_SCOPE);
+        bindToLegacyScope(TransferProcessPolicyContext.class, new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient, monitor), TRANSFER_SCOPE);
+        bindToLegacyScope(ContractNegotiationPolicyContext.class, new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient, monitor), NEGOTIATION_SCOPE);
+        bindToLegacyScope(CatalogPolicyContext.class, new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient, monitor), CATALOG_SCOPE);
     }
 
     private <C extends PolicyContext> void bindToLegacyScope(Class<C> contextType, AtomicConstraintRuleFunction<Permission, C> function, String scope) {

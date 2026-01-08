@@ -23,6 +23,7 @@ import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.ConnectorDiscoveryServiceImpl;
@@ -47,9 +48,11 @@ public class ConnectorDiscoveryDefaultServiceExtension implements ServiceExtensi
     private EdcHttpClient httpClient;
     @Inject
     private TypeManager typeManager;
+    @Inject
+    private Monitor monitor;
 
     @Provider(isDefault = true)
     public ConnectorDiscoveryService defaultConnectorDiscoveryService() {
-        return new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, typeManager.getMapper());
+        return new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, typeManager.getMapper(), monitor);
     }
 }

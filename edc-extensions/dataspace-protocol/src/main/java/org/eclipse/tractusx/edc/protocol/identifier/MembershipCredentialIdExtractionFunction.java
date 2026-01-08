@@ -24,6 +24,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.ClaimToken;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 
@@ -41,17 +42,31 @@ public abstract class MembershipCredentialIdExtractionFunction implements Partic
     private static final String IDENTITY_CREDENTIAL = "MembershipCredential";
     
     private final CredentialTypePredicate typePredicate = new CredentialTypePredicate(CX_CREDENTIAL_NS, IDENTITY_CREDENTIAL);
+    private final Monitor monitor;
+
+    public MembershipCredentialIdExtractionFunction(Monitor monitor)
+    {
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+    }
     
     @Override
     public String apply(ClaimToken claimToken) {
         var credentials = getCredentialList(claimToken)
-                .orElseThrow(failure -> new EdcException("Failed to fetch credentials from the claim token: %s".formatted(failure.getFailureDetail())));
+                .orElseThrow(failure -> {
+                    var msg = "Failed to fetch credentials from the claim token: %s".formatted(failure.getFailureDetail());
+                    monitor.severe(msg);
+                    return new EdcException(msg);
+                });
         
         return credentials.stream()
                 .filter(typePredicate)
                 .findFirst()
                 .flatMap(this::getIdentifier)
-                .orElseThrow(() -> new EdcException("Required credential type '%s' not present in ClaimToken, cannot extract property '%s'".formatted(IDENTITY_CREDENTIAL, identityProperty())));
+                .orElseThrow(() -> {
+                    var msg = "Required credential type '%s' not present in ClaimToken, cannot extract property '%s'".formatted(IDENTITY_CREDENTIAL, identityProperty());
+                    monitor.severe(msg);
+                    return new EdcException(msg);
+                });
     }
     
     @SuppressWarnings("unchecked")
@@ -59,14 +74,20 @@ public abstract class MembershipCredentialIdExtractionFunction implements Partic
         var vcListClaim = claimToken.getClaims().get(VC_CLAIM);
         
         if (vcListClaim == null) {
-            return Result.failure("ClaimToken did not contain a '%s' claim.".formatted(VC_CLAIM));
+            var msg = "ClaimToken did not contain a '%s' claim.".formatted(VC_CLAIM);
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
         if (!(vcListClaim instanceof List)) {
-            return Result.failure("ClaimToken contains a '%s' claim, but the type is incorrect. Expected %s, got %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName()));
+            var msg = "ClaimToken contains a '%s' claim, but the type is incorrect. Expected %s, got %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName());
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
         var vcList = (List<VerifiableCredential>) vcListClaim;
         if (vcList.isEmpty()) {
-            return Result.failure("ClaimToken contains a '%s' claim but it did not contain any VerifiableCredentials.".formatted(VC_CLAIM));
+            var msg = "ClaimToken contains a '%s' claim but it did not contain any VerifiableCredentials.".formatted(VC_CLAIM);
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
         return Result.success(vcList);
     }
