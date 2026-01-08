@@ -16,6 +16,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+
 package org.eclipse.tractusx.edc.discovery.v4alpha.spi;
 
 import java.util.concurrent.CompletableFuture;

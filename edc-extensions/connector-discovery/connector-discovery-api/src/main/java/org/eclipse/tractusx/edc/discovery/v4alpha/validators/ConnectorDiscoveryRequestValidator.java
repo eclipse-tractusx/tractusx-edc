@@ -48,7 +48,7 @@ public class ConnectorDiscoveryRequestValidator {
     private static class KnownConnectorValidator implements Validator<JsonObject> {
         private final JsonLdPath path;
 
-        public KnownConnectorValidator(JsonLdPath path) {
+        KnownConnectorValidator(JsonLdPath path) {
             this.path = path;
         }
 

@@ -16,6 +16,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+
 package org.eclipse.tractusx.edc.discovery.v4alpha.transformers;
 
 import jakarta.json.JsonObject;
@@ -44,7 +45,7 @@ public class JsonObjectToConnectorDiscoveryRequest extends AbstractJsonLdTransfo
         var knownConnectors = Optional.ofNullable(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE))
                 .map(JsonValue::asJsonArray)
                 .map(a -> a.stream()
-                        .map(v -> ((JsonString)v).getString())
+                        .map(v -> ((JsonString) v).getString())
                         .collect(toList()))
                 .filter(list -> !list.isEmpty())
                 .orElse(null);
