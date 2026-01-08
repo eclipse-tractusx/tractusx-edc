@@ -20,12 +20,13 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha.api;
 
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.container.Suspended;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
@@ -70,14 +71,22 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
     @Path("/connectors")
     @POST
     @Override
-    public JsonArray discoverConnectorServicesV4Alpha(JsonObject inputJson) {
+    public void discoverConnectorServicesV4Alpha(JsonObject inputJson, @Suspended AsyncResponse response) {
         validator.validate(ConnectorDiscoveryRequest.TYPE, inputJson)
                 .orElseThrow((ValidationFailureException::new));
 
         var request = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class);
 
-        return connectorDiscoveryService.discoverConnectors(request.getContent())
-                .orElseThrow(failure -> new UnexpectedResultApiException((failure.getFailureDetail())));
+        connectorDiscoveryService.discoverConnectors(request.getContent())
+                .whenComplete((result, throwable) -> {
+                    if ((throwable == null) && result.succeeded()) {
+                        response.resume(result.getContent());
+                    } else if (result.failed()) {
+                        response.resume(new UnexpectedResultApiException(result.getFailureDetail()));
+                    } else {
+                        response.resume(throwable);
+                    }
+                });
     }
 }
 
