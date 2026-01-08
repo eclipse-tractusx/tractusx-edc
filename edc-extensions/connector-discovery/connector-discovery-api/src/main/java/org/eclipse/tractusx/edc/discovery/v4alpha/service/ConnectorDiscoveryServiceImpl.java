@@ -39,6 +39,7 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRe
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 
 public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService {
@@ -105,8 +106,8 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
     }
 
     @Override
-    public ServiceResult<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request) {
-        return ServiceResult.unexpected("Call not expected");
+    public CompletableFuture<ServiceResult<JsonArray>> discoverConnectors(ConnectorDiscoveryRequest request) {
+        return CompletableFuture.completedFuture(ServiceResult.unexpected("Call not expected"));
     }
 
     private String removeTrailingSlash(String path) {

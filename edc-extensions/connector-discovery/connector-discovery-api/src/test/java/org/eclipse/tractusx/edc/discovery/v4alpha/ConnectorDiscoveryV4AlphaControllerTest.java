@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -142,7 +143,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
         when(transformerRegistry.transform(input, ConnectorDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
         when(connectorService.discoverConnectors(discoveryRequest))
-                .thenReturn(ServiceResult.success(expectedJson));
+                .thenReturn(CompletableFuture.completedFuture(ServiceResult.success(expectedJson)));
 
         var resultString = baseRequest("/connectors")
                 .contentType(ContentType.JSON)

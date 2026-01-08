@@ -24,6 +24,8 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.result.ServiceResult;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Service responsible for discovering connector parameters for different DSP (Dataspace Protocol) versions.
  * This service enables clients to determine the appropriate connection parameters needed to communicate
@@ -46,5 +48,5 @@ public interface ConnectorDiscoveryService {
      */
     ServiceResult<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request);
 
-    ServiceResult<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request);
+    CompletableFuture<ServiceResult<JsonArray>> discoverConnectors(ConnectorDiscoveryRequest request);
 }

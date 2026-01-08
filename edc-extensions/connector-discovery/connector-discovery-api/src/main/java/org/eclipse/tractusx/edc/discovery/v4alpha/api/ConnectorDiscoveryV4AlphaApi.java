@@ -29,8 +29,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.container.Suspended;
 import org.eclipse.edc.jsonld.spi.JsonLdKeywords;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
@@ -61,8 +62,14 @@ public interface ConnectorDiscoveryV4AlphaApi {
     @Operation(description = "Retrieves 'DataService' Entries from the DID document of a participant and provides the connection parameters for all found",
             requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Service Discovery Request", implementation = ConnectorDiscoveryRequestSchema.class))),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "A list of connector endpoint parameters for the right version for each found connector",
-                            content = @Content(array = @ArraySchema(schema = @Schema(name = "Service Discovery Response", implementation = ConnectorParamsDiscoveryResponse.class)))),
+                    @ApiResponse(responseCode = "200",
+                            description = "A list of connector endpoint parameters for the right version for each found connector",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(
+                                            name = "Service Discovery Response",
+                                            implementation = ConnectorParamsDiscoveryResponse.class))
+                            )),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "404", description = "Given Id could not be resolved to a DID document",
@@ -72,7 +79,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
                     @ApiResponse(responseCode = "502", description = "Discovery failed due to connection to counter party",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    JsonArray discoverConnectorServicesV4Alpha(JsonObject querySpecJson);
+    void discoverConnectorServicesV4Alpha(JsonObject querySpecJson, @Suspended AsyncResponse response);
 
     @Schema(name = "ConnectorParamsDiscoveryRequest", example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
     record ConnectorParamsDiscoveryRequestSchema(
