@@ -29,14 +29,21 @@ The lifecycle management logic shall look like:
 
 ```mermaid
 flowchart TD
-    A[Connector<br/>starts up] -->|id| B{id already<br/>exists?}
+    J@{ shape: stadium, label: "Terminal point" }
+    A@{ shape: circle, label: "Connector</br>starts up" }
+    A --> H{reg-enabled}
+    H -->|false| J
+    H -->|true,id| B{id already<br/>exists?}
     B --> |true| C{same url?}
     B --> |false| F[add to did doc]
     C -->|true| D[do nothing]
     C -->|false| E[update existing entry with URL]
-    D -->|shutdown| G[remove did doc entry]
-    E -->|shutdown| G[remove did doc entry]
-    F -->|shutdown| G[remove did doc entry]
+    D -->|shutdown| G{dereg-enabled}
+    E -->|shutdown| G
+    F -->|shutdown| G
+    G -->|true| K[deregister]
+    K --> J
+    G -->|false| J
 ```
 
 The SPI will look something like
@@ -54,3 +61,39 @@ public interface DidServiceClient {
 }
 
 ```
+
+## Scaling considerations
+
+As this extension triggers a side-effect on the DID Service, one must consider the case of horizontally scaled runtimes.
+When scaling down, the shutdown sequence must not affect the did document service entry if another container is still
+running. Containers aren't natively aware of each other and making them would be disproportionate effort. If
+deregistration is enabled, this is a very realistic scenario.
+
+The container image should receive two new environment variables:
+- `TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED` (labeled *reg-enabled* in flowchart)
+- `TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED` (labeled *dereg-enabled* in flowchart)
+
+At the same time, requiring an admin to consider this when deploying the helm chart is unrealistic. That's why the
+values yaml should look like:
+
+```yaml
+controlplane:
+  didService:
+    selfRegistration:
+      # -- Whether Service Self Registration is enabled
+      enabled: false
+      # -- Unique id of connector to be used for register / unregister service inside did document (must be valid URI)
+      id: "did:web:changeme"
+```
+
+The [deployment-controlplane.yaml](/charts/tractusx-connector/templates/deployment-controlplane.yaml) will infer `TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED`
+by inspecting the scaling configuration like:
+
+```yaml
+- name: "TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED"
+  value: {{ and (eq .Values.controlplane.replicacount 1) (not .Values.controlplane.autoscaling.enabled) }}
+```
+
+This approach may result in dangling references from the did document to dead endpoints. Cleanup of those lies outside
+tractusx-edc responsibility and should be done on the DID service directly. This state is more desirable than having 
+available but undiscoverable endpoints as consequence of deletion from every container that shuts down.
