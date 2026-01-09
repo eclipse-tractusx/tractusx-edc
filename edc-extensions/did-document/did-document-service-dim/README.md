@@ -3,6 +3,7 @@
 ## Overview
 This extension provides a client for managing DID Document Service entries using the DIM (Decentralized Identity Management) API.
 It enables secure and programmatic updates to DID Documents for organizations using the TractusX ecosystem.
+The client's purpose is to be injected in the `did-document-service-self-registration` extension by implementing the `DidDocumentServiceClient` SPI.
 
 ## API Details
 

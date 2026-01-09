@@ -103,7 +103,8 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     @Override
     public ServiceResult<Void> update(Service service) {
         return validateService(service)
-                .compose(v -> deleteById(service.getId()))
+                .compose(v -> deleteServiceEntry(service.getId()))
+                .compose(v -> updatePatchStatus())
                 .compose(v -> createServiceEntry(service))
                 .compose(v -> updatePatchStatus())
                 .onSuccess(v -> monitor.info("Updated service entry %s in DID Document".formatted(asString(service))))
@@ -404,6 +405,6 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     }
 
     private boolean isBlank(String str) {
-        return str == null || str.trim().isEmpty();
+        return str == null || str.isBlank();
     }
 }

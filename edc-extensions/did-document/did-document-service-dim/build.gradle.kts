@@ -25,6 +25,7 @@ plugins {
 dependencies {
     implementation(project(":spi:did-document-service-spi"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    implementation(project(":core:core-utils"))
     implementation(libs.edc.runtime.metamodel)
     implementation(libs.edc.spi.identity.did)
     implementation(libs.edc.spi.http)

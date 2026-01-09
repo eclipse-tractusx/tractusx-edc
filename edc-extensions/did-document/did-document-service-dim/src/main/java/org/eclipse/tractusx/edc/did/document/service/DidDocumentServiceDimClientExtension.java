@@ -27,10 +27,9 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.core.utils.PathUtils;
 import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauth2Client;
 import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClient;
-
-import java.util.Optional;
 
 @Provides(DidDocumentServiceClient.class)
 public class DidDocumentServiceDimClientExtension implements ServiceExtension {
@@ -48,7 +47,7 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
     private Monitor monitor;
 
     @Setting(key = "tx.edc.iam.sts.dim.url", description = "STS Dim endpoint", required = false)
-    private String dimUrlConfig;
+    private String dimUrl;
 
     @Setting(key = "edc.participant.id", description = "EDC Participant Id")
     private String ownDid;
@@ -56,17 +55,17 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
 
-        Optional.ofNullable(dimUrlConfig)
-                .map(dimUrl -> new DidDocumentServiceDimClient(
-                        httpClient,
-                        dimOauth2Client,
-                        typeManager.getMapper(),
-                        dimUrl,
-                        ownDid,
-                        monitor)
-                ).ifPresentOrElse(client ->
-                                context.registerService(DidDocumentServiceClient.class, client),
-                        () -> monitor.info("DIM Url not configured, DidDocumentServiceDIMClient will not be registered")
-                );
+        if (dimUrl == null || dimUrl.isBlank() || dimOauth2Client == null) {
+            monitor.info("DidDocumentServiceDIMClient will not be registered because DIM URL not configured or an implementation of DimOauth2Client is missing");
+        } else {
+            var client = new DidDocumentServiceDimClient(
+                    httpClient,
+                    dimOauth2Client,
+                    typeManager.getMapper(),
+                    PathUtils.removeTrailingSlash(dimUrl),
+                    ownDid,
+                    monitor);
+            context.registerService(DidDocumentServiceClient.class, client);
+        }
     }
 }
