@@ -27,12 +27,12 @@ import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
+import org.eclipse.edc.validator.spi.Violation;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static java.lang.String.format;
 import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
@@ -61,22 +61,22 @@ public class ConnectorDiscoveryRequestValidator {
                 return ValidationResult.success();
             }
 
-            var issues = new ArrayList<String>();
+            var issues = new ArrayList<Violation>();
             for (JsonValue value : providedObject) {
                 if (value.getValueType() != JsonValue.ValueType.STRING) {
-                    issues.add(format("value '%s' is not of type STRING, it is of type %s", value.toString(), value.getValueType()));
+                    issues.add(violation("value '%s' is not of type STRING, it is of type %s".formatted(value.toString(), value.getValueType()), path.toString()));
                 } else {
                     var content = ((JsonString) value).getString();
                     try {
                         new URL(content);
                     } catch (MalformedURLException e) {
-                        issues.add(format("value '%s' is not a valid url", content));
+                        issues.add(violation("value '%s' is not a valid url".formatted(content), path.toString()));
                     }
                 }
             }
 
             if (!issues.isEmpty()) {
-                return ValidationResult.failure(violation(format("Validation issues for field '%s': %s", path, issues), path.toString()));
+                return ValidationResult.failure(issues);
             }
 
             return ValidationResult.success();

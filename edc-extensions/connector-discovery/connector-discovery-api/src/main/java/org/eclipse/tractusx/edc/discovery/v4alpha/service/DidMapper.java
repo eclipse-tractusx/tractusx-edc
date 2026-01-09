@@ -19,11 +19,10 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha.service;
 
+import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
 
 import java.util.concurrent.CompletableFuture;
-
-import static java.lang.String.format;
 
 public class DidMapper implements IdentifierToDidMapper {
     private static final String DID_PREFIX = "did:";
@@ -39,6 +38,7 @@ public class DidMapper implements IdentifierToDidMapper {
             return CompletableFuture.completedFuture(identifier);
         }
         return CompletableFuture.failedFuture(
-                new IllegalArgumentException(format("Given identifier %s is not a DID", identifier)));
+                new UnexpectedResultApiException(
+                        "Given identifier %s is not a DID".formatted(identifier)));
     }
 }

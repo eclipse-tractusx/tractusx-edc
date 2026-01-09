@@ -24,15 +24,15 @@ import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
 import org.eclipse.edc.validator.spi.Validator;
 
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
 
 
 public class ConnectorParamsDiscoveryRequestValidator {
 
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()
-                .verify(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, MandatoryValue::new)
+                .verify(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, MandatoryValue::new)
                 .verify(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, MandatoryValue::new)
                 .build();
     }

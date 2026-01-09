@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.discovery.v4alpha.spi;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.spi.result.ServiceResult;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -46,7 +45,7 @@ public interface ConnectorDiscoveryService {
      * @return a ServiceResult containing a JsonObject with the discovered connection parameters,
      *         or a failure result if discovery was unsuccessful
      */
-    ServiceResult<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request);
+    CompletableFuture<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request);
 
-    CompletableFuture<ServiceResult<JsonArray>> discoverConnectors(ConnectorDiscoveryRequest request);
+    CompletableFuture<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request);
 }

@@ -30,8 +30,8 @@ import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
 
 class ConnectorParamsDiscoveryRequestValidatorTest {
 
@@ -40,7 +40,7 @@ class ConnectorParamsDiscoveryRequestValidatorTest {
     @Test
     void shouldSucceed_whenRequestIsValid() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, value("BPNL1234567890"))
+                .add(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, value("BPNL1234567890"))
                 .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value("https://provider.domain.com/api/dsp"))
                 .build();
 
@@ -52,7 +52,7 @@ class ConnectorParamsDiscoveryRequestValidatorTest {
     @Test
     void shouldSucceed_whenRequestHasOtherProps() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, value("BPNL1234567890"))
+                .add(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, value("BPNL1234567890"))
                 .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value("https://provider.domain.com/api/dsp"))
                 .add("additionalProperty", value("someValue"))
                 .build();
@@ -76,7 +76,7 @@ class ConnectorParamsDiscoveryRequestValidatorTest {
     @Test
     void shouldFail_whenCounterPartyAddressIsMissing() {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, value("BPNL1234567890"))
+                .add(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, value("BPNL1234567890"))
                 .build();
 
         var result = validator.validate(validRequest);

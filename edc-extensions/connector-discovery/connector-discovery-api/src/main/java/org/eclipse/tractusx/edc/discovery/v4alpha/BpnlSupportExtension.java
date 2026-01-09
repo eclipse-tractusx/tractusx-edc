@@ -26,13 +26,15 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.AggregatedIdentifierMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.DidMapper;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.Dsp08ToBpnlMapper;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.DspVersionToIdentifierMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.NAME;
 
 @Extension(value = NAME)
-public class AggregatedBpnDidMapperExtension implements ServiceExtension {
+public class BpnlSupportExtension implements ServiceExtension {
     public static final String NAME = "Identifier Mapper Extension for DID and BPNL";
 
     @Inject
@@ -46,5 +48,10 @@ public class AggregatedBpnDidMapperExtension implements ServiceExtension {
     @Provider
     public IdentifierToDidMapper bpnIdentityMapper() {
         return new AggregatedIdentifierMapper(new DidMapper(), new BpnMapper(bdrsClient));
+    }
+
+    @Provider
+    public DspVersionToIdentifierMapper dsp08Handler() {
+        return new Dsp08ToBpnlMapper(bdrsClient);
     }
 }

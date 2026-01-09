@@ -26,8 +26,8 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRe
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
 
 public class JsonObjectToConnectorParamsDiscoveryRequest extends AbstractJsonLdTransformer<JsonObject, ConnectorParamsDiscoveryRequest> {
 
@@ -39,15 +39,15 @@ public class JsonObjectToConnectorParamsDiscoveryRequest extends AbstractJsonLdT
     @Override
     public @Nullable ConnectorParamsDiscoveryRequest transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
 
-        var bpnl = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE), transformerContext);
+        var identifier = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE), transformerContext);
         var counterPartyAddress = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE), transformerContext);
 
-        if (bpnl == null || counterPartyAddress == null) {
-            transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: tx:bpnl or edc:counterPartyAddress");
+        if (identifier == null || counterPartyAddress == null) {
+            transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: tx:identifier or edc:counterPartyAddress");
             return null;
         }
 
-        return new ConnectorParamsDiscoveryRequest(bpnl, counterPartyAddress);
+        return new ConnectorParamsDiscoveryRequest(identifier, counterPartyAddress);
 
     }
 }

@@ -27,10 +27,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -45,27 +45,31 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
     private final ConnectorDiscoveryService connectorDiscoveryService;
     private final TypeTransformerRegistry transformerRegistry;
     private final JsonObjectValidatorRegistry validator;
-
+    private final Monitor monitor;
 
     public ConnectorDiscoveryV4AlphaController(ConnectorDiscoveryService connectorDiscoveryService,
                                                TypeTransformerRegistry transformerRegistry,
-                                               JsonObjectValidatorRegistry validator) {
+                                               JsonObjectValidatorRegistry validator,
+                                               Monitor monitor) {
         this.connectorDiscoveryService = connectorDiscoveryService;
         this.transformerRegistry = transformerRegistry;
         this.validator = validator;
+        this.monitor = monitor;
     }
 
     @Path("/dspversionparams")
     @POST
     @Override
-    public JsonObject discoverDspVersionParamsV4Alpha(JsonObject inputJson) {
+    public void discoverDspVersionParamsV4Alpha(JsonObject inputJson, @Suspended AsyncResponse response) {
         validator.validate(ConnectorParamsDiscoveryRequest.TYPE, inputJson)
                 .orElseThrow(ValidationFailureException::new);
 
         var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class);
 
-        return connectorDiscoveryService.discoverVersionParams(discoveryRequest.getContent())
-                .orElseThrow(failure -> new UnexpectedResultApiException(failure.getFailureDetail()));
+        connectorDiscoveryService.discoverVersionParams(discoveryRequest.getContent())
+                .whenComplete((result, throwable) -> {
+                    handleResult(response, result, throwable);
+                });
     }
 
     @Path("/connectors")
@@ -79,14 +83,17 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
 
         connectorDiscoveryService.discoverConnectors(request.getContent())
                 .whenComplete((result, throwable) -> {
-                    if ((throwable == null) && result.succeeded()) {
-                        response.resume(result.getContent());
-                    } else if (result.failed()) {
-                        response.resume(new UnexpectedResultApiException(result.getFailureDetail()));
-                    } else {
-                        response.resume(throwable);
-                    }
+                    handleResult(response, result, throwable);
                 });
+    }
+
+    private <T> void handleResult(AsyncResponse response, T result, Throwable throwable) {
+        if (throwable == null) {
+            response.resume(result);
+        } else {
+            monitor.warning("Exception thrown during connector discovery", throwable);
+            response.resume(throwable);
+        }
     }
 }
 
