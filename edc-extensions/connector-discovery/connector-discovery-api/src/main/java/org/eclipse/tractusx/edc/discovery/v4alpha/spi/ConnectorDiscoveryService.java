@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,8 +20,10 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha.spi;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.spi.result.ServiceResult;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Service responsible for discovering connector parameters for different DSP (Dataspace Protocol) versions.
@@ -42,5 +45,7 @@ public interface ConnectorDiscoveryService {
      * @return a ServiceResult containing a JsonObject with the discovered connection parameters,
      *         or a failure result if discovery was unsuccessful
      */
-    ServiceResult<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request);
+    CompletableFuture<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request);
+
+    CompletableFuture<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request);
 }
