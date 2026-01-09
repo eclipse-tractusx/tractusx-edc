@@ -38,6 +38,7 @@ import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.response.TransferErrorResponse;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.util.HashMap;
@@ -51,19 +52,23 @@ import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static jakarta.ws.rs.core.Response.status;
+import static java.lang.String.format;
 
 @Path("{any:.*}")
 @Produces(WILDCARD)
 public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
 
+    private final Monitor monitor;
     private final PipelineService pipelineService;
     private final DataFlowRequestSupplier requestSupplier;
     private final ExecutorService executorService;
     private final DataPlaneAuthorizationService authorizationService;
 
-    public DataPlanePublicApiV2Controller(PipelineService pipelineService,
+
+    public DataPlanePublicApiV2Controller(Monitor monitor, PipelineService pipelineService,
                                           ExecutorService executorService,
                                           DataPlaneAuthorizationService authorizationService) {
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.pipelineService = pipelineService;
         this.authorizationService = authorizationService;
         this.requestSupplier = new DataFlowRequestSupplier();
@@ -181,10 +186,12 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
                 .whenComplete((result, throwable) -> {
                     if (throwable == null) {
                         if (result.failed()) {
+                            monitor.severe(format("Failed to read data from source: %s", result.getFailureDetail()));
                             response.resume(error(INTERNAL_SERVER_ERROR, result.getFailureMessages()));
                         }
                     } else {
                         var error = "Unhandled exception occurred during data transfer: " + throwable.getMessage();
+                        monitor.severe(format("Failed to read data from source: %s", error), throwable);
                         response.resume(error(INTERNAL_SERVER_ERROR, List.of(error)));
                     }
                 });

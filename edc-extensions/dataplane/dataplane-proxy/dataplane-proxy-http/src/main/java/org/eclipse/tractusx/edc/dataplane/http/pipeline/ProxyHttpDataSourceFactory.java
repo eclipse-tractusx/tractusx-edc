@@ -62,10 +62,14 @@ public class ProxyHttpDataSourceFactory implements DataSourceFactory {
             if (PULL.equals(request.getTransferType().flowType())) {
                 createSource(request);
             } else {
-                return failure("Transfer type mismatch: ProxyHttpData data type is only allowed for PULL transfer types.");
+                var msg = "Transfer type mismatch: ProxyHttpData data type is only allowed for PULL transfer types.";
+                monitor.severe(msg);
+                return failure(msg);
             }
         } catch (Exception e) {
-            return failure("Failed to build ProxyHttpDataSource: " + e.getMessage());
+            var msg = "Failed to build ProxyHttpDataSource: " + e.getMessage();
+            monitor.severe(msg, e);
+            return failure(msg);
         }
         return Result.success();
     }

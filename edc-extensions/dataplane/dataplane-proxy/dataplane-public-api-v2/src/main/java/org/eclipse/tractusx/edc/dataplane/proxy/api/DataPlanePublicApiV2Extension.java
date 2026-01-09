@@ -116,7 +116,7 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
             generatorService.addResponseGeneratorFunction(PROXY_HTTP_DATA_TYPE, () -> Endpoint.url(publicApiResponseUrl));
         }
         
-        var publicApiController = new DataPlanePublicApiV2Controller(pipelineService, executorService, authorizationService);
+        var publicApiController = new DataPlanePublicApiV2Controller(context.getMonitor(), pipelineService, executorService, authorizationService);
         webService.registerResource(API_CONTEXT, publicApiController);
     }
 

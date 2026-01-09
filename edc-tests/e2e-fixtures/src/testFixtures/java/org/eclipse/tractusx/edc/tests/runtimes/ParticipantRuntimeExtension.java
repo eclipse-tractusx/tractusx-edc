@@ -111,7 +111,7 @@ public class ParticipantRuntimeExtension extends RuntimePerClassExtension implem
         private static class StaticPrivateKeyResolver implements PrivateKeyResolver {
             private final PrivateKey privateKey;
 
-            public StaticPrivateKeyResolver(PrivateKey privateKey) {
+            StaticPrivateKeyResolver(PrivateKey privateKey) {
                 this.privateKey = privateKey;
             }
 

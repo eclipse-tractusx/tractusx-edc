@@ -21,6 +21,7 @@
 package org.eclipse.tractusx.edc.identity.mapper;
 
 import org.eclipse.edc.spi.iam.AudienceResolver;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.message.ProtocolRemoteMessage;
 import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
@@ -31,16 +32,18 @@ import java.util.Optional;
 import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
 
 /**
- * Extracts the audience from a {@link RemoteMessage} using {@link RemoteMessage#getCounterPartyId()}.
+ * Extracts the audience from a {@link RemoteMessage} using {@link ProtocolRemoteMessage#getCounterPartyId()}.
  * If the counter-party id is a DID, returns it as-is. If it is a BPN, calls {@link BdrsClient#resolveDid(String)}
  * to resolve the corresponding DID.
  */
 class BdrsClientAudienceMapper implements AudienceResolver {
     
     private final BdrsClient client;
+    private final Monitor monitor;
 
-    BdrsClientAudienceMapper(BdrsClient client) {
+    BdrsClientAudienceMapper(BdrsClient client, Monitor monitor) {
         this.client = client;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
@@ -54,7 +57,9 @@ class BdrsClientAudienceMapper implements AudienceResolver {
             var resolve = client.resolveDid(counterPartyId);
             return Result.from(Optional.ofNullable(resolve));
         } catch (Exception e) {
-            return Result.failure("Failure in DID resolution: " + e.getMessage());
+            var msg = "Failure in DID resolution: " + e.getMessage();
+            monitor.severe(msg, e);
+            return Result.failure(msg);
         }
     }
 

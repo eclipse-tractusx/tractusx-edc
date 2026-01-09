@@ -73,7 +73,7 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
         this.credentialValidationService = credentialValidationService;
         this.didResolver = didResolver;
         this.revocationServiceRegistry = revocationServiceRegistry;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override

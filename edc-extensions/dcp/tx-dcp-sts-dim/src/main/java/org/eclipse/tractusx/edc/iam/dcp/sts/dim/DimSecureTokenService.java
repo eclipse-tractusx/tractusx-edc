@@ -145,7 +145,9 @@ public class DimSecureTokenService implements SecureTokenService {
     private Result<Void> extractCredential(String scope, Consumer<String> consumer) {
         var tokens = scope.split(":");
         if (tokens.length != 3) {
-            return Result.failure("Scope string %s has invalid format".formatted(scope));
+            var msg = "Scope string %s has invalid format".formatted(scope);
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
         consumer.accept(tokens[1]);
         return Result.success();
@@ -159,7 +161,10 @@ public class DimSecureTokenService implements SecureTokenService {
 
     private Result<TokenRepresentation> executeRequest(Request request, String context) {
         return httpClient.execute(request, List.of(retryWhenStatusIsNotIn(200, 201)), this::handleResponse)
-                .recover(failure -> Result.failure("[%s] %s".formatted(context, failure.getFailureDetail())));
+                .recover(failure -> {
+                    monitor.severe("Request too %s failed: [%s] %s".formatted(request.url().url(), context, failure.getFailureDetail()));
+                    return Result.failure("[%s] %s".formatted(context, failure.getFailureDetail()));
+                });
     }
 
     private Result<TokenRepresentation> handleResponse(Response response) {
@@ -183,6 +188,7 @@ public class DimSecureTokenService implements SecureTokenService {
             return baseRequestWithToken()
                     .map(builder -> builder.post(requestBody));
         } catch (JsonProcessingException e) {
+            monitor.severe("Failed to serialize request body: " + e.getMessage(), e);
             return Result.failure(e.getMessage());
         }
 

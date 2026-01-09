@@ -72,13 +72,15 @@ public class EdrServiceImpl implements EdrService {
     private ServiceResult<DataAddress> autoRefresh(String id, DataAddress edr, RefreshMode mode) {
         var edrEntry = edrStore.findById(id);
         if (edrEntry == null) {
-            return ServiceResult.notFound("An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id));
+            var msg = "An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id);
+            monitor.warning(msg);
+            return ServiceResult.notFound(msg);
         }
         if (edrLock.isExpired(edr, edrEntry) || mode.equals(RefreshMode.FORCE_REFRESH)) {
             var result = ServiceResult.from(edrLock.acquireLock(id, edr))
                     .compose(shouldRefresh -> {
                         if (!shouldRefresh && !mode.equals(RefreshMode.FORCE_REFRESH)) {
-                            monitor.debug("Dont need to refresh. Will resolve existing.");
+                            monitor.debug("Don't need to refresh. Will resolve existing.");
                             var refreshedEdr = edrStore.resolveByTransferProcess(id);
                             return ServiceResult.from(refreshedEdr);
                         } else {
