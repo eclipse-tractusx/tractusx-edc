@@ -30,6 +30,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.spi.resolver.DataAddressResolver;
 import org.eclipse.edc.connector.dataplane.util.sink.AsyncStreamingDataSink;
 import org.eclipse.edc.junit.annotations.ApiTest;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -69,6 +70,7 @@ class DataPlanePublicApiV2ControllerTest extends RestControllerTestBase {
     private final PipelineService pipelineService = mock();
     private final DataAddressResolver dataAddressResolver = mock();
     private final DataPlaneAuthorizationService authorizationService = mock();
+    private final Monitor monitor = mock();
 
     @BeforeEach
     void setup() {
@@ -196,7 +198,8 @@ class DataPlanePublicApiV2ControllerTest extends RestControllerTestBase {
 
     @Override
     protected Object controller() {
-        return new DataPlanePublicApiV2Controller(mock(), pipelineService, Executors.newSingleThreadExecutor(), authorizationService);
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        return new DataPlanePublicApiV2Controller(monitor, pipelineService, Executors.newSingleThreadExecutor(), authorizationService);
     }
 
     private RequestSpecification baseRequest() {
