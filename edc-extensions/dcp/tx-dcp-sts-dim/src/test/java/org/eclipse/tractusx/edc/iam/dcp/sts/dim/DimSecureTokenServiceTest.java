@@ -51,6 +51,7 @@ import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -66,6 +67,7 @@ public class DimSecureTokenServiceTest {
 
     @BeforeEach
     void setup() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         client = new DimSecureTokenService(testHttpClient(interceptor), DIM_URL, oauth2Client, mapper, monitor);
     }
 

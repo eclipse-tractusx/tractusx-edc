@@ -20,19 +20,29 @@
 
 package org.eclipse.tractusx.edc.identity.mapper;
 
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.message.ProtocolRemoteMessage;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class BdrsClientAudienceMapperTest {
 
     private final BdrsClient bdrsClient = mock();
-    private final BdrsClientAudienceMapper clientAudienceMapper = new BdrsClientAudienceMapper(bdrsClient, mock());
-    
+    private BdrsClientAudienceMapper clientAudienceMapper;
+    private final Monitor monitor = mock();
+
+    @BeforeEach
+    void setup() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        clientAudienceMapper = new BdrsClientAudienceMapper(bdrsClient, monitor);
+    }
+
     @Test
     void shouldReturnDid_whenCounterPartyIdIsDid() {
         var counterPartyId = "did:web:did1";
@@ -62,7 +72,7 @@ class BdrsClientAudienceMapperTest {
     @Test
     void shouldFail_whenResolutionThrowsException() {
         when(bdrsClient.resolveDid("bpn1")).thenThrow(new RuntimeException("exception"));
-
+        when(monitor.withPrefix("BdrsClientAudienceMapper")).thenReturn(monitor);
         var did = clientAudienceMapper.resolve(new TestMessage("bpn1"));
 
         assertThat(did).isFailed().detail().contains("exception");

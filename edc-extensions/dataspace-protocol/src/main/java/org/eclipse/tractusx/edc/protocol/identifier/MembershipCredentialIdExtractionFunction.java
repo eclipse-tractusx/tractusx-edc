@@ -44,8 +44,7 @@ public abstract class MembershipCredentialIdExtractionFunction implements Partic
     private final CredentialTypePredicate typePredicate = new CredentialTypePredicate(CX_CREDENTIAL_NS, IDENTITY_CREDENTIAL);
     private final Monitor monitor;
 
-    public MembershipCredentialIdExtractionFunction(Monitor monitor)
-    {
+    public MembershipCredentialIdExtractionFunction(Monitor monitor) {
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
     

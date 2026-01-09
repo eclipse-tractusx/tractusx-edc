@@ -212,9 +212,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         var storeResult = accessTokenDataStore.update(accessTokenData);
 
         if (storeResult.failed()) {
-            var msg = "Failed to store refreshed access token data: %s".formatted(storeResult.getFailureDetail());
-            monitor.severe(msg);
-            return Result.failure(msg);
+            monitor.severe("Failed to store refreshed access token data: %s".formatted(storeResult.getFailureDetail()));
+            return Result.failure(storeResult.getFailureMessages());
         }
         return Result.success(new TokenResponse(newAccessToken.getContent(), newRefreshToken.getContent(), tokenExpirySeconds, "bearer"));
     }
@@ -283,9 +282,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         var storeResult = accessTokenDataStore.store(accessTokenData);
 
         if (storeResult.failed()) {
-            var msg = "Could not store AccessTokenData: %s".formatted(storeResult.getFailureDetail());
-            monitor.severe(msg);
-            return Result.failure(msg);
+            monitor.severe("Could not store AccessTokenData: %s".formatted(storeResult.getFailureDetail()));
+            return Result.failure(storeResult.getFailureMessages());
         }
 
         return Result.success(edrTokenRepresentation);

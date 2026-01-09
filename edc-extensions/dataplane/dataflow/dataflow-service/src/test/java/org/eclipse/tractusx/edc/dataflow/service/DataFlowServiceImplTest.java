@@ -21,10 +21,12 @@ package org.eclipse.tractusx.edc.dataflow.service;
 
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceFailure;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +38,7 @@ import static org.eclipse.edc.spi.result.ServiceFailure.Reason.CONFLICT;
 import static org.eclipse.edc.spi.result.ServiceFailure.Reason.NOT_FOUND;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PULL;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PUSH;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +48,14 @@ class DataFlowServiceImplTest {
 
     private final DataPlaneStore store = mock();
     private final FinitenessEvaluator finitenessEvaluator = mock();
-    private final DataFlowServiceImpl service = new DataFlowServiceImpl(store, finitenessEvaluator);
+    private final Monitor monitor = mock();
+    private DataFlowServiceImpl service;
+
+    @BeforeEach
+    public void setup() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        service = new DataFlowServiceImpl(store, finitenessEvaluator, monitor);
+    }
 
     @Test
     public void trigger_shouldReturnFailure_whenDataFlowNotFound() {

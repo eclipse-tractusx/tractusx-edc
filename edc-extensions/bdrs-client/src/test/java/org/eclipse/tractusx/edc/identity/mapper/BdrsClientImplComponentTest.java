@@ -145,6 +145,7 @@ class BdrsClientImplComponentTest {
         ParticipantContextSupplier participantContextSupplier = mock();
         var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
         when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
         client = new BdrsClientImpl("http://%s:%d/api/directory".formatted(BDRS_SERVER_CONTAINER.getHost(), directoryPort), 1,
                 "did:web:self",
                 () -> "http://credential.service",

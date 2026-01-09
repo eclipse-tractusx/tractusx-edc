@@ -26,9 +26,11 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.ConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -39,6 +41,7 @@ import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_PROTOCOL;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +52,14 @@ class ConnectorDiscoveryServiceImplTest {
     private final ObjectMapper mapper = new ObjectMapper().configure(
             com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final EdcHttpClient httpClient = mock();
-    private final ConnectorDiscoveryServiceImpl service = new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, mapper);
+    private final Monitor monitor = mock();
+    private ConnectorDiscoveryServiceImpl service;
+
+    @BeforeEach
+    void setup() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        service = new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, mapper, monitor);
+    }
 
     @Test
     void discoverVersionParams_shouldReturnDsp2025_whenDsp2025AvailableAndDidResolvable() throws IOException {

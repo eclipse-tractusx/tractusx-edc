@@ -19,12 +19,19 @@
 
 package org.eclipse.tractusx.edc.protocol.identifier;
 
+import org.eclipse.edc.spi.monitor.Monitor;
+
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DidExtractionFunctionTest extends MembershipCredentialIdExtractionFunctionTest {
+    private final Monitor monitor = mock();
+
     @Override
     protected MembershipCredentialIdExtractionFunction extractionFunction() {
-        return new DidExtractionFunction(mock());
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        return new DidExtractionFunction(monitor);
     }
     
     @Override
