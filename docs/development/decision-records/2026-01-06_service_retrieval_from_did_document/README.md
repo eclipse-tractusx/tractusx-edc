@@ -3,10 +3,9 @@
 ## Decision
 
 We will implement an additional endpoint in the connector discovery endpoint family. The endpoint will, based on a
-DID retrieves the DID document, parses the service section for `DataService` entries, and retrieves for the detected
-connector endpoints the dsp version parameters. It returns a list of version parameter sets one for each found connector
-in the DID document. There will be a general support for other identifiers, using BPNLs as a second supported
-identifier type.
+DID, extract the connector endpoints from a DID document and determine the right dsp version parameters for each
+found connector. These parameters are returned in a list. There will be a general support for other identifiers,
+using BPNLs as a second supported identifier type.
 
 ## Rationale
 
@@ -44,7 +43,7 @@ called `/connectors` in this management api section that takes the following inp
 }
 ```
 
-The `counterPartId` field is type-neutral, in order to support different identifier types. The service will interpret
+The `counterPartyId` field is type-neutral, in order to support different identifier types. The service will interpret
 the identifier based on properties of the identifier, for now, DIDs and BPNLs will be supported. The mechanism
 will be implemented in an extensible fashion, so that a general mapping from any identifier to a DID can be added.
 The default implementation will detect DIDs and map them to themselves. A second extension will allow to handle
