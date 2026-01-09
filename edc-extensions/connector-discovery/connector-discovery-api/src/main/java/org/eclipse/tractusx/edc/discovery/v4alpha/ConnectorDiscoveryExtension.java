@@ -23,6 +23,7 @@ package org.eclipse.tractusx.edc.discovery.v4alpha;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -65,6 +66,8 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     private JsonLd jsonLd;
     @Inject
     private TypeManager typeManager;
+    @Inject
+    private Monitor monitor;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
@@ -76,7 +79,7 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
         validatorRegistry.register(ConnectorDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry));
+        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry, monitor));
         webService.registerDynamicResource(ApiContext.MANAGEMENT, ConnectorDiscoveryV4AlphaController.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
     }
 }

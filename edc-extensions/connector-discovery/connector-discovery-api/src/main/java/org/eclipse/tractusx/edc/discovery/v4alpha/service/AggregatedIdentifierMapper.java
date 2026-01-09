@@ -19,19 +19,19 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha.service;
 
+import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static java.lang.String.format;
+import static java.util.List.of;
 
 public class AggregatedIdentifierMapper implements IdentifierToDidMapper {
     private final Collection<IdentifierToDidMapper> aggregatedMapper;
 
     public AggregatedIdentifierMapper(IdentifierToDidMapper... mappers) {
-        this.aggregatedMapper = List.of(mappers);
+        this.aggregatedMapper = of(mappers);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AggregatedIdentifierMapper implements IdentifierToDidMapper {
                 .filter(mapper -> mapper.canHandle(identifier))
                 .findAny()
                 .map(mapper -> mapper.mapToDid(identifier))
-                .orElse(CompletableFuture.failedFuture(
-                        new IllegalArgumentException(format("Given identifier %s is of unknown type", identifier))));
+                .orElse(CompletableFuture.failedFuture(new InvalidRequestException(
+                        "Given counterPartyId %s is of unknown type".formatted(identifier))));
     }
 }

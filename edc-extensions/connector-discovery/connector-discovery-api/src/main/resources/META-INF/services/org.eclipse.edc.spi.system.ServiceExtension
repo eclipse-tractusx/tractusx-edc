@@ -19,4 +19,4 @@
 
 org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension
 org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryDefaultServiceExtension
-org.eclipse.tractusx.edc.discovery.v4alpha.AggregatedBpnDidMapperExtension
+org.eclipse.tractusx.edc.discovery.v4alpha.BpnlSupportExtension

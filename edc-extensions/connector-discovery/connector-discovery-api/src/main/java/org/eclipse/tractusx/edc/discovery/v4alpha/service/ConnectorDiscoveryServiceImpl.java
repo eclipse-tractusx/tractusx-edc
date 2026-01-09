@@ -27,89 +27,144 @@ import jakarta.json.JsonObjectBuilder;
 import okhttp3.Request;
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest;
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.did.spi.document.Service;
+import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
 import org.eclipse.edc.protocol.spi.ProtocolVersion;
 import org.eclipse.edc.protocol.spi.ProtocolVersions;
-import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.web.spi.exception.BadGatewayException;
+import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.DspVersionToIdentifierMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+
+import static jakarta.json.Json.createArrayBuilder;
+import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 
 
 public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService {
 
     private static final String DSP_DISCOVERY_PATH = "/.well-known/dspace-version";
+    private static final String DATA_SERVICE = "DataService";
 
-    private final BdrsClient bdrsClient;
+    private final DidResolverRegistry didResolver;
     private final EdcHttpClient httpClient;
     private final ObjectMapper mapper;
     private final IdentifierToDidMapper identifierMapper;
+    private final DspVersionToIdentifierMapper dspVersionMapper;
+    private final Monitor monitor;
 
-    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, EdcHttpClient httpClient, ObjectMapper mapper, IdentifierToDidMapper identifierMapper) {
-        this.bdrsClient = bdrsClient;
+    public ConnectorDiscoveryServiceImpl(DidResolverRegistry didResolver,
+                                         EdcHttpClient httpClient, ObjectMapper mapper,
+                                         IdentifierToDidMapper identifierMapper, DspVersionToIdentifierMapper dspVersionMapper,
+                                         Monitor monitor) {
+        this.didResolver = didResolver;
         this.httpClient = httpClient;
         this.mapper = mapper;
         this.identifierMapper = identifierMapper;
+        this.dspVersionMapper = dspVersionMapper;
+        this.monitor = monitor;
     }
 
     @Override
-    public ServiceResult<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request) {
-
-        var discoveredParameters = Json.createObjectBuilder();
+    public CompletableFuture<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request) {
 
         var wellKnownRequest = new Request.Builder()
                 .url(request.counterPartyAddress() + DSP_DISCOVERY_PATH)
                 .get()
                 .build();
 
-        try (var response = httpClient.execute(wellKnownRequest)) {
+        var resolveDid = identifierMapper.mapToDid(request.identifier());
+        return httpClient.executeAsync(wellKnownRequest, emptyList())
+                .thenCombine(resolveDid, (response, did) -> {
+                    try {
+                        if (!response.isSuccessful()) {
+                            var msg = "Counter party well-known endpoint has failed with status %s and message: %s"
+                                    .formatted(response.code(), response.message());
+                            monitor.warning(msg);
+                            throw new BadGatewayException(msg);
 
-            if (!response.isSuccessful()) {
-                var failureMessage = response.message();
-                return ServiceResult.unexpected("Counter party well-known endpoint has failed with status %s and message: %s".formatted(response.code(), failureMessage));
-            } else {
-                var bytesBody = response.body().bytes();
+                        } else {
+                            var discoveredParameters = Json.createObjectBuilder();
+                            var bytesBody = response.body().bytes();
+                            var protocolVersions = mapper.readValue(bytesBody, ProtocolVersions.class);
 
-                var protocolVersions = mapper.readValue(bytesBody, ProtocolVersions.class);
-                var did = bdrsClient.resolveDid(request.bpnl());
-                var version20251 = findProtocolVersion(Dsp2025Constants.V_2025_1_VERSION, protocolVersions);
-                if (version20251 != null && did != null) {
-                    addDiscoveredParameters(Dsp2025Constants.V_2025_1_VERSION, did,
-                            request.counterPartyAddress() + removeTrailingSlash(version20251.path()),
-                            discoveredParameters);
+                            var version20251 = findProtocolVersion(Dsp2025Constants.V_2025_1_VERSION, protocolVersions);
+                            if (version20251 != null && did != null) {
+                                addDiscoveredParameters(Dsp2025Constants.V_2025_1_VERSION,
+                                        dspVersionMapper.identifierForDspVersion(did, Dsp2025Constants.V_2025_1_VERSION).join(),
+                                        request.counterPartyAddress() + removeTrailingSlash(version20251.path()),
+                                        discoveredParameters);
 
-                    return ServiceResult.success(discoveredParameters.build());
-                } else {
-                    var version08 = findProtocolVersion(Dsp08Constants.V_08_VERSION, protocolVersions);
-                    if (version08 != null) {
-                        addDiscoveredParameters(Dsp08Constants.V_08_VERSION, request.bpnl(),
-                                request.counterPartyAddress() + removeTrailingSlash(version08.path()),
-                                discoveredParameters);
+                                return discoveredParameters.build();
+                            } else {
+                                var version08 = findProtocolVersion(Dsp08Constants.V_08_VERSION, protocolVersions);
+                                if (version08 != null) {
+                                    addDiscoveredParameters(Dsp08Constants.V_08_VERSION,
+                                            dspVersionMapper.identifierForDspVersion(did, Dsp08Constants.V_08_VERSION).join(),
+                                            request.counterPartyAddress() + removeTrailingSlash(version08.path()),
+                                            discoveredParameters);
 
-                        return ServiceResult.success(discoveredParameters.build());
+                                    return discoveredParameters.build();
+                                }
+                            }
+                            throw new InvalidRequestException(
+                                    "The counter party does not support any of the expected protocol versions (%s, %s)"
+                                            .formatted(Dsp08Constants.V_08_VERSION, Dsp2025Constants.V_2025_1_VERSION));
+                        }
+                    } catch (IOException e) {
+                        var msg = "An exception with the following message occurred while executing dsp version request: %s"
+                                .formatted(e.getMessage());
+                        monitor.warning(msg, e);
+                        throw new BadGatewayException(msg);
                     }
-                }
-            }
-
-        } catch (IOException e) {
-            return ServiceResult.unexpected("An exception with the following message occurred while executing dsp version request: %s".formatted(e.getMessage()));
-        }
-
-        return ServiceResult.unexpected("No valid protocol version found for the counter party. " +
-                "The provided BPNL couldn't be resolved to a DID or the counter party does " +
-                "not support any of the expected protocol versions (" + Dsp08Constants.V_08_VERSION + ", " + Dsp2025Constants.V_2025_1_VERSION + ")");
+                });
     }
 
     @Override
-    public CompletableFuture<ServiceResult<JsonArray>> discoverConnectors(ConnectorDiscoveryRequest request) {
-        return CompletableFuture.completedFuture(ServiceResult.unexpected("Call not expected"));
+    public CompletableFuture<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request) {
+        identifierMapper.mapToDid(request.counterPartyId()).thenApply(didResolver::resolve)
+                .thenApply(result -> {
+                    if (result.failed()) {
+                        var msg = format("Error, downloading the DID" + ": %s", result.getFailureDetail());
+                        monitor.warning(msg);
+                        throw new InvalidRequestException(msg);
+                    }
+                    var didDocument = result.getContent();
+                    var connectorRequests = didDocument.getService().stream()
+                            .filter(entry -> DATA_SERVICE.equals(entry.getType()))
+                            .map(Service::getServiceEndpoint)
+                            .map(endpoint -> discoverVersionParams(
+                                    new ConnectorParamsDiscoveryRequest(request.counterPartyId(), endpoint)))
+                            .toList();
+
+                    var returnArrayBuilder = createArrayBuilder();
+
+                    for (CompletableFuture<JsonObject> future : connectorRequests) {
+                        try {
+                            var paramsResult = future.join();
+                            returnArrayBuilder.add(paramsResult);
+                        } catch (Exception e) {
+                            monitor.severe("Exception during connector discovery, omit endpoint result", e);
+                        }
+                    }
+
+                    var returnArray = returnArrayBuilder.build();
+                    if (returnArray.isEmpty()) {
+                        throw new InvalidRequestException(
+                                "No connector endpoints found for did %s".formatted(request.counterPartyId()));
+                    }
+                    return returnArrayBuilder;
+                });
     }
 
     private String removeTrailingSlash(String path) {
@@ -127,8 +182,11 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
                 .orElse(null);
     }
 
-    private void addDiscoveredParameters(String version, String counterPartyId, String address, JsonObjectBuilder versionParameters) {
-        var protocol = Dsp2025Constants.V_2025_1_VERSION.equals(version) ? Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1 : HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
+    private void addDiscoveredParameters(String version, String counterPartyId, String address, JsonObjectBuilder
+            versionParameters) {
+        var protocol = Dsp2025Constants.V_2025_1_VERSION.equals(version)
+                ? Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1
+                : HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
         versionParameters.add(CatalogRequest.CATALOG_REQUEST_PROTOCOL, protocol);
         versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, address);
         versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ID, counterPartyId);

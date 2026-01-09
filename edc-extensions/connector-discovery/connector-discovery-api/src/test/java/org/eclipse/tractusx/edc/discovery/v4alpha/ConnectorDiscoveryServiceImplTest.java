@@ -26,6 +26,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.AggregatedIdentifierMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.ConnectorDiscoveryServiceImpl;
@@ -40,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ADDRESS;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ID;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_PROTOCOL;
-import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,11 +49,12 @@ import static org.mockito.Mockito.when;
 class ConnectorDiscoveryServiceImplTest {
 
     private final BdrsClient bdrsClient = mock();
+    private final DidResolverRegistry didResolver = mock();
     private final ObjectMapper mapper = new ObjectMapper().configure(
             com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final EdcHttpClient httpClient = mock();
     private final ConnectorDiscoveryServiceImpl service =
-            new ConnectorDiscoveryServiceImpl(bdrsClient, httpClient, mapper, new AggregatedIdentifierMapper(new DidMapper(), new BpnMapper(bdrsClient)));
+            new ConnectorDiscoveryServiceImpl(bdrsClient, didResolver, httpClient, mapper, new AggregatedIdentifierMapper(new DidMapper(), new BpnMapper(bdrsClient)));
 
     @Test
     void discoverVersionParams_shouldReturnDsp2025_whenDsp2025AvailableAndDidResolvable() throws IOException {
@@ -78,7 +79,7 @@ class ConnectorDiscoveryServiceImplTest {
                 .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any/somePath")
                 .build();
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.identifier()))
                 .thenReturn(expectedDid);
         when(httpClient.execute(any()))
                 .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
@@ -105,7 +106,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("path", "/somePath")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.identifier()))
                 .thenReturn(null);
         when(httpClient.execute(any()))
                 .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
@@ -133,7 +134,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("path", "/2025-1")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.identifier()))
                 .thenReturn(null);
         when(httpClient.execute(any()))
                 .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
@@ -157,7 +158,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("path", "/")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.identifier()))
                 .thenReturn(expectedDid);
         when(httpClient.execute(any()))
                 .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
@@ -180,7 +181,7 @@ class ConnectorDiscoveryServiceImplTest {
 
         var expectedDid = "did:web:providerdid";
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.identifier()))
                 .thenReturn(expectedDid);
         when(httpClient.execute(any()))
                 .thenReturn(dummyResponseBuilder(404, "Not Found", "Not Found").build());
@@ -203,7 +204,7 @@ class ConnectorDiscoveryServiceImplTest {
                                 .add("version", "2025-1")
                                 .add("binding", "someBinding"))).build();
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.bpnl()))
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.identifier()))
                 .thenReturn(expectedDid);
         when(httpClient.execute(any()))
                 .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());

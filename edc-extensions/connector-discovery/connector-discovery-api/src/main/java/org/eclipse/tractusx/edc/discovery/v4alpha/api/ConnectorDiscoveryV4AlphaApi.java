@@ -57,7 +57,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    JsonObject discoverDspVersionParamsV4Alpha(JsonObject querySpecJson);
+    void discoverDspVersionParamsV4Alpha(JsonObject querySpecJson, @Suspended AsyncResponse response);
 
     @Operation(description = "Retrieves 'DataService' Entries from the DID document of a participant and provides the connection parameters for all found",
             requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Service Discovery Request", implementation = ConnectorDiscoveryRequestSchema.class))),

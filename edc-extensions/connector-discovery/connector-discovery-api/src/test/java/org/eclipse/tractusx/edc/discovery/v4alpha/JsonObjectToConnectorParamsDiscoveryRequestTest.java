@@ -25,8 +25,8 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.transformers.JsonObjectToConne
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -38,14 +38,14 @@ class JsonObjectToConnectorParamsDiscoveryRequestTest {
     @Test
     void testTransform() {
         var jsonObject = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, "testBPNL")
+                .add(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, "testBPNL")
                 .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, "testCounterPartyAddress")
                 .build();
 
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNotNull();
-        assertThat(request.bpnl()).isEqualTo("testBPNL");
+        assertThat(request.identifier()).isEqualTo("testBPNL");
         assertThat(request.counterPartyAddress()).isEqualTo("testCounterPartyAddress");
     }
 
@@ -58,7 +58,7 @@ class JsonObjectToConnectorParamsDiscoveryRequestTest {
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNull();
-        verify(transformerContext).reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: tx:bpnl or edc:counterPartyAddress");
+        verify(transformerContext).reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: tx:identifier or edc:counterPartyAddress");
     }
 
 }
