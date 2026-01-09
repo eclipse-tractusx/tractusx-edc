@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.dataflow.service;
 
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.tractusx.non.finite.provider.push.spi.FinitenessEvaluator;
 import org.eclipse.tractusx.edc.spi.dataflow.DataFlowService;
@@ -36,12 +35,10 @@ public class DataFlowServiceImpl implements DataFlowService {
 
     private final DataPlaneStore dataPlaneStore;
     private final FinitenessEvaluator finitenessEvaluator;
-    private final Monitor monitor;
 
-    public DataFlowServiceImpl(DataPlaneStore dataPlaneStore, FinitenessEvaluator finitenessEvaluator, Monitor monitor) {
+    public DataFlowServiceImpl(DataPlaneStore dataPlaneStore, FinitenessEvaluator finitenessEvaluator) {
         this.dataPlaneStore = dataPlaneStore;
         this.finitenessEvaluator = finitenessEvaluator;
-        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
@@ -52,22 +49,18 @@ public class DataFlowServiceImpl implements DataFlowService {
 
     private ServiceResult<Void> trigger(DataFlow dataflow) {
         if (!isPushFlowType(dataflow)) {
-            var msg  = "Could not trigger dataflow %s because it's not PUSH flow type".formatted(dataflow.getId());
-            monitor.severe(msg);
-            return badRequest(msg);
+            return badRequest("Could not trigger dataflow %s because it's not PUSH flow type"
+                    .formatted(dataflow.getId()));
         }
 
         if (!finitenessEvaluator.isNonFinite(dataflow)) {
-            var msg  = "Could not trigger dataflow %s because underlying asset is finite".formatted(dataflow.getId());
-            monitor.severe(msg);
-            return badRequest(msg);
+            return badRequest("Could not trigger dataflow %s because underlying asset is finite"
+                    .formatted(dataflow.getId()));
         }
 
         if (!isInStartedState(dataflow)) {
-            var msg  = "Could not trigger dataflow %s because it's not STARTED. Current state is %s"
-                    .formatted(dataflow.getId(), dataflow.stateAsString());
-            monitor.severe(msg);
-            return conflict(msg);
+            return conflict("Could not trigger dataflow %s because it's not STARTED. Current state is %s"
+                    .formatted(dataflow.getId(), dataflow.stateAsString()));
         }
 
         dataflow.transitToReceived(dataflow.getRuntimeId());

@@ -31,7 +31,6 @@ import org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
 import org.eclipse.edc.protocol.spi.ProtocolVersion;
 import org.eclipse.edc.protocol.spi.ProtocolVersions;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -47,13 +46,12 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
     private final BdrsClient bdrsClient;
     private final EdcHttpClient httpClient;
     private final ObjectMapper mapper;
-    private final Monitor monitor;
 
-    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, EdcHttpClient httpClient, ObjectMapper mapper, Monitor monitor) {
+    public ConnectorDiscoveryServiceImpl(BdrsClient bdrsClient, EdcHttpClient httpClient, ObjectMapper mapper) {
         this.bdrsClient = bdrsClient;
         this.httpClient = httpClient;
         this.mapper = mapper;
-        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+
     }
 
     @Override
@@ -70,9 +68,7 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
 
             if (!response.isSuccessful()) {
                 var failureMessage = response.message();
-                var msg = "Counter party well-known endpoint has failed with status %s and message: %s".formatted(response.code(), failureMessage);
-                monitor.severe(msg);
-                return ServiceResult.unexpected(msg);
+                return ServiceResult.unexpected("Counter party well-known endpoint has failed with status %s and message: %s".formatted(response.code(), failureMessage));
             } else {
                 var bytesBody = response.body().bytes();
 
@@ -98,16 +94,12 @@ public class ConnectorDiscoveryServiceImpl implements ConnectorDiscoveryService 
             }
 
         } catch (IOException e) {
-            var msg = "An exception with the following message occurred while executing dsp version request: %s".formatted(e.getMessage());
-            monitor.severe(msg, e);
-            return ServiceResult.unexpected(msg);
+            return ServiceResult.unexpected("An exception with the following message occurred while executing dsp version request: %s".formatted(e.getMessage()));
         }
 
-        var msg = "No valid protocol version found for the counter party. " +
+        return ServiceResult.unexpected("No valid protocol version found for the counter party. " +
                 "The provided BPNL couldn't be resolved to a DID or the counter party does " +
-                "not support any of the expected protocol versions (" + Dsp08Constants.V_08_VERSION + ", " + Dsp2025Constants.V_2025_1_VERSION + ")";
-        monitor.severe(msg);
-        return ServiceResult.unexpected(msg);
+                "not support any of the expected protocol versions (" + Dsp08Constants.V_08_VERSION + ", " + Dsp2025Constants.V_2025_1_VERSION + ")");
     }
 
     private String removeTrailingSlash(String path) {

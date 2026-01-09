@@ -26,7 +26,6 @@ import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
@@ -65,12 +64,10 @@ public class BusinessPartnerNumberPermissionLegacyFunction<C extends Participant
             Operator.HAS_PART
     );
 
-    private final BdrsClient bdrsClient;
-    private final Monitor monitor;
+    private BdrsClient bdrsClient;
 
-    public BusinessPartnerNumberPermissionLegacyFunction(BdrsClient bdrsClient, Monitor monitor) {
+    public BusinessPartnerNumberPermissionLegacyFunction(BdrsClient bdrsClient) {
         this.bdrsClient = bdrsClient;
-        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
@@ -78,17 +75,14 @@ public class BusinessPartnerNumberPermissionLegacyFunction<C extends Participant
         var participantAgent = context.participantAgent();
 
         if (!SUPPORTED_OPERATORS.contains(operator)) {
-            var msg = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
-            monitor.warning(msg);
-            context.reportProblem(msg);
+            var message = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
+            context.reportProblem(message);
             return false;
         }
 
         var identity = participantAgent.getIdentity();
         if (identity == null) {
-            var msg = "Identity of the participant agent cannot be null";
-            monitor.warning(msg);
-            context.reportProblem(msg);
+            context.reportProblem("Identity of the participant agent cannot be null");
             return false;
         }
 
@@ -131,22 +125,16 @@ public class BusinessPartnerNumberPermissionLegacyFunction<C extends Participant
 
             return success(containsBpn);
         }
-
-        var msg = "Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
-                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null));
-        monitor.warning(msg);
-        return failure(msg);
+        return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
+                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 
     private Result<Boolean> checkStringContains(String identity, Object rightValue) {
         if (rightValue instanceof String bpnString) {
             return success(identity.contains(bpnString));
         }
-
-        var msg = "Invalid right-value: operator '%s' requires a 'String' but got a '%s'"
-                .formatted(HAS_PART, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null));
-        monitor.warning(msg);
-        return failure(msg);
+        return failure("Invalid right-value: operator '%s' requires a 'String' but got a '%s'"
+                .formatted(HAS_PART, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -156,10 +144,7 @@ public class BusinessPartnerNumberPermissionLegacyFunction<C extends Participant
         } else if (rightValue instanceof List bpnList) {
             return success(bpnList.stream().allMatch(bpn -> Objects.equals(identity, bpn)));
         }
-
-        var msg = "Invalid right-value: operator '%s' requires a 'String' or a 'List' but got a '%s'"
-                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null));
-        monitor.warning(msg);
-        return failure(msg);
+        return failure("Invalid right-value: operator '%s' requires a 'String' or a 'List' but got a '%s'"
+                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
     }
 }

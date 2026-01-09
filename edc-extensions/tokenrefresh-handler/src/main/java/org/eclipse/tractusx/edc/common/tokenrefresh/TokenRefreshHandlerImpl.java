@@ -91,8 +91,8 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
     public ServiceResult<DataAddress> refreshToken(String tokenId) {
         var edrResult = edrCache.get(tokenId);
         if (edrResult.failed()) {
-            var msg = "Could not find EDR for token ID %s: %s".formatted(tokenId, edrResult.getFailureDetail());
-            monitor.severe(msg);
+            var msg = "Could not find EDR for transfer process ID %s: %s".formatted(tokenId, edrResult.getFailureDetail());
+            monitor.warning(msg);
             return ServiceResult.notFound(edrResult.getFailureDetail());
         }
         var edr = edrResult.getContent();
@@ -108,22 +108,22 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
 
         if (isNullOrBlank(accessToken)) {
             var msg = "Cannot perform token refresh: required property 'authorization' not found on EDR.";
-            monitor.severe(msg);
+            monitor.warning(msg);
             return ServiceResult.badRequest(msg);
         }
         if (isNullOrBlank(StringUtils.toString(refreshToken))) {
             var msg = "Cannot perform token refresh: required property 'refreshToken' not found on EDR.";
-            monitor.severe(msg);
+            monitor.warning(msg);
             return ServiceResult.badRequest(msg);
         }
         if (isNullOrBlank(StringUtils.toString(refreshEndpoint))) {
             var msg = "Cannot perform token refresh: required property 'refreshEndpoint' not found on EDR.";
-            monitor.severe(msg);
+            monitor.warning(msg);
             return ServiceResult.badRequest(msg);
         }
         if (isNullOrBlank(StringUtils.toString(refreshAudience))) {
             var msg = "Cannot perform token refresh: required property 'refreshAudience' not found on EDR.";
-            monitor.severe(msg);
+            monitor.warning(msg);
             return ServiceResult.badRequest(msg);
         }
 

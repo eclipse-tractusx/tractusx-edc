@@ -24,9 +24,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,7 +41,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,16 +49,9 @@ class BusinessPartnerNumberPermissionFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
     private final BdrsClient bdrsClient = mock();
-    private final Monitor monitor = mock();
     private final Permission unusedPermission = Permission.Builder.newInstance().build();
     private final ParticipantAgentPolicyContext policyContext = new TestParticipantAgentPolicyContext(participantAgent);
-    private BusinessPartnerNumberPermissionLegacyFunction<TestParticipantAgentPolicyContext> validation;
-
-    @BeforeEach
-    void setup() {
-        when(monitor.withPrefix(anyString())).thenReturn(monitor);
-        validation = new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient, monitor);
-    }
+    private final BusinessPartnerNumberPermissionLegacyFunction<TestParticipantAgentPolicyContext> validation = new BusinessPartnerNumberPermissionLegacyFunction<>(bdrsClient);
 
     @ParameterizedTest(name = "Illegal Operator {0}")
     @ArgumentsSource(IllegalOperatorProvider.class)

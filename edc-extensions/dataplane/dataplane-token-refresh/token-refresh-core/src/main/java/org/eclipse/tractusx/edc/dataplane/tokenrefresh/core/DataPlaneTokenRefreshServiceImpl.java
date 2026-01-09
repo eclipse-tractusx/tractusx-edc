@@ -244,6 +244,11 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         var additionalDataForStorage = new HashMap<>(additionalTokenData);
         additionalDataForStorage.put("authType", "bearer");
 
+        // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
+        var claimToken = ClaimToken.Builder.newInstance().claims(tokenParameters.getClaims()).build();
+        var accessTokenData = new AccessTokenData(accessTokenResult.getContent().id(), claimToken, backendDataAddress, additionalDataForStorage);
+        var storeResult = accessTokenDataStore.store(accessTokenData);
+
         var participantContextServiceResult = participantContextSupplier.get();
         if (participantContextServiceResult.failed()) {
             var msg = "Cannot retrieve ParticipantContext: " + participantContextServiceResult.getFailureDetail();
@@ -275,11 +280,6 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 .additional(edrAdditionalData) //contains additional properties and the refresh token
                 .expiresIn(tokenExpirySeconds) //todo: needed?
                 .build();
-
-        // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
-        var claimToken = ClaimToken.Builder.newInstance().claims(tokenParameters.getClaims()).build();
-        var accessTokenData = new AccessTokenData(accessTokenResult.getContent().id(), claimToken, backendDataAddress, additionalDataForStorage);
-        var storeResult = accessTokenDataStore.store(accessTokenData);
 
         if (storeResult.failed()) {
             monitor.severe("Could not store AccessTokenData: %s".formatted(storeResult.getFailureDetail()));

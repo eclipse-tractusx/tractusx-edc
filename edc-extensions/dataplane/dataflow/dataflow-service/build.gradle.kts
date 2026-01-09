@@ -28,7 +28,6 @@ dependencies {
 
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.dataplane.dataplane)
-    implementation(libs.edc.boot)
 
     testImplementation(libs.edc.junit)
 }
