@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.edc.identity.mapper;
 
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -56,10 +57,11 @@ class BdrsClientAudienceMapper implements AudienceResolver {
             
             var resolve = client.resolveDid(counterPartyId);
             return Result.from(Optional.ofNullable(resolve));
+        } catch (EdcException e) {
+            return Result.failure("Failure in DID resolution: " + e.getMessage());
         } catch (Exception e) {
-            var msg = "Failure in DID resolution: " + e.getMessage();
-            monitor.severe(msg, e);
-            return Result.failure(msg);
+            monitor.warning(e.getMessage(), e);
+            return Result.failure(e.getMessage());
         }
     }
 

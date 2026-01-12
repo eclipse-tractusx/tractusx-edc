@@ -92,7 +92,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         var edrResult = edrCache.get(tokenId);
         if (edrResult.failed()) {
             var msg = "Could not find EDR for transfer process ID %s: %s".formatted(tokenId, edrResult.getFailureDetail());
-            monitor.warning(msg);
+            monitor.debug(msg);
             return ServiceResult.notFound(edrResult.getFailureDetail());
         }
         var edr = edrResult.getContent();
@@ -108,22 +108,22 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
 
         if (isNullOrBlank(accessToken)) {
             var msg = "Cannot perform token refresh: required property 'authorization' not found on EDR.";
-            monitor.warning(msg);
+            monitor.severe(msg);
             return ServiceResult.badRequest(msg);
         }
         if (isNullOrBlank(StringUtils.toString(refreshToken))) {
             var msg = "Cannot perform token refresh: required property 'refreshToken' not found on EDR.";
-            monitor.warning(msg);
+            monitor.severe(msg);
             return ServiceResult.badRequest(msg);
         }
         if (isNullOrBlank(StringUtils.toString(refreshEndpoint))) {
             var msg = "Cannot perform token refresh: required property 'refreshEndpoint' not found on EDR.";
-            monitor.warning(msg);
+            monitor.severe(msg);
             return ServiceResult.badRequest(msg);
         }
         if (isNullOrBlank(StringUtils.toString(refreshAudience))) {
             var msg = "Cannot perform token refresh: required property 'refreshAudience' not found on EDR.";
-            monitor.warning(msg);
+            monitor.severe(msg);
             return ServiceResult.badRequest(msg);
         }
 
@@ -142,7 +142,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
                         .flatMap(ServiceResult::from))
                 .recover(f -> {
                     var msg = "Could not execute token refresh: " + f.getFailureDetail();
-                    monitor.severe(msg);
+                    monitor.warning(msg);
                     return ServiceResult.badRequest(msg);
                 })
                 .compose(this::executeRequest)
@@ -168,11 +168,11 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
                     return ServiceResult.success(tokenResponse);
                 }
                 var msg = "Token refresh successful, but body was empty.";
-                monitor.severe(msg);
-                return ServiceResult.badRequest(msg);
+                monitor.warning(msg);
+                return ServiceResult.unexpected(msg);
             }
             var responseBody = StringUtils.toString(response.body());
-            monitor.severe(format("Received error response from %s: %s - %s: \"%s\".", tokenRefreshRequest.url().url(),
+            monitor.debug(format("Received error response from %s: %s - %s: \"%s\".", tokenRefreshRequest.url().url(),
                     response.code(), response.message(), responseBody));
             return switch (response.code()) {
                 case 401 -> ServiceResult.unauthorized(response.message());
@@ -182,7 +182,7 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
             };
         } catch (IOException e) {
             var msg = "Error executing token refresh request";
-            monitor.severe(msg, e);
+            monitor.warning(msg, e);
             return ServiceResult.from(StoreResult.generalError(msg + ": %s".formatted(e)));
         }
     }

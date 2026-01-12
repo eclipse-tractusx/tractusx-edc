@@ -73,7 +73,7 @@ public class EdrServiceImpl implements EdrService {
         var edrEntry = edrStore.findById(id);
         if (edrEntry == null) {
             var msg = "An EndpointDataReferenceEntry with ID '%s' does not exist".formatted(id);
-            monitor.warning(msg);
+            monitor.debug(msg);
             return ServiceResult.notFound(msg);
         }
         if (edrLock.isExpired(edr, edrEntry) || mode.equals(RefreshMode.FORCE_REFRESH)) {

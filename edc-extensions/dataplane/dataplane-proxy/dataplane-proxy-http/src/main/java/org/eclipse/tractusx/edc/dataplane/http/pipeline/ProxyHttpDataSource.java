@@ -67,7 +67,6 @@ public class ProxyHttpDataSource implements DataSource {
 
             return handleResponse(response, statusCode);
         } catch (IOException e) {
-            monitor.severe("Exception during executing HTTP request: " + request.url().url(), e);
             throw new EdcException(e);
         }
     }

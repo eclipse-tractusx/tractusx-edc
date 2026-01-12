@@ -81,7 +81,7 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
             var contractAgreement = contractAgreementService.findById(entry.getAgreementId());
             if (contractAgreement == null) {
                 var msg = NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId());
-                monitor.warning(msg);
+                monitor.debug(msg);
                 return ServiceResult.notFound(msg);
             }
 

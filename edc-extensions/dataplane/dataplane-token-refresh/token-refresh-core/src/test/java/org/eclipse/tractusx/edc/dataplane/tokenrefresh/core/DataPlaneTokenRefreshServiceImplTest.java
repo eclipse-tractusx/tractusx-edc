@@ -84,7 +84,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
         accessTokenService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
                 tokenValidationService, didPublicKeyResolver, localPublicKeyService, accessTokenDataStore, tokenGenService, mock(), monitor,
-                "https://example.com", "did:web:provider", 1, 300L,
+                "https://example.com", 1, 300L,
                 () -> "keyid", mock(), new ObjectMapper(), participantContextSupplier);
     }
 

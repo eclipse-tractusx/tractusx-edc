@@ -171,7 +171,7 @@ class BdrsClientImpl implements BdrsClient {
                 }
             } else {
                 var msg = "Could not obtain data from BDRS server: code: %d, message: %s".formatted(response.code(), response.message());
-                monitor.severe(msg);
+                monitor.warning(msg);
                 return Result.failure(msg);
             }
         } catch (IOException e) {
@@ -204,7 +204,7 @@ class BdrsClientImpl implements BdrsClient {
                 .compose(pres -> {
                     if (pres.isEmpty()) {
                         var msg = "Expected exactly 1 VP, but was empty";
-                        monitor.severe(msg);
+                        monitor.warning(msg);
                         return Result.failure(msg);
                     }
                     if (pres.size() != 1) {

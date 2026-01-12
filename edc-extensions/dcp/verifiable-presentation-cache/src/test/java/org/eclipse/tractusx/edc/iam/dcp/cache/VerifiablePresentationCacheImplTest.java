@@ -24,6 +24,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.RevocationServiceRegi
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentation;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiablePresentationContainer;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.spi.dcp.VerifiablePresentationCacheEntry;
@@ -44,6 +45,7 @@ import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.edc.spi.result.StoreFailure.Reason.NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -70,9 +72,9 @@ class VerifiablePresentationCacheImplTest {
     private final VerifiableCredentialValidationService validationService = mock();
     private final UnaryOperator<String> didResolver = pcId -> ownDid;
     private final RevocationServiceRegistry revocationServiceRegistry = mock();
+    private final Monitor monitor = mock();
 
-    private final VerifiablePresentationCacheImpl cache = new VerifiablePresentationCacheImpl(cacheValidity,
-            clock, store, validationService, didResolver, revocationServiceRegistry, mock());
+    private VerifiablePresentationCacheImpl cache;
 
     @BeforeEach
     void setUp() {
@@ -91,6 +93,10 @@ class VerifiablePresentationCacheImplTest {
         when(store.remove(participantContextId, counterPartyDid, scopes)).thenReturn(StoreResult.success());
         when(validationService.validate(eq(List.of(vpContainer)), eq(ownDid), eq(emptyList()))).thenReturn(Result.success());
         when(revocationServiceRegistry.checkValidity(vc)).thenReturn(Result.success());
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+
+        cache = new VerifiablePresentationCacheImpl(cacheValidity, clock, store, validationService, didResolver,
+                revocationServiceRegistry, monitor);
     }
 
     @Nested

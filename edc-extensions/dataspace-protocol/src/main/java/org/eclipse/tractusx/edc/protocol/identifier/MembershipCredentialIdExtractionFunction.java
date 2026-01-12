@@ -51,12 +51,8 @@ public abstract class MembershipCredentialIdExtractionFunction implements Partic
     @Override
     public String apply(ClaimToken claimToken) {
         var credentials = getCredentialList(claimToken)
-                .orElseThrow(failure -> {
-                    var msg = "Failed to fetch credentials from the claim token: %s".formatted(failure.getFailureDetail());
-                    monitor.severe(msg);
-                    return new EdcException(msg);
-                });
-        
+                .orElseThrow(failure -> new EdcException("Failed to fetch credentials from the claim token: %s".formatted(failure.getFailureDetail())));
+
         return credentials.stream()
                 .filter(typePredicate)
                 .findFirst()

@@ -91,7 +91,6 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     private final Supplier<String> publicKeyIdSupplier;
     private final Monitor monitor;
     private final String refreshEndpoint;
-    private final String ownDid;
     private final Clock clock;
     private final Vault vault;
     private final ObjectMapper objectMapper;
@@ -106,7 +105,6 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                                             Supplier<String> privateKeyIdSupplier,
                                             Monitor monitor,
                                             String refreshEndpoint,
-                                            String ownDid,
                                             int tokenExpiryToleranceSeconds,
                                             long tokenExpirySeconds,
                                             Supplier<String> publicKeyIdSupplier,
@@ -123,7 +121,6 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         this.refreshEndpoint = refreshEndpoint;
         this.clock = clock;
         this.publicKeyIdSupplier = publicKeyIdSupplier;
-        this.ownDid = ownDid;
         this.vault = vault;
         this.objectMapper = objectMapper;
         this.tokenExpirySeconds = tokenExpirySeconds;
@@ -163,7 +160,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         var authTokenRes = tokenValidationService.validate(authenticationToken, publicKeyResolver, authenticationTokenValidationRules);
         if (authTokenRes.failed()) {
             var msg = "Authentication token validation failed: %s".formatted(authTokenRes.getFailureDetail());
-            monitor.severe(msg);
+            monitor.debug(msg);
             return Result.failure(msg);
         }
 
@@ -183,7 +180,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
         if (accessTokenDataResult.failed()) {
             var msg = "Access token validation failed: %s".formatted(accessTokenDataResult.getFailureDetail());
-            monitor.severe(msg);
+            monitor.debug(msg);
             return Result.failure(msg);
         }
 
@@ -228,14 +225,14 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         var refreshTokenResult = createToken(TokenParameters.Builder.newInstance().build());
         if (refreshTokenResult.failed()) {
             var msg = "Could not generate refresh token: %s".formatted(refreshTokenResult.getFailureDetail());
-            monitor.severe(msg);
+            monitor.debug(msg);
             return Result.failure(msg);
         }
 
         var accessTokenResult = createToken(tokenParameters);
         if (accessTokenResult.failed()) {
             var msg = "Could not generate access token: %s".formatted(accessTokenResult.getFailureDetail());
-            monitor.severe(msg);
+            monitor.debug(msg);
             return Result.failure(msg);
         }
 
@@ -265,7 +262,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
         if (audience == null) {
             var msg = "Missing audience in the additional properties";
-            monitor.severe(msg);
+            monitor.debug(msg);
             return Result.failure(msg);
         }
 
@@ -298,7 +295,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
                     if (tokenData == null) {
                         var msg = "AccessTokenData with ID '%s' does not exist.".formatted(id);
-                        monitor.warning(msg);
+                        monitor.debug(msg);
                         return  Result.failure(msg);
                     }
                     return Result.success(tokenData);
@@ -317,7 +314,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 .map(ServiceResult::from)
                 .orElseGet(() -> {
                     var msg = "AccessTokenData associated to the transfer with ID '%s' does not exist.".formatted(transferProcessId);
-                    monitor.warning(msg);
+                    monitor.debug(msg);
                     return ServiceResult.notFound(msg);
                 });
     }
