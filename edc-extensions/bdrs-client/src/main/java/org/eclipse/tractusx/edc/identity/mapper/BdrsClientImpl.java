@@ -171,6 +171,7 @@ class BdrsClientImpl implements BdrsClient {
                 }
             } else {
                 var msg = "Could not obtain data from BDRS server: code: %d, message: %s".formatted(response.code(), response.message());
+                monitor.warning(msg);
                 return Result.failure(msg);
             }
         } catch (IOException e) {
@@ -194,6 +195,7 @@ class BdrsClientImpl implements BdrsClient {
                     if (result.succeeded()) {
                         return Result.success(result.getContent());
                     } else {
+                        monitor.severe("Could not get participant context: " + result.getFailureDetail());
                         return Result.failure(result.getFailureDetail());
                     }
                 })
@@ -201,7 +203,9 @@ class BdrsClientImpl implements BdrsClient {
                 .compose(sit -> credentialServiceClient.requestPresentation(ownCredentialServiceUrl.get(), sit.getToken(), List.of(scope)))
                 .compose(pres -> {
                     if (pres.isEmpty()) {
-                        return Result.failure("Expected exactly 1 VP, but was empty");
+                        var msg = "Expected exactly 1 VP, but was empty";
+                        monitor.warning(msg);
+                        return Result.failure(msg);
                     }
                     if (pres.size() != 1) {
                         monitor.warning("Expected exactly 1 VP, but found %d.".formatted(pres.size()));

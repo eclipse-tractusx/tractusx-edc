@@ -27,6 +27,7 @@ import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.protocol.identifier.BpnExtractionFunction;
@@ -55,14 +56,16 @@ public class DataspaceProtocolExtension implements ServiceExtension {
     private DspBaseWebhookAddress dspWebhookAddress;
     @Inject
     private SingleParticipantContextSupplier singleParticipantContextSupplier;
+    @Inject
+    private Monitor monitor;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
         Stream.of(
-                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), new BpnExtractionFunction()),
-                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2025_1, V_2025_1, () -> dspWebhookAddress.get() + V_2025_1_PATH, new DidExtractionFunction()),
+                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), new BpnExtractionFunction(monitor)),
+                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2025_1, V_2025_1, () -> dspWebhookAddress.get() + V_2025_1_PATH, new DidExtractionFunction(monitor)),
                 // currently required for DCP TCK tests
-                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2024_1, V_2024_1, () -> dspWebhookAddress.get() + V_2024_1_PATH, new BpnExtractionFunction())
+                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2024_1, V_2024_1, () -> dspWebhookAddress.get() + V_2024_1_PATH, new BpnExtractionFunction(monitor))
         ).forEach(contextRegistry::register);
     }
 

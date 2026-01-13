@@ -61,7 +61,7 @@ class AgreementsRetirementServiceImplTest {
     private final EventRouter eventRouter = mock();
 
     private final AgreementsRetirementService service = new AgreementsRetirementServiceImpl(store, transactionContext,
-            contractAgreementService, eventRouter, Clock.systemUTC());
+            contractAgreementService, eventRouter, Clock.systemUTC(), mock());
 
     @Test
     void returnsTrue_ifAgreementIsRetired() {

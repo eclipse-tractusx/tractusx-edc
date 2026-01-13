@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.agreements.retirement.service;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventRouter;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -49,15 +50,17 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
     private final ContractAgreementService contractAgreementService;
     private final EventRouter eventRouter;
     private final Clock clock;
+    private final Monitor monitor;
 
     public AgreementsRetirementServiceImpl(AgreementsRetirementStore store, TransactionContext transactionContext,
                                            ContractAgreementService contractAgreementService, EventRouter eventRouter,
-                                           Clock clock) {
+                                           Clock clock, Monitor monitor) {
         this.store = store;
         this.transactionContext = transactionContext;
         this.contractAgreementService = contractAgreementService;
         this.eventRouter = eventRouter;
         this.clock = clock;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
@@ -77,7 +80,9 @@ public class AgreementsRetirementServiceImpl implements AgreementsRetirementServ
         return transactionContext.execute(() -> {
             var contractAgreement = contractAgreementService.findById(entry.getAgreementId());
             if (contractAgreement == null) {
-                return ServiceResult.notFound(NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId()));
+                var msg = NOT_FOUND_IN_CONTRACT_AGREEMENT_TEMPLATE.formatted(entry.getAgreementId());
+                monitor.debug(msg);
+                return ServiceResult.notFound(msg);
             }
 
             return store.save(entry)

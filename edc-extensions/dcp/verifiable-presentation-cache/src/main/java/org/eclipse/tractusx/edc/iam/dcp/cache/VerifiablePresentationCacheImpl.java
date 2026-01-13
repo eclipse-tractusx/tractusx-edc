@@ -73,7 +73,7 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
         this.credentialValidationService = credentialValidationService;
         this.didResolver = didResolver;
         this.revocationServiceRegistry = revocationServiceRegistry;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
@@ -91,7 +91,9 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
         var cacheResult = store.query(participantContextId, counterPartyDid, scopes);
 
         if (cacheResult.failed()) {
-            return StoreResult.notFound("No cached entry found for given participant and scopes.");
+            var msg = "No cached entry found for given participant and scopes.";
+            monitor.debug(msg);
+            return StoreResult.notFound(msg);
         }
 
         if (isExpired(cacheResult.getContent()) || expiredOrRevoked(cacheResult.getContent().getPresentations())) {
@@ -99,7 +101,9 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
             if (removeResult.failed()) {
                 monitor.warning(format("Failed to remove expired or invalid entry from cache for %s: %s", counterPartyDid, removeResult.getFailureDetail()));
             }
-            return StoreResult.notFound("No cached entry found for given participant and scopes.");
+            var msg = "VPs/VCs are expired or revoked. Removed from cache.";
+            monitor.debug(msg);
+            return StoreResult.notFound(msg);
         }
 
         return cacheResult.map(VerifiablePresentationCacheEntry::getPresentations);
@@ -127,18 +131,27 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
         var allCreds = presentations.stream()
                 .flatMap(p -> p.presentation().getCredentials().stream())
                 .toList();
-        if (requestedScopes.size() > allCreds.size()) {
-            return Result.failure("Number of requested credentials does not match the number of returned credentials");
-        }
 
         var types = allCreds.stream().map(VerifiableCredential::getType)
                 .flatMap(Collection::stream)
                 .distinct()
                 .toList();
 
-        return requestedScopes.stream().allMatch(scope -> types.stream().anyMatch(scope::contains)) ?
-                Result.success() :
-                Result.failure("Not all requested credentials are present in the presentation response");
+        if (requestedScopes.size() > allCreds.size()) {
+            var msg = "More credentials are requested than returned";
+            monitor.debug(msg + ": requested { %s }, returned { %s }".formatted(String.join(",", requestedScopes),
+                    String.join(",", types)));
+            return Result.failure(msg);
+        }
+
+        if (!requestedScopes.stream().allMatch(scope -> types.stream().anyMatch(scope::contains))) {
+            var msg = "Not all requested credentials are present in the presentation response";
+            monitor.debug(msg + ": requested { %s }, returned { %s }".formatted(String.join(",", requestedScopes),
+                    String.join(",", types)));
+            return Result.failure(msg);
+        }
+
+        return Result.success();
     }
 
     /**
@@ -153,7 +166,9 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
         if (issuers.stream().allMatch(expectedIssuer::equals)) {
             return Result.success();
         } else {
-            return Result.failure("Returned presentations contains invalid issuer. Expected %s found %s".formatted(expectedIssuer, issuers));
+            var msg = "Returned presentations contains invalid issuer. Expected %s found %s".formatted(expectedIssuer, issuers);
+            monitor.warning(msg);
+            return Result.failure(msg);
         }
     }
 

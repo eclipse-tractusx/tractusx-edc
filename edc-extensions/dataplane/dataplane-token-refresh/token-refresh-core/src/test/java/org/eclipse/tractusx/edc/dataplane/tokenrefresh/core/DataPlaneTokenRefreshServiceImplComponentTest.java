@@ -110,7 +110,6 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 () -> privateKeyAlias,
                 monitor,
                 TEST_REFRESH_ENDPOINT,
-                PROVIDER_DID,
                 1,
                 300L,
                 () -> providerKey.getKeyID(),

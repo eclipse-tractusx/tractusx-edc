@@ -196,7 +196,9 @@ public class NonFiniteCapablePipelineService implements PipelineService {
             try {
                 source.close();
             } catch (Exception e) {
-                return StreamResult.error("Cannot terminate DataFlow %s: %s".formatted(dataFlowId, e.getMessage()));
+                var msg = "Cannot terminate DataFlow %s: %s".formatted(dataFlowId, e.getMessage());
+                monitor.severe(msg, e);
+                return StreamResult.error(msg);
             }
         }
         return StreamResult.success();

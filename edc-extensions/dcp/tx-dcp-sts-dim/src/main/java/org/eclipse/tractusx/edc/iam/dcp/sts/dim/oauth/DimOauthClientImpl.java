@@ -91,7 +91,9 @@ public class DimOauthClientImpl implements DimOauth2Client {
     private Result<Oauth2CredentialsRequest> createRequest() {
         var participantContextServiceResult = participantContextSupplier.get();
         if (participantContextServiceResult.failed()) {
-            return Result.failure("Cannot retrieve Participant Context");
+            var msg = "Cannot retrieve Participant Context";
+            monitor.severe(msg + ": " + participantContextServiceResult.getFailureDetail());
+            return Result.failure(msg);
         }
 
         var secret = vault.resolveSecret(participantContextServiceResult.getContent().getParticipantContextId(), configuration.clientSecretAlias());
@@ -104,7 +106,9 @@ public class DimOauthClientImpl implements DimOauth2Client {
 
             return Result.success(builder.build());
         } else {
-            return Result.failure("Failed to fetch client secret from the vault with alias: %s".formatted(configuration.clientSecretAlias()));
+            var msg = "Failed to fetch client secret from the vault with alias: %s".formatted(configuration.clientSecretAlias());
+            monitor.severe(msg);
+            return Result.failure(msg);
         }
     }
 

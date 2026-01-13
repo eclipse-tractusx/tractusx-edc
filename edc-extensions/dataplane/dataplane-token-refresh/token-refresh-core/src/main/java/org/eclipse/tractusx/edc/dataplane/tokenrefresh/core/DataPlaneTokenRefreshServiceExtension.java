@@ -122,7 +122,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(jwsSignerProvider),
-                    () -> context.getConfig().getString(TOKEN_SIGNER_PRIVATE_KEY_ALIAS), context.getMonitor(), refreshEndpoint, getOwnDid(context), expiryTolerance, tokenExpiry,
+                    () -> context.getConfig().getString(TOKEN_SIGNER_PRIVATE_KEY_ALIAS), context.getMonitor(), refreshEndpoint, expiryTolerance, tokenExpiry,
                     () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper(), singleParticipantContextSupplier);
         }
         return tokenRefreshService;
