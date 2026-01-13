@@ -59,7 +59,7 @@ public abstract class MembershipCredentialIdExtractionFunction implements Partic
                 .flatMap(this::getIdentifier)
                 .orElseThrow(() -> {
                     var msg = "Required credential type '%s' not present in ClaimToken, cannot extract property '%s'".formatted(IDENTITY_CREDENTIAL, identityProperty());
-                    monitor.severe(msg);
+                    monitor.warning(msg);
                     return new EdcException(msg);
                 });
     }
@@ -70,18 +70,18 @@ public abstract class MembershipCredentialIdExtractionFunction implements Partic
         
         if (vcListClaim == null) {
             var msg = "ClaimToken did not contain a '%s' claim.".formatted(VC_CLAIM);
-            monitor.severe(msg);
+            monitor.warning(msg);
             return Result.failure(msg);
         }
         if (!(vcListClaim instanceof List)) {
             var msg = "ClaimToken contains a '%s' claim, but the type is incorrect. Expected %s, got %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName());
-            monitor.severe(msg);
+            monitor.warning(msg);
             return Result.failure(msg);
         }
         var vcList = (List<VerifiableCredential>) vcListClaim;
         if (vcList.isEmpty()) {
             var msg = "ClaimToken contains a '%s' claim but it did not contain any VerifiableCredentials.".formatted(VC_CLAIM);
-            monitor.severe(msg);
+            monitor.warning(msg);
             return Result.failure(msg);
         }
         return Result.success(vcList);

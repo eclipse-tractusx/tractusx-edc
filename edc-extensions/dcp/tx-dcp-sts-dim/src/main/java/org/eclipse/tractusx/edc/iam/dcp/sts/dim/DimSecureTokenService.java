@@ -162,7 +162,7 @@ public class DimSecureTokenService implements SecureTokenService {
     private Result<TokenRepresentation> executeRequest(Request request, String context) {
         return httpClient.execute(request, List.of(retryWhenStatusIsNotIn(200, 201)), this::handleResponse)
                 .recover(failure -> {
-                    monitor.warning("Request too %s failed: [%s] %s".formatted(request.url().url(), context, failure.getFailureDetail()));
+                    monitor.warning("Request to %s failed: [%s] %s".formatted(request.url().url(), context, failure.getFailureDetail()));
                     return Result.failure("[%s] %s".formatted(context, failure.getFailureDetail()));
                 });
     }
@@ -188,7 +188,7 @@ public class DimSecureTokenService implements SecureTokenService {
             return baseRequestWithToken()
                     .map(builder -> builder.post(requestBody));
         } catch (JsonProcessingException e) {
-            monitor.warning("Failed to serialize request body: " + e.getMessage(), e);
+            monitor.severe("Failed to serialize request body: " + e.getMessage(), e);
             return Result.failure(e.getMessage());
         }
 

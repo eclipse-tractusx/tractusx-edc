@@ -138,7 +138,7 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
                 .toList();
 
         if (requestedScopes.size() > allCreds.size()) {
-            var msg = "Number of requested credentials does not match the number of returned credentials";
+            var msg = "More credentials are requested than returned";
             monitor.debug(msg + ": requested { %s }, returned { %s }".formatted(String.join(",", requestedScopes),
                     String.join(",", types)));
             return Result.failure(msg);
@@ -167,7 +167,7 @@ public class VerifiablePresentationCacheImpl implements VerifiablePresentationCa
             return Result.success();
         } else {
             var msg = "Returned presentations contains invalid issuer. Expected %s found %s".formatted(expectedIssuer, issuers);
-            monitor.debug(msg);
+            monitor.warning(msg);
             return Result.failure(msg);
         }
     }
