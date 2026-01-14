@@ -22,35 +22,72 @@ to avoid creating duplicate `service` entries and manage itself.
 
 1. Introduce configuration options in application and helm chart.
 2. Create a new SPI including an interface that represents the feature in an abstract manner.
-3. An extension that implements the SPI's interface as client for [SAP DIV's write endpoint to the did document](https://api.sap.com/api/DIV/path/CompanyIdentityV2HttpController_updateCompanyIdentity_v2.0.0).
-4. Another extension that will implement the lifecycle management logic.
+3. Add an extension that will implement the lifecycle management logic.
+4. Another extension implements the SPI's interface as client for [SAP DIV's write endpoint to the did document](https://api.sap.com/api/DIV/path/CompanyIdentityV2HttpController_updateCompanyIdentity_v2.0.0).
 
-The lifecycle management logic shall look like:
+The lifecycle management logic is designed to ensure functional correctness while limiting outbound HTTP traffic on 
+startup. It shall behave acoording to the following diagram:
 
 ```mermaid
 flowchart TD
-    A[Connector<br/>starts up] -->|id| B{id already<br/>exists?}
-    B --> |true| C{same url?}
-    B --> |false| F[add to did doc]
-    C -->|true| D[do nothing]
-    C -->|false| E[update existing entry with URL]
-    D -->|shutdown| G[remove did doc entry]
-    E -->|shutdown| G[remove did doc entry]
-    F -->|shutdown| G[remove did doc entry]
+    J@{ shape: stadium, label: "Terminal point" }
+    A@{ shape: circle, label: "Connector</br>starts up" }
+    A --> H{reg-enabled}
+    H -->|false| G
+    H -->|true</br>serves id and url| E[delete and recreate existing entry with URL]
+    E -->|shutdown| G{dereg-enabled}
+    G -->|true| K[deregister]
+    K --> J
+    G -->|false| J
 ```
 
-The SPI will look something like
+The SPI will look like
 
 ```java
 
-public interface DidServiceClient {
+public interface DidDocumentServiceClient {
 
-    void createService(String id, String urlOfWellKnown);
+    ServiceResult<Void> update(Service service);
     
-    void updateService(String id, String urlOfWellKnown);
-    
-    void deleteService(String id);
-    
+    ServiceResult<Void> deleteById(String id);
 }
-
 ```
+
+## Scaling considerations
+
+As this extension triggers a side-effect on the DID Service, one must consider the case of horizontally scaled runtimes.
+When scaling down, the shutdown sequence must not affect the did document service entry if another container is still
+running. Containers aren't natively aware of each other and making them would be disproportionate effort. If
+deregistration is enabled, this is a very realistic scenario.
+
+The container image should receive two new environment variables:
+- `TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED` (labeled *reg-enabled* in flowchart)
+- `TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED` (labeled *dereg-enabled* in flowchart)
+
+At the same time, requiring an admin to consider this when deploying the helm chart is burdensome. That's why the
+values yaml should look like:
+
+```yaml
+controlplane:
+  didService:
+    selfRegistration:
+      # -- Whether Service Self Registration is enabled
+      enabled: false
+      # -- Unique id of connector to be used for register / unregister service inside did document (must be valid URI)
+      id: "did:web:changeme"
+```
+
+The [deployment-controlplane.yaml](/charts/tractusx-connector/templates/deployment-controlplane.yaml) will infer `TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED`
+by inspecting the scaling configuration like:
+
+```yaml
+- name: "TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED"
+  value: {{ and (eq .Values.controlplane.replicacount 1) (not .Values.controlplane.autoscaling.enabled) }}
+```
+
+Disabling deregistration in the non-scaled case (`!controlplane.autoscaling.enabled` and `controlplane.replicacount==1`)
+they can set `TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED=false` in the map `controlplane.env`.
+
+This approach may result in dangling references from the did document to dead endpoints. Cleanup of those lies outside
+tractusx-edc responsibility and should be done on the DID service directly. This state is more desirable than having 
+available but undiscoverable endpoints as consequence of deletion from every container that shuts down.
