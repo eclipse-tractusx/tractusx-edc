@@ -36,6 +36,7 @@ import java.util.Optional;
 public class DidDocumentServiceSelfRegistrationExtension implements ServiceExtension {
 
     public static final String TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED = "tx.edc.did.service.self.registration.enabled";
+    public static final String TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED = "tx.edc.did.service.self.deregistration.enabled";
     public static final String TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID = "tx.edc.did.service.self.registration.id";
 
     public static final String DATA_SERVICE_TYPE = "DataService";
@@ -54,6 +55,9 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     @Setting(key = TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED, defaultValue = "false", description = "Enable self-registration of the DID Document Service")
     private boolean selfRegistrationEnabled;
 
+    @Setting(key = TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED, defaultValue = "false", description = "Enable self-deregistration of the DID Document Service")
+    private boolean selfDeregistrationEnabled;
+
     @Setting(key = TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID, required = false, description = "The Id to use for service self-registration (should be valid URI)")
     private String serviceId;
 
@@ -68,7 +72,7 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     @Override
     public void shutdown() {
         Optional.ofNullable(didDocumentServiceClient)
-                .filter(client -> selfRegistrationEnabled)
+                .filter(client -> selfDeregistrationEnabled)
                 .ifPresent(this::selfUnregisterDidDocumentService);
     }
 
@@ -100,7 +104,7 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     private Result<String> validatedServiceId(String serviceId) {
 
         if (serviceId == null || serviceId.isBlank()) {
-            return Result.failure("Service ID for DID Document Service self-registration configured via Property '%s' is missing or blank but self-registration is enabled.".formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID));
+            return Result.failure("Service ID for DID Document Service configured via Property '%s' is missing or blank but self-registration / de-registration is enabled.".formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID));
         }
         try {
             new URI(serviceId);
