@@ -257,7 +257,7 @@ spec:
             - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED"
               value: {{ .Values.iatp.didService.selfRegistration.enabled | quote}}
             - name: "TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED"
-              value: {{ and (eq (int .Values.controlplane.replicaCount) 1) (not .Values.controlplane.autoscaling.enabled) }}
+              value: {{ and (eq (int .Values.controlplane.replicaCount) 1) (not .Values.controlplane.autoscaling.enabled) | quote }}
             - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID"
               value: {{ .Values.iatp.didService.selfRegistration.id | quote }}
             - name: "TX_EDC_DCP_CACHE_ENABLED"
