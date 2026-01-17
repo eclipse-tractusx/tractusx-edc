@@ -81,25 +81,27 @@ public interface ConnectorDiscoveryV4AlphaApi {
             })
     void discoverConnectorServicesV4Alpha(JsonObject querySpecJson, @Suspended AsyncResponse response);
 
-    @Schema(name = "ConnectorParamsDiscoveryRequest", example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
+    @Schema(name = "ConnectorParamsDiscoveryRequest",
+            description = "Note: In former versions, the property 'counterPartyId' was named 'bpnl', for convenience this value is still allowed",
+            example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
     record ConnectorParamsDiscoveryRequestSchema(
             @Schema(name = CONTEXT, requiredMode = REQUIRED)
             Object context,
             @Schema(name = JsonLdKeywords.TYPE, example = ConnectorParamsDiscoveryRequest.TYPE)
             String type,
             @Schema(requiredMode = REQUIRED)
-            String bpnl,
+            String counterPartyId,
             @Schema(requiredMode = REQUIRED)
             String counterPartyAddress
     ) {
         public static final String EXAMPLE = """
                 {
                     "@context": {
-                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-                        "edc": "https://w3id.org/edc/v0.0.1/ns/"
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
                     },
                     "@type": "tx:ConnectorParamsDiscoveryRequest",
-                    "tx:bpnl": "BPNL1234567890",
+                    "edc:counterPartyId": "BPNL1234567890",
                     "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
                 }
                 """;
@@ -116,8 +118,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
         public static final String EXAMPLE = """
                 {
                     "@context": {
-                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/"
                     },
                     "edc:counterPartyId": "did:web:one-example.com",
                     "edc:counterPartyAddress": "https://provider.domain.com/api/dsp/2025-1",
@@ -138,18 +139,18 @@ public interface ConnectorDiscoveryV4AlphaApi {
             String[] knownConnectors
     ) {
         public static final String EXAMPLE = """
-                    {
-                        "@context": {
-                            "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                            "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
-                        },
-                        "@type": "tx:ConnectorParamsDiscoveryRequest",
-                        "edc:counterPartyId": "did:web:one-example.com",
-                        "tx:knownConnectors": [
-                            "https://provider.domain.com/conn1/api/dsp",
-                            "https://provider.domain.com/conn2/api/v1/dsp",
-                        ]
-                    }
-                    """;
+                {
+                    "@context": {
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                    },
+                    "@type": "tx:ConnectorParamsDiscoveryRequest",
+                    "edc:counterPartyId": "did:web:one-example.com",
+                    "tx:knownConnectors": [
+                        "https://provider.domain.com/conn1/api/dsp",
+                        "https://provider.domain.com/conn2/api/v1/dsp",
+                    ]
+                }
+                """;
     }
 }

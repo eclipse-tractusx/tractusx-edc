@@ -60,7 +60,7 @@ public class AggregatedIdentifierMapperTest {
             when(bdrsClient.resolveDid(identifier)).thenReturn(expectation);
         }
 
-        var mappedDid = testee.mapToDid(identifier).get();
+        var mappedDid = testee.mapToDid(identifier);
 
         assertThat(mappedDid).isEqualTo(expectation);
         if (bdrsClientCall) {
@@ -105,28 +105,30 @@ public class AggregatedIdentifierMapperTest {
 
     @Test
     void shouldFail_whenProvidedIdentifierIsNeitherBpnlNorDid() {
-        assertThatThrownBy(() -> testee.mapToDid("https://example.com").join())
+        assertThatThrownBy(() -> testee.mapToDid("https://example.com"))
                 .hasMessageContaining("is of unknown type");
         verify(bdrsClient, never()).resolveDid(anyString());
     }
 
     @Test
     void shouldFail_whenProvidedBpnlCannotBeFound() {
-        when(bdrsClient.resolveDid("BPNL1234567890AB")).thenReturn(null);
-        assertThatThrownBy(() -> testee.mapToDid("BPNL1234567890AB").join())
+        var testBpnl = "BPNL1234567890AB";
+        when(bdrsClient.resolveDid(testBpnl)).thenReturn(null);
+        assertThatThrownBy(() -> testee.mapToDid(testBpnl))
                 .hasMessageContaining("not found as registered identity");
-        verify(bdrsClient, times(1)).resolveDid("BPNL1234567890AB");
+        verify(bdrsClient, times(1)).resolveDid(testBpnl);
     }
 
     @Test
     void shouldFail_whenDidMapperIsCalledWithWrongIdentifier() {
-        assertThatThrownBy(() -> didTestee.mapToDid("BPNL1234567890AB").join())
+        assertThatThrownBy(() -> didTestee.mapToDid("BPNL1234567890AB"))
                 .hasMessageContaining("is not a DID");
+        verify(bdrsClient, never()).resolveDid(anyString());
     }
 
     @Test
     void shouldFail_whenBpnMapperIsCalledWithWrongIdentifier() {
-        assertThatThrownBy(() -> bpnTestee.mapToDid("did:web:example.com").join())
+        assertThatThrownBy(() -> bpnTestee.mapToDid("did:web:example.com"))
                 .hasMessageContaining("is not a BPNL");
         verify(bdrsClient, never()).resolveDid(anyString());
     }

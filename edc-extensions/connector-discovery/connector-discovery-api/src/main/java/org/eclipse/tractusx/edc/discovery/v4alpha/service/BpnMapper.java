@@ -24,8 +24,6 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApi
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
-import java.util.concurrent.CompletableFuture;
-
 public class BpnMapper implements IdentifierToDidMapper {
     private static final String BPNL_PREFIX = "bpnl";
 
@@ -41,19 +39,15 @@ public class BpnMapper implements IdentifierToDidMapper {
     }
 
     @Override
-    public CompletableFuture<String> mapToDid(String identifier) {
+    public String mapToDid(String identifier) {
         if (canHandle(identifier)) {
-            return CompletableFuture.supplyAsync(() -> {
-                var did = bdrsClient.resolveDid(identifier);
-                if (did != null) {
-                    return did;
-                } else {
-                    throw new InvalidRequestException(
-                            "Given BPNL %s not found as registered identity".formatted(identifier));
-                }
-            });
+            var did = bdrsClient.resolveDid(identifier);
+            if (did != null) {
+                return did;
+            } else {
+                throw new InvalidRequestException("Given BPNL %s not found as registered identity".formatted(identifier));
+            }
         }
-        return CompletableFuture.failedFuture(
-                new UnexpectedResultApiException("Given counterPartyId %s is not a BPNL".formatted(identifier)));
+        throw new UnexpectedResultApiException("Given counterPartyId %s is not a BPNL".formatted(identifier));
     }
 }

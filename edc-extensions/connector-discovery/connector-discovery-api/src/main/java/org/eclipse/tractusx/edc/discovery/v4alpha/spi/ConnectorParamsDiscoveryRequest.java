@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -33,17 +34,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 public record ConnectorParamsDiscoveryRequest(String identifier, String counterPartyAddress) {
 
     public static final String TYPE = TX_NAMESPACE +  "ConnectorParamsDiscoveryRequest";
-    public static final String DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE = TX_NAMESPACE + "bpnl";
+    public static final String DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY = TX_NAMESPACE + "bpnl";
+    public static final String DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE = EDC_NAMESPACE + "counterPartyId";
     public static final String DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE = EDC_NAMESPACE + "counterPartyAddress";
-
-    public static final String EXAMPLE = """
-            {
-                "@context": {
-                    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-                    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                },
-                "tx:identifier": "BPNL1234567890",
-                "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
-            }
-            """;
 }

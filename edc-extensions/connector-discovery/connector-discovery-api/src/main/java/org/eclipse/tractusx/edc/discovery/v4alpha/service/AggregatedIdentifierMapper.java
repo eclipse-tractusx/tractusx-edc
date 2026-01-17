@@ -23,7 +23,6 @@ import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
 
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 
 import static java.util.List.of;
 
@@ -40,12 +39,11 @@ public class AggregatedIdentifierMapper implements IdentifierToDidMapper {
     }
 
     @Override
-    public CompletableFuture<String> mapToDid(String identifier) {
+    public String mapToDid(String identifier) {
         return aggregatedMapper.stream()
                 .filter(mapper -> mapper.canHandle(identifier))
                 .findAny()
                 .map(mapper -> mapper.mapToDid(identifier))
-                .orElse(CompletableFuture.failedFuture(new InvalidRequestException(
-                        "Given counterPartyId %s is of unknown type".formatted(identifier))));
+                .orElseThrow(() -> new InvalidRequestException("Given counterPartyId %s is of unknown type".formatted(identifier)));
     }
 }

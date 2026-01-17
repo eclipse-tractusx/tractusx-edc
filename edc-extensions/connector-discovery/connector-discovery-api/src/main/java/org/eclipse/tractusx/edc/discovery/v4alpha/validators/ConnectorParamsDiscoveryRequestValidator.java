@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,20 +21,65 @@
 package org.eclipse.tractusx.edc.discovery.v4alpha.validators;
 
 import jakarta.json.JsonObject;
+import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
+import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
+import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY;
 
 
 public class ConnectorParamsDiscoveryRequestValidator {
 
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()
-                .verify(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, MandatoryValue::new)
+                .verify(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, CounterPartyIdValidator::new)
+                .verify(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY, BpnlValidator::new)
                 .verify(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, MandatoryValue::new)
                 .build();
+    }
+
+    private static class CounterPartyIdValidator implements Validator<JsonObject> {
+        private final JsonLdPath path;
+
+        CounterPartyIdValidator(JsonLdPath path) {
+            this.path = path;
+        }
+
+        @Override
+        public ValidationResult validate(JsonObject input) {
+            var providedObject = input.getJsonArray(path.last());
+            if (providedObject == null) {
+                if (input.getJsonArray(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY) != null) {
+                    return ValidationResult.success();
+                }
+                return ValidationResult.failure(
+                        violation("Neither 'counterPartyId' nor 'bpnl' property given", path.toString()));
+            }
+
+            return new MandatoryValue(path).validate(input);
+        }
+    }
+
+    private static class BpnlValidator implements Validator<JsonObject> {
+        private final JsonLdPath path;
+
+        BpnlValidator(JsonLdPath path) {
+            this.path = path;
+        }
+
+        @Override
+        public ValidationResult validate(JsonObject input) {
+            var providedObject = input.getJsonArray(path.last());
+            if (providedObject == null) {
+                return ValidationResult.success();
+            }
+
+            return new MandatoryValue(path).validate(input);
+        }
     }
 }

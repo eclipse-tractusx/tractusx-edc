@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,6 +25,7 @@ import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -33,6 +35,8 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.DspVersionToIdentifierMapper;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
 
+import java.time.Clock;
+
 import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.NAME;
 
 @Extension(value = NAME)
@@ -40,10 +44,15 @@ public class ConnectorDiscoveryDefaultServiceExtension implements ServiceExtensi
 
     public static final String NAME = "Default Connector Discovery Service Extension";
 
+    public static final String TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY = "tx.edc.connector.discovery.cache.expiry";
+
     @Override
     public String name() {
         return NAME;
     }
+
+    @Setting(description = "Expiry time for caching protocol version information in milliseconds", key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = 1000 * 60 * 12 + "")
+    private long didCacheExpiryMillis;
 
     @Inject
     private DidResolverRegistry didResolver;
@@ -57,10 +66,12 @@ public class ConnectorDiscoveryDefaultServiceExtension implements ServiceExtensi
     private IdentifierToDidMapper identifierMapper;
     @Inject
     private DspVersionToIdentifierMapper dspVersionMapper;
+    @Inject
+    private Clock clock;
 
     @Provider(isDefault = true)
     public ConnectorDiscoveryService defaultConnectorDiscoveryService() {
-        return new ConnectorDiscoveryServiceImpl(didResolver, httpClient, typeManager.getMapper(), identifierMapper, dspVersionMapper, monitor);
+        return new ConnectorDiscoveryServiceImpl(didResolver, httpClient, typeManager.getMapper(), identifierMapper, dspVersionMapper, clock, didCacheExpiryMillis, monitor);
     }
 
     @Provider(isDefault = true)
@@ -69,5 +80,7 @@ public class ConnectorDiscoveryDefaultServiceExtension implements ServiceExtensi
     }
 
     @Provider(isDefault = true)
-    public DspVersionToIdentifierMapper defaultDspVersionToIdentifierMapper() { return new DspVersionToIdentifierMapper(){}; }
+    public DspVersionToIdentifierMapper defaultDspVersionToIdentifierMapper() {
+        return new DspVersionToIdentifierMapper() { };
+    }
 }

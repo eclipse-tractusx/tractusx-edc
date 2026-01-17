@@ -19,10 +19,8 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha.spi;
 
-import java.util.concurrent.CompletableFuture;
-
 public interface IdentifierToDidMapper {
     boolean canHandle(String identifier);
 
-    CompletableFuture<String> mapToDid(String identifier);
+    String mapToDid(String identifier);
 }
