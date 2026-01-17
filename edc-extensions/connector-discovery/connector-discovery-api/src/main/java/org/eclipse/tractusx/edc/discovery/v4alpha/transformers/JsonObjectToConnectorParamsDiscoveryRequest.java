@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY;
 
 public class JsonObjectToConnectorParamsDiscoveryRequest extends AbstractJsonLdTransformer<JsonObject, ConnectorParamsDiscoveryRequest> {
 
@@ -39,16 +41,19 @@ public class JsonObjectToConnectorParamsDiscoveryRequest extends AbstractJsonLdT
     @Override
     public @Nullable ConnectorParamsDiscoveryRequest transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
 
-        var identifier = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE), transformerContext);
+        var identifierValue = jsonObject.get(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE);
+        if (identifierValue == null) {
+            identifierValue = jsonObject.get(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY);
+        }
+        var identifier = transformString(identifierValue, transformerContext);
         var counterPartyAddress = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE), transformerContext);
 
         if (identifier == null || counterPartyAddress == null) {
-            transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: tx:identifier or edc:counterPartyAddress");
+            transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: edc:counterPartyId or edc:counterPartyAddress");
             return null;
         }
 
         return new ConnectorParamsDiscoveryRequest(identifier, counterPartyAddress);
-
     }
 }
 

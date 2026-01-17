@@ -31,6 +31,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -64,9 +65,10 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
         validator.validate(ConnectorParamsDiscoveryRequest.TYPE, inputJson)
                 .orElseThrow(ValidationFailureException::new);
 
-        var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class);
+        var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class)
+                .asOptional().orElseThrow(() -> new UnexpectedResultApiException("Input data could not parsed to proper request object"));
 
-        connectorDiscoveryService.discoverVersionParams(discoveryRequest.getContent())
+        connectorDiscoveryService.discoverVersionParams(discoveryRequest)
                 .whenComplete((result, throwable) -> {
                     handleResult(response, result, throwable);
                 });
@@ -79,9 +81,10 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
         validator.validate(ConnectorDiscoveryRequest.TYPE, inputJson)
                 .orElseThrow((ValidationFailureException::new));
 
-        var request = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class);
+        var request = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class)
+                .asOptional().orElseThrow(() -> new UnexpectedResultApiException("Input data could not parsed to proper request object"));
 
-        connectorDiscoveryService.discoverConnectors(request.getContent())
+        connectorDiscoveryService.discoverConnectors(request)
                 .whenComplete((result, throwable) -> {
                     handleResult(response, result, throwable);
                 });

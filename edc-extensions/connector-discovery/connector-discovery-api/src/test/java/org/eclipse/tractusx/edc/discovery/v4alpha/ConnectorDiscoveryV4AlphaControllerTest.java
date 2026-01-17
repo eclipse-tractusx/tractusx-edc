@@ -23,15 +23,17 @@ package org.eclipse.tractusx.edc.discovery.v4alpha;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Violation;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
+import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.edc.web.spi.exception.ValidationFailureException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.api.ConnectorDiscoveryV4AlphaController;
+import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -53,10 +55,11 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
     private final ConnectorDiscoveryService connectorService = mock();
     private final TypeTransformerRegistry transformerRegistry = mock();
     private final JsonObjectValidatorRegistry validator = mock();
+    private final Monitor monitor = mock();
 
     @Override
     protected Object controller() {
-        return new ConnectorDiscoveryV4AlphaController(connectorService, transformerRegistry, validator);
+        return new ConnectorDiscoveryV4AlphaController(connectorService, transformerRegistry, validator, monitor);
     }
 
     @Test
@@ -74,7 +77,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
         when(transformerRegistry.transform(input, ConnectorParamsDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
         when(connectorService.discoverVersionParams(discoveryRequest))
-                .thenReturn(ServiceResult.success(expectedJson));
+                .thenReturn(CompletableFuture.completedFuture(expectedJson));
 
         var resultString = baseRequest("/dspversionparams")
                 .contentType(ContentType.JSON)
@@ -101,7 +104,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
         when(transformerRegistry.transform(input, ConnectorParamsDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
         when(connectorService.discoverVersionParams(discoveryRequest))
-                .thenReturn(ServiceResult.unexpected("test error"));
+                .thenReturn(CompletableFuture.failedFuture(new UnexpectedResultApiException("test error")));
 
         baseRequest("/dspversionparams")
                 .contentType(ContentType.JSON)
@@ -110,6 +113,28 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
                 .then()
                 .log().ifError()
                 .statusCode(500);
+    }
+
+    @Test
+    void connectorParamsDiscovery_shouldReturnFailureBadRequest_whenServiceFails() {
+
+        var input = Json.createObjectBuilder().build();
+        var discoveryRequest = new ConnectorParamsDiscoveryRequest("test", "test");
+
+        when(validator.validate(ConnectorParamsDiscoveryRequest.TYPE, input))
+                .thenReturn(ValidationResult.success());
+        when(transformerRegistry.transform(input, ConnectorParamsDiscoveryRequest.class))
+                .thenReturn(Result.success(discoveryRequest));
+        when(connectorService.discoverVersionParams(discoveryRequest))
+                .thenReturn(CompletableFuture.failedFuture(new InvalidRequestException("test error")));
+
+        baseRequest("/dspversionparams")
+                .contentType(ContentType.JSON)
+                .body(input)
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(400);
     }
 
     @Test
@@ -143,7 +168,7 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
         when(transformerRegistry.transform(input, ConnectorDiscoveryRequest.class))
                 .thenReturn(Result.success(discoveryRequest));
         when(connectorService.discoverConnectors(discoveryRequest))
-                .thenReturn(CompletableFuture.completedFuture(ServiceResult.success(expectedJson)));
+                .thenReturn(CompletableFuture.completedFuture(expectedJson));
 
         var resultString = baseRequest("/connectors")
                 .contentType(ContentType.JSON)
@@ -159,12 +184,69 @@ class ConnectorDiscoveryV4AlphaControllerTest extends RestControllerTestBase {
         assertThat(resultJson).isEqualTo(expectedJson);
     }
 
+    @Test
+    void connectorServiceDiscovery_shouldReturnFailure_whenServiceFails() {
+
+        var input = Json.createObjectBuilder().build();
+        var discoveryRequest = new ConnectorDiscoveryRequest("test", List.of("https://example.com/api/v1/dsp"));
+
+        when(validator.validate(ConnectorDiscoveryRequest.TYPE, input))
+                .thenReturn(ValidationResult.success());
+        when(transformerRegistry.transform(input, ConnectorDiscoveryRequest.class))
+                .thenReturn(Result.success(discoveryRequest));
+        when(connectorService.discoverConnectors(discoveryRequest))
+                .thenReturn(CompletableFuture.failedFuture(new UnexpectedResultApiException("test error")));
+
+        baseRequest("/connectors")
+                .contentType(ContentType.JSON)
+                .body(input)
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(500);
+    }
+
+    @Test
+    void connectorServiceDiscovery_shouldReturnFailureBadRequest_whenServiceFails() {
+
+        var input = Json.createObjectBuilder().build();
+        var discoveryRequest = new ConnectorDiscoveryRequest("test", List.of("https://example.com/api/v1/dsp"));
+
+        when(validator.validate(ConnectorDiscoveryRequest.TYPE, input))
+                .thenReturn(ValidationResult.success());
+        when(transformerRegistry.transform(input, ConnectorDiscoveryRequest.class))
+                .thenReturn(Result.success(discoveryRequest));
+        when(connectorService.discoverConnectors(discoveryRequest))
+                .thenReturn(CompletableFuture.failedFuture(new InvalidRequestException("test error")));
+
+        baseRequest("/connectors")
+                .contentType(ContentType.JSON)
+                .body(input)
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(400);
+    }
+
+    @Test
+    void connectorServiceDiscovery_shouldReturnValidationFailure_whenValidationFails() {
+
+        when(validator.validate(eq(ConnectorDiscoveryRequest.TYPE), any()))
+                .thenThrow(new ValidationFailureException(List.of(new Violation("invalidField", "invalidField", "Invalid field"))));
+
+        baseRequest("/connectors")
+                .contentType(ContentType.JSON)
+                .body("")
+                .post()
+                .then()
+                .log().ifError()
+                .statusCode(400);
+    }
+
     private RequestSpecification baseRequest(String path) {
         return given()
                 .baseUri("http://localhost:" + port)
                 .basePath("/v4alpha/connectordiscovery" + path)
                 .when();
     }
-
-
 }

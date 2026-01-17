@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,6 +26,13 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.validator.spi.Validator;
 import org.eclipse.tractusx.edc.discovery.v4alpha.validators.ConnectorParamsDiscoveryRequestValidator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.stream.Stream;
 
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
@@ -32,21 +40,38 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY;
+import static org.junit.jupiter.params.provider.Arguments.of;
 
 class ConnectorParamsDiscoveryRequestValidatorTest {
 
     private final Validator<JsonObject> validator = ConnectorParamsDiscoveryRequestValidator.instance();
 
-    @Test
-    void shouldSucceed_whenRequestIsValid() {
+    @ParameterizedTest
+    @ArgumentsSource(ConnectorParamsDiscoveryRequestValidatorTest.RequestProvider.class)
+    void shouldSucceed_whenRequestIsValid(String id, boolean legacy, String address) {
         JsonObject validRequest = Json.createObjectBuilder()
-                .add(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE, value("BPNL1234567890"))
-                .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value("https://provider.domain.com/api/dsp"))
+                .add(legacy
+                        ? DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY
+                        : DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE,
+                        value(id))
+                .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value(address))
                 .build();
 
         var result = validator.validate(validRequest);
 
         assertThat(result).isSucceeded();
+    }
+
+    private static class RequestProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                    of("BPNL1234567890AB", false, "https://provider.domain.com/api/dsp"),
+                    of("did:web:example.com", false, "https://provider.domain.com/api/dsp"),
+                    of("BPNL1234567890AB", true, "https://provider.domain.com/api/dsp")
+            );
+        }
     }
 
     @Test
@@ -63,7 +88,7 @@ class ConnectorParamsDiscoveryRequestValidatorTest {
     }
 
     @Test
-    void shouldFail_whenBpnlIsMissing() {
+    void shouldFail_whenCounterPartyIdIsMissing() {
         JsonObject validRequest = Json.createObjectBuilder()
                 .add(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, value("https://provider.domain.com/api/dsp"))
                 .build();
@@ -87,5 +112,4 @@ class ConnectorParamsDiscoveryRequestValidatorTest {
     private JsonArrayBuilder value(String value) {
         return createArrayBuilder().add(createObjectBuilder().add(VALUE, value));
     }
-
 }
