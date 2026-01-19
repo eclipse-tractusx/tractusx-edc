@@ -118,8 +118,7 @@ public class DcpPresentationFlowTest {
     @Test
     void runPresentationFlowTests() {
         var monitor = new ConsoleMonitor(true, true);
-        //Should be used DSP 2024-1 until it will not be updated in DCP TCK to 2025-1
-        var triggerPath = PROTOCOL_API_PATH + "/2024/1/catalog/request";
+        var triggerPath = PROTOCOL_API_PATH + "/2025-1/catalog/request";
         var holderDid = formatDid(CALLBACK_PORT, "holder");
         var thirdPartyDid = formatDid(CALLBACK_PORT, "thirdparty");
         var baseCallbackUrl = "http://localhost:%s".formatted(CALLBACK_PORT);
