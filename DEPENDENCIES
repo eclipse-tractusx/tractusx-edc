@@ -29,22 +29,20 @@ maven/mavencentral/com.azure/azure-storage-internal-avro/12.15.0, MIT, approved,
 maven/mavencentral/com.azure/azure-storage-internal-avro/12.17.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-xml/1.2.0, MIT, approved, clearlydefined
 maven/mavencentral/com.ethlo.time/itu/1.14.0, Apache-2.0, approved, #19505
-maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.15.4, Apache-2.0, approved, #15260
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.16.2, Apache-2.0, approved, #11606
-maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.17.2, Apache-2.0, approved, #13672
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.0, Apache-2.0, approved, #16364
+maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.3, Apache-2.0, approved, #16364
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.4, Apache-2.0, approved, #16364
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.19.2, Apache-2.0, approved, #21911
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.20, Apache-2.0, approved, #23056
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.21, Apache-2.0, approved, #25587
-maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.15.4, Apache-2.0 AND MIT AND BSD-2-Clause, approved, #15194
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.16.2, Apache-2.0 AND MIT, approved, #11602
-maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.17.2, Apache-2.0 AND MIT, approved, #13665
+maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.18.3, Apache-2.0 AND MIT, approved, #16371
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.18.4.1, Apache-2.0 AND MIT, approved, #16371
+maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.19.2, Apache-2.0 AND MIT, approved, #21916
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.20.1, MIT AND Apache-2.0, approved, #23054
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.21.0, MIT AND Apache-2.0 AND (Apache-2.0 AND LicenseRef-scancode-free-unknown AND MIT), restricted, #25590
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.11.0, Apache-2.0, approved, CQ23093
-maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.15.4, Apache-2.0, approved, #15199
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.2, Apache-2.0, approved, #11605
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.0, Apache-2.0, approved, #16372
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.1, Apache-2.0, approved, #16372
@@ -63,27 +61,30 @@ maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.21
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.19.1, Apache-2.0, approved, #20841
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.20.1, , restricted, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.21.0, , restricted, clearlydefined
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.17.2, Apache-2.0, approved, #15117
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.18.3, Apache-2.0, approved, #17264
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.19.2, Apache-2.0, approved, #24939
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.20.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.16.2, Apache-2.0, approved, #11853
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.17.2, Apache-2.0, approved, #14160
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.3, Apache-2.0, approved, #16625
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.4, Apache-2.0, approved, #16625
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.19.2, Apache-2.0, approved, #23299
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.20.1, Apache-2.0, approved, #24684
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.21.0, , restricted, clearlydefined
-maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.15.4, Apache-2.0, approved, #9235
+maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.18.3, Apache-2.0, approved, #16626
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.20.1, Apache-2.0, approved, #25014
-maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.15.4, Apache-2.0, approved, #9236
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.16.2, Apache-2.0, approved, #11858
+maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.18.3, Apache-2.0, approved, #16623
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.19.2, Apache-2.0, approved, #20839
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.20.1, Apache-2.0, approved, #25013
-maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.15.4, Apache-2.0, approved, #9241
+maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-yaml-provider/2.19.2, Apache-2.0, approved, clearlydefined
+maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-yaml-provider/2.20.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.18.0, Apache-2.0, approved, #16368
+maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.18.3, Apache-2.0, approved, #16368
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.20.1, Apache-2.0, approved, #23057
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.16.2, Apache-2.0, approved, #11852
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.20.1, , restricted, clearlydefined
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.21.0, , restricted, clearlydefined
-maven/mavencentral/com.github.dasniko/testcontainers-keycloak/4.1.0, , restricted, clearlydefined
+maven/mavencentral/com.github.dasniko/testcontainers-keycloak/4.1.1, , restricted, clearlydefined
 maven/mavencentral/com.github.docker-java/docker-java-api/3.7.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.7.0, Apache-2.0 AND MPL-2.0, approved, #25269
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.7.0, Apache-2.0, approved, clearlydefined
@@ -136,8 +137,8 @@ maven/mavencentral/com.squareup.okio/okio/3.16.4, Apache-2.0, approved, clearlyd
 maven/mavencentral/com.sun.activation/jakarta.activation/2.0.1, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/com.sun.istack/istack-commons-runtime/4.1.2, BSD-3-Clause, approved, #15290
 maven/mavencentral/com.sun.istack/istack-commons-tools/4.1.2, BSD-3-Clause, approved, #2580
-maven/mavencentral/com.sun.xml.bind.external/relaxng-datatype/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
-maven/mavencentral/com.sun.xml.bind.external/rngom/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/com.sun.xml.bind.external/relaxng-datatype/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/com.sun.xml.bind.external/rngom/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
 maven/mavencentral/commons-beanutils/commons-beanutils/1.11.0, Apache-2.0, approved, #21555
 maven/mavencentral/commons-codec/commons-codec/1.11, Apache-2.0 AND BSD-3-Clause, approved, CQ15971
 maven/mavencentral/commons-codec/commons-codec/1.15, Apache-2.0 AND BSD-3-Clause AND LicenseRef-Public-Domain, approved, CQ22641
@@ -146,6 +147,7 @@ maven/mavencentral/commons-codec/commons-codec/1.19.0, Apache-2.0 AND (Apache-2.
 maven/mavencentral/commons-collections/commons-collections/3.2.2, Apache-2.0, approved, #15185
 maven/mavencentral/commons-fileupload/commons-fileupload/1.6.0, Apache-2.0, approved, #21847
 maven/mavencentral/commons-io/commons-io/2.11.0, Apache-2.0, approved, CQ23745
+maven/mavencentral/commons-io/commons-io/2.17.0, Apache-2.0, approved, #16198
 maven/mavencentral/commons-io/commons-io/2.19.0, Apache-2.0, approved, #20657
 maven/mavencentral/commons-io/commons-io/2.20.0, Apache-2.0, approved, #22562
 maven/mavencentral/commons-logging/commons-logging/1.2, Apache-2.0, approved, CQ10162
@@ -256,13 +258,12 @@ maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.40, Apache-2.0,
 maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.26, Apache-2.0, approved, #10353
 maven/mavencentral/jakarta.activation/jakarta.activation-api/1.2.2, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/jakarta.activation/jakarta.activation-api/2.1.0, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
-maven/mavencentral/jakarta.activation/jakarta.activation-api/2.1.2, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/jakarta.activation/jakarta.activation-api/2.1.3, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/jakarta.annotation/jakarta.annotation-api/2.1.1, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.ca
 maven/mavencentral/jakarta.annotation/jakarta.annotation-api/3.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.ca
 maven/mavencentral/jakarta.inject/jakarta.inject-api/2.0.1, Apache-2.0, approved, ee4j.cdi
 maven/mavencentral/jakarta.json/jakarta.json-api/2.1.3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jsonp
-maven/mavencentral/jakarta.mail/jakarta.mail-api/2.1.2, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.mail
+maven/mavencentral/jakarta.mail/jakarta.mail-api/2.1.3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.mail
 maven/mavencentral/jakarta.servlet/jakarta.servlet-api/6.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.servlet
 maven/mavencentral/jakarta.servlet/jakarta.servlet-api/6.1.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.servlet
 maven/mavencentral/jakarta.validation/jakarta.validation-api/2.0.2, Apache-2.0, approved, ee4j.validation
@@ -311,9 +312,9 @@ maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.13, Apache-2.0, approv
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.14, Apache-2.0, approved, CQ23528
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.16, Apache-2.0, approved, CQ23528
 maven/mavencentral/org.apache.httpcomponents/httpmime/4.5.13, Apache-2.0, approved, CQ11718
-maven/mavencentral/org.apache.james/apache-mime4j-core/0.8.11, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.james/apache-mime4j-dom/0.8.11, Apache-2.0, approved, #2340
-maven/mavencentral/org.apache.james/apache-mime4j-storage/0.8.11, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apache.james/apache-mime4j-core/0.8.12, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apache.james/apache-mime4j-dom/0.8.12, Apache-2.0, approved, #2340
+maven/mavencentral/org.apache.james/apache-mime4j-storage/0.8.12, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.apache.logging.log4j/log4j-api-test/2.25.3, Apache-2.0, approved, #22934
 maven/mavencentral/org.apache.logging.log4j/log4j-api/2.25.3, Apache-2.0, approved, #21940
 maven/mavencentral/org.apache.logging.log4j/log4j-core-test/2.25.3, Apache-2.0 AND BSD-3-Clause AND EPL-1.0 AND EPL-2.0, approved, clearlydefined
@@ -369,8 +370,8 @@ maven/mavencentral/org.codehaus.plexus/plexus-utils/3.3.0, , approved, CQ21066
 maven/mavencentral/org.codehaus.plexus/plexus-utils/3.4.1, Apache-2.0 AND BSD-2-Clause AND LicenseRef-scancode-indiana-extreme AND LicenseRef-scancode-public-domain AND SAX-PD, approved, #1703
 maven/mavencentral/org.codehaus.plexus/plexus-utils/3.5.1, Apache-2.0 AND BSD-3-Clause AND BSD-2-Clause and LicenseRef-BSD-Style AND LicenseRef-Public-Domain, approved, #4119
 maven/mavencentral/org.codehaus.plexus/plexus-utils/3.6.0, Apache-2.0 AND Entessa AND Apache-1.1 AND BSD-3-Clause AND BSD-2-Clause AND SAX-PD AND LicenseRef-Public-Domain, approved, #21842
-maven/mavencentral/org.eclipse.angus/angus-activation/1.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.angus
-maven/mavencentral/org.eclipse.angus/angus-mail/1.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.angus
+maven/mavencentral/org.eclipse.angus/angus-activation/2.0.2, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.angus
+maven/mavencentral/org.eclipse.angus/angus-mail/2.0.3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.angus
 maven/mavencentral/org.eclipse.dataspacetck.common/core-api/1.0.0-RC4, Apache-2.0, approved, technology.dataspacetck
 maven/mavencentral/org.eclipse.dataspacetck.common/core-api/1.0.0-SNAPSHOT, Apache-2.0, approved, technology.dataspacetck
 maven/mavencentral/org.eclipse.dataspacetck.dcp/dcp-api/1.0.0-SNAPSHOT, Apache-2.0, approved, technology.dataspacetck
@@ -712,7 +713,7 @@ maven/mavencentral/org.eclipse.jetty/jetty-session/12.1.4, EPL-2.0 OR Apache-2.0
 maven/mavencentral/org.eclipse.jetty/jetty-util/12.0.30, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-util/12.1.4, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-xml/12.0.30, EPL-2.0 OR Apache-2.0, approved, rt.jetty
-maven/mavencentral/org.eclipse.microprofile.openapi/microprofile-openapi-api/3.1.1, Apache-2.0, approved, technology.microprofile
+maven/mavencentral/org.eclipse.microprofile.openapi/microprofile-openapi-api/4.0.2, Apache-2.0, approved, technology.microprofile
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
 maven/mavencentral/org.eclipse.sisu/org.eclipse.sisu.inject/0.9.0.M4, EPL-1.0, approved, technology.sisu
 maven/mavencentral/org.eclipse.sisu/org.eclipse.sisu.plexus/0.9.0.M4, EPL-1.0, approved, technology.sisu
@@ -723,13 +724,13 @@ maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.6, EPL-2.0 OR GPL-2.0-only with
 maven/mavencentral/org.glassfish.hk2/hk2-locator/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-utils/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/osgi-resource-locator/1.0.3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
-maven/mavencentral/org.glassfish.jaxb/codemodel/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
-maven/mavencentral/org.glassfish.jaxb/jaxb-core/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
-maven/mavencentral/org.glassfish.jaxb/jaxb-jxc/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
-maven/mavencentral/org.glassfish.jaxb/jaxb-runtime/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
-maven/mavencentral/org.glassfish.jaxb/jaxb-xjc/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
-maven/mavencentral/org.glassfish.jaxb/txw2/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
-maven/mavencentral/org.glassfish.jaxb/xsom/4.0.3, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/codemodel/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/jaxb-core/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/jaxb-jxc/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/jaxb-runtime/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/jaxb-xjc/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/txw2/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
+maven/mavencentral/org.glassfish.jaxb/xsom/4.0.5, BSD-3-Clause, approved, ee4j.jaxb-impl
 maven/mavencentral/org.glassfish.jersey.containers/jersey-container-servlet-core/3.1.11, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jersey
 maven/mavencentral/org.glassfish.jersey.containers/jersey-container-servlet/3.1.11, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jersey
 maven/mavencentral/org.glassfish.jersey.core/jersey-client/3.1.11, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jersey
@@ -756,14 +757,14 @@ maven/mavencentral/org.javassist/javassist/3.30.2-GA, Apache-2.0 AND LGPL-2.1-or
 maven/mavencentral/org.jboss.logging/commons-logging-jboss-logging/1.0.0.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jboss.logging/jboss-logging/3.3.1.Final, Apache-2.0, approved, CQ13843
 maven/mavencentral/org.jboss.logging/jboss-logging/3.5.3.Final, Apache-2.0, approved, #9471
-maven/mavencentral/org.jboss.logging/jboss-logging/3.6.0.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.jboss.resteasy/resteasy-client-api/6.2.9.Final, Apache-2.0, approved, #10223
-maven/mavencentral/org.jboss.resteasy/resteasy-client/6.2.9.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.jboss.resteasy/resteasy-core-spi/6.2.9.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.jboss.resteasy/resteasy-core/6.2.9.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.jboss.resteasy/resteasy-jackson2-provider/6.2.9.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.jboss.resteasy/resteasy-jaxb-provider/6.2.9.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.jboss.resteasy/resteasy-multipart-provider/6.2.9.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.jboss.logging/jboss-logging/3.6.1.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.jboss.resteasy/resteasy-client-api/6.2.12.Final, Apache-2.0, approved, #10223
+maven/mavencentral/org.jboss.resteasy/resteasy-client/6.2.12.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.jboss.resteasy/resteasy-core-spi/6.2.12.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.jboss.resteasy/resteasy-core/6.2.12.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.jboss.resteasy/resteasy-jackson2-provider/6.2.12.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.jboss.resteasy/resteasy-jaxb-provider/6.2.12.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.jboss.resteasy/resteasy-multipart-provider/6.2.12.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jboss.shrinkwrap/shrinkwrap-api/2.0.0-beta-2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jboss.shrinkwrap/shrinkwrap-impl-base/2.0.0-beta-2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jboss.shrinkwrap/shrinkwrap-spi/2.0.0-beta-2, Apache-2.0, approved, clearlydefined
@@ -807,8 +808,8 @@ maven/mavencentral/org.junit/junit-bom/6.0.0, , restricted, clearlydefined
 maven/mavencentral/org.junit/junit-bom/6.0.1, , restricted, clearlydefined
 maven/mavencentral/org.junit/junit-bom/6.0.2, , restricted, clearlydefined
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
-maven/mavencentral/org.keycloak/keycloak-admin-client/26.0.7, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.keycloak/keycloak-client-common-synced/26.0.7, Apache-2.0, approved, #22754
+maven/mavencentral/org.keycloak/keycloak-admin-client/26.0.8, , restricted, clearlydefined
+maven/mavencentral/org.keycloak/keycloak-client-common-synced/26.0.8, Apache-2.0, approved, #22754
 maven/mavencentral/org.latencyutils/LatencyUtils/2.0.3, CC0-1.0, approved, #15280
 maven/mavencentral/org.mockito/mockito-core/4.11.0, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #6160
 maven/mavencentral/org.mockito/mockito-core/5.18.0, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #21306
@@ -862,68 +863,68 @@ maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-C
 maven/mavencentral/org.yaml/snakeyaml/2.4, Apache-2.0, approved, #19469
 maven/mavencentral/org.yaml/snakeyaml/2.5, Apache-2.0, approved, #23100
 maven/mavencentral/software.amazon.awssdk/annotations/2.38.2, Apache-2.0, approved, #24768
-maven/mavencentral/software.amazon.awssdk/annotations/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/annotations/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/apache-client/2.38.2, Apache-2.0, approved, #24766
-maven/mavencentral/software.amazon.awssdk/apache-client/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/apache-client/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/arns/2.38.2, Apache-2.0, approved, #24764
-maven/mavencentral/software.amazon.awssdk/arns/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/arns/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/auth/2.38.2, Apache-2.0, approved, #24767
-maven/mavencentral/software.amazon.awssdk/auth/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/auth/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/aws-core/2.38.2, Apache-2.0, approved, #24782
-maven/mavencentral/software.amazon.awssdk/aws-core/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/aws-core/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.38.2, Apache-2.0, approved, #24763
-maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/aws-query-protocol/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.38.2, Apache-2.0, approved, #24752
-maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/aws-xml-protocol/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/checksums-spi/2.38.2, Apache-2.0, approved, #24753
-maven/mavencentral/software.amazon.awssdk/checksums-spi/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/checksums-spi/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/checksums/2.38.2, Apache-2.0, approved, #24761
-maven/mavencentral/software.amazon.awssdk/checksums/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/checksums/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/crt-core/2.38.2, Apache-2.0, approved, #24779
-maven/mavencentral/software.amazon.awssdk/crt-core/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/crt-core/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.38.2, Apache-2.0, approved, #24758
-maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/endpoints-spi/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.38.2, Apache-2.0, approved, #24780
-maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth-aws-eventstream/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.38.2, Apache-2.0, approved, #24771
-maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.38.2, Apache-2.0, approved, #24773
-maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-auth/2.38.2, Apache-2.0, approved, #24756
-maven/mavencentral/software.amazon.awssdk/http-auth/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-auth/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.38.2, Apache-2.0, approved, #24776
-maven/mavencentral/software.amazon.awssdk/http-client-spi/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/http-client-spi/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/iam/2.38.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.38.2, Apache-2.0, approved, #24760
-maven/mavencentral/software.amazon.awssdk/identity-spi/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/identity-spi/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/json-utils/2.38.2, Apache-2.0, approved, #24784
-maven/mavencentral/software.amazon.awssdk/json-utils/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/json-utils/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.38.2, Apache-2.0, approved, #24755
-maven/mavencentral/software.amazon.awssdk/metrics-spi/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/metrics-spi/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.38.2, Apache-2.0, approved, #24770
-maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/netty-nio-client/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/profiles/2.38.2, Apache-2.0, approved, #24759
-maven/mavencentral/software.amazon.awssdk/profiles/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/profiles/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/protocol-core/2.38.2, Apache-2.0, approved, #24754
-maven/mavencentral/software.amazon.awssdk/protocol-core/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/protocol-core/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/regions/2.38.2, Apache-2.0, approved, #24765
-maven/mavencentral/software.amazon.awssdk/regions/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/regions/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries-spi/2.38.2, Apache-2.0, approved, #24775
-maven/mavencentral/software.amazon.awssdk/retries-spi/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/retries-spi/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/retries/2.38.2, Apache-2.0, approved, #24772
-maven/mavencentral/software.amazon.awssdk/retries/2.41.5, , restricted, clearlydefined
-maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/retries/2.41.10, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/s3-transfer-manager/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/s3/2.38.2, Apache-2.0, approved, #24769
-maven/mavencentral/software.amazon.awssdk/s3/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/s3/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.38.2, Apache-2.0, approved, #24774
-maven/mavencentral/software.amazon.awssdk/sdk-core/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sdk-core/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/sts/2.38.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.38.2, Apache-2.0, approved, #24778
-maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/utils-lite/2.38.2, Apache-2.0, approved, #24762
-maven/mavencentral/software.amazon.awssdk/utils-lite/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/utils-lite/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.awssdk/utils/2.38.2, Apache-2.0, approved, #24783
-maven/mavencentral/software.amazon.awssdk/utils/2.41.5, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/utils/2.41.10, , restricted, clearlydefined
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, #19691
 maven/mavencentral/tools.jackson.core/jackson-core/3.0.3, Apache-2.0 AND BSD-2-Clause AND MIT, approved, clearlydefined
 maven/mavencentral/tools.jackson.core/jackson-databind/3.0.3, Apache-2.0, approved, clearlydefined
