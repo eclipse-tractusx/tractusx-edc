@@ -41,29 +41,37 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIR
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 
-@OpenAPIDefinition(info = @Info(description = "With this API clients discover EDC requesting parameters according to different DSP versions", title = "Connector Discovery API"))
+@OpenAPIDefinition(info = @Info(
+        description = "With this API clients discover connectors based on published services in a DID document and " +
+                "discover the right version parameters according to different DSP versions.",
+        title = "Connector Discovery API"))
 @Tag(name = "Connector Discovery")
 public interface ConnectorDiscoveryV4AlphaApi {
 
-    @Operation(description = "Discover supported connector parameters.",
-            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Params Discovery Request", implementation = ConnectorParamsDiscoveryRequestSchema.class))),
+    @Operation(description = "Discover supported connector parameters for a given connector endpoint.",
+            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Params Discovery Request",
+                    implementation = ConnectorParamsDiscoveryRequestSchema.class))),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "A list of connector parameters per DSP version",
-                            content = @Content(schema = @Schema(name = "Connector Discovery Response", implementation = ConnectorParamsDiscoveryResponse.class))),
+                    @ApiResponse(responseCode = "200",
+                            description = "A list of connector parameters for the DSP version to use with the given connector.",
+                            content = @Content(schema = @Schema(name = "Connector Discovery Response",
+                                    implementation = ConnectorParamsDiscoveryResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Discovery failed due to an internal error",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
-                    @ApiResponse(responseCode = "502", description = "Discovery failed due to connection to counter party",
+                    @ApiResponse(responseCode = "502", description = "Discovery failed due to connection issues to counter party",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
     void discoverDspVersionParamsV4Alpha(JsonObject querySpecJson, @Suspended AsyncResponse response);
 
-    @Operation(description = "Retrieves 'DataService' Entries from the DID document of a participant and provides the connection parameters for all found",
-            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Service Discovery Request", implementation = ConnectorDiscoveryRequestSchema.class))),
+    @Operation(description = "Searches for 'DataService' entries in the DID document of a participant and provides " +
+            "the connection parameters for all found connectors by applying the connector param discovery request for each.",
+            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Discovery Request",
+                    implementation = ConnectorDiscoveryRequestSchema.class))),
             responses = {
                     @ApiResponse(responseCode = "200",
-                            description = "A list of connector endpoint parameters for the right version for each found connector",
+                            description = "A list of connector endpoint parameters for the version to use for each found connector",
                             content = @Content(
                                     mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(
@@ -82,7 +90,8 @@ public interface ConnectorDiscoveryV4AlphaApi {
     void discoverConnectorServicesV4Alpha(JsonObject querySpecJson, @Suspended AsyncResponse response);
 
     @Schema(name = "ConnectorParamsDiscoveryRequest",
-            description = "Note: In former versions, the property 'counterPartyId' was named 'bpnl', for convenience this value is still allowed",
+            description = "Note: In former versions, the property 'counterPartyId' was named 'bpnl', " +
+                    "for convenience this value is still allowed",
             example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
     record ConnectorParamsDiscoveryRequestSchema(
             @Schema(name = CONTEXT, requiredMode = REQUIRED)

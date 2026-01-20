@@ -31,7 +31,8 @@ import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDisc
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY;
 
-public class JsonObjectToConnectorParamsDiscoveryRequest extends AbstractJsonLdTransformer<JsonObject, ConnectorParamsDiscoveryRequest> {
+public class JsonObjectToConnectorParamsDiscoveryRequest
+        extends AbstractJsonLdTransformer<JsonObject, ConnectorParamsDiscoveryRequest> {
 
     public JsonObjectToConnectorParamsDiscoveryRequest() {
         super(JsonObject.class, ConnectorParamsDiscoveryRequest.class);
@@ -39,14 +40,16 @@ public class JsonObjectToConnectorParamsDiscoveryRequest extends AbstractJsonLdT
     }
 
     @Override
-    public @Nullable ConnectorParamsDiscoveryRequest transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
+    public @Nullable ConnectorParamsDiscoveryRequest transform(@NotNull JsonObject jsonObject,
+                                                               @NotNull TransformerContext transformerContext) {
 
         var identifierValue = jsonObject.get(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE);
         if (identifierValue == null) {
             identifierValue = jsonObject.get(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY);
         }
         var identifier = transformString(identifierValue, transformerContext);
-        var counterPartyAddress = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE), transformerContext);
+        var counterPartyAddress = transformString(
+                jsonObject.get(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE), transformerContext);
 
         if (identifier == null || counterPartyAddress == null) {
             transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: edc:counterPartyId or edc:counterPartyAddress");

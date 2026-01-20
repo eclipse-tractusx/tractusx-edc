@@ -37,6 +37,12 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 
+/**
+ * Validator for the 'ConnectorDiscoveryRequest' as defined in the connector discovery api.
+ * <p>
+ * The validator checks the availability of the mandatory 'counterPartyId' field and validates, that the
+ * 'knownConnectors' field contains an array of valid urls.
+ */
 public class ConnectorDiscoveryRequestValidator {
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()
@@ -64,7 +70,8 @@ public class ConnectorDiscoveryRequestValidator {
             var issues = new ArrayList<Violation>();
             for (JsonValue value : providedObject) {
                 if (value.getValueType() != JsonValue.ValueType.STRING) {
-                    issues.add(violation("value '%s' is not of type STRING, it is of type %s".formatted(value.toString(), value.getValueType()), path.toString()));
+                    issues.add(violation("value '%s' is not of type STRING, it is of type %s"
+                            .formatted(value.toString(), value.getValueType()), path.toString()));
                 } else {
                     var content = ((JsonString) value).getString();
                     try {

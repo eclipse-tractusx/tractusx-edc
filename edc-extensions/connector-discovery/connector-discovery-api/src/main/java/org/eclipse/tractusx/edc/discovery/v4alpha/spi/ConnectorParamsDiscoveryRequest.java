@@ -24,14 +24,13 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 /**
- * Request object for discovering connector parameters for a specific counterparty.
- * Contains the necessary information to identify and locate a counterparty connector
- * for DSP (Dataspace Protocol) communication.
+ * Request object for the connector parameter discovery request input the required parameters to the service implementation.
  *
- * @param identifier the Business Partner Number Legal (BPNL) counterPartyId of the counterparty
- * @param counterPartyAddress the base address/URL of the counterparty's DSP endpoint
+ * @param counterPartyId The identifier for the participant whose connector endpoints are requested, typically the DID.
+ * @param counterPartyAddress The base address or the full path to the '/.well-known/dspace-version' endpoint of
+ *                            the counterparty's DSP service
  */
-public record ConnectorParamsDiscoveryRequest(String identifier, String counterPartyAddress) {
+public record ConnectorParamsDiscoveryRequest(String counterPartyId, String counterPartyAddress) {
 
     public static final String TYPE = TX_NAMESPACE +  "ConnectorParamsDiscoveryRequest";
     public static final String DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY = TX_NAMESPACE + "bpnl";
