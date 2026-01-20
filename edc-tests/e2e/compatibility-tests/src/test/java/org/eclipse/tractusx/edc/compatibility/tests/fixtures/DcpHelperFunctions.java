@@ -29,6 +29,7 @@ import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialSto
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 
 import java.util.Base64;
 
@@ -107,6 +108,53 @@ public class DcpHelperFunctions {
                     vault.storeSecret(account.getSecretAlias(), "clientSecret");
                 });
 
+    }
+
+    public static void configureParticipant(IatpParticipant participant, DataspaceIssuer issuer, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
+        configureParticipantContext(participant, identityHubParticipant, identityHubRuntime);
+
+        var accountService = identityHubRuntime.getService(StsAccountService.class);
+        var vault = identityHubRuntime.getService(Vault.class);
+        var credentialStore = identityHubRuntime.getService(CredentialStore.class);
+
+        var credentials = issuer.issueCredentials(participant.getDid(), participant.getId());
+
+        credentials.forEach(credentialStore::create);
+
+        accountService.findById(participant.getDid())
+                .onSuccess(account -> {
+                    vault.storeSecret(account.getSecretAlias(), "clientSecret");
+                });
+
+    }
+
+    public static void configureParticipantContext(IatpParticipant participant, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
+        var participantContextService = identityHubRuntime.getService(ParticipantContextService.class);
+
+        var participantKey = participant.getKeyPairAsJwk();
+        var key = KeyDescriptor.Builder.newInstance()
+                .keyId(participant.getFullKeyId())
+                .publicKeyJwk(participantKey.toPublicJWK().toJSONObject())
+                .privateKeyAlias(participant.getPrivateKeyAlias())
+                .build();
+
+        var service = new Service();
+        service.setId("#credential-service");
+        service.setType("CredentialService");
+        service.setServiceEndpoint(identityHubParticipant.getResolutionApi() + "/v1/participants/" + toBase64(participant.getDid()));
+
+        var participantManifest = ParticipantManifest.Builder.newInstance()
+                .participantContextId(participant.getDid())
+                .did(participant.getDid())
+                .key(key)
+                .serviceEndpoint(service)
+                .active(true)
+                .build();
+
+        participantContextService.createParticipantContext(participantManifest);
+
+        var vault = identityHubRuntime.getService(Vault.class);
+        vault.storeSecret(participant.getPrivateKeyAlias(), participant.getPrivateKeyAsString());
     }
 
     static String toBase64(String s) {

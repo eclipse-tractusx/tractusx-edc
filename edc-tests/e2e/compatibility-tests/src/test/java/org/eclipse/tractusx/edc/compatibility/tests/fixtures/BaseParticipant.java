@@ -50,7 +50,7 @@ public abstract class BaseParticipant extends Participant {
     protected final LazySupplier<URI> consumerPublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
     protected final LazySupplier<URI> controlPlaneVersion = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/version"));
     protected final LazySupplier<URI> dataPlaneVersion = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/version"));
-    protected URI sts;
+    protected LazySupplier<URI> stsUri;
     protected KeyPair keyPair;
     protected JWK keyPairJwk;
     protected String did;
@@ -164,8 +164,8 @@ public abstract class BaseParticipant extends Participant {
             super(participant);
         }
 
-        public B sts(URI sts) {
-            participant.sts = sts;
+        public B stsUri(LazySupplier<URI> stsUri) {
+            participant.stsUri = stsUri;
             return self();
         }
 

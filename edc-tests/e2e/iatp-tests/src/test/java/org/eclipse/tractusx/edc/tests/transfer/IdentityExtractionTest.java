@@ -28,7 +28,7 @@ import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.ClaimToken;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

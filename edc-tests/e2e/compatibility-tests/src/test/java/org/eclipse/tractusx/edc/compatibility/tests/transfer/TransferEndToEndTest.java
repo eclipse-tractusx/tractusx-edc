@@ -29,7 +29,6 @@ import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.sql.testfixtures.PostgresqlEndToEndExtension;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.BaseParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.IdentityHubParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.LocalParticipant;
@@ -86,7 +85,7 @@ public class TransferEndToEndTest {
     protected static final RemoteParticipant REMOTE_PARTICIPANT = RemoteParticipant.Builder.newInstance()
             .name("remote")
             .id("remote")
-            .sts(IDENTITY_HUB_PARTICIPANT.getSts())
+            .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
             .did(IDENTITY_HUB_PARTICIPANT.didFor("remote"))
             .trustedIssuer(ISSUER.didUrl())
             .build();
@@ -94,17 +93,15 @@ public class TransferEndToEndTest {
     protected static final LocalParticipant LOCAL_PARTICIPANT = LocalParticipant.Builder.newInstance()
             .name("local")
             .id("local")
-            .sts(IDENTITY_HUB_PARTICIPANT.getSts())
+            .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
             .did(IDENTITY_HUB_PARTICIPANT.didFor("local"))
             .trustedIssuer(ISSUER.didUrl())
             .build();
 
-//    static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
+//    static final IatpParticipant LOCAL_PARTICIPANT = IatpParticipant.Builder.newInstance()
 //            .name("local")
-//            .id("local")
-//            .bpn("local")
-//            .sts(IDENTITY_HUB_PARTICIPANT.getSts())
-//            .did(IDENTITY_HUB_PARTICIPANT.didFor("local"))
+//            .id(IDENTITY_HUB_PARTICIPANT.didFor("local"))
+//            .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
 //            .trustedIssuer(ISSUER.didUrl())
 //            .build();
 
@@ -113,22 +110,11 @@ public class TransferEndToEndTest {
             REMOTE_PARTICIPANT.getId(), REMOTE_PARTICIPANT.getDid()
     );
 
-    @RegisterExtension
     @Order(0)
+    @RegisterExtension
     private static final PostgresExtension POSTGRES = new PostgresExtension(LOCAL_PARTICIPANT.getName(), REMOTE_PARTICIPANT.getName());
 
-    @Order(0)
-    @RegisterExtension
-    static final PostgresqlEndToEndExtension POSTGRESQL = new PostgresqlEndToEndExtension();
-//
-//    @Order(1)
-//    @RegisterExtension
-//    static final BeforeAllCallback CREATE_DATABASES = context -> {
-//        POSTGRESQL.createDatabase(LOCAL_PARTICIPANT.getName());
-//        POSTGRESQL.createDatabase(REMOTE_PARTICIPANT.getName());
-//    };
-
-    @Order(2)
+    @Order(1)
     @RegisterExtension
     static final RuntimeExtension LOCAL_CONTROL_PLANE = new RuntimePerClassExtension(
             Runtimes.CONTROL_PLANE.create("local-control-plane")

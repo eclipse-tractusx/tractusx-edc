@@ -37,7 +37,7 @@ public class RemoteParticipant extends BaseParticipant {
             "contractnegotiation", "policy", "transferprocess", "bpn",
             "policy-monitor", "edr", "dataplane", "accesstokendata", "dataplaneinstance");
 
-    public Map<String, String> controlPlaneEnv(BaseParticipant participant, PostgresExtension postgresql) {
+    public Map<String, String> controlPlaneEnv(LocalParticipant participant, PostgresExtension postgresql) {
         var postgresqlConfig = postgresql.getConfig(getName());
 
         return new HashMap<>() {
@@ -59,7 +59,7 @@ public class RemoteParticipant extends BaseParticipant {
                 put("EDC_DSP_CALLBACK_ADDRESS", controlPlaneProtocol.get().toString());
                 putAll(datasourceEnvironmentVariables("default", postgresqlConfig));
 //                putAll(postgresqlConfig.getEntries());
-                put("EDC_IAM_STS_OAUTH_TOKEN_URL", sts.toString() + "/token");
+                put("EDC_IAM_STS_OAUTH_TOKEN_URL", stsUri.get().toString() + "/token");
                 put("EDC_IAM_STS_OAUTH_CLIENT_ID", getDid());
                 put("EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS", id + "-secret");
                 put("TESTING_EDC_VAULTS_1_KEY", id + "-secret");
@@ -75,7 +75,7 @@ public class RemoteParticipant extends BaseParticipant {
         };
     }
 
-    public Map<String, String> dataPlaneEnv(BaseParticipant participant, PostgresExtension postgresql) {
+    public Map<String, String> dataPlaneEnv(LocalParticipant participant, PostgresExtension postgresql) {
         var postgresqlConfig = postgresql.getConfig(getName());
 
         return new HashMap<>() {
@@ -96,7 +96,7 @@ public class RemoteParticipant extends BaseParticipant {
                 put("EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS", "private-key");
                 put("EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS", "public-key");
                 put("EDC_DPF_SELECTOR_URL", controlPlaneControl.get() + "/v1/dataplanes");
-                put("EDC_IAM_STS_OAUTH_TOKEN_URL", sts.toString() + "/token");
+                put("EDC_IAM_STS_OAUTH_TOKEN_URL", stsUri.get().toString() + "/token");
                 put("EDC_IAM_STS_OAUTH_CLIENT_ID", getDid());
                 put("EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS", id + "-secret");
                 put("TESTING_EDC_VAULTS_1_KEY", id + "-secret");

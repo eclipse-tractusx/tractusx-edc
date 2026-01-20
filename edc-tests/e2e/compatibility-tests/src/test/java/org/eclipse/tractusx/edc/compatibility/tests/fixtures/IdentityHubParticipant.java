@@ -72,8 +72,8 @@ public class IdentityHubParticipant {
         return name;
     }
 
-    public URI getSts() {
-        return sts.get();
+    public LazySupplier<URI> getSts() {
+        return sts;
     }
 
     public URI getResolutionApi() {

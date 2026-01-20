@@ -67,7 +67,7 @@ public class LocalParticipant extends BaseParticipant {
                 put("provisioner.http.entries.default.provisioner.type", "provider");
                 put("provisioner.http.entries.default.endpoint", "http://localhost:%d/provision".formatted(httpProvisionerPort));
                 put("provisioner.http.entries.default.data.address.type", "HttpProvision");
-                put("edc.iam.sts.oauth.token.url", sts.toString() + "/token");
+                put("edc.iam.sts.oauth.token.url", stsUri.get().toString() + "/token");
                 put("edc.iam.sts.oauth.client.id", getDid());
                 put("edc.iam.sts.oauth.client.secret.alias", id + "-secret");
                 put("edc.iam.issuer.id", getDid());
@@ -97,7 +97,7 @@ public class LocalParticipant extends BaseParticipant {
                 put("edc.dataplane.state-machine.iteration-wait-millis", "50");
                 put("edc.dpf.selector.url", controlPlaneControl.get() + "/v1/dataplanes");
                 put("edc.component.id", "dataplane");
-                put("edc.iam.sts.oauth.token.url", sts.toString() + "/token");
+                put("edc.iam.sts.oauth.token.url", stsUri.get().toString() + "/token");
                 put("edc.iam.sts.oauth.client.id", getDid());
                 put("edc.iam.sts.oauth.client.secret.alias", id + "-secret");
                 put("edc.iam.issuer.id", getDid());

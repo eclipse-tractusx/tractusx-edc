@@ -44,7 +44,7 @@ import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
 import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

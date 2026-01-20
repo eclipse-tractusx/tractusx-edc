@@ -44,7 +44,7 @@ public class StsParticipant extends TractusxParticipantBase {
     private StsParticipant() {
     }
 
-    public Config stsConfig(IatpParticipant... participants) {
+    public Config stsConfig(org.eclipse.tractusx.edc.tests.participant.IatpParticipant... participants) {
         var additionalSettings = Map.of(
                 "web.http.sts.port", String.valueOf(stsUri.get().getPort()),
                 "web.http.sts.path", stsUri.get().getPath(),

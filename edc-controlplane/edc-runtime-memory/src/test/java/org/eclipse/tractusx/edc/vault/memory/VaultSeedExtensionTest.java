@@ -52,7 +52,7 @@ class VaultSeedExtensionTest {
     @BeforeEach
     void setup(ServiceExtensionContext context) {
         context.registerService(Monitor.class, monitor);
-        context.registerService(Vault.class, new InMemoryVault(monitor));
+        context.registerService(Vault.class, new InMemoryVault(monitor, null));
         context.registerService(SingleParticipantContextSupplier.class, participantContextSupplier);
     }
 

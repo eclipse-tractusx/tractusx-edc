@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
+package org.eclipse.tractusx.edc.tests.participant;
 
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.store.StsAccountStore;
@@ -36,8 +36,6 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 
 import java.net.URI;

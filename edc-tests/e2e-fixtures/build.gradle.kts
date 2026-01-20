@@ -49,8 +49,8 @@ dependencies {
     testFixturesApi(libs.edc.spi.dataplane.dataplane)
     testFixturesApi(libs.edc.spi.participant.context.single)
     testFixturesApi(libs.edc.ih.spi.credentials)
-//    testFixturesApi(libs.edc.sts.core)
-//    testFixturesApi(libs.edc.spi.keypair)
+    testFixturesApi(libs.edc.spi.sts)
+    testFixturesApi(libs.edc.spi.keypair)
 
 //    testFixturesApi(libs.edc.ih.spi)
 
