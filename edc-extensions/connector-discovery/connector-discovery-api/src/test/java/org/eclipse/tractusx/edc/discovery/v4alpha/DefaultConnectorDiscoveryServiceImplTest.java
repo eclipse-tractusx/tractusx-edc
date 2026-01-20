@@ -69,10 +69,10 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
     private final ConnectorDiscoveryService testee = new DefaultConnectorDiscoveryServiceImpl(httpClient, didResolver, mapper, new BaseConnectorDiscoveryServiceImpl.CacheConfig(1000, clock), monitor);
 
-    private final static String TEST_DID = "did:web:providerdid";
-    private final static String TEST_ADDRESS = "http://example.org/api/dsp";
+    private static final String TEST_DID = "did:web:providerdid";
+    private static final String TEST_ADDRESS = "http://example.org/api/dsp";
 
-    private final static String VERSION_PROTOCOL = "dataspace-protocol-http:2025-1";
+    private static final String VERSION_PROTOCOL = "dataspace-protocol-http:2025-1";
 
 
     @Test
