@@ -60,7 +60,7 @@ class JsonObjectToConnectorParamsDiscoveryRequestTest {
         var request = transformer.transform(jsonObject.build(), transformerContext);
 
         assertThat(request).isNotNull();
-        assertThat(request.identifier()).isEqualTo(expectedIdentifier);
+        assertThat(request.counterPartyId()).isEqualTo(expectedIdentifier);
         assertThat(request.counterPartyAddress()).isEqualTo(counterPartyAddress);
     }
 

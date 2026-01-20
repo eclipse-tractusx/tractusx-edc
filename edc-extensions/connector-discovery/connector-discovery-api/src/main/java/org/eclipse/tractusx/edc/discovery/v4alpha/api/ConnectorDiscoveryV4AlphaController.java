@@ -66,7 +66,8 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
                 .orElseThrow(ValidationFailureException::new);
 
         var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class)
-                .asOptional().orElseThrow(() -> new UnexpectedResultApiException("Input data could not parsed to proper request object"));
+                .asOptional().orElseThrow(() ->
+                        new UnexpectedResultApiException("Input data could not parsed to proper request object"));
 
         connectorDiscoveryService.discoverVersionParams(discoveryRequest)
                 .whenComplete((result, throwable) -> {
@@ -82,7 +83,8 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
                 .orElseThrow((ValidationFailureException::new));
 
         var request = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class)
-                .asOptional().orElseThrow(() -> new UnexpectedResultApiException("Input data could not parsed to proper request object"));
+                .asOptional().orElseThrow(() ->
+                        new UnexpectedResultApiException("Input data could not parsed to proper request object"));
 
         connectorDiscoveryService.discoverConnectors(request)
                 .whenComplete((result, throwable) -> {

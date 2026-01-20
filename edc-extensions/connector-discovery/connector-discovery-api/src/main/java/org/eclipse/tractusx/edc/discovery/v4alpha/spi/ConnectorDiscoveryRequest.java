@@ -24,6 +24,12 @@ import java.util.Collection;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
+/**
+ * Request object for the connector discovery request input the required parameters to the service implementation.
+ *
+ * @param counterPartyId The identifier for the participant whose connector endpoints are requested, typically the DID.
+ * @param knownConnectors A list of additional connector endpoints for which the version parameters are requested.
+ */
 public record ConnectorDiscoveryRequest(String counterPartyId, Collection<String> knownConnectors) {
     public static final String TYPE = TX_NAMESPACE +  "ConnectorServiceDiscoveryRequest";
     public static final String CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE = EDC_NAMESPACE + "counterPartyId";

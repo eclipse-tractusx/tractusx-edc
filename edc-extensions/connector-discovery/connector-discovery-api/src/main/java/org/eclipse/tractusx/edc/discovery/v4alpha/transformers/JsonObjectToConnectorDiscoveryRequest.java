@@ -34,14 +34,17 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 
-public class JsonObjectToConnectorDiscoveryRequest extends AbstractJsonLdTransformer<JsonObject, ConnectorDiscoveryRequest> {
+public class JsonObjectToConnectorDiscoveryRequest extends
+        AbstractJsonLdTransformer<JsonObject, ConnectorDiscoveryRequest> {
     public JsonObjectToConnectorDiscoveryRequest() {
         super(JsonObject.class, ConnectorDiscoveryRequest.class);
     }
 
     @Override
-    public @Nullable ConnectorDiscoveryRequest transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
-        var counterPartyId = transformString(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE), transformerContext);
+    public @Nullable ConnectorDiscoveryRequest transform(@NotNull JsonObject jsonObject,
+                                                         @NotNull TransformerContext transformerContext) {
+        var counterPartyId = transformString(
+                jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE), transformerContext);
         var knownConnectors = Optional.ofNullable(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE))
                 .map(JsonValue::asJsonArray)
                 .map(a -> a.stream()

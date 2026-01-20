@@ -20,9 +20,13 @@
 
 package org.eclipse.tractusx.edc.discovery.v4alpha;
 
+import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -33,6 +37,8 @@ import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.discovery.v4alpha.api.ConnectorDiscoveryV4AlphaController;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.DefaultConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -41,11 +47,15 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.transformers.JsonObjectToConne
 import org.eclipse.tractusx.edc.discovery.v4alpha.validators.ConnectorDiscoveryRequestValidator;
 import org.eclipse.tractusx.edc.discovery.v4alpha.validators.ConnectorParamsDiscoveryRequestValidator;
 
+import java.time.Clock;
+
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.NAME;
 
 @Extension(value = NAME)
 public class ConnectorDiscoveryExtension implements ServiceExtension {
+
+    public static final String TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY = "tx.edc.connector.discovery.cache.expiry";
 
     public static final String NAME = "Connector Discovery API Extension";
 
@@ -67,7 +77,17 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
     @Inject
+    private DidResolverRegistry didResolver;
+    @Inject
+    private EdcHttpClient httpClient;
+    @Inject
+    private Clock clock;
+    @Inject
     private Monitor monitor;
+
+    @Setting(description = "Expiry time for caching protocol version information in milliseconds",
+             key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = 1000 * 60 * 120 + "")
+    private long connectorDiscoveryCacheExpiry;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
@@ -79,7 +99,17 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
         validatorRegistry.register(ConnectorDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry, monitor));
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, ConnectorDiscoveryV4AlphaController.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
+        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(
+                connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry, monitor));
+        webService.registerDynamicResource(
+                ApiContext.MANAGEMENT, ConnectorDiscoveryV4AlphaController.class,
+                new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
+
+    }
+
+    @Provider(isDefault = true)
+    public ConnectorDiscoveryService defaultConnectorDiscoveryService() {
+        return new DefaultConnectorDiscoveryServiceImpl(httpClient, didResolver, typeManager.getMapper(),
+                new BaseConnectorDiscoveryServiceImpl.CacheConfig(connectorDiscoveryCacheExpiry, clock), monitor);
     }
 }

@@ -29,58 +29,47 @@ import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.ConnectorDiscoveryServiceImpl;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.DidMapper;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
-import org.eclipse.tractusx.edc.discovery.v4alpha.spi.DspVersionToIdentifierMapper;
-import org.eclipse.tractusx.edc.discovery.v4alpha.spi.IdentifierToDidMapper;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.time.Clock;
 
 import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.NAME;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY;
 
 @Extension(value = NAME)
-public class ConnectorDiscoveryDefaultServiceExtension implements ServiceExtension {
+public class ConnectorDiscoveryBpnlAndDsp08ServiceExtension implements ServiceExtension {
 
     public static final String NAME = "Default Connector Discovery Service Extension";
-
-    public static final String TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY = "tx.edc.connector.discovery.cache.expiry";
 
     @Override
     public String name() {
         return NAME;
     }
 
-    @Setting(description = "Expiry time for caching protocol version information in milliseconds", key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = 1000 * 60 * 12 + "")
-    private long didCacheExpiryMillis;
-
     @Inject
-    private DidResolverRegistry didResolver;
-    @Inject
-    private Monitor monitor;
-    @Inject
-    private EdcHttpClient httpClient;
+    private BdrsClient bdrsClient;
     @Inject
     private TypeManager typeManager;
     @Inject
-    private IdentifierToDidMapper identifierMapper;
+    private DidResolverRegistry didResolver;
     @Inject
-    private DspVersionToIdentifierMapper dspVersionMapper;
+    private EdcHttpClient httpClient;
     @Inject
     private Clock clock;
+    @Inject
+    private Monitor monitor;
 
-    @Provider(isDefault = true)
-    public ConnectorDiscoveryService defaultConnectorDiscoveryService() {
-        return new ConnectorDiscoveryServiceImpl(didResolver, httpClient, typeManager.getMapper(), identifierMapper, dspVersionMapper, clock, didCacheExpiryMillis, monitor);
-    }
+    @Setting(description = "Expiry time for caching protocol version information in milliseconds",
+            key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = 1000 * 60 * 120 + "")
+    private long connectorDiscoveryCacheExpiry;
 
-    @Provider(isDefault = true)
-    public IdentifierToDidMapper defaultIdentityMapper() {
-        return new DidMapper();
-    }
-
-    @Provider(isDefault = true)
-    public DspVersionToIdentifierMapper defaultDspVersionToIdentifierMapper() {
-        return new DspVersionToIdentifierMapper() { };
+    @Provider
+    public ConnectorDiscoveryService connectorDiscoveryService() {
+        return new BpnlAndDsp08ConnectorDiscoveryServiceImpl(
+                bdrsClient, httpClient, didResolver, typeManager.getMapper(),
+                new BaseConnectorDiscoveryServiceImpl.CacheConfig(connectorDiscoveryCacheExpiry, clock), monitor);
     }
 }

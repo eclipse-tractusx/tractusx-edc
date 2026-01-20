@@ -32,7 +32,14 @@ import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDisc
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY;
 
-
+/**
+ * Validator for the 'ConnectorParamsDiscoveryRequest' as defined in the connector discovery api.
+ *
+ * The validator check the availability of the 'counterPartyAddress' field as this is mandatory. In addition,
+ * it checks the availability of the 'counterPartyId' field which is mandatory as well. But for backward compatibility
+ * it is also possible to use the field name 'bpnl' used earlier. The validator checks that at least one of the
+ * two properties is defined and that they fulfil the requirements of the MandatoryValue validator.
+ */
 public class ConnectorParamsDiscoveryRequestValidator {
 
     public static Validator<JsonObject> instance() {
