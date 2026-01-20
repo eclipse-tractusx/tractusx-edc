@@ -22,10 +22,6 @@ package org.eclipse.tractusx.edc.discovery.v4alpha;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
-import okhttp3.MediaType;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
@@ -38,10 +34,10 @@ import java.io.IOException;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ADDRESS;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ID;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_PROTOCOL;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.DefaultConnectorDiscoveryServiceImplTest.dummyResponseBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 
 class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
 
@@ -50,7 +46,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
     private final ObjectMapper mapper = new ObjectMapper().configure(
             com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final EdcHttpClient httpClient = mock();
-    private final BpnlAndDsp08ConnectorDiscoveryServiceImpl service = new BpnlAndDsp08ConnectorDiscoveryServiceImpl(mock(), mock());
+    private final BpnlAndDsp08ConnectorDiscoveryServiceImpl service = null;
 
     @Test
     void discoverVersionParams_shouldReturnDsp2025_whenDsp2025AvailableAndDidResolvable() throws IOException {
@@ -210,16 +206,4 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         //        assertThat(response.getFailureDetail()).contains("No valid protocol version found for the counter party.");
     }
 
-    private static okhttp3.Response.Builder dummyResponseBuilder(int code, String body) {
-        return dummyResponseBuilder(code, body, "any");
-    }
-
-    private static okhttp3.Response.Builder dummyResponseBuilder(int code, String body, String message) {
-        return new okhttp3.Response.Builder()
-                .code(code)
-                .message(message)
-                .body(ResponseBody.create(body, MediaType.get("application/json")))
-                .protocol(Protocol.HTTP_1_1)
-                .request(new Request.Builder().url("http://any").build());
-    }
 }

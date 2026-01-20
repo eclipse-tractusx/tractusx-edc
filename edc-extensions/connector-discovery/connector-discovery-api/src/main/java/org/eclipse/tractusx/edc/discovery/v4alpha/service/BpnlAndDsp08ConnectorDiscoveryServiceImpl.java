@@ -64,12 +64,14 @@ public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDisc
             String counterPartyId, String versionAddress, String versionInformation) {
         if (Dsp2025Constants.V_2025_1_VERSION.equals(versionInformation)) {
             return createVersionParameterRecord(
-                    versionInformation,
+                    Dsp2025Constants.V_2025_1_VERSION,
                     mapToDid(counterPartyId),
                     versionAddress);
-        } else if (Dsp08Constants.V_08_VERSION.equals(versionInformation)) {
+        } else if (Dsp08Constants.V_08_VERSION.equals(versionInformation) || "0.8".equals(versionInformation)) {
+            // The or condition with "0.8" is for backward compatibility, because CX-0018 wrongly
+            // mentioned 0.8 as version identifier
             return createVersionParameterRecord(
-                    versionInformation,
+                    Dsp08Constants.V_08_VERSION,
                     mapToBpn(counterPartyId),
                     versionAddress);
         }

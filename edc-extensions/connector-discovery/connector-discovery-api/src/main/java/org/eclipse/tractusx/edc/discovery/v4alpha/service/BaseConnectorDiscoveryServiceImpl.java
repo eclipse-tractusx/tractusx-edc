@@ -136,6 +136,9 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      */
     @Override
     public CompletableFuture<JsonObject> discoverVersionParams(ConnectorParamsDiscoveryRequest request) {
+        stringNotEmpty(request.counterPartyId());
+        stringNotEmpty(request.counterPartyAddress());
+
         var versionEndpoint = createFullPath(request.counterPartyAddress(), DSP_DISCOVERY_PATH);
         var cacheEntry = versionsCache.get(versionEndpoint);
 
@@ -161,8 +164,9 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                         throw new BadGatewayException(msg);
                     }
                     var protocolVersion = extractLatestSupportedVersion(parseResponseBody(response));
+                    var resultObject = createResultObjectFromProtocolVersionData(request, protocolVersion);
                     versionsCache.put(versionEndpoint, new TimestampedValue<>(protocolVersion, cacheValidity));
-                    return createResultObjectFromProtocolVersionData(request, protocolVersion);
+                    return resultObject;
                 });
     }
 
@@ -224,7 +228,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                 .orElseThrow(() -> {
                     var joined = supportedVersions.stream().collect(joining(", ", "", ""));
                     return new InvalidRequestException(
-                            "The counterparty does not support any of the expected protocol versions (%s)"
+                            "The counterparty information cannot be parsed properly"
                                     .formatted(joined));
                 });
     }
@@ -295,7 +299,8 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
         for (String version : supportedVersions) {
             var foundVersion = versions.protocolVersions().stream()
                     .filter(pv -> pv.version().equals(version))
-                    .findFirst();
+                    .findFirst()
+                    .filter(v -> v.version() != null && v.path() != null);
             if (foundVersion.isPresent()) {
                 return foundVersion.get();
             }
@@ -380,5 +385,11 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
             throw new InvalidRequestException("No connector endpoints found for counterPartyId %s".formatted(counterPartyId));
         }
         return returnArray;
+    }
+
+    private void stringNotEmpty(String input) {
+        if (input == null || input.isBlank()) {
+            throw new InvalidRequestException("Input data must not be empty");
+        }
     }
 }
