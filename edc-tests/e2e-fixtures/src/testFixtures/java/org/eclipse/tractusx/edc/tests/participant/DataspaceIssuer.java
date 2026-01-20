@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
+package org.eclipse.tractusx.edc.tests.participant;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,7 +41,6 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialContainer;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
-import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 
 import java.time.Instant;
 import java.util.List;
@@ -57,9 +57,12 @@ import static org.eclipse.edc.jsonld.util.JacksonJsonLd.createObjectMapper;
 public class DataspaceIssuer extends IdentityParticipant {
 
     private static final ObjectMapper MAPPER = createObjectMapper();
-    private static final String KEY_ID = "#key1";
-    private final DidDocument didDocument;
-    private final String did;
+    private static final String KEY_ID = "#key-1";
+    private DidDocument didDocument;
+    private String did;
+
+    public DataspaceIssuer() {
+    }
 
     public DataspaceIssuer(String did) {
         this.did = did;
@@ -77,6 +80,7 @@ public class DataspaceIssuer extends IdentityParticipant {
     public String verificationId() {
         return did + "#" + getKeyId();
     }
+
 
     public VerifiableCredentialResource issueMembershipCredential(String did, String bpn) {
         return issueCredential(
@@ -96,13 +100,13 @@ public class DataspaceIssuer extends IdentityParticipant {
                         .id(did)
                         .claim("holderIdentifier", bpn)
                         .claim("activityType", "vehicleDismantle")
-                        .claim("allowedVehicleBrands", List.of("Moskvich", "Lada"))
+                        .claim("allowedVehicleBrands", List.of("BMW", "Volkswagen"))
                         .build(),
                 createVcBuilder("DismantlerCredential", Json.createObjectBuilder()
                         .add("type", "DismantlerCredential")
                         .add("holderIdentifier", bpn)
                         .add("activityType", "vehicleDismantle")
-                        .add("allowedVehicleBrands", Json.createArrayBuilder().add("Moskvich").add("Lada").build())
+                        .add("allowedVehicleBrands", Json.createArrayBuilder().add("BMW").add("Volkswagen").build())
                         .add("id", did)
                         .build())
         );
@@ -152,6 +156,14 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .build();
 
         return createVcBuilder("MembershipCredential", subject);
+    }
+
+    public List<VerifiableCredentialResource> issueCredentials(String did, String bpn) {
+        return List.of(
+                issueMembershipCredential(did, bpn),
+                issueDismantlerCredential(did, bpn),
+                issueFrameworkCredential(did, bpn, "BpnCredential"),
+                issueFrameworkCredential(did, bpn, "DataExchangeGovernanceCredential"));
     }
 
     private VerifiableCredentialResource issueCredential(String did, String bpn, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObjectBuilder vcBuilder) {
@@ -225,5 +237,45 @@ public class DataspaceIssuer extends IdentityParticipant {
                 .verificationMethod(List.of(verificationMethod))
                 .build();
 
+    }
+
+    public static class Builder extends IdentityParticipant.Builder<DataspaceIssuer, Builder> {
+
+        protected Builder() {
+            super(new DataspaceIssuer());
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder did(String did) {
+            participant.did = did;
+            return self();
+        }
+
+        @Override
+        public DataspaceIssuer build() {
+            super.build();
+            participant.didDocument = generateDidDocument();
+            return participant;
+        }
+
+        private DidDocument generateDidDocument() {
+            var jwk = participant.getKeyPairAsJwk();
+            var verificationMethod = VerificationMethod.Builder.newInstance()
+                    .id(participant.verificationId())
+                    .controller(participant.didUrl())
+                    .type("JsonWebKey2020")
+                    .publicKeyJwk(jwk.toPublicJWK().toJSONObject())
+                    .build();
+
+            return DidDocument.Builder.newInstance()
+                    .id(participant.didUrl())
+                    .authentication(List.of(KEY_ID))
+                    .verificationMethod(List.of(verificationMethod))
+                    .build();
+
+        }
     }
 }

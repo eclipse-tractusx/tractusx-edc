@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.tests;
+package org.eclipse.tractusx.edc.tests.participant;
 
 import com.nimbusds.jose.jwk.JWK;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;

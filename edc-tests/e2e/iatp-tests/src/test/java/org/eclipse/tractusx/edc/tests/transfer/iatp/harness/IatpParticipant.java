@@ -36,6 +36,7 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 
@@ -184,7 +185,7 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
             return DidDocument.Builder.newInstance()
                     .id(participant.did)
                     .service(List.of(service))
-                    .authentication(List.of("#key1"))
+                    .authentication(List.of("#key-1"))
                     .verificationMethod(List.of(verificationMethod))
                     .build();
         }

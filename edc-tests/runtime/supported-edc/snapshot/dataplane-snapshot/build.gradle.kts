@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  * Copyright (c) 2025 Cofinity-X GmbH
  *
@@ -16,33 +16,26 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ ******************************************************************************/
 
 plugins {
-    `java-library`
     id("application")
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.docker)
 }
 
 dependencies {
-    // use basic (all in-mem) control plane
-//    implementation(project(":edc-controlplane:edc-controlplane-base"))
-    implementation(libs.edc.bom.identityhub)
+    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
+        exclude(group = "org.eclipse.edc", "vault-hashicorp")
+    }
+
     implementation(project(":edc-extensions:single-participant-vault"))
-    implementation(project(":core:json-ld-core"))
-    implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
+}
 
-    implementation(libs.edc.iam.mock)
-    implementation(libs.edc.spi.keys)
-    // for the controller
-    implementation(libs.jakarta.rsApi)
-    implementation(libs.bundles.edc.sts)
-
-    implementation(libs.edc.lib.token)
-
-    implementation(libs.edc.ih.common.core)
-    implementation(libs.edc.ih.core)
-    implementation(libs.edc.ih.keypairs)
-    implementation(libs.edc.ih.participants)
+tasks.shadowJar {
+    mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    archiveFileName.set("${project.name}.jar")
 }
 
 application {

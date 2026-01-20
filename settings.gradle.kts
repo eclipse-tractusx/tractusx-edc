@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.internal.relocated.kotlin.metadata.internal.metadata.deserialization.VersionRequirementTable.Companion.create
+
 /*
  * Copyright (c) 2023 Contributors to the Eclipse Foundation
  *
@@ -26,6 +28,21 @@ pluginManagement {
         mavenCentral()
         maven {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("stableLibs") {
+            from(files("./gradle/libs.stable.versions.toml"))
         }
     }
 }
@@ -118,6 +135,7 @@ include(":edc-tests:e2e:transfer-tests")
 include("edc-tests:e2e:discovery-tests")
 include(":edc-tests:e2e:dcp-tck-tests")
 include(":edc-tests:e2e:dsp-compatibility-tests")
+include(":edc-tests:e2e:compatibility-tests")
 include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-dsp")
 include(":edc-tests:runtime:iatp:iatp-extensions")
@@ -129,6 +147,13 @@ include(":edc-tests:runtime:runtime-postgresql")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-base")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-no-protocols")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08")
+include("edc-tests:runtime:supported-edc:stable:extensions")
+include("edc-tests:runtime:supported-edc:stable:controlplane-stable")
+include("edc-tests:runtime:supported-edc:stable:dataplane-stable")
+include("edc-tests:runtime:supported-edc:snapshot:identityhub-snapshot")
+include("edc-tests:runtime:supported-edc:snapshot:controlplane-snapshot")
+include("edc-tests:runtime:supported-edc:snapshot:dataplane-snapshot")
+
 
 
 // modules for controlplane artifacts

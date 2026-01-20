@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2025 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -89,7 +90,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private final InMemoryAccessTokenDataStore tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
     private final Monitor monitor = mock();
-    private final InMemoryVault vault = new InMemoryVault(mock(), null);
+    private final InMemoryVault vault = new InMemoryVault(mock());
     private final ObjectMapper objectMapper = new ObjectMapper();
     private ECKey consumerKey;
     private ECKey providerKey;
