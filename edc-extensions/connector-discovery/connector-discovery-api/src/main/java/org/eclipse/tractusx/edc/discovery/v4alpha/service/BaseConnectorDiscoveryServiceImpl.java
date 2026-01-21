@@ -163,6 +163,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                         monitor.warning(msg);
                         throw new BadGatewayException(msg);
                     }
+
                     var protocolVersion = extractLatestSupportedVersion(parseResponseBody(response));
                     var resultObject = createResultObjectFromProtocolVersionData(request, protocolVersion);
                     versionsCache.put(versionEndpoint, new TimestampedValue<>(protocolVersion, cacheValidity));
@@ -195,7 +196,8 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
             input = root.substring(0, root.length() - DSP_DISCOVERY_PATH.length() - 1);
         }
         try {
-            return new URL(removeSurroundingSlash(input) + "/" + removeSurroundingSlash(subpath)).toExternalForm();
+            return new URL(removeSurroundingSlash(removeSurroundingSlash(input) + "/" + removeSurroundingSlash(subpath)))
+                    .toExternalForm();
         } catch (MalformedURLException e) {
             throw new InvalidRequestException("Provided endpoint url of connector cannot be parsed as URL: %s".formatted(root));
         }
@@ -280,7 +282,9 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
     private ProtocolVersions parseResponseBody(Response response) {
         try {
             var bytesBody = response.body().bytes();
-            return mapper.readValue(bytesBody, ProtocolVersions.class);
+            return Optional.ofNullable(mapper.readValue(bytesBody, ProtocolVersions.class))
+                    .filter(r -> r.protocolVersions() != null)
+                    .orElseThrow(() -> new BadGatewayException("No protocol versions found"));
         } catch (IOException e) {
             var msg = "An exception with the following message occurred while executing dsp version request: %s"
                     .formatted(e.getMessage());
@@ -298,9 +302,9 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
     private ProtocolVersion extractLatestSupportedVersion(ProtocolVersions versions) {
         for (String version : supportedVersions) {
             var foundVersion = versions.protocolVersions().stream()
-                    .filter(pv -> pv.version().equals(version))
+                    .filter(pv -> version.equals(pv.version()))
                     .findFirst()
-                    .filter(v -> v.version() != null && v.path() != null);
+                    .filter(v -> v.path() != null);
             if (foundVersion.isPresent()) {
                 return foundVersion.get();
             }
@@ -321,6 +325,10 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      */
     @Override
     public CompletableFuture<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request) {
+        stringNotEmpty(request.counterPartyId());
+        if (!request.counterPartyId().startsWith(DID_PREFIX)) {
+            throw new InvalidRequestException("The counterparty id has to be a did, is %s".formatted(request.counterPartyId()));
+        }
         return discoverConnectorsFromDidDocument(request.counterPartyId())
                 .thenApply(serviceEndpoints -> {
                     var allEndpoints = Stream.concat(
@@ -352,7 +360,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
     private DidDocument readDidDocument(String did) {
         var result = didResolver.resolve(did);
         if (result.failed()) {
-            var msg = "Error, downloading the DID" + ": %s".formatted(result.getFailureDetail());
+            var msg = "Error, downloading the did" + ": %s".formatted(result.getFailureDetail());
             monitor.warning(msg);
             throw new InvalidRequestException(msg);
         }
@@ -370,12 +378,13 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
         for (int i = 0; i < endpoints.size(); i++) {
             var endpoint = endpoints.get(i);
             discoveryCalls[i] = discoverVersionParams(new ConnectorParamsDiscoveryRequest(counterPartyId, endpoint))
-                    .whenComplete((result, throwable) -> {
+                    .handle((result, throwable) -> {
                         if (throwable != null) {
                             monitor.severe("Exception during connector discovery, omit endpoint result", throwable);
                         } else {
                             returnArrayBuilder.add(result);
                         }
+                        return null;
                     });
         }
 

@@ -33,6 +33,7 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDiscoveryServiceImpl {
@@ -82,7 +83,8 @@ public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDisc
         if (identifier.toLowerCase().startsWith(DID_PREFIX)) {
             return identifier;
         } else if (identifier.toLowerCase().startsWith(BPNL_PREFIX)) {
-            return bdrsClient.resolveDid(identifier);
+            return Optional.ofNullable(bdrsClient.resolveDid(identifier))
+                    .orElseThrow(() -> new InvalidRequestException("Bpnl %s cannot be mapped to a did".formatted(identifier)));
         }
         throw new InvalidRequestException("Given counterPartyId %s is of unknown type".formatted(identifier));
     }
@@ -91,7 +93,8 @@ public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDisc
         if (identifier.toLowerCase().startsWith(BPNL_PREFIX)) {
             return identifier;
         } else if (identifier.toLowerCase().startsWith(DID_PREFIX)) {
-            return bdrsClient.resolveBpn(identifier);
+            return Optional.ofNullable(bdrsClient.resolveBpn(identifier))
+                    .orElseThrow(() -> new InvalidRequestException("Did %s cannot be mapped to a bpnl".formatted(identifier)));
         }
         throw new InvalidRequestException("Given counterPartyId %s is of unknown type".formatted(identifier));
     }
