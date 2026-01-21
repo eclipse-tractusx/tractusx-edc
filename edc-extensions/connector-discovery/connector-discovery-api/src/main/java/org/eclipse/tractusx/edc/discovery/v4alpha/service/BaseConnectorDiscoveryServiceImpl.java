@@ -158,7 +158,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
         return httpClient.executeAsync(wellKnownRequest, emptyList())
                 .thenApply(response -> {
                     if (!response.isSuccessful()) {
-                        var msg = "counterparty well-known endpoint has failed with status %s and message: %s"
+                        var msg = "Counterparty well-known endpoint has failed with status %s and message: %s"
                                 .formatted(response.code(), response.message());
                         monitor.warning(msg);
                         throw new BadGatewayException(msg);
