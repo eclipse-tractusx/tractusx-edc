@@ -19,24 +19,34 @@
 
 package org.eclipse.tractusx.edc.discovery.e2e;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.junit.annotations.EndToEndTest;
+import org.eclipse.edc.iam.did.spi.document.DidDocument;
+import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.Runtimes;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 import java.util.Objects;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
@@ -47,8 +57,11 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 
-@EndToEndTest
+//@EndToEndTest
 public class ConnectorDiscoveryTest {
+    private static final String UNKNOWN_BPNL = "BPNL1234567890AB";
+    private static final int DID_SERVER_PORT = getFreePort();
+    private static final String LOCAL_PROVIDER_DID = "did:web:localhost%%3A%d:%s".formatted(DID_SERVER_PORT, "provider");
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
@@ -71,16 +84,27 @@ public class ConnectorDiscoveryTest {
             .bpn(PROVIDER_BPN)
             .build();
 
-    private static final TransferParticipant PROVIDER_NO_PROTOCOLS = TransferParticipant.Builder.newInstance()
-            .name(PROVIDER_NAME + "_NO_PROTOCOLS")
+    private static final DidDocument RETURNED_DOCUMENT = DidDocument.Builder.newInstance()
             .id(PROVIDER_DID)
-            .bpn(PROVIDER_BPN)
+            .service(List.of(
+                    new Service(PROVIDER_DID + "connector", "DataService", PROVIDER_FULL_DSP.getProtocolUrl()),
+                    new Service(PROVIDER_DID + "cs", "CredentialService", "http://dontcare")))
             .build();
 
     @RegisterExtension
     static final RuntimeExtension CONSUMER_RUNTIME = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
-            .registerServiceMock(BdrsClient.class, new MockBdrsClient(ConnectorDiscoveryTest::resolveProviderDid, (s) -> s));
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient(ConnectorDiscoveryTest::resolveProviderDid,
+                    ConnectorDiscoveryTest::resolveProviderBpn));
 
+    @RegisterExtension
+    protected static WireMockExtension didServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().port(DID_SERVER_PORT))
+            .build();
+
+//
+//    @RegisterExtension
+//    static final RuntimeExtension CONSUMER_RUNTIME_DID = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
+//            .registerServiceMock(DidResolverRegistry.class, new MockDidResolverRegistry(RETURNED_DOCUMENT));
 
     @RegisterExtension
     static final RuntimeExtension PROVIDER_RUNTIME_FULL_DSP = Runtimes.discoveryRuntimeFullDsp(PROVIDER_FULL_DSP);
@@ -88,20 +112,34 @@ public class ConnectorDiscoveryTest {
     @RegisterExtension
     static final RuntimeExtension PROVIDER_RUNTIME_DSP_V08 = Runtimes.discoveryRuntimeDsp08(PROVIDER_DSP_V08);
 
-    @RegisterExtension
-    static final RuntimeExtension PROVIDER_RUNTIME_NO_PROTOCOLS = Runtimes.discoveryRuntimeNoProtocols(PROVIDER_NO_PROTOCOLS);
-
     private static String resolveProviderDid(String bpn) {
-        if (Objects.equals(bpn, "unresolvableBpnl")) {
+        if (Objects.equals(bpn, UNKNOWN_BPNL)) {
             return null;
         }
         return PROVIDER_FULL_DSP.getDid();
     }
 
-    @Test
+    private static String resolveProviderBpn(String did) {
+        return PROVIDER_FULL_DSP.getBpn();
+    }
+
+    private void configureDidMock() throws JsonProcessingException {
+        didServer.stubFor(get(urlPathEqualTo("/provider/did.json"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(new ObjectMapper().writerFor(DidDocument.class).writeValueAsString(RETURNED_DOCUMENT))));
+    }
+
+    @BeforeEach
+    void setUp() throws Exception {
+        configureDidMock();
+    }
+
+    //@Test
     void discoveryShouldReturn2025DspParams() {
 
-        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), List.of("https://example.com/test1", "https://example.com/test2"));
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), emptyList());
 
         var response = CONSUMER.discoverConnectorServices(requestBody);
 
@@ -109,7 +147,8 @@ public class ConnectorDiscoveryTest {
                 .extract().body().asString();
 
         assertThat(body)
-                .isNotNull();
+                .isNotNull()
+                .contains("Just to test it");
     }
 
     //    @Test

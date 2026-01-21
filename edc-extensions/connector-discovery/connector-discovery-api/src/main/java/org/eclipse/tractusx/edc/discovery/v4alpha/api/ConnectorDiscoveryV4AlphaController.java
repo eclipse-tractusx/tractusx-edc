@@ -36,6 +36,8 @@ import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 
+import java.util.concurrent.CompletionException;
+
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Consumes(APPLICATION_JSON)
@@ -96,8 +98,12 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
         if (throwable == null) {
             response.resume(result);
         } else {
-            monitor.warning("Exception thrown during connector discovery", throwable);
-            response.resume(throwable);
+            var realCause = throwable;
+            if (throwable instanceof CompletionException) {
+                realCause = throwable.getCause();
+            }
+            monitor.warning("Exception thrown during connector discovery", realCause);
+            response.resume(realCause);
         }
     }
 }
