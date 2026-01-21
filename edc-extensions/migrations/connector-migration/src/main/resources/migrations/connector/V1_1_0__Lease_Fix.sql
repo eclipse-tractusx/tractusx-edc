@@ -4,7 +4,7 @@ ALTER TABLE edc_data_plane_instance DROP CONSTRAINT data_plane_instance_lease_id
 ALTER TABLE edc_policy_monitor DROP CONSTRAINT policy_monitor_lease_lease_id_fk;
 ALTER TABLE edc_transfer_process DROP CONSTRAINT transfer_process_lease_lease_id_fk;
 
-DELETE FROM edc_lease WHERE lease_id IS NULL;
+DELETE FROM edc_lease;
 
 ALTER TABLE edc_lease
     ADD COLUMN resource_id varchar NOT NULL,
