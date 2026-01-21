@@ -187,7 +187,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      *
      * @param root    Input url that points either to the root endpoint of the DSP service or the version metadata endpoint
      * @param subpath Intended subpath to be added to the input url
-     * @return A joint path cleaned from unneeded slashes following the pattern '<root url>/subpath'
+     * @return A joint path cleaned from unneeded slashes following the pattern 'root/subpath'
      * @throws InvalidRequestException If the created path, i.e., the root parameter is not a correct url.
      */
     protected String createFullPath(String root, String subpath) {
