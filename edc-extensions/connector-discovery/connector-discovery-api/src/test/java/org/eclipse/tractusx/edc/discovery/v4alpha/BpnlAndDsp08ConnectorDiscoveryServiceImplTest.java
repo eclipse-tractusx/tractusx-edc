@@ -22,23 +22,55 @@ package org.eclipse.tractusx.edc.discovery.v4alpha;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import okhttp3.MediaType;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.did.spi.document.DidDocument;
+import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.web.spi.exception.InvalidRequestException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ADDRESS;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ID;
 import static org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequest.CATALOG_REQUEST_PROTOCOL;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.DefaultConnectorDiscoveryServiceImplTest.dummyResponseBuilder;
+import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/*
+ * This class only tests the delta to the default service implementation, basically all error cases are mainly handled
+ * there, so this concentrates on positive test cases.
+ */
 class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
 
     private final BdrsClient bdrsClient = mock();
@@ -46,164 +78,281 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
     private final ObjectMapper mapper = new ObjectMapper().configure(
             com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private final EdcHttpClient httpClient = mock();
-    private final BpnlAndDsp08ConnectorDiscoveryServiceImpl service = null;
+    private final Clock clock = Clock.systemUTC();
+    private final Monitor monitor = mock();
 
-    @Test
-    void discoverVersionParams_shouldReturnDsp2025_whenDsp2025AvailableAndDidResolvable() throws IOException {
-        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "http://any");
+    private final BpnlAndDsp08ConnectorDiscoveryServiceImpl testee = new BpnlAndDsp08ConnectorDiscoveryServiceImpl(
+            bdrsClient, httpClient, didResolver, mapper,
+            new BaseConnectorDiscoveryServiceImpl.CacheConfig(1000, clock), monitor);
 
-        var expectedDid = "did:web:providerdid";
+    private static final String TEST_DID = "did:web:providerdid";
+    private static final String TEST_BPNL = "BPNL1234567890AB";
+    private static final String TEST_UNKNOWN_IDENTIFIER = "unknown";
+    private static final String TEST_ADDRESS = "http://example.org/api/dsp";
+    private static final String TEST_ADDRESS_2 = "http://example.org/c3/api/v1/dsp";
 
-        var mockVersionResponseMock = Json.createObjectBuilder()
-                .add("protocolVersions", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
-                                .add("version", "0.8")
-                                .add("path", "/")
-                                .add("binding", "someBinding"))
-                        .add(Json.createObjectBuilder()
-                                .add("version", "2025-1")
-                                .add("path", "/somePath")
-                                .add("binding", "someBinding"))).build();
+    private static final String VERSION_PROTOCOL_NEW = "dataspace-protocol-http:2025-1";
+    private static final String VERSION_PROTOCOL_OLD = "dataspace-protocol-http";
+
+    private static final DidDocument RETURNED_DOCUMENT = DidDocument.Builder.newInstance()
+            .id(TEST_DID)
+            .service(List.of(
+                    new Service(TEST_DID + "c1", "DataService", TEST_ADDRESS),
+                    new Service(TEST_DID + "c2", "CatalogService", "http://younameit"),
+                    new Service(TEST_DID + "c3", "DataService", TEST_ADDRESS_2),
+                    new Service(TEST_DID + "cs", "CredentialService", "http://dontcare")))
+            .build();
+
+    private static final JsonObject STANDARD_VERSION_METADATA = Json.createObjectBuilder()
+            .add("protocolVersions", Json.createArrayBuilder()
+                    .add(Json.createObjectBuilder()
+                            .add("version", "v0.8")
+                            .add("path", "/"))
+                    .add(Json.createObjectBuilder()
+                            .add("version", "2025-1")
+                            .add("path", "/somePath"))).build();
+
+    private static final JsonObject ONLY_OLD_VERSION_METADATA = Json.createObjectBuilder()
+            .add("protocolVersions", Json.createArrayBuilder()
+                    .add(Json.createObjectBuilder()
+                            .add("version", "v0.8")
+                            .add("path", "/"))).build();
+
+    @ParameterizedTest
+    @ValueSource(strings = { TEST_DID, TEST_BPNL })
+    void discoverVersionParams_shouldReturnDsp2025_whenDsp2025Available(String counterPartyId) throws IOException {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(counterPartyId, TEST_ADDRESS);
 
         var expectedJson = Json.createObjectBuilder()
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, expectedDid)
-                .add(CATALOG_REQUEST_PROTOCOL, "dataspace-protocol-http:2025-1")
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any/somePath")
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_DID)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_NEW)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, TEST_ADDRESS + "/somePath")
                 .build();
 
         when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
-                .thenReturn(expectedDid);
-        when(httpClient.execute(any()))
-                .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
+                .thenReturn(TEST_DID);
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
 
-        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+        var response = testee.discoverVersionParams(paramsDiscoveryRequest).join();
 
-        //        assertThat(response).isSucceeded();
-        //        assertThat(response.getContent()).isEqualTo(expectedJson);
+        assertThat(response).isEqualTo(expectedJson);
+    }
 
+    @ParameterizedTest
+    @ValueSource(strings = { TEST_DID, TEST_BPNL })
+    void discoverVersionParams_shouldReturnDsp08_whenDidDsp2025NotAvailable(String counterPartyId) throws IOException {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(counterPartyId, TEST_ADDRESS);
+
+        when(bdrsClient.resolveBpn(counterPartyId))
+                .thenReturn(TEST_BPNL);
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
+
+        var expectedJson = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_BPNL)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_OLD)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, TEST_ADDRESS)
+                .build();
+
+        var response = testee.discoverVersionParams(paramsDiscoveryRequest).join();
+
+        assertThat(response).isEqualTo(expectedJson);
     }
 
     @Test
-    void discoverVersionParams_shoudReturnDsp08_whenDidCantBeResolvedAndDsp08Available() throws IOException {
-        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "http://any");
-
-        var mockVersionResponseMock = Json.createObjectBuilder()
-                .add("protocolVersions", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
-                                .add("version", "v0.8")
-                                .add("path", "/")
-                                .add("binding", "someBinding"))
-                        .add(Json.createObjectBuilder()
-                                .add("version", "2025-1")
-                                .add("path", "/somePath")
-                                .add("binding", "someBinding"))).build();
+    void discoverVersionParams_shouldReturnFailure_whenDidNotResolvable() throws IOException {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_BPNL, TEST_ADDRESS);
 
         when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
                 .thenReturn(null);
-        when(httpClient.execute(any()))
-                .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
 
-        var expectedJsonArray = Json.createObjectBuilder()
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, "someBpnl")
-                .add(CATALOG_REQUEST_PROTOCOL, "dataspace-protocol-http")
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any")
-                .build();
-
-        var response = service.discoverVersionParams(paramsDiscoveryRequest);
-        //        assertThat(response).isSucceeded();
-        //        assertThat(response.getContent()).isEqualTo(expectedJsonArray);
+        assertThatThrownBy(() -> {
+            testee.discoverVersionParams(paramsDiscoveryRequest).join();
+        }).isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("cannot be mapped to a");
     }
 
-    @Test
-    void discoverVersionParams_shouldReturnFailure_whenDidNotResolvableAndDsp08NotAvailable() throws IOException {
-        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "http://any");
 
-        var mockVersionResponseMock = Json.createObjectBuilder()
-                .add("protocolVersions", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
-                                .add("version", "2025-1")
-                                .add("path", "/2025-1")
-                                .add("binding", "someBinding"))).build();
+    @Test
+    void discoverVersionParams_shouldReturnFailure_whenBpnlNotResolvable() throws IOException {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
                 .thenReturn(null);
-        when(httpClient.execute(any()))
-                .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
 
-        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+        assertThatThrownBy(() -> {
+            testee.discoverVersionParams(paramsDiscoveryRequest).join();
+        }).isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("cannot be mapped to a");
+    }
 
-        //        assertThat(response).isFailed();
+    @ParameterizedTest
+    @ArgumentsSource(VersionMetadataProvider.class)
+    void discoverVersionParams_shouldReturnFailure_whenUnknownIdentifierUsed(JsonObject versionMetadata) throws IOException {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_UNKNOWN_IDENTIFIER, TEST_ADDRESS);
 
+        when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
+                .thenReturn(null);
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, versionMetadata.toString()).build()));
+
+        assertThatThrownBy(() -> {
+            testee.discoverVersionParams(paramsDiscoveryRequest).join();
+        }).isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("is of unknown type");
+    }
+
+    private static class VersionMetadataProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                    of(STANDARD_VERSION_METADATA),
+                    of(ONLY_OLD_VERSION_METADATA)
+            );
+        }
     }
 
     @Test
-    void discoverVersionParams_shouldReturnDsp08_whenDsp2025NotAvailableAndDsp08Available() throws IOException {
-        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "http://any");
+    void discoverVersionParams_shouldReturnFailure_whenNoVersionSupported() throws IOException {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
-        var expectedDid = "did:web:providerdid";
-
-        var mockVersionResponseMock = Json.createObjectBuilder()
+        var versionMetadata = Json.createObjectBuilder()
                 .add("protocolVersions", Json.createArrayBuilder()
                         .add(Json.createObjectBuilder()
-                                .add("version", "v0.8")
-                                .add("path", "/")
-                                .add("binding", "someBinding"))).build();
+                                .add("version", "2024/1")
+                                .add("path", "/somePath"))).build();
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
-                .thenReturn(expectedDid);
-        when(httpClient.execute(any()))
-                .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, versionMetadata.toString()).build()));
+        assertThatThrownBy(() -> {
+            testee.discoverVersionParams(paramsDiscoveryRequest).join();
+        }).isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("The counterparty does not support any of the expected protocol versions");
+    }
 
-        var expectedJsonArray = Json.createObjectBuilder()
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, "someBpnl")
-                .add(CATALOG_REQUEST_PROTOCOL, "dataspace-protocol-http")
-                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, "http://any")
+    @ParameterizedTest
+    @ValueSource(strings = { TEST_DID, TEST_BPNL })
+    void discoverConnectors_shouldReturnExpectedValues_StandardCall(String counterPartyId)  throws IOException {
+        var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(counterPartyId, emptyList());
+
+        var expectedJson1 = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_DID)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_NEW)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, TEST_ADDRESS + "/somePath")
                 .build();
 
-        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+        var expectedJson2 = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_BPNL)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_OLD)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, TEST_ADDRESS_2)
+                .build();
 
-        //        assertThat(response).isSucceeded();
-        //        assertThat(response.getContent()).isEqualTo(expectedJsonArray);
+        when(didResolver.resolve(any())).thenReturn(Result.success(RETURNED_DOCUMENT));
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
+        when(bdrsClient.resolveDid(TEST_BPNL))
+                .thenReturn(TEST_DID);
+        when(bdrsClient.resolveBpn(TEST_DID))
+                .thenReturn(TEST_BPNL);
+
+        var response = testee.discoverConnectors(connectorDiscoveryRequest).join();
+
+        var returnedData = response.getValuesAs(JsonObject.class);
+
+        assertThat(returnedData.size()).isEqualTo(2);
+        assertThat(returnedData).containsExactly(expectedJson1, expectedJson2);
+
+        verify(didResolver, times(1)).resolve(TEST_DID);
+        verify(httpClient, times(2)).executeAsync(any(), any());
     }
 
-    @Test
-    void discoverVersionParams_shouldReturnFailure_whenMetadataEndpointHasError() throws IOException {
-        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "http://any");
+    @ParameterizedTest
+    @ValueSource(strings = { TEST_DID, TEST_BPNL })
+    void discoverConnectors_shouldReturnExpectedValues_WithKnownConnectorsProvided(String counterPartId)  throws IOException {
+        var additionalOne = "http://example.com/connector_additional/api/dsp";
+        var additionalTwo = "http://example.com/connector_extra/api/v1/dsp";
 
-        var expectedDid = "did:web:providerdid";
+        var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(TEST_DID, List.of(additionalOne, additionalTwo));
 
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
-                .thenReturn(expectedDid);
-        when(httpClient.execute(any()))
-                .thenReturn(dummyResponseBuilder(404, "Not Found", "Not Found").build());
+        var expectedJson1 = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_DID)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_NEW)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, TEST_ADDRESS + "/somePath")
+                .build();
 
-        var response = service.discoverVersionParams(paramsDiscoveryRequest);
+        var expectedJson2 = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_BPNL)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_OLD)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, TEST_ADDRESS_2)
+                .build();
 
-        //        assertThat(response).isFailed();
-        //        assertThat(response.getFailureDetail()).contains("Not Found");
+        var expectedJson3 = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_DID)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_NEW)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, additionalOne + "/somePath")
+                .build();
+
+        var expectedJson4 = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_BPNL)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_OLD)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, additionalTwo)
+                .build();
+
+        when(didResolver.resolve(any())).thenReturn(Result.success(RETURNED_DOCUMENT));
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
+        when(bdrsClient.resolveDid(TEST_BPNL))
+                .thenReturn(TEST_DID);
+        when(bdrsClient.resolveBpn(TEST_DID))
+                .thenReturn(TEST_BPNL)
+                .thenReturn(TEST_BPNL);
+
+        var response = testee.discoverConnectors(connectorDiscoveryRequest).join();
+
+        var returnedData = response.getValuesAs(JsonObject.class);
+
+        assertThat(returnedData.size()).isEqualTo(4);
+        assertThat(returnedData).containsExactly(expectedJson1, expectedJson2, expectedJson3, expectedJson4);
+
+        verify(didResolver, times(1)).resolve(TEST_DID);
+        verify(httpClient, times(4)).executeAsync(any(), any());
     }
 
-    @Test
-    void discoverVersionParams_shouldReturnFailure_whenVersionRequestHasMissingProps() throws IOException {
-        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest("someBpnl", "http://any");
-
-        var expectedDid = "did:web:providerdid";
-
-        var mockVersionResponseMock = Json.createObjectBuilder()
-                .add("protocolVersions", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
-                                .add("version", "2025-1")
-                                .add("binding", "someBinding"))).build();
-
-        when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
-                .thenReturn(expectedDid);
-        when(httpClient.execute(any()))
-                .thenReturn(dummyResponseBuilder(200, mockVersionResponseMock.toString()).build());
-
-        var response = service.discoverVersionParams(paramsDiscoveryRequest);
-
-        //        assertThat(response).isFailed();
-        //        assertThat(response.getFailureDetail()).contains("No valid protocol version found for the counter party.");
+    static okhttp3.Response.Builder dummyResponseBuilder(int code, String body) {
+        return dummyResponseBuilder(code, body, "any");
     }
 
+    static okhttp3.Response.Builder dummyResponseBuilder(int code, String body, String message) {
+        return new okhttp3.Response.Builder()
+                .code(code)
+                .message(message)
+                .body(ResponseBody.create(body, MediaType.get("application/json")))
+                .protocol(Protocol.HTTP_1_1)
+                .request(new Request.Builder().url(TEST_ADDRESS).build());
+    }
 }
