@@ -37,8 +37,8 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.web.spi.exception.BadGatewayException;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.DefaultConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -49,7 +49,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.io.IOException;
 import java.time.Clock;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -81,8 +80,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     private final Monitor monitor = mock();
 
     private final ConnectorDiscoveryService testee = new DefaultConnectorDiscoveryServiceImpl(
-            httpClient, didResolver, mapper,
-            new BaseConnectorDiscoveryServiceImpl.CacheConfig(1000, clock), monitor);
+            httpClient, didResolver, mapper, new CacheConfig(1000, clock), monitor);
 
     private static final String TEST_DID = "did:web:providerdid";
     private static final String TEST_NON_DID_IDENTIFIER = "BPNL1234567890AB";
@@ -114,7 +112,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
                     .add(STANDARD_VERSION_20251_DATA)).build();
 
     @Test
-    void discoverVersionParams_shouldReturnDsp2025_whenDsp2025Available() throws IOException {
+    void discoverVersionParams_shouldReturnDsp2025_whenDsp2025Available() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var expectedJson = Json.createObjectBuilder()
@@ -125,7 +123,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()));
 
         var response = testee.discoverVersionParams(paramsDiscoveryRequest).join();
 
@@ -133,7 +131,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverVersionParams_shouldReturnUseCacheDuringSucccess() throws IOException, InterruptedException {
+    void discoverVersionParams_shouldReturnUseCacheDuringSucccess() throws InterruptedException {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var expectedJson = Json.createObjectBuilder()
@@ -145,9 +143,9 @@ public class DefaultConnectorDiscoveryServiceImplTest {
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(
                         CompletableFuture.completedFuture(
-                                dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()),
+                                dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()),
                         CompletableFuture.completedFuture(
-                                dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
+                                dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()));
 
         var response = testee.discoverVersionParams(paramsDiscoveryRequest).join();
         assertThat(response).isEqualTo(expectedJson);
@@ -164,7 +162,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverVersionParams_shouldReturnException_whenOnlyDsp08Available() throws IOException {
+    void discoverVersionParams_shouldReturnException_whenOnlyDsp08Available() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var mockVersionResponseMock = Json.createObjectBuilder()
@@ -173,33 +171,31 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, mockVersionResponseMock.toString()).build()));
+                        dummyResponseBuilder(mockVersionResponseMock.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("The counterparty does not support any of the expected protocol versions");
     }
 
     @Test
-    void discoverVersionParams_shouldReturnException_whenMetadataEndpointHasError() throws IOException {
+    void discoverVersionParams_shouldReturnException_whenMetadataEndpointHasError() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
                         dummyResponseBuilder(404, "Not Found", "Not Found").build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(BadGatewayException.class)
                 .hasMessageContaining("Counterparty well-known endpoint has failed with status")
                 .hasMessageContaining("404");
     }
 
     @Test
-    void discoverVersionParams_shouldReturnException_whenVersionRequestHasMissingProps() throws IOException {
+    void discoverVersionParams_shouldReturnException_whenVersionRequestHasMissingProps() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var mockVersionResponseMock = Json.createObjectBuilder()
@@ -209,17 +205,16 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, mockVersionResponseMock.toString()).build()));
+                        dummyResponseBuilder(mockVersionResponseMock.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("The counterparty does not support any of the expected protocol versions");
     }
 
     @Test
-    void discoverVersionParams_shouldReturnException_whenVersionResponseIsOfWrongType() throws IOException {
+    void discoverVersionParams_shouldReturnException_whenVersionResponseIsOfWrongType() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var mockVersionResponseMock = Json.createObjectBuilder()
@@ -230,17 +225,16 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, mockVersionResponseMock.toString()).build()));
+                        dummyResponseBuilder(mockVersionResponseMock.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(BadGatewayException.class)
                 .hasMessageContaining("No protocol versions found");
     }
 
     @Test
-    void discoverVersionParams_shouldReturnException_whenVersionResponseHasWrongProps() throws IOException {
+    void discoverVersionParams_shouldReturnException_whenVersionResponseHasWrongProps() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var mockVersionResponseMock = Json.createObjectBuilder()
@@ -251,11 +245,10 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, mockVersionResponseMock.toString()).build()));
+                        dummyResponseBuilder(mockVersionResponseMock.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("The counterparty does not support any of the expected protocol versions");
     }
@@ -263,16 +256,15 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     @ParameterizedTest
     @ArgumentsSource(RequestDataProvider.class)
     void discoverVersionParams_shouldReturnException_whenNoDidIsUsed(
-            String id, String address, Class exceptionType, String message) throws IOException {
+            String id, String address, Class<Throwable> exceptionType, String message) {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(id, address);
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(exceptionType)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(exceptionType)
                 .hasMessageContaining(message);
     }
 
@@ -293,7 +285,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverConnectors_shouldReturnExpectedValues_StandardCall()  throws IOException {
+    void discoverConnectors_shouldReturnExpectedValues_StandardCall() {
         var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(TEST_DID, emptyList());
 
         var expectedJson1 = Json.createObjectBuilder()
@@ -311,9 +303,9 @@ public class DefaultConnectorDiscoveryServiceImplTest {
         when(didResolver.resolve(any())).thenReturn(Result.success(RETURNED_DOCUMENT));
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()));
 
         var response = testee.discoverConnectors(connectorDiscoveryRequest).join();
 
@@ -327,7 +319,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverConnectors_shouldReturnExpectedValues_WithKnownConnectorsAndFailingVersionMetadataCall()  throws IOException {
+    void discoverConnectors_shouldReturnExpectedValues_WithKnownConnectorsAndFailingVersionMetadataCall() {
         var additionalOne = "http://example.com/connector_additional/api/dsp";
         var additionalTwo = "http://example.com/connector_additional_broken/api/dsp";
 
@@ -354,11 +346,11 @@ public class DefaultConnectorDiscoveryServiceImplTest {
         when(didResolver.resolve(any())).thenReturn(Result.success(RETURNED_DOCUMENT));
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
                         dummyResponseBuilder(500, "", "Server Error").build()));
 
@@ -376,12 +368,11 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
     @ParameterizedTest
     @ArgumentsSource(ConnectorRequestDataProvider.class)
-    void discoverConnectors_shouldFail_whenCounterPartyIdIsNotAsExpected(String counterPartyId, String expectedMessage) throws IOException {
+    void discoverConnectors_shouldFail_whenCounterPartyIdIsNotAsExpected(String counterPartyId, String expectedMessage) {
         var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(counterPartyId, emptyList());
 
-        assertThatThrownBy(() -> {
-            testee.discoverConnectors(connectorDiscoveryRequest).join();
-        }).isInstanceOf(InvalidRequestException.class)
+        assertThatThrownBy(() -> testee.discoverConnectors(connectorDiscoveryRequest).join())
+                .isInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining(expectedMessage);
     }
 
@@ -397,20 +388,19 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverConnectors_shouldFail_whenDidDocumentCannotBeRetrieved() throws IOException {
+    void discoverConnectors_shouldFail_whenDidDocumentCannotBeRetrieved() {
         var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(TEST_DID, emptyList());
 
         when(didResolver.resolve(any())).thenReturn(Result.failure("Did document could not be found"));
 
-        assertThatThrownBy(() -> {
-            testee.discoverConnectors(connectorDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverConnectors(connectorDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("Error, downloading the did");
     }
 
     @Test
-    void discoverConnectors_shouldFail_whenDidDocumentContainsEmptyServiceSection() throws IOException {
+    void discoverConnectors_shouldFail_whenDidDocumentContainsEmptyServiceSection() {
         var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(TEST_DID, emptyList());
 
         DidDocument testDidDocument = DidDocument.Builder.newInstance()
@@ -422,9 +412,8 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
         when(didResolver.resolve(any())).thenReturn(Result.success(testDidDocument));
 
-        assertThatThrownBy(() -> {
-            testee.discoverConnectors(connectorDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverConnectors(connectorDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("No connector endpoints found for counterPartyId");
 
@@ -433,17 +422,16 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverConnectors_shouldFail_whenKnownsConnectorCollectionIsNull() throws IOException {
+    void discoverConnectors_shouldFail_whenKnownsConnectorCollectionIsNull() {
         var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(TEST_DID, null);
 
-        assertThatThrownBy(() -> {
-            testee.discoverConnectors(connectorDiscoveryRequest).join();
-        }).isInstanceOf(UnexpectedResultApiException.class)
+        assertThatThrownBy(() -> testee.discoverConnectors(connectorDiscoveryRequest).join())
+                .isInstanceOf(UnexpectedResultApiException.class)
                 .hasMessageContaining("Null not allowed for knownConnector collection");
     }
 
-    static okhttp3.Response.Builder dummyResponseBuilder(int code, String body) {
-        return dummyResponseBuilder(code, body, "any");
+    static okhttp3.Response.Builder dummyResponseBuilder(String body) {
+        return dummyResponseBuilder(200, body, "any");
     }
 
     static okhttp3.Response.Builder dummyResponseBuilder(int code, String body, String message) {

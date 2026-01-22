@@ -27,6 +27,7 @@ plugins {
 
 dependencies {
     // compile-time dependencies
+    implementation(libs.edc.spi.web)
     implementation(libs.edc.spi.boot)
     implementation(libs.edc.spi.controlplane)
     implementation(libs.edc.lib.util)

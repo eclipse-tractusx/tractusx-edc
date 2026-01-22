@@ -27,6 +27,7 @@ import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
 
 import java.util.List;
 

@@ -37,8 +37,8 @@ import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.discovery.v4alpha.api.ConnectorDiscoveryV4AlphaController;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.DefaultConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -110,6 +110,6 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     @Provider(isDefault = true)
     public ConnectorDiscoveryService defaultConnectorDiscoveryService() {
         return new DefaultConnectorDiscoveryServiceImpl(httpClient, didResolver, typeManager.getMapper(),
-                new BaseConnectorDiscoveryServiceImpl.CacheConfig(connectorDiscoveryCacheExpiry, clock), monitor);
+                new CacheConfig(connectorDiscoveryCacheExpiry, clock), monitor);
     }
 }

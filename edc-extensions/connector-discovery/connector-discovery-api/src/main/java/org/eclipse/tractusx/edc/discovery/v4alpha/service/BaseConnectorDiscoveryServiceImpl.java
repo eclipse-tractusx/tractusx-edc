@@ -43,6 +43,7 @@ import org.eclipse.edc.util.collection.TimestampedValue;
 import org.eclipse.edc.web.spi.exception.BadGatewayException;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -95,9 +96,6 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
             Dsp2025Constants.V_2025_1_VERSION, Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1,
             Dsp08Constants.V_08_VERSION, HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP);
     private final ConcurrentLruCache<String, TimestampedValue<ProtocolVersion>> versionsCache;
-
-    public record CacheConfig(long cacheValidity, Clock clock) {
-    }
 
     /**
      * All instantiable services will derive from this base class, so the constructor is protected.
@@ -406,3 +404,4 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
         }
     }
 }
+

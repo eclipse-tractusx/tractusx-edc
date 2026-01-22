@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.discovery.v4alpha;
+package org.eclipse.tractusx.edc.discovery.cx;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
@@ -34,8 +34,8 @@ import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.cx.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
@@ -47,7 +47,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.IOException;
 import java.time.Clock;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -82,8 +81,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
     private final Monitor monitor = mock();
 
     private final BpnlAndDsp08ConnectorDiscoveryServiceImpl testee = new BpnlAndDsp08ConnectorDiscoveryServiceImpl(
-            bdrsClient, httpClient, didResolver, mapper,
-            new BaseConnectorDiscoveryServiceImpl.CacheConfig(1000, clock), monitor);
+            bdrsClient, httpClient, didResolver, mapper, new CacheConfig(1000, clock), monitor);
 
     private static final String TEST_DID = "did:web:providerdid";
     private static final String TEST_BPNL = "BPNL1234567890AB";
@@ -120,7 +118,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
 
     @ParameterizedTest
     @ValueSource(strings = { TEST_DID, TEST_BPNL })
-    void discoverVersionParams_shouldReturnDsp2025_whenDsp2025Available(String counterPartyId) throws IOException {
+    void discoverVersionParams_shouldReturnDsp2025_whenDsp2025Available(String counterPartyId) {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(counterPartyId, TEST_ADDRESS);
 
         var expectedJson = Json.createObjectBuilder()
@@ -133,7 +131,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
                 .thenReturn(TEST_DID);
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()));
 
         var response = testee.discoverVersionParams(paramsDiscoveryRequest).join();
 
@@ -142,14 +140,14 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
 
     @ParameterizedTest
     @ValueSource(strings = { TEST_DID, TEST_BPNL })
-    void discoverVersionParams_shouldReturnDsp08_whenDidDsp2025NotAvailable(String counterPartyId) throws IOException {
+    void discoverVersionParams_shouldReturnDsp08_whenDidDsp2025NotAvailable(String counterPartyId) {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(counterPartyId, TEST_ADDRESS);
 
         when(bdrsClient.resolveBpn(counterPartyId))
                 .thenReturn(TEST_BPNL);
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(ONLY_OLD_VERSION_METADATA.toString()).build()));
 
         var expectedJson = Json.createObjectBuilder()
                 .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_BPNL)
@@ -163,54 +161,51 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverVersionParams_shouldReturnFailure_whenDidNotResolvable() throws IOException {
+    void discoverVersionParams_shouldReturnFailure_whenDidNotResolvable() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_BPNL, TEST_ADDRESS);
 
         when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
                 .thenReturn(null);
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("cannot be mapped to a");
     }
 
 
     @Test
-    void discoverVersionParams_shouldReturnFailure_whenBpnlNotResolvable() throws IOException {
+    void discoverVersionParams_shouldReturnFailure_whenBpnlNotResolvable() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
                 .thenReturn(null);
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(ONLY_OLD_VERSION_METADATA.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("cannot be mapped to a");
     }
 
     @ParameterizedTest
     @ArgumentsSource(VersionMetadataProvider.class)
-    void discoverVersionParams_shouldReturnFailure_whenUnknownIdentifierUsed(JsonObject versionMetadata) throws IOException {
+    void discoverVersionParams_shouldReturnFailure_whenUnknownIdentifierUsed(JsonObject versionMetadata) {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_UNKNOWN_IDENTIFIER, TEST_ADDRESS);
 
         when(bdrsClient.resolveDid(paramsDiscoveryRequest.counterPartyId()))
                 .thenReturn(null);
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, versionMetadata.toString()).build()));
+                        dummyResponseBuilder(versionMetadata.toString()).build()));
 
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("is of unknown type");
     }
@@ -226,7 +221,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverVersionParams_shouldReturnFailure_whenNoVersionSupported() throws IOException {
+    void discoverVersionParams_shouldReturnFailure_whenNoVersionSupported() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var versionMetadata = Json.createObjectBuilder()
@@ -237,17 +232,16 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
 
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, versionMetadata.toString()).build()));
-        assertThatThrownBy(() -> {
-            testee.discoverVersionParams(paramsDiscoveryRequest).join();
-        }).isInstanceOf(CompletionException.class)
+                        dummyResponseBuilder(versionMetadata.toString()).build()));
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining("The counterparty does not support any of the expected protocol versions");
     }
 
     @ParameterizedTest
     @ValueSource(strings = { TEST_DID, TEST_BPNL })
-    void discoverConnectors_shouldReturnExpectedValues_StandardCall(String counterPartyId)  throws IOException {
+    void discoverConnectors_shouldReturnExpectedValues_StandardCall(String counterPartyId) {
         var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(counterPartyId, emptyList());
 
         var expectedJson1 = Json.createObjectBuilder()
@@ -265,9 +259,9 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         when(didResolver.resolve(any())).thenReturn(Result.success(RETURNED_DOCUMENT));
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(ONLY_OLD_VERSION_METADATA.toString()).build()));
         when(bdrsClient.resolveDid(TEST_BPNL))
                 .thenReturn(TEST_DID);
         when(bdrsClient.resolveBpn(TEST_DID))
@@ -286,11 +280,11 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
 
     @ParameterizedTest
     @ValueSource(strings = { TEST_DID, TEST_BPNL })
-    void discoverConnectors_shouldReturnExpectedValues_WithKnownConnectorsProvided(String counterPartId)  throws IOException {
+    void discoverConnectors_shouldReturnExpectedValues_WithKnownConnectorsProvided(String counterPartId) {
         var additionalOne = "http://example.com/connector_additional/api/dsp";
         var additionalTwo = "http://example.com/connector_extra/api/v1/dsp";
 
-        var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(TEST_DID, List.of(additionalOne, additionalTwo));
+        var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(counterPartId, List.of(additionalOne, additionalTwo));
 
         var expectedJson1 = Json.createObjectBuilder()
                 .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_DID)
@@ -319,13 +313,13 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         when(didResolver.resolve(any())).thenReturn(Result.success(RETURNED_DOCUMENT));
         when(httpClient.executeAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(ONLY_OLD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, STANDARD_VERSION_METADATA.toString()).build()))
+                        dummyResponseBuilder(STANDARD_VERSION_METADATA.toString()).build()))
                 .thenReturn(CompletableFuture.completedFuture(
-                        dummyResponseBuilder(200, ONLY_OLD_VERSION_METADATA.toString()).build()));
+                        dummyResponseBuilder(ONLY_OLD_VERSION_METADATA.toString()).build()));
         when(bdrsClient.resolveDid(TEST_BPNL))
                 .thenReturn(TEST_DID);
         when(bdrsClient.resolveBpn(TEST_DID))
@@ -343,14 +337,10 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         verify(httpClient, times(4)).executeAsync(any(), any());
     }
 
-    static okhttp3.Response.Builder dummyResponseBuilder(int code, String body) {
-        return dummyResponseBuilder(code, body, "any");
-    }
-
-    static okhttp3.Response.Builder dummyResponseBuilder(int code, String body, String message) {
+    static okhttp3.Response.Builder dummyResponseBuilder(String body) {
         return new okhttp3.Response.Builder()
-                .code(code)
-                .message(message)
+                .code(200)
+                .message("any")
                 .body(ResponseBody.create(body, MediaType.get("application/json")))
                 .protocol(Protocol.HTTP_1_1)
                 .request(new Request.Builder().url(TEST_ADDRESS).build());

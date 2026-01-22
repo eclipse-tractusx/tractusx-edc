@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.discovery.v4alpha;
+package org.eclipse.tractusx.edc.discovery.cx;
 
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
@@ -29,8 +29,8 @@ import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.cx.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
@@ -70,6 +70,6 @@ public class ConnectorDiscoveryBpnlAndDsp08ServiceExtension implements ServiceEx
     public ConnectorDiscoveryService connectorDiscoveryService() {
         return new BpnlAndDsp08ConnectorDiscoveryServiceImpl(
                 bdrsClient, httpClient, didResolver, typeManager.getMapper(),
-                new BaseConnectorDiscoveryServiceImpl.CacheConfig(connectorDiscoveryCacheExpiry, clock), monitor);
+                new CacheConfig(connectorDiscoveryCacheExpiry, clock), monitor);
     }
 }
