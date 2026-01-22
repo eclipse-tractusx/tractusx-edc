@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
@@ -50,8 +51,7 @@ public class JsonObjectToConnectorDiscoveryRequest extends
                 .map(a -> a.stream()
                         .map(v -> ((JsonString) v).getString())
                         .collect(toList()))
-                .filter(list -> !list.isEmpty())
-                .orElse(null);
+                .orElse(emptyList());
 
         if (counterPartyId == null) {
             transformerContext.reportProblem("Missing required attribute in ConnectorDiscoveryRequest: tx:counterPartyId");

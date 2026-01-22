@@ -42,6 +42,7 @@ import org.eclipse.edc.util.collection.ConcurrentLruCache;
 import org.eclipse.edc.util.collection.TimestampedValue;
 import org.eclipse.edc.web.spi.exception.BadGatewayException;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
@@ -328,6 +329,9 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
         stringNotEmpty(request.counterPartyId());
         if (!request.counterPartyId().startsWith(DID_PREFIX)) {
             throw new InvalidRequestException("The counterparty id has to be a did, is %s".formatted(request.counterPartyId()));
+        }
+        if (request.knownConnectors() == null) {
+            throw new UnexpectedResultApiException("Null not allowed for knownConnector collection");
         }
         return discoverConnectorsFromDidDocument(request.counterPartyId())
                 .thenApply(serviceEndpoints -> {

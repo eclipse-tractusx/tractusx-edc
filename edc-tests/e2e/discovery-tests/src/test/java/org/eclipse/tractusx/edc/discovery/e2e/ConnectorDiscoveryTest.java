@@ -25,12 +25,14 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
+import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.Runtimes;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
@@ -46,6 +48,7 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
@@ -54,10 +57,9 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 
-//@EndToEndTest
+@EndToEndTest
 public class ConnectorDiscoveryTest {
     private static final String UNKNOWN_BPNL = "BPNL1234567890AB";
     private static final int DID_SERVER_PORT = getFreePort();
@@ -74,22 +76,24 @@ public class ConnectorDiscoveryTest {
 
     private static final TransferParticipant PROVIDER_FULL_DSP = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
-            .id(PROVIDER_DID)
+            .id(LOCAL_PROVIDER_DID)
             .bpn(PROVIDER_BPN)
             .build();
 
     private static final TransferParticipant PROVIDER_DSP_V08 = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME + "_V08")
-            .id(PROVIDER_DID)
+            .id(LOCAL_PROVIDER_DID)
             .bpn(PROVIDER_BPN)
             .build();
 
-    private static final DidDocument RETURNED_DOCUMENT = DidDocument.Builder.newInstance()
-            .id(PROVIDER_DID)
+    private static final DidDocument DIDDOCUMENT = DidDocument.Builder.newInstance()
+            .id(LOCAL_PROVIDER_DID)
             .service(List.of(
-                    new Service(PROVIDER_DID + "connector", "DataService", PROVIDER_FULL_DSP.getProtocolUrl()),
-                    new Service(PROVIDER_DID + "cs", "CredentialService", "http://dontcare")))
+                    new Service(LOCAL_PROVIDER_DID + "#connector", "DataService", PROVIDER_FULL_DSP.getProtocolUrl()),
+                    new Service(LOCAL_PROVIDER_DID + "#connector2", "DataService", PROVIDER_DSP_V08.getProtocolUrl()),
+                    new Service(LOCAL_PROVIDER_DID + "#cs", "CredentialService", "http://dontcare")))
             .build();
+
 
     @RegisterExtension
     static final RuntimeExtension CONSUMER_RUNTIME = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
@@ -111,30 +115,86 @@ public class ConnectorDiscoveryTest {
         if (Objects.equals(bpn, UNKNOWN_BPNL)) {
             return null;
         }
-        return PROVIDER_FULL_DSP.getDid();
+        return LOCAL_PROVIDER_DID;
     }
 
     private static String resolveProviderBpn(String did) {
         return PROVIDER_FULL_DSP.getBpn();
     }
 
-    private void configureDidMock() throws JsonProcessingException {
+    private void configureDidMock(DidDocument didDocument) throws JsonProcessingException {
         didServer.stubFor(get(urlPathEqualTo("/provider/did.json"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(new ObjectMapper().writerFor(DidDocument.class).writeValueAsString(RETURNED_DOCUMENT))));
+                        .withBody(new ObjectMapper().writeValueAsString(didDocument))));
     }
 
     @BeforeEach
-    void setUp() throws Exception {
-        configureDidMock();
+    public void setup() throws Exception {
+        configureDidMock(DIDDOCUMENT);
     }
 
-    //@Test
-    void discoveryShouldReturn2025DspParams() {
+    @Test
+    void discoveryShouldReturnDspParams_DidAsIdentifier() {
+        var expectedProtocolString = "\"protocol\":\"dataspace-protocol-http:2025-1\"";
+        var expectedAddressString = "\"counterPartyAddress\":\"%s/2025-1\"".formatted(PROVIDER_FULL_DSP.getProtocolUrl());
+        var expectedIdString = "\"counterPartyId\":\"%s\"".formatted(LOCAL_PROVIDER_DID);
+        var expectedProtocolString2 = "\"protocol\":\"dataspace-protocol-http\"";
+        var expectedAddressString2 = "\"counterPartyAddress\":\"%s\"".formatted(PROVIDER_DSP_V08.getProtocolUrl());
+        var expectedIdString2 = "\"counterPartyId\":\"%s\"".formatted(PROVIDER_DSP_V08.getBpn());
+
 
         var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), emptyList());
+
+        var response = CONSUMER.discoverConnectorServices(requestBody);
+
+        var body = response.statusCode(200)
+                .extract().body().asString();
+
+        assertThat(body)
+                .isNotNull()
+                .contains(expectedProtocolString)
+                .contains(expectedAddressString)
+                .contains(expectedIdString)
+                .contains(expectedProtocolString2)
+                .contains(expectedAddressString2)
+                .contains(expectedIdString2);
+    }
+
+    @Test
+    void discoveryShouldReturnDspParams_BpnAsIdentifier() {
+        var expectedProtocolString = "\"protocol\":\"dataspace-protocol-http:2025-1\"";
+        var expectedAddressString = "\"counterPartyAddress\":\"%s/2025-1\"".formatted(PROVIDER_FULL_DSP.getProtocolUrl());
+        var expectedIdString = "\"counterPartyId\":\"%s\"".formatted(LOCAL_PROVIDER_DID);
+        var expectedProtocolString2 = "\"protocol\":\"dataspace-protocol-http\"";
+        var expectedAddressString2 = "\"counterPartyAddress\":\"%s\"".formatted(PROVIDER_DSP_V08.getProtocolUrl());
+        var expectedIdString2 = "\"counterPartyId\":\"%s\"".formatted(PROVIDER_DSP_V08.getBpn());
+
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), emptyList());
+
+        var response = CONSUMER.discoverConnectorServices(requestBody);
+
+        var body = response.statusCode(200)
+                .extract().body().asString();
+
+        assertThat(body)
+                .isNotNull()
+                .contains(expectedProtocolString)
+                .contains(expectedAddressString)
+                .contains(expectedIdString)
+                .contains(expectedProtocolString2)
+                .contains(expectedAddressString2)
+                .contains(expectedIdString2);
+    }
+
+    @Test
+    void discoveryShouldReturn400_ifRequestHasMissingProps() {
+
+        var requestBody = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
+                .add(TYPE, "tx:ConnectorServiceDiscoveryRequest")
+                .build();
 
         var response = CONSUMER.discoverConnectorServices(requestBody);
 
@@ -143,117 +203,13 @@ public class ConnectorDiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("Just to test it");
+                .contains("mandatory value 'https://w3id.org/edc/v0.0.1/ns/counterPartyId' is missing or it is blank");
+
     }
 
-    //    @Test
-    //    void discoveryShouldReturn08DspParams_whenDidNotResolvable() {
-    //
-    //        var requestBody = createRequestBody("unresolvableBpnl", PROVIDER_FULL_DSP.getProtocolUrl());
-    //
-    //        var response = CONSUMER.discoverDspParameters(requestBody);
-    //
-    //        var body = response.statusCode(200)
-    //                .extract().body().asString();
-    //
-    //        assertThat(body)
-    //                .isNotNull()
-    //                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl())
-    //                .contains("\"counterPartyId\":\"" + "unresolvableBpnl" + "\"")
-    //                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
-    //
-    //    }
-    //
-    //    @Test
-    //    void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable() {
-    //
-    //        var requestBody = createRequestBody(PROVIDER_DSP_V08.getBpn(), PROVIDER_DSP_V08.getProtocolUrl());
-    //
-    //        var response = CONSUMER.discoverDspParameters(requestBody);
-    //
-    //        var body = response.statusCode(200)
-    //                .extract().body().asString();
-    //
-    //        assertThat(body)
-    //                .isNotNull()
-    //                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
-    //                .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
-    //                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
-    //
-    //    }
-    //
-    //    @Test
-    //    void discoveryShouldReturn400_ifRequestHasMissingProps() {
-    //
-    //        var requestBody = createObjectBuilder()
-    //                .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
-    //                .add(TYPE, "tx:ConnectorDiscoveryRequest")
-    //                .add("edc:counterPartyAddress", PROVIDER_FULL_DSP.getProtocolUrl())
-    //                .build();
-    //
-    //        var response = CONSUMER.discoverDspParameters(requestBody);
-    //
-    //        var body = response.statusCode(400)
-    //                .extract().body().asString();
-    //
-    //        assertThat(body)
-    //                .isNotNull()
-    //                .contains("mandatory value 'https://w3id.org/tractusx/v0.0.1/ns/bpnl' is missing or it is blank");
-    //
-    //    }
-    //
-    //    @Test
-    //    void discoveryShouldReturn500_ifMetadaEndpointNotReachable() {
-    //
-    //        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl() + "/not-existing");
-    //
-    //        var response = CONSUMER.discoverDspParameters(requestBody);
-    //
-    //        var body = response.statusCode(500)
-    //                .extract().body().asString();
-    //
-    //        assertThat(body)
-    //                .isNotNull()
-    //                .contains("Counter party well-known endpoint has failed with status 404 and message: Not Found");
-    //
-    //    }
-    //
-    //    @Test
-    //    void discoveryShouldReturn500_whenProviderEndpointNotReachable() {
-    //
-    //        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), "http://non-existing-provider.com");
-    //
-    //        var response = CONSUMER.discoverDspParameters(requestBody);
-    //
-    //        var body = response.statusCode(500)
-    //                .extract().body().asString();
-    //
-    //        assertThat(body)
-    //                .isNotNull()
-    //                .contains("An exception with the following message occurred while executing dsp version request:");
-    //
-    //    }
-    //
-    //    @Test
-    //    void discoveryShouldReturn500_whenNoProtocolsAvailable() {
-    //
-    //        var requestBody = createRequestBody(PROVIDER_NO_PROTOCOLS.getBpn(), PROVIDER_NO_PROTOCOLS.getProtocolUrl());
-    //
-    //        var response = CONSUMER.discoverDspParameters(requestBody);
-    //
-    //
-    //        var body = response.statusCode(500)
-    //                .extract().body().asString();
-    //
-    //        assertThat(body)
-    //                .isNotNull()
-    //                .contains("No valid protocol version found for the counter party.");
-    //
-    //    }
-    
     private JsonObject createRequestBody(String counterPartyId, List<String> knownConnectors) {
         var builder = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder().add("tx", TX_NAMESPACE))
+                .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
                 .add(TYPE, "tx:ConnectorServiceDiscoveryRequest")
                 .add("edc:counterPartyId", counterPartyId);
         if (knownConnectors != null) {

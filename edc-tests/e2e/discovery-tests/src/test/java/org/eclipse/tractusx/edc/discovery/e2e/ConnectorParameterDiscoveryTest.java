@@ -245,11 +245,11 @@ public class ConnectorParameterDiscoveryTest {
                 .contains("The counterparty does not support any of the expected protocol versions");
     }
 
-    private JsonObject createRequestBody(String bpn, String counterPartyAddress) {
+    private JsonObject createRequestBody(String counterPartyId, String counterPartyAddress) {
         return createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
                 .add(TYPE, "tx:ConnectorDiscoveryRequest")
-                .add("tx:bpnl", bpn)
+                .add("edc:counterPartyId", counterPartyId)
                 .add("edc:counterPartyAddress", counterPartyAddress)
                 .build();
     }
