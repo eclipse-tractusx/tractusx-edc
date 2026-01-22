@@ -36,6 +36,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.web.spi.exception.BadGatewayException;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.exceptions.UnexpectedResultApiException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.DefaultConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
@@ -429,6 +430,16 @@ public class DefaultConnectorDiscoveryServiceImplTest {
 
         verify(didResolver, times(1)).resolve(TEST_DID);
         verify(httpClient, never()).executeAsync(any(), any());
+    }
+
+    @Test
+    void discoverConnectors_shouldFail_whenKnownsConnectorCollectionIsNull() throws IOException {
+        var connectorDiscoveryRequest = new ConnectorDiscoveryRequest(TEST_DID, null);
+
+        assertThatThrownBy(() -> {
+            testee.discoverConnectors(connectorDiscoveryRequest).join();
+        }).isInstanceOf(UnexpectedResultApiException.class)
+                .hasMessageContaining("Null not allowed for knownConnector collection");
     }
 
     static okhttp3.Response.Builder dummyResponseBuilder(int code, String body) {

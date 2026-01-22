@@ -61,7 +61,8 @@ public class JsonObjectToConnectorDiscoveryRequestTest {
 
         assertThat(request).isNotNull();
         assertThat(request.counterPartyId()).isEqualTo("testIdentifier");
-        assertThat(request.knownConnectors()).isNull();
+        assertThat(request.knownConnectors()).isNotNull();
+        assertThat(request.knownConnectors()).isEmpty();
     }
 
     @Test
@@ -75,7 +76,8 @@ public class JsonObjectToConnectorDiscoveryRequestTest {
 
         assertThat(request).isNotNull();
         assertThat(request.counterPartyId()).isEqualTo("testIdentifier");
-        assertThat(request.knownConnectors()).isNull();
+        assertThat(request.knownConnectors()).isNotNull();
+        assertThat(request.knownConnectors()).isEmpty();
     }
 
     @Test

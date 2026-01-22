@@ -72,8 +72,9 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
                         new UnexpectedResultApiException("Input data could not parsed to proper request object"));
 
         connectorDiscoveryService.discoverVersionParams(discoveryRequest)
-                .whenComplete((result, throwable) -> {
+                .handle((result, throwable) -> {
                     handleResult(response, result, throwable);
+                    return null;
                 });
     }
 
@@ -89,8 +90,9 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
                         new UnexpectedResultApiException("Input data could not parsed to proper request object"));
 
         connectorDiscoveryService.discoverConnectors(request)
-                .whenComplete((result, throwable) -> {
+                .handle((result, throwable) -> {
                     handleResult(response, result, throwable);
+                    return null;
                 });
     }
 
