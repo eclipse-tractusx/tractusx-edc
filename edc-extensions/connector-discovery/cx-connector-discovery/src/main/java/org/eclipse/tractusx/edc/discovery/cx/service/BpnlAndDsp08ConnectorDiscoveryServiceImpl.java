@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.discovery.v4alpha.service;
+package org.eclipse.tractusx.edc.discovery.cx.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonArray;
@@ -29,6 +29,8 @@ import org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
+import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 

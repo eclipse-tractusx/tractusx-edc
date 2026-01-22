@@ -79,7 +79,9 @@ public class ConnectorParameterDiscoveryTest {
 
     @RegisterExtension
     static final RuntimeExtension CONSUMER_RUNTIME = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
-            .registerServiceMock(BdrsClient.class, new MockBdrsClient(ConnectorParameterDiscoveryTest::resolveProviderDid, ConnectorParameterDiscoveryTest::resolveProviderBpn));
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient(
+                    ConnectorParameterDiscoveryTest::resolveProviderDid,
+                    ConnectorParameterDiscoveryTest::resolveProviderBpn));
 
 
     @RegisterExtension

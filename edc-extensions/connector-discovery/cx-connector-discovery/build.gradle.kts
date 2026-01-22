@@ -27,6 +27,7 @@ dependencies {
     api(project(":spi:bdrs-client-spi"))
 
     api(libs.edc.spi.web)
+    api(libs.edc.spi.boot)
     api(libs.edc.spi.http)
     api(libs.edc.spi.jsonld)
     api(libs.edc.spi.controlplane)
