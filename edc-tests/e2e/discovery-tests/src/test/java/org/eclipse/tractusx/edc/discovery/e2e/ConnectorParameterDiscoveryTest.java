@@ -228,7 +228,7 @@ public class ConnectorParameterDiscoveryTest {
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
-        var body = response.statusCode(500)
+        response.statusCode(500)
                 .extract().body().asString();
     }
 
