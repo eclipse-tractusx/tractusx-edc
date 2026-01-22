@@ -101,11 +101,6 @@ public class ConnectorDiscoveryTest {
             .options(wireMockConfig().port(DID_SERVER_PORT))
             .build();
 
-//
-//    @RegisterExtension
-//    static final RuntimeExtension CONSUMER_RUNTIME_DID = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
-//            .registerServiceMock(DidResolverRegistry.class, new MockDidResolverRegistry(RETURNED_DOCUMENT));
-
     @RegisterExtension
     static final RuntimeExtension PROVIDER_RUNTIME_FULL_DSP = Runtimes.discoveryRuntimeFullDsp(PROVIDER_FULL_DSP);
 

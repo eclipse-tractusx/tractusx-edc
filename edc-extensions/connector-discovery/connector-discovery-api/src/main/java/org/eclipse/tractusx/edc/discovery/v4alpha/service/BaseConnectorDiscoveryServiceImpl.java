@@ -230,7 +230,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                 .orElseThrow(() -> {
                     var joined = supportedVersions.stream().collect(joining(", ", "", ""));
                     return new InvalidRequestException(
-                            "The counterparty information cannot be parsed properly"
+                            "The counterparty does not support any of the expected protocol versions (%s)"
                                     .formatted(joined));
                 });
     }
