@@ -1,24 +1,48 @@
 # Fetching a Provider's Catalog
 
 The catalog API is the first request in a data transfer sequence. It is executed by the Data
-Consumer against their own control plane and triggers the retrieval of a catalog of data offers from a specified Data Provider.
-Before executing a catalog request, a data consumer must identify which versions of the DSP the data provider supports
-and select one to use in the data transfer request chain.
+Consumer against their own control plane and triggers the retrieval of a catalog of data offers from a specified Data
+Provider. Before executing a catalog request, a data consumer must identify which versions of the DSP the data provider
+supports and select one to use in the data transfer request chain.
 
-## Discovering DSP versions and parameters
+## Discovering of connectors and the corrext DSP version parameters to address it
 
-As explained in the Dataspace Protocol document
-_"Connectors implementing the Dataspace Protocol may operate on different versions and bindings.
-Therefore, it is necessary that they can discover such information reliably and unambiguously"._
-The 2025-1 specification dictates that each connector should expose a commonly identifiable and publicly available version
-metadata endpoint location (at `/.well-known/dspace-version`)
-which dataspace participants should use to discover which versions of the protocol are supported by a Connector.
+As explained in the Dataspace Protocol Specification _"Connectors implementing the Dataspace Protocol may operate on
+different versions and bindings. Therefore, it is necessary that they can discover such information reliably and
+unambiguously"._ The 2025-1 specification dictates that each connector should expose a commonly identifiable and
+publicly available version metadata endpoint location (at `/.well-known/dspace-version`) which dataspace participants
+should use to discover which versions of the protocol are supported by a Connector.
 
-To ease the discovery of available and supported DSP versions of a Connector, the tractusx-edc project makes available
-an API endpoint that proxies the request to the metadata endpoint and returns the corresponding parameters for the
-latest supported DSP version.
+In addition, the discovery of connectors is supported by the usage of the service section in the DID document. As
+described in the Dataspace Protocol Specification, a service entry can be of type `DataService` with an endpoint
+reference to the before mentioned version metadata endpoint.
 
-DSP parameter discovery is done via the following request:
+To ease the discovery of available connectors and supported DSP versions of a connector, the Eclipse Tractus-X connector
+provides an API endpoint family that executes the whole mechanism of downloading the DID document, processing the 
+service section and retrieving the right parameters for further usage in follow-up DSP calls, like a catalog request.
+
+DSP discovery is supported with the following requests
+
+For the full flow including the DID document download:
+
+```http request
+POST /v4alpha/connectordiscovery/connectors HTTP/1.1
+Host: https://consumer-control.plane/api/management
+X-Api-Key: password
+Content-Type: application/json
+```
+```json
+{
+  "@context": {
+    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "tx:ConnectorServiceDiscoveryRequest",
+  "edc:counterPartyId": "did:web:providerDid"
+}
+```
+
+or, if a connector base address is already known:
 
 ```http request
 POST /v4alpha/connectordiscovery/dspversionparams HTTP/1.1
@@ -33,30 +57,37 @@ Content-Type: application/json
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "tx:ConnectorParamsDiscoveryRequest",
-  "tx:bpnl": "BPNL1234567890",
+  "edc:counterPartyId": "did:web:providerDid",
   "edc:counterPartyAddress": "https://provider.domain.com/api/v1/dsp"
 }
 ```
 
-If the counterparty connector supports DSP version 2025-1, a valid response should be:
+The mechanism determines from the provided version metadata always the latest DSP version supported by the requesting
+and the requested connector, for which the version parameters to be used in the management api are returned. If the
+counterparty connector supports DSP version 2025-1, a valid response looks like:
+
 ```json
-[
-  {
-    "@context": {
-      "edc": "https://w3id.org/edc/v0.0.1/ns/"
-    },
-    "edc:counterPartyId": "did:web:one-example.com",
-    "edc:counterPartyAddress": "https://provider.domain.com/api/v1/dsp/2025-1",
-    "edc:protocol": "dataspace-protocol-http:2025-1"
-  }
-]
+{
+  "@context": {
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "edc:counterPartyId": "did:web:one-example.com",
+  "edc:counterPartyAddress": "https://provider.domain.com/api/v1/dsp/2025-1",
+  "edc:protocol": "dataspace-protocol-http:2025-1"
+}
 ```
 
-Notice the automatic resolution of the `counterPartyId` from a BPN to a DID, and the appendment of the
-correct DSP version path to the counterPartyAddress and to the required protocol.
+In case of the first api, the returned object is actually an array of the described objects, as the DID document
+might contain multiple connector references and parameters are returned for each of the found connectors.
 
-The information contained in the above discovery response can be directly used in the data transfer request chain, 
+The information contained in the above response can be directly used in the data transfer request chain,
 as demonstrated in the following example.
+
+### Catena-X specifics:
+
+For a Catena-X compliant connector runtime, the connector discovery supports the versions `2025-1` and `v0.8` of the
+DSP protocol. As version 0.8 was used with BPNLs instead of DIDs as identifiers, the API supports both identifiers
+at the interface. It does automatic translation between the identifiers using the BDRS data.
 
 ## Catalog request
 
