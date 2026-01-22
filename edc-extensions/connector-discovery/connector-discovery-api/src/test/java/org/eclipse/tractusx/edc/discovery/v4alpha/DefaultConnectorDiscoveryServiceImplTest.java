@@ -193,7 +193,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
             testee.discoverVersionParams(paramsDiscoveryRequest).join();
         }).isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(BadGatewayException.class)
-                .hasMessageContaining("counterparty well-known endpoint has failed with status")
+                .hasMessageContaining("Counterparty well-known endpoint has failed with status")
                 .hasMessageContaining("404");
     }
 
