@@ -24,9 +24,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.spi.EdcException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,8 +61,8 @@ public class ContainerRequestContextApiImpl implements ContainerRequestContextAp
 
     @Override
     public String body() {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(context.getEntityStream()))) {
-            return br.lines().collect(Collectors.joining("\n"));
+        try {
+            return new String(context.getEntityStream().readAllBytes());
         } catch (IOException e) {
             throw new EdcException("Failed to read request body: " + e.getMessage());
         }
