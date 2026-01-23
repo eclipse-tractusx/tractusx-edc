@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.discovery.cx.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants;
@@ -63,20 +62,14 @@ public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDisc
     }
 
     @Override
-    protected JsonObject createVersionParameterForProtocolVersion(
-            String counterPartyId, String versionAddress, String versionInformation) {
-        if (Dsp2025Constants.V_2025_1_VERSION.equals(versionInformation)) {
-            return createVersionParameterRecord(
-                    Dsp2025Constants.V_2025_1_VERSION,
-                    mapToDid(counterPartyId),
-                    versionAddress);
-        } else if (Dsp08Constants.V_08_VERSION.equals(versionInformation) || "0.8".equals(versionInformation)) {
+    protected VersionParameters createVersionParameterForProtocolVersion(
+            String counterPartyId, String versionAddress, String version) {
+        if (Dsp2025Constants.V_2025_1_VERSION.equals(version)) {
+            return new VersionParameters(mapToDid(counterPartyId), versionAddress, Dsp2025Constants.V_2025_1_VERSION);
+        } else if (Dsp08Constants.V_08_VERSION.equals(version) || "0.8".equals(version)) {
             // The or condition with "0.8" is for backward compatibility, because CX-0018 wrongly
             // mentioned 0.8 as version identifier
-            return createVersionParameterRecord(
-                    Dsp08Constants.V_08_VERSION,
-                    mapToBpn(counterPartyId),
-                    versionAddress);
+            return new VersionParameters(mapToBpn(counterPartyId), versionAddress, Dsp08Constants.V_08_VERSION);
         }
         return null;
     }

@@ -21,7 +21,6 @@
 package org.eclipse.tractusx.edc.discovery.v4alpha.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.json.JsonObject;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
@@ -43,17 +42,14 @@ public class DefaultConnectorDiscoveryServiceImpl extends BaseConnectorDiscovery
     }
 
     @Override
-    protected JsonObject createVersionParameterForProtocolVersion(
-            String counterPartyId, String versionAddress, String versionInformation) {
+    protected VersionParameters createVersionParameterForProtocolVersion(
+            String counterPartyId, String versionAddress, String version) {
         if (!counterPartyId.toLowerCase().startsWith(DID_PREFIX)) {
             throw new InvalidRequestException(
                     "CounterPartyId used not supported, must be a did: %s".formatted(counterPartyId));
         }
-        if (Dsp2025Constants.V_2025_1_VERSION.equals(versionInformation)) {
-            return createVersionParameterRecord(
-                    versionInformation,
-                    counterPartyId,
-                    versionAddress);
+        if (Dsp2025Constants.V_2025_1_VERSION.equals(version)) {
+            return new VersionParameters(counterPartyId, versionAddress, version);
         }
         return null;
     }

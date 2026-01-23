@@ -54,7 +54,6 @@ import java.net.URL;
 import java.time.Clock;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -87,14 +86,6 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      */
     private final List<String> supportedVersions;
 
-    /*
-     * A list of version mappings from official names expected in a version metadata to the name of the version
-     * in the management api. Add new versions, if applicable, 2024/1 is omitted on purpose, add it, if your
-     * implementation makes use of it.
-     */
-    private final Map<String, String> versionMapper = Map.of(
-            Dsp2025Constants.V_2025_1_VERSION, Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1,
-            Dsp08Constants.V_08_VERSION, HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP);
     private final ConcurrentLruCache<String, TimestampedValue<ProtocolVersion>> versionsCache;
 
     /**
@@ -226,12 +217,37 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                                 request.counterPartyId(),
                                 createFullPath(request.counterPartyAddress(), versionInformation.path()),
                                 versionInformation.version()))
+                .map(this::createVersionParameterRecord)
                 .orElseThrow(() -> {
                     var joined = supportedVersions.stream().collect(joining(", ", "", ""));
                     return new InvalidRequestException(
                             "The counterparty does not support any of the expected protocol versions (%s)"
                                     .formatted(joined));
                 });
+    }
+
+    /**
+     * Intermediate record that stores the three target parameters for a connector. It provides a conversion
+     * method for the translation of the official 'version' information to the protocol string used in the
+     * management api.
+     *
+     * @param counterPartyId The counterparty identifier to use when addressing the target connector.
+     * @param counterPartyAddress The DSP base address of the target connector for the corresponding version.
+     * @param version The official 'version' to use when addressing the target connector.
+     */
+    public record VersionParameters(String counterPartyId, String counterPartyAddress, String version) {
+        /**
+         * Translates the official DSP name of a version to the management api protocol parameter.
+         *
+         * @return The management api protocol identifier for the version to be used for the connector.
+         */
+        String protocol() {
+            return switch(version) {
+                case Dsp2025Constants.V_2025_1_VERSION -> Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
+                case Dsp08Constants.V_08_VERSION -> HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
+                default -> throw new IllegalArgumentException("Protocol version: %s not supported".formatted(version));
+            };
+        }
     }
 
     /**
@@ -245,33 +261,21 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      *                           in DSP requests.
      * @param versionInformation The version string returned by the version metadata endpoint representing the latest
      *                           version supported by the called connector and the calling connector.
-     * @return A 'JsonObject' which contains an entry for all three relevant parameters. See 'createVersionParameterRecord'
-     *         for details.
+     * @return A {@link VersionParameters} record which contains for all three relevant parameters
      * @throws RuntimeException A meaningful exception from 'org.eclipse.edc.web.spi.exception' to allow, e.g., a correct
      *                          selection of a status code for the request.
      */
-    protected abstract JsonObject createVersionParameterForProtocolVersion(
+    protected abstract VersionParameters createVersionParameterForProtocolVersion(
             String counterPartyId, String versionAddress, String versionInformation);
 
-    /**
-     * A helper method to be used within 'createVersionParameterForProtocolVersion' to create the actual 'JsonObject'
-     * that transports the information.
-     *
-     * @param version        The version string of the version as announced in the version metadata. This will be translated
-     *                       to the version string to be used in the management api for the protocol property that identifies
-     *                       the DSP version to be used for the request.
-     * @param counterPartyId The counterparty id to be used in the management api for a DSP call. In catalog requests,
-     *                       this is the counterPartyId field, but it can be named different in other DSP call requests.
-     * @param address        The base address for referencing the counterparty in the management api to initiate a DSP
-     *                       call. The management api will typically simply add the DSP subpath to this path according to the
-     *                       version specificiation.
-     * @return A 'JsonObject', that represents the record of data expected from the endpoints
+    /*
+     * A helper method to be used to create the actual 'JsonObject' that transports the information.
      */
-    protected JsonObject createVersionParameterRecord(String version, String counterPartyId, String address) {
+    private JsonObject createVersionParameterRecord(VersionParameters rawParameters) {
         var versionParameters = Json.createObjectBuilder();
-        versionParameters.add(CatalogRequest.CATALOG_REQUEST_PROTOCOL, versionMapper.get(version));
-        versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, address);
-        versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ID, counterPartyId);
+        versionParameters.add(CatalogRequest.CATALOG_REQUEST_PROTOCOL, rawParameters.protocol());
+        versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, rawParameters.counterPartyAddress());
+        versionParameters.add(CatalogRequest.CATALOG_REQUEST_COUNTER_PARTY_ID, rawParameters.counterPartyId());
         return versionParameters.build();
     }
 
