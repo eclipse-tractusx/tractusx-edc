@@ -57,6 +57,7 @@ edc-spi-jwt-signer = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = 
 edc-spi-keypair = { module = "org.eclipse.edc:keypair-spi", version.ref = "edc" }
 edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
 edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
+edc-spi-participant-context = { module = "org.eclipse.edc:connector-participant-context-spi", version.ref = "edc" }
 edc-spi-participant-context-single = { module = "org.eclipse.edc:participant-context-single-spi", version.ref = "edc" }
 edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
