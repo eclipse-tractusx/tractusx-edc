@@ -30,12 +30,15 @@ dependencies {
     runtimeOnly(stableLibs.tx.edc.controlplane.postgresql.hashicorp.vault) {
         exclude(group = "org.eclipse.edc", "vault-hashicorp")
         exclude(module = "bdrs-client")
-        exclude(module = "tx-iatp-sts-dim")
     }
-    runtimeOnly(project(":edc-tests:runtime:supported-edc:stable:extensions"))
+
+    runtimeOnly(stableLibs.tx.edc.dataplane.postgresql.hashicorp.vault) {
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+        exclude(group = "org.eclipse.edc", "vault-hashicorp")
+    }
+    runtimeOnly(project(":edc-tests:runtime:runtime-compatibility:stable:extensions"))
     runtimeOnly(stableLibs.edc.identity.trust.sts.remote.client)
     runtimeOnly(stableLibs.edc.auth.oauth2.client)
-    runtimeOnly(stableLibs.edc.api.management.dataplaneselector)
 }
 
 tasks.shadowJar {

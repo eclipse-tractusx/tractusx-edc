@@ -69,7 +69,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     private static final String CONSUMER_PROXY_API_KEY = "consumerProxyKey";
     private static final String API_KEY_HEADER_NAME = "x-api-key";
     protected final LazySupplier<URI> dataPlaneProxy = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
-    private final LazySupplier<URI> dataPlanePublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
+    protected final LazySupplier<URI> dataPlanePublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
     private final LazySupplier<URI> federatedCatalog = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/catalog"));
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;

@@ -116,8 +116,8 @@ public class TransferEndToEndTest {
 
     @Order(1)
     @RegisterExtension
-    static final RuntimeExtension LOCAL_CONTROL_PLANE = new RuntimePerClassExtension(
-            Runtimes.CONTROL_PLANE.create("local-control-plane")
+    static final RuntimeExtension LOCAL_CONNECTOR = new RuntimePerClassExtension(
+            Runtimes.SNAPSHOT_CONNECTOR.create("local-connector")
                     .configurationProvider(() -> POSTGRES.getConfig(LOCAL_PARTICIPANT.getName()))
                     .configurationProvider(LOCAL_PARTICIPANT::controlPlaneConfig)
                     .registerServiceMock(BdrsClient.class, new BdrsClient() {
@@ -144,14 +144,6 @@ public class TransferEndToEndTest {
 
     @Order(3)
     @RegisterExtension
-    static final RuntimeExtension LOCAL_DATA_PLANE = new RuntimePerClassExtension(
-            Runtimes.DATA_PLANE.create("local-data-plane")
-                    .configurationProvider(() -> POSTGRES.getConfig(LOCAL_PARTICIPANT.getName()))
-                    .configurationProvider(LOCAL_PARTICIPANT::dataPlaneConfig)
-    );
-
-    @Order(4)
-    @RegisterExtension
     static final RemoteParticipantExtension REMOTE_PARTICIPANT_EXTENSION = new RemoteParticipantExtension(REMOTE_PARTICIPANT, LOCAL_PARTICIPANT, POSTGRES);
 
     @RegisterExtension
@@ -165,13 +157,10 @@ public class TransferEndToEndTest {
         configureParticipant(REMOTE_PARTICIPANT, ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
         configureParticipantContext(ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
 
-        var vault = LOCAL_DATA_PLANE.getService(Vault.class);
+        var vault = LOCAL_CONNECTOR.getService(Vault.class);
         vault.storeSecret("private-key", LOCAL_PARTICIPANT.getPrivateKeyAsString());
         vault.storeSecret("public-key", LOCAL_PARTICIPANT.getPublicKeyAsString());
         vault.storeSecret("local-secret", "clientSecret");
-
-        var cpVault = LOCAL_CONTROL_PLANE.getService(Vault.class);
-        cpVault.storeSecret("local-secret", "clientSecret");
     }
 
     @ParameterizedTest
@@ -179,7 +168,6 @@ public class TransferEndToEndTest {
     void httpPullTransfer(BaseParticipant consumer, BaseParticipant provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
-        provider.waitForDataPlane();
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
         var assetId = UUID.randomUUID().toString();
         var usagePolicy = inForceDatePolicyLegacy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+5s");
@@ -215,7 +203,6 @@ public class TransferEndToEndTest {
     void suspendAndResume_httpPull_dataTransfer(BaseParticipant consumer, BaseParticipant provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
-        provider.waitForDataPlane();
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
         var assetId = UUID.randomUUID().toString();
         createResourcesOnProvider(provider, assetId, PolicyFixtures.noConstraintPolicy(), httpSourceDataAddress());

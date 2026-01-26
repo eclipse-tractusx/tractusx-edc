@@ -46,10 +46,4 @@ dependencies {
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
     testImplementation("com.networknt:json-schema-validator:2.0.0")
-
-    testCompileOnly(project(":edc-tests:runtime:supported-edc:stable:controlplane-stable"))
-    testCompileOnly(project(":edc-tests:runtime:supported-edc:stable:dataplane-stable"))
-    testCompileOnly(project(":edc-tests:runtime:supported-edc:snapshot:identityhub-snapshot"))
-    testCompileOnly(project(":edc-tests:runtime:supported-edc:stable:controlplane-stable"))
-    testCompileOnly(project(":edc-tests:runtime:supported-edc:snapshot:dataplane-snapshot"))
 }

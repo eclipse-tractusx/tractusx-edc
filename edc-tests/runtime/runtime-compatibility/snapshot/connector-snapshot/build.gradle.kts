@@ -19,23 +19,22 @@
  ******************************************************************************/
 
 plugins {
+    `java-library`
     id("application")
-    alias(libs.plugins.shadow)
-    alias(libs.plugins.docker)
 }
 
 dependencies {
-    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
+    implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
         exclude(group = "org.eclipse.edc", "vault-hashicorp")
+        exclude(group = "org.eclipse.tractusx.edc", module = "bdrs-client")
+    }
+
+    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+        exclude("org.eclipse.edc", "vault-hashicorp")
     }
 
     implementation(project(":edc-extensions:single-participant-vault"))
-}
-
-tasks.shadowJar {
-    mergeServiceFiles()
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    archiveFileName.set("${project.name}.jar")
 }
 
 application {

@@ -147,12 +147,10 @@ include(":edc-tests:runtime:runtime-postgresql")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-base")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-no-protocols")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08")
-include("edc-tests:runtime:supported-edc:stable:extensions")
-include("edc-tests:runtime:supported-edc:stable:controlplane-stable")
-include("edc-tests:runtime:supported-edc:stable:dataplane-stable")
-include("edc-tests:runtime:supported-edc:snapshot:identityhub-snapshot")
-include("edc-tests:runtime:supported-edc:snapshot:controlplane-snapshot")
-include("edc-tests:runtime:supported-edc:snapshot:dataplane-snapshot")
+include("edc-tests:runtime:runtime-compatibility:stable:extensions")
+include("edc-tests:runtime:runtime-compatibility:stable:connector-stable")
+include("edc-tests:runtime:runtime-compatibility:snapshot:identityhub-snapshot")
+include("edc-tests:runtime:runtime-compatibility:snapshot:connector-snapshot")
 
 
 

@@ -31,8 +31,7 @@ public class RemoteParticipantExtension implements BeforeAllCallback, AfterAllCa
     private final LocalParticipant localParticipant;
     private final PostgresExtension postgresql;
 
-    private GenericContainer<?> controlPlane;
-    private GenericContainer<?> dataPlane;
+    private GenericContainer<?> connector;
 
     public RemoteParticipantExtension(RemoteParticipant participant, LocalParticipant localParticipant, PostgresExtension postgresql) {
         this.participant = participant;
@@ -42,20 +41,14 @@ public class RemoteParticipantExtension implements BeforeAllCallback, AfterAllCa
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        controlPlane = EdcDockerRuntimes.CONTROL_PLANE.create("remote-controlplane", participant.controlPlaneEnv(localParticipant, postgresql));
-        dataPlane = EdcDockerRuntimes.DATA_PLANE.create("remote-dataplane", participant.dataPlaneEnv(localParticipant, postgresql));
-
-        controlPlane.start();
-        dataPlane.start();
+        connector = EdcDockerRuntimes.STABLE_CONNECTOR.create("remote-connector", participant.controlPlaneEnv(localParticipant, postgresql));
+        connector.start();
     }
 
     @Override
     public void afterAll(ExtensionContext context) {
-        if (controlPlane != null) {
-            controlPlane.stop();
-        }
-        if (dataPlane != null) {
-            dataPlane.stop();
+        if (connector != null) {
+            connector.stop();
         }
     }
 }

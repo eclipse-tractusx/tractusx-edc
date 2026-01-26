@@ -27,8 +27,7 @@ import java.util.Map;
 
 public enum EdcDockerRuntimes {
 
-    CONTROL_PLANE("controlplane-stable:latest"),
-    DATA_PLANE("dataplane-stable:latest");
+    STABLE_CONNECTOR("connector-stable:latest");
 
     private final String image;
 

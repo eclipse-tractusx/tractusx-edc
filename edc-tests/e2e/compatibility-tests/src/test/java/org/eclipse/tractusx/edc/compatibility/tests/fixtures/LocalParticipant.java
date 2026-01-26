@@ -47,10 +47,8 @@ public class LocalParticipant extends BaseParticipant {
                 put("web.http.management.port", String.valueOf(controlPlaneManagement.get().getPort()));
                 put("web.http.management.path", controlPlaneManagement.get().getPath());
                 put("web.http.management.auth.key", API_KEY);
-                put("web.http.version.port", String.valueOf(controlPlaneVersion.get().getPort()));
-                put("web.http.version.path", controlPlaneVersion.get().getPath());
-                put("web.http.control.port", String.valueOf(controlPlaneControl.get().getPort()));
-                put("web.http.control.path", controlPlaneControl.get().getPath());
+                put("web.http.control.port", String.valueOf(getFreePort()));
+                put("web.http.control.path", "/control");
                 put("edc.dsp.callback.address", controlPlaneProtocol.get().toString());
                 put("edc.transfer.proxy.endpoint", dataPlanePublic.get().toString());
                 put("edc.transfer.send.retry.limit", "1");
@@ -74,6 +72,7 @@ public class LocalParticipant extends BaseParticipant {
                 put("edc.iam.did.web.use.https", "false");
                 put("edc.iam.trusted-issuer.issuer.id", trustedIssuer);
                 put("edc.sql.schema.autocreate", "false");
+                putAll(dataPlaneConfig().getEntries());
             }
         };
 
@@ -87,15 +86,13 @@ public class LocalParticipant extends BaseParticipant {
                 put("web.http.path", "/api");
                 put("web.http.public.port", String.valueOf(dataPlanePublic.get().getPort()));
                 put("web.http.public.path", dataPlanePublic.get().getPath());
-                put("web.http.control.port", String.valueOf(dataPlaneControl.get().getPort()));
-                put("web.http.control.path", dataPlaneControl.get().getPath());
+                put("web.http.control.port", String.valueOf(getFreePort()));
+                put("web.http.control.path",  "/control");
                 put("edc.dataplane.api.public.baseurl", dataPlanePublic.get() + "/v2/");
-                put("edc.dataplane.token.validation.endpoint", controlPlaneControl.get() + "/token");
                 put("edc.transfer.proxy.token.signer.privatekey.alias", "private-key");
                 put("edc.transfer.proxy.token.verifier.publickey.alias", "public-key");
                 put("edc.dataplane.http.sink.partition.size", "1");
                 put("edc.dataplane.state-machine.iteration-wait-millis", "50");
-                put("edc.dpf.selector.url", controlPlaneControl.get() + "/v1/dataplanes");
                 put("edc.component.id", "dataplane");
                 put("edc.iam.sts.oauth.token.url", stsUri.get().toString() + "/token");
                 put("edc.iam.sts.oauth.client.id", getDid());

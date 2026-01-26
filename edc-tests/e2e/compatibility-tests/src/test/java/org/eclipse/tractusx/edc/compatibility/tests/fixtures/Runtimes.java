@@ -26,10 +26,8 @@ import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import java.net.URL;
 
 public enum Runtimes {
-
-    CONTROL_PLANE(":edc-tests:runtime:supported-edc:snapshot:controlplane-snapshot"),
-    IDENTITY_HUB(":edc-tests:runtime:supported-edc:snapshot:identityhub-snapshot"),
-    DATA_PLANE(":edc-tests:runtime:supported-edc:snapshot:dataplane-snapshot");
+    SNAPSHOT_CONNECTOR(":edc-tests:runtime:runtime-compatibility:snapshot:connector-snapshot"),
+    IDENTITY_HUB(":edc-tests:runtime:runtime-compatibility:snapshot:identityhub-snapshot");
 
     private final String[] modules;
     private URL[] classpathEntries;
