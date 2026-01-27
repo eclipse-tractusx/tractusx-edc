@@ -17,4 +17,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension
+org.eclipse.tractusx.edc.discovery.cx.ConnectorDiscoveryBpnlAndDsp08ServiceExtension

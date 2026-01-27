@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,20 +20,73 @@
 package org.eclipse.tractusx.edc.discovery.v4alpha.validators;
 
 import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.jsonobject.validators.MandatoryValue;
+import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
+import org.eclipse.edc.validator.spi.Violation;
 
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
+import static org.eclipse.edc.validator.spi.Violation.violation;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 
+/**
+ * Validator for the 'ConnectorDiscoveryRequest' as defined in the connector discovery api.
+ * <p>
+ * The validator checks the availability of the mandatory 'counterPartyId' field and validates, that the
+ * 'knownConnectors' field contains an array of valid urls.
+ */
 public class ConnectorDiscoveryRequestValidator {
-
     public static Validator<JsonObject> instance() {
         return JsonObjectValidator.newValidator()
-                .verify(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE, MandatoryValue::new)
-                .verify(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE, MandatoryValue::new)
+                .verify(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE, MandatoryValue::new)
+                .verify(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, KnownConnectorValidator::new)
                 .build();
+    }
+
+    private ConnectorDiscoveryRequestValidator() {}
+
+    private static class KnownConnectorValidator implements Validator<JsonObject> {
+        private final JsonLdPath path;
+
+        KnownConnectorValidator(JsonLdPath path) {
+            this.path = path;
+        }
+
+        @Override
+        public ValidationResult validate(JsonObject input) {
+            var providedObject = input.getJsonArray(path.last());
+            if (providedObject == null) {
+                return ValidationResult.success();
+            }
+
+            var issues = new ArrayList<Violation>();
+            for (JsonValue value : providedObject) {
+                if (value.getValueType() != JsonValue.ValueType.STRING) {
+                    issues.add(violation("value '%s' is not of type STRING, it is of type %s"
+                            .formatted(value.toString(), value.getValueType()), path.toString()));
+                } else {
+                    var content = ((JsonString) value).getString();
+                    try {
+                        new URL(content);
+                    } catch (MalformedURLException e) {
+                        issues.add(violation("value '%s' is not a valid url".formatted(content), path.toString()));
+                    }
+                }
+            }
+
+            if (!issues.isEmpty()) {
+                return ValidationResult.failure(issues);
+            }
+
+            return ValidationResult.success();
+        }
     }
 }
