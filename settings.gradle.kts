@@ -74,6 +74,8 @@ include(":edc-extensions:validators:empty-asset-selector")
 include(":edc-extensions:log4j2-monitor")
 include("edc-extensions:connector-discovery:connector-discovery-api")
 include(":edc-extensions:dataspace-protocol")
+include(":edc-extensions:dataspace-protocol:cx-dataspace-protocol")
+include(":edc-extensions:dataspace-protocol:dataspace-protocol-core")
 include(":edc-extensions:did-document:did-document-service-self-registration")
 include(":edc-extensions:did-document:did-document-service-dim")
 

@@ -18,12 +18,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-plugins {
-    `maven-publish`
-    `java-library`
-}
+package org.eclipse.tractusx.edc.protocol.core.identifier;
 
-dependencies {
-    api(project(":edc-extensions:dataspace-protocol:dataspace-protocol-core"))
-    api(project(":edc-extensions:dataspace-protocol:cx-dataspace-protocol"))
+import org.eclipse.edc.spi.monitor.Monitor;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class DidExtractionFunctionTest extends MembershipCredentialIdExtractionFunctionTest {
+    private final Monitor monitor = mock();
+
+    @Override
+    protected MembershipCredentialIdExtractionFunction extractionFunction() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        return new DidExtractionFunction(monitor);
+    }
+    
+    @Override
+    protected String expectedId() {
+        return DID;
+    }
 }
