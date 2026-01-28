@@ -1,4 +1,4 @@
-package org.eclipse.tractusx.edc.protocol.core; /********************************************************************************
+/********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  * Copyright (c) 2025 Cofinity-X GmbH
  *
@@ -17,6 +17,8 @@ package org.eclipse.tractusx.edc.protocol.core; /*******************************
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
+package org.eclipse.tractusx.edc.protocol.core;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
