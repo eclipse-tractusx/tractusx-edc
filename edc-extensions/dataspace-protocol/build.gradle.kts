@@ -24,8 +24,6 @@ plugins {
 }
 
 dependencies {
-    dependencies {
-        api(project(":edc-extensions:dataspace-protocol:dataspace-protocol-core"))
-        api(project(":edc-extensions:dataspace-protocol:cx-dataspace-protocol"))
-    }
+    api(project(":edc-extensions:dataspace-protocol:dataspace-protocol-core"))
+    api(project(":edc-extensions:dataspace-protocol:cx-dataspace-protocol"))
 }

@@ -20,8 +20,8 @@
 package org.eclipse.tractusx.edc.protocol.cx.identifier;
 
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.protocol.lib.MembershipCredentialIdExtractionFunction;
-import org.eclipse.tractusx.edc.protocol.lib.MembershipCredentialIdExtractionFunctionTest;
+import org.eclipse.tractusx.edc.protocol.core.MembershipCredentialIdExtractionFunction;
+import org.eclipse.tractusx.edc.protocol.core.MembershipCredentialIdExtractionFunctionTest;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;

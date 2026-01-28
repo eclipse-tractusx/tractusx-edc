@@ -1,4 +1,5 @@
-/********************************************************************************
+/*
+ * Copyright (c) 2025 Think-it GmbH
  * Copyright (c) 2026 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,9 +16,9 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
- ********************************************************************************/
+ */
 
-package org.eclipse.tractusx.edc.protocol.lib;
+package org.eclipse.tractusx.edc.protocol.core;
 
 import org.eclipse.edc.participantcontext.spi.identity.ParticipantIdentityResolver;
 import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;

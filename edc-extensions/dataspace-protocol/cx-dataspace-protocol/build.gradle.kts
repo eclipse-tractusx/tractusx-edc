@@ -40,8 +40,8 @@ dependencies {
 
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
-    implementation(project(":edc-extensions:dataspace-protocol:dataspace-protocol-lib"))
+    implementation(project(":edc-extensions:dataspace-protocol:dataspace-protocol-core"))
 
     testImplementation(libs.edc.junit)
-    testImplementation(testFixtures(project(":edc-extensions:dataspace-protocol:dataspace-protocol-lib")))
+    testImplementation(testFixtures(project(":edc-extensions:dataspace-protocol:dataspace-protocol-core")))
 }
