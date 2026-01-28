@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.tractusx.edc.protocol.core;
+package org.eclipse.tractusx.edc.protocol.core.identifier;
 
 import org.eclipse.edc.spi.monitor.Monitor;
 

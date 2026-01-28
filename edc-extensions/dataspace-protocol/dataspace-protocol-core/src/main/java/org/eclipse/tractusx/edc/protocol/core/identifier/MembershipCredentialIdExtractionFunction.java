@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.protocol.core;
+package org.eclipse.tractusx.edc.protocol.core.identifier;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;

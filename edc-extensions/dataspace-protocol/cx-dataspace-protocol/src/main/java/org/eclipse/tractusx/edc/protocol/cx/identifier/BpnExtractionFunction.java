@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.protocol.cx.identifier;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.protocol.core.MembershipCredentialIdExtractionFunction;
+import org.eclipse.tractusx.edc.protocol.core.identifier.MembershipCredentialIdExtractionFunction;
 
 import java.util.Map;
 import java.util.Optional;

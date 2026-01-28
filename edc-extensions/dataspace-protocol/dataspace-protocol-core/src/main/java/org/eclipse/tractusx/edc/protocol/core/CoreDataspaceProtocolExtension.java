@@ -30,6 +30,8 @@ import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.protocol.core.identifier.DefaultParticipantIdentityResolver;
+import org.eclipse.tractusx.edc.protocol.core.identifier.DidExtractionFunction;
 
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.V_2025_1;

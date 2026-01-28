@@ -21,7 +21,7 @@
 package org.eclipse.tractusx.edc.protocol.cx.identifier;
 
 import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
-import org.eclipse.tractusx.edc.protocol.core.DefaultParticipantIdentityResolver;
+import org.eclipse.tractusx.edc.protocol.core.identifier.DefaultParticipantIdentityResolver;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;

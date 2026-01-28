@@ -25,6 +25,7 @@ import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.protocol.core.identifier.DidExtractionFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
