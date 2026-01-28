@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
