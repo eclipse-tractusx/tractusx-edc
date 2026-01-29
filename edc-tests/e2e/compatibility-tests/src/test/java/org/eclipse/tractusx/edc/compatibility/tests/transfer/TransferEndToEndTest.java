@@ -29,14 +29,13 @@ import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.compatibility.tests.fixtures.BaseParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.IdentityHubParticipant;
-import org.eclipse.tractusx.edc.compatibility.tests.fixtures.LocalParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipantExtension;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.Runtimes;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,20 +89,14 @@ public class TransferEndToEndTest {
             .trustedIssuer(ISSUER.didUrl())
             .build();
 
-    protected static final LocalParticipant LOCAL_PARTICIPANT = LocalParticipant.Builder.newInstance()
+    static final IatpParticipant LOCAL_PARTICIPANT = IatpParticipant.Builder.newInstance()
             .name("local")
             .id("local")
             .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
             .did(IDENTITY_HUB_PARTICIPANT.didFor("local"))
+            .bpn("local")
             .trustedIssuer(ISSUER.didUrl())
             .build();
-
-//    static final IatpParticipant LOCAL_PARTICIPANT = IatpParticipant.Builder.newInstance()
-//            .name("local")
-//            .id(IDENTITY_HUB_PARTICIPANT.didFor("local"))
-//            .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
-//            .trustedIssuer(ISSUER.didUrl())
-//            .build();
 
     private static final Map<String, String> DIDS = Map.of(
             LOCAL_PARTICIPANT.getId(), LOCAL_PARTICIPANT.getDid(),
@@ -119,7 +112,7 @@ public class TransferEndToEndTest {
     static final RuntimeExtension LOCAL_CONNECTOR = new RuntimePerClassExtension(
             Runtimes.SNAPSHOT_CONNECTOR.create("local-connector")
                     .configurationProvider(() -> POSTGRES.getConfig(LOCAL_PARTICIPANT.getName()))
-                    .configurationProvider(LOCAL_PARTICIPANT::controlPlaneConfig)
+                    .configurationProvider(LOCAL_PARTICIPANT::iatpConfig)
                     .registerServiceMock(BdrsClient.class, new BdrsClient() {
                         @Override
                         public String resolveDid(String bpn) {
@@ -158,14 +151,14 @@ public class TransferEndToEndTest {
         configureParticipantContext(ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
 
         var vault = LOCAL_CONNECTOR.getService(Vault.class);
-        vault.storeSecret("private-key", LOCAL_PARTICIPANT.getPrivateKeyAsString());
-        vault.storeSecret("public-key", LOCAL_PARTICIPANT.getPublicKeyAsString());
-        vault.storeSecret("local-secret", "clientSecret");
+        vault.storeSecret(LOCAL_PARTICIPANT.getPrivateKeyAlias(), LOCAL_PARTICIPANT.getPrivateKeyAsString());
+        vault.storeSecret(LOCAL_PARTICIPANT.getFullKeyId(), LOCAL_PARTICIPANT.getPublicKeyAsString());
+        vault.storeSecret("client_secret_alias", "clientSecret");
     }
 
     @ParameterizedTest
     @ArgumentsSource(ParticipantsArgProvider.class)
-    void httpPullTransfer(BaseParticipant consumer, BaseParticipant provider, String protocol) {
+    void httpPullTransfer(IatpParticipant consumer, IatpParticipant provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
@@ -180,27 +173,26 @@ public class TransferEndToEndTest {
         consumer.awaitTransferToBeInState(transferProcessId, STARTED);
 
         var edr = await().atMost(consumer.getTimeout())
-                .until(() -> consumer.getEdr(transferProcessId), Objects::nonNull);
+                .until(() -> consumer.edrs().getEdr(transferProcessId), Objects::nonNull);
 
         // Do the transfer
         var msg = UUID.randomUUID().toString();
-        await().atMost(consumer.getTimeout())
-                .untilAsserted(() -> consumer.pullData(edr, Map.of("message", msg), body -> assertThat(body).isEqualTo("data")));
+        var data = consumer.data().pullData(edr, Map.of("message", msg));
+        assertThat(data).isNotNull().isEqualTo("data");
 
         // checks that the EDR is gone once the contract expires
         await().atMost(consumer.getTimeout())
-                .untilAsserted(() -> assertThatThrownBy(() -> consumer.getEdr(transferProcessId)));
+                .untilAsserted(() -> assertThatThrownBy(() -> consumer.edrs().getEdr(transferProcessId)));
 
         // checks that transfer fails
-        await().atMost(consumer.getTimeout())
-                .untilAsserted(() -> assertThatThrownBy(() -> consumer.pullData(edr, Map.of("message", msg), body -> assertThat(body).isEqualTo("data"))));
+        await().atMost(consumer.getTimeout()).untilAsserted(() -> assertThatThrownBy(() -> consumer.data().pullData(edr, Map.of("message", msg))));
 
         providerDataSource.verify(getRequestedFor(urlPathEqualTo("/source")));
     }
 
     @ParameterizedTest
     @ArgumentsSource(ParticipantsArgProvider.class)
-    void suspendAndResume_httpPull_dataTransfer(BaseParticipant consumer, BaseParticipant provider, String protocol) {
+    void suspendAndResume_httpPull_dataTransfer(IatpParticipant consumer, IatpParticipant provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
@@ -213,32 +205,34 @@ public class TransferEndToEndTest {
 
         consumer.awaitTransferToBeInState(transferProcessId, STARTED);
 
-        var edr = await().atMost(consumer.getTimeout()).until(() -> consumer.getEdr(transferProcessId), Objects::nonNull);
+        var edr = await().atMost(consumer.getTimeout()).until(() -> consumer.edrs().getEdr(transferProcessId), Objects::nonNull);
 
         var msg = UUID.randomUUID().toString();
-        await().atMost(consumer.getTimeout()).untilAsserted(() -> consumer.pullData(edr, Map.of("message", msg), body -> assertThat(body).isEqualTo("data")));
+        var data = consumer.data().pullData(edr, Map.of("message", msg));
+        assertThat(data).isNotNull().isEqualTo("data");
 
         consumer.suspendTransfer(transferProcessId, "supension");
 
         consumer.awaitTransferToBeInState(transferProcessId, SUSPENDED);
 
         // checks that the EDR is gone once the transfer has been suspended
-        await().atMost(consumer.getTimeout()).untilAsserted(() -> assertThatThrownBy(() -> consumer.getEdr(transferProcessId)));
+        await().atMost(consumer.getTimeout()).untilAsserted(() -> assertThatThrownBy(() -> consumer.edrs().getEdr(transferProcessId)));
         // checks that transfer fails
-        await().atMost(consumer.getTimeout()).untilAsserted(() -> assertThatThrownBy(() -> consumer.pullData(edr, Map.of("message", msg), body -> assertThat(body).isEqualTo("data"))));
+        await().atMost(consumer.getTimeout()).untilAsserted(() -> assertThatThrownBy(() -> consumer.data().pullData(edr, Map.of("message", msg))));
 
         consumer.resumeTransfer(transferProcessId);
 
         // check that transfer is available again
         consumer.awaitTransferToBeInState(transferProcessId, STARTED);
-        var secondEdr = await().atMost(consumer.getTimeout()).until(() -> consumer.getEdr(transferProcessId), Objects::nonNull);
+        var secondEdr = await().atMost(consumer.getTimeout()).until(() -> consumer.edrs().getEdr(transferProcessId), Objects::nonNull);
         var secondMessage = UUID.randomUUID().toString();
-        await().atMost(consumer.getTimeout()).untilAsserted(() -> consumer.pullData(secondEdr, Map.of("message", secondMessage), body -> assertThat(body).isEqualTo("data")));
+        data = consumer.data().pullData(secondEdr, Map.of("message", secondMessage));
+        assertThat(data).isNotNull().isEqualTo("data");
 
         providerDataSource.verify(getRequestedFor(urlPathEqualTo("/source")));
     }
 
-    protected void createResourcesOnProvider(BaseParticipant provider, String assetId, JsonObject contractPolicy, Map<String, Object> dataAddressProperties) {
+    protected void createResourcesOnProvider(IatpParticipant provider, String assetId, JsonObject contractPolicy, Map<String, Object> dataAddressProperties) {
         provider.createAsset(assetId, Map.of("description", "description"), dataAddressProperties);
         var contractPolicyId = provider.createPolicyDefinition(contractPolicy);
         var noConstraintPolicyId = provider.createPolicyDefinition(noConstraintPolicy());
@@ -264,5 +258,4 @@ public class TransferEndToEndTest {
             );
         }
     }
-
 }

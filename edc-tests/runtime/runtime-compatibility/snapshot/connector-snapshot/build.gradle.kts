@@ -25,8 +25,7 @@ plugins {
 
 dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
-        exclude(group = "org.eclipse.edc", "vault-hashicorp")
-        exclude(group = "org.eclipse.tractusx.edc", module = "bdrs-client")
+        exclude("org.eclipse.edc", "vault-hashicorp")
     }
 
     implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {

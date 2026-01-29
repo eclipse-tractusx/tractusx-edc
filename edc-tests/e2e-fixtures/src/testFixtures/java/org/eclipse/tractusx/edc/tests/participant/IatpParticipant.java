@@ -140,7 +140,11 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
     public static class Builder extends TractusxIatpParticipantBase.Builder<IatpParticipant, Builder> {
 
         protected Builder() {
-            super(new IatpParticipant());
+            this(new IatpParticipant());
+        }
+
+        protected Builder(IatpParticipant participant) {
+            super(participant);
         }
 
         public static Builder newInstance() {

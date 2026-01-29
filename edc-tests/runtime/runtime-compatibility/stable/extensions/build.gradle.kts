@@ -24,7 +24,6 @@ plugins {
 }
 
 dependencies {
-
     implementation(stableLibs.edc.boot.spi)
     implementation(stableLibs.edc.core.spi)
     implementation(stableLibs.tx.bdrs.client.spi)

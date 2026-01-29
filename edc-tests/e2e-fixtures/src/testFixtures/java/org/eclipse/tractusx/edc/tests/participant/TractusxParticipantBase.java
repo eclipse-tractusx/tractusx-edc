@@ -70,7 +70,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     private static final String API_KEY_HEADER_NAME = "x-api-key";
     protected final LazySupplier<URI> dataPlaneProxy = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
     protected final LazySupplier<URI> dataPlanePublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
-    private final LazySupplier<URI> federatedCatalog = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/catalog"));
+    protected final LazySupplier<URI> federatedCatalog = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/catalog"));
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
     protected ParticipantConsumerDataPlaneApi dataPlane;
@@ -139,6 +139,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.catalog.cache.execution.period.seconds", "2");
                 put("edc.policy.validation.enabled", "true");
                 put("tractusx.edc.participant.bpn", getBpn());
+                put("edc.iam.did.web.use.https", "false");
             }
         };
 
@@ -321,6 +322,11 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             this.participant.bpn = bpn;
             return self();
         }
+
+        public B did(String did) {
+            this.participant.did = did;
+            return self();
+        }
         
         public B protocolVersionPath(String path) {
             this.participant.protocolVersionPath = path;
@@ -329,8 +335,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
         @Override
         public P build() {
-            participant.did = participant.id;
-            
+            if (participant.did == null) {
+                participant.did = participant.id;
+            }
+
             if (participant.bpn == null) {
                 participant.bpn = participant.name.toLowerCase() + BPN_SUFFIX;
             }

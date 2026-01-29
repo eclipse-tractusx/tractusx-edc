@@ -28,29 +28,22 @@ plugins {
 
 dependencies {
     runtimeOnly(stableLibs.tx.edc.controlplane.postgresql.hashicorp.vault) {
-        exclude(group = "org.eclipse.edc", "vault-hashicorp")
-        exclude(module = "bdrs-client")
+        exclude("org.eclipse.edc", "vault-hashicorp")
+        exclude("bdrs-client")
     }
 
     runtimeOnly(stableLibs.tx.edc.dataplane.postgresql.hashicorp.vault) {
         exclude("org.eclipse.edc", "data-plane-selector-client")
-        exclude(group = "org.eclipse.edc", "vault-hashicorp")
+        exclude("org.eclipse.edc", "vault-hashicorp")
     }
     runtimeOnly(project(":edc-tests:runtime:runtime-compatibility:stable:extensions"))
     runtimeOnly(stableLibs.edc.identity.trust.sts.remote.client)
     runtimeOnly(stableLibs.edc.auth.oauth2.client)
 }
 
-tasks.shadowJar {
-    exclude("**/pom.properties", "**/pom.xml")
-    mergeServiceFiles()
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    archiveFileName.set("${project.name}.jar")
-}
 
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
-
 }
 
 edcBuild {

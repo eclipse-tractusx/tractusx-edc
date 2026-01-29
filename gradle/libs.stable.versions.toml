@@ -13,4 +13,3 @@ edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 tx-bdrs-client-spi = { module = "org.eclipse.tractusx.edc:bdrs-client-spi", version.ref = "tractusx" }
 edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }
 edc-auth-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref = "edc" }
-edc-api-management-dataplaneselector = { module = "org.eclipse.edc:data-plane-selector-api", version.ref = "edc" }

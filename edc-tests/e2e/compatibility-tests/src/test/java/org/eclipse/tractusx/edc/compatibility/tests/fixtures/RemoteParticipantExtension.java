@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.compatibility.tests.fixtures;
 
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -28,12 +29,12 @@ import org.testcontainers.containers.GenericContainer;
 public class RemoteParticipantExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final RemoteParticipant participant;
-    private final LocalParticipant localParticipant;
+    private final IatpParticipant localParticipant;
     private final PostgresExtension postgresql;
 
     private GenericContainer<?> connector;
 
-    public RemoteParticipantExtension(RemoteParticipant participant, LocalParticipant localParticipant, PostgresExtension postgresql) {
+    public RemoteParticipantExtension(RemoteParticipant participant, IatpParticipant localParticipant, PostgresExtension postgresql) {
         this.participant = participant;
         this.localParticipant = localParticipant;
         this.postgresql = postgresql;
@@ -41,7 +42,7 @@ public class RemoteParticipantExtension implements BeforeAllCallback, AfterAllCa
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        connector = EdcDockerRuntimes.STABLE_CONNECTOR.create("remote-connector", participant.controlPlaneEnv(localParticipant, postgresql));
+        connector = EdcDockerRuntimes.STABLE_CONNECTOR.create("remote-connector", participant.getConfig(localParticipant, postgresql).getEntries());
         connector.start();
     }
 
