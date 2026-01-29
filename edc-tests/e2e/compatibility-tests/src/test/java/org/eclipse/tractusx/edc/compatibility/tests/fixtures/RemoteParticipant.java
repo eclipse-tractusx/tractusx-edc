@@ -39,7 +39,7 @@ public class RemoteParticipant extends IatpParticipant {
     public Config getConfig(IatpParticipant participant, PostgresExtension postgresql) {
         var postgresqlConfig = postgresql.getConfig(getName());
 
-        Map<String, String>settings =  new HashMap<>() {
+        Map<String, String> settings =  new HashMap<>() {
             {
                 put("edc.participant.id", id);
                 put("edc.api.auth.key", MANAGEMENT_API_KEY);

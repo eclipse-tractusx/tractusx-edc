@@ -23,12 +23,12 @@ package org.eclipse.tractusx.edc.compatibility.tests.transfer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
-import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.tractusx.edc.compatibility.tests.CompatibilityTest;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.IdentityHubParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipantExtension;
@@ -69,7 +69,7 @@ import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFun
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipantContext;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDatePolicyLegacy;
 
-@EndToEndTest
+@CompatibilityTest
 public class TransferEndToEndTest {
 
     protected static final IdentityHubParticipant IDENTITY_HUB_PARTICIPANT = IdentityHubParticipant.Builder.newInstance()
