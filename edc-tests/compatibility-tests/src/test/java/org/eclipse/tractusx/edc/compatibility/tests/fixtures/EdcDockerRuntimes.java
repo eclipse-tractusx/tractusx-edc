@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,29 +20,28 @@
 
 package org.eclipse.tractusx.edc.compatibility.tests.fixtures;
 
-import org.eclipse.edc.junit.extensions.ClasspathReader;
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
-import java.net.URL;
+import java.util.Map;
 
-public enum Runtimes {
-    //TODO: move to runtime-postgresql as soon as ISSUE-2226 is implemented.
-    SNAPSHOT_CONNECTOR(":edc-tests:runtime:runtime-compatibility:snapshot:connector-snapshot"),
-    STABLE_CONNECTOR(":edc-tests:runtime:runtime-compatibility:stable:connector-stable"),
-    IDENTITY_HUB(":edc-tests:runtime:runtime-compatibility:snapshot:identityhub-snapshot");
+public enum EdcDockerRuntimes {
 
-    private final String[] modules;
-    private URL[] classpathEntries;
+    STABLE_CONNECTOR("connector-stable:latest");
 
-    Runtimes(String... modules) {
-        this.modules = modules;
+    private final String image;
+
+    EdcDockerRuntimes(String image) {
+        this.image = image;
     }
 
-    public EmbeddedRuntime create(String name) {
-        if (classpathEntries == null) {
-            classpathEntries = ClasspathReader.classpathFor(modules);
-        }
-        return new EmbeddedRuntime(name, classpathEntries);
+    public GenericContainer<?> create(String name, Map<String, String> env) {
+        return new GenericContainer<>(image)
+                .withCreateContainerCmdModifier(cmd -> cmd.withName(name))
+                .withNetworkMode("host")
+                .withLogConsumer(it -> System.out.printf("[%s] %s%n", name, it.getUtf8StringWithoutLineEnding()))
+                .waitingFor(Wait.forLogMessage(".*Runtime .* ready.*", 1))
+                .withEnv(env);
     }
 
 }

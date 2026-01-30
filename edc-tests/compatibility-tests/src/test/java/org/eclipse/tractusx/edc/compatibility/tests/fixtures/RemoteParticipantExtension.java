@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Cofinity-X
+ * Copyright (c) 2026 Cofinity-X
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.

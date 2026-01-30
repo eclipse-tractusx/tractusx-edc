@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -89,6 +89,14 @@ public class TransferEndToEndTest {
             .trustedIssuer(ISSUER.didUrl())
             .build();
 
+    protected static final RemoteParticipant REMOTE_PARTICIPANT2 = RemoteParticipant.Builder.newInstance()
+            .name("remote2")
+            .id("remote2")
+            .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
+            .did(IDENTITY_HUB_PARTICIPANT.didFor("remote2"))
+            .trustedIssuer(ISSUER.didUrl())
+            .build();
+
     static final IatpParticipant LOCAL_PARTICIPANT = IatpParticipant.Builder.newInstance()
             .name("local")
             .id("local")
@@ -100,12 +108,13 @@ public class TransferEndToEndTest {
 
     private static final Map<String, String> DIDS = Map.of(
             LOCAL_PARTICIPANT.getId(), LOCAL_PARTICIPANT.getDid(),
-            REMOTE_PARTICIPANT.getId(), REMOTE_PARTICIPANT.getDid()
+            REMOTE_PARTICIPANT.getId(), REMOTE_PARTICIPANT.getDid(),
+            REMOTE_PARTICIPANT2.getId(), REMOTE_PARTICIPANT2.getDid()
     );
 
     @Order(0)
     @RegisterExtension
-    private static final PostgresExtension POSTGRES = new PostgresExtension(LOCAL_PARTICIPANT.getName(), REMOTE_PARTICIPANT.getName());
+    private static final PostgresExtension POSTGRES = new PostgresExtension(LOCAL_PARTICIPANT.getName(), REMOTE_PARTICIPANT.getName(), REMOTE_PARTICIPANT2.getName());
 
     @Order(1)
     @RegisterExtension

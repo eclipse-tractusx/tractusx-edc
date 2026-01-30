@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -75,9 +75,7 @@ public class DcpHelperFunctions {
         credentials.forEach(credentialStore::create);
 
         accountService.findById(participant.getDid())
-                .onSuccess(account -> {
-                    vault.storeSecret(account.getSecretAlias(), "clientSecret");
-                });
+                .onSuccess(account -> vault.storeSecret(account.getSecretAlias(), "clientSecret"));
 
     }
 

@@ -1,6 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -51,8 +51,6 @@ dependencies {
     testFixturesApi(libs.edc.ih.spi.credentials)
     testFixturesApi(libs.edc.spi.sts)
     testFixturesApi(libs.edc.spi.keypair)
-
-//    testFixturesApi(libs.edc.ih.spi)
 
     testFixturesApi(testFixtures(libs.edc.api.management.test.fixtures))
 

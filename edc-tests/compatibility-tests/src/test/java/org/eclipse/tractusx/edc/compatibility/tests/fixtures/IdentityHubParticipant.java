@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -62,14 +62,6 @@ public class IdentityHubParticipant {
         settings.put("edc.api.accounts.key", "password");
 
         return ConfigFactory.fromMap(settings);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LazySupplier<URI> getSts() {
