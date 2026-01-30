@@ -245,7 +245,8 @@ fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependenc
 
 fun downloadYamlArtifact(dep: ResolvedDependency, classifier: String, destinationDirectory: java.nio.file.Path) {
     try {
-        val managementApi = dependencies.create(dep.moduleGroup, dep.moduleName, dep.moduleVersion, classifier = classifier, ext = "yaml")
+        val managementApiNotation = "${dep.moduleGroup}:${dep.moduleName}:${dep.moduleVersion}:${classifier}@yaml"
+        val managementApi = dependencies.create(managementApiNotation)
         configurations
             .detachedConfiguration(managementApi)
             .resolve()

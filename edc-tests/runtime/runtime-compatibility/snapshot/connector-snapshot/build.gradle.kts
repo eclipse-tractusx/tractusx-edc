@@ -36,6 +36,7 @@ dependencies {
     implementation(project(":edc-extensions:single-participant-vault"))
 }
 
+
 application {
     mainClass.set("org.eclipse.edc.boot.system.runtime.BaseRuntime")
 }

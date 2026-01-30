@@ -20,8 +20,6 @@
 
 plugins {
     id("application")
-    alias(libs.plugins.shadow)
-    alias(libs.plugins.docker)
 }
 
 dependencies {
@@ -29,12 +27,6 @@ dependencies {
 
     runtimeOnly(libs.edc.bom.identityhub)
     implementation(project(":edc-extensions:single-participant-vault"))
-}
-
-tasks.shadowJar {
-    mergeServiceFiles()
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    archiveFileName.set("${project.name}.jar")
 }
 
 application {

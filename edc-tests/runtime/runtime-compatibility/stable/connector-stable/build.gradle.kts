@@ -29,7 +29,7 @@ plugins {
 dependencies {
     runtimeOnly(stableLibs.tx.edc.controlplane.postgresql.hashicorp.vault) {
         exclude("org.eclipse.edc", "vault-hashicorp")
-        exclude("bdrs-client")
+        exclude(module = "bdrs-client")
     }
 
     runtimeOnly(stableLibs.tx.edc.dataplane.postgresql.hashicorp.vault) {
@@ -48,6 +48,13 @@ application {
 
 edcBuild {
     publish.set(false)
+}
+
+tasks.shadowJar {
+    exclude("**/pom.properties", "**/pom.xml")
+    mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    archiveFileName.set("${project.name}.jar")
 }
 
 // configure the "dockerize" task

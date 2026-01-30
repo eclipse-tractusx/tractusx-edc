@@ -4,9 +4,8 @@ FROM eclipse-temurin:24.0.2_12-jre-alpine
 # Optional JVM arguments, such as memory settings
 ARG JVM_ARGS=""
 ARG JAR
-ARG CURL_VERSION=8.6.0-r0
 
-RUN apk --no-cache add "curl=${CURL_VERSION}"
+RUN apk --no-cache add curl
 
 USER "$APP_USER"
 WORKDIR /app

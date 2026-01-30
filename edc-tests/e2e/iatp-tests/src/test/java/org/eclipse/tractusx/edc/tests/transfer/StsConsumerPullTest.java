@@ -25,12 +25,12 @@ import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.tractusx.edc.tests.extension.VaultSeedExtension;
+import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
-import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
