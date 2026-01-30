@@ -35,6 +35,8 @@ customLabels: {}
 participant:
   # -- BPN Number
   id: "BPNLCHANGEME"
+  # -- Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy)
+  contextId: "UUID CHANGEME"
 
 iatp:
   # -- Decentralized IDentifier (DID) of the connector
