@@ -24,8 +24,8 @@ import org.eclipse.edc.runtime.metamodel.annotation.Settings;
 import org.eclipse.edc.sql.DriverManagerConnectionFactory;
 import org.eclipse.edc.sql.datasource.ConnectionFactoryDataSource;
 
-import javax.sql.DataSource;
 import java.util.Properties;
+import javax.sql.DataSource;
 
 @Settings
 public record DatabaseMigrationConfiguration(
