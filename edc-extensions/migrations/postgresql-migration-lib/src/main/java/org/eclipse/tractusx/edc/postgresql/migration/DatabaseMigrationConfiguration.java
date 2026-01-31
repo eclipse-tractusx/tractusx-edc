@@ -62,7 +62,6 @@ public record DatabaseMigrationConfiguration(
         String password,
 
         @Setting(
-                description = "Configures the participant context id for the single participant runtime",
                 key = "edc.participant.context.id",
                 required = false
         )
