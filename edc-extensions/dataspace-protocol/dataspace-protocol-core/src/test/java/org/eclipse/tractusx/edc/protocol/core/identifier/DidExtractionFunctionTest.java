@@ -20,13 +20,28 @@
 
 package org.eclipse.tractusx.edc.protocol.core.identifier;
 
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DidExtractionFunctionTest extends MembershipCredentialIdExtractionFunctionTest {
+
+    public static final String ID_PROPERTY = "id";
     private final Monitor monitor = mock();
 
     @Override
@@ -34,9 +49,26 @@ public class DidExtractionFunctionTest extends MembershipCredentialIdExtractionF
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
         return new DidExtractionFunction(monitor);
     }
-    
+
     @Override
     protected String expectedId() {
         return DID;
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(VerifiableCredentialArgumentProvider.class)
+    void apply(VerifiableCredential credential) {
+        var id = extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", List.of(credential)).build());
+        assertThat(id).isEqualTo(expectedId());
+    }
+
+    private static class VerifiableCredentialArgumentProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                    Arguments.of(vc("MembershipCredential", Map.of(ID_PROPERTY, DID))),
+                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of(ID_PROPERTY, DID))),
+                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of(ID_PROPERTY, DID, CX_CREDENTIAL_NS + ID_PROPERTY, DID))));
+        }
     }
 }

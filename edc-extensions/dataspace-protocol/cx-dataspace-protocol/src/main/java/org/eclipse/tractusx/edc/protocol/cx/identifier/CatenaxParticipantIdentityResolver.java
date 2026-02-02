@@ -20,19 +20,22 @@
 
 package org.eclipse.tractusx.edc.protocol.cx.identifier;
 
+import org.eclipse.edc.participantcontext.spi.identity.ParticipantIdentityResolver;
 import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
-import org.eclipse.tractusx.edc.protocol.core.identifier.DefaultParticipantIdentityResolver;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
+import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2024Constants.DATASPACE_PROTOCOL_HTTP_V_2024_1;
 
-public class CatenaxParticipantIdentityResolver extends DefaultParticipantIdentityResolver {
+public class CatenaxParticipantIdentityResolver implements ParticipantIdentityResolver {
     private final String bpn;
+    private final ParticipantContextSupplier participantContextSupplier;
 
     public CatenaxParticipantIdentityResolver(String bpn, ParticipantContextSupplier participantContextSupplier) {
-        super(participantContextSupplier);
         this.bpn = bpn;
+        this.participantContextSupplier = participantContextSupplier;
     }
 
     @Nullable
@@ -41,6 +44,7 @@ public class CatenaxParticipantIdentityResolver extends DefaultParticipantIdenti
         if (DATASPACE_PROTOCOL_HTTP.equals(protocol) || DATASPACE_PROTOCOL_HTTP_V_2024_1.equals(protocol)) {
             return bpn;
         }
-        return super.getParticipantId(participantContextId, protocol);
+        return participantContextSupplier.get().map(ParticipantContext::getIdentity)
+                .orElseThrow(f -> new EdcException("Cannot get the participant context: " + f.getFailureDetail()));
     }
 }

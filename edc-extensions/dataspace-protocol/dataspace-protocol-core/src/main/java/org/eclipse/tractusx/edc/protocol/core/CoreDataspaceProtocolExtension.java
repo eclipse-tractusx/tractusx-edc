@@ -21,16 +21,13 @@
 package org.eclipse.tractusx.edc.protocol.core;
 
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
-import org.eclipse.edc.participantcontext.spi.identity.ParticipantIdentityResolver;
 import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContext;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.protocol.core.identifier.DefaultParticipantIdentityResolver;
 import org.eclipse.tractusx.edc.protocol.core.identifier.DidExtractionFunction;
 
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DATASPACE_PROTOCOL_HTTP_V_2025_1;
@@ -51,10 +48,5 @@ public class CoreDataspaceProtocolExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         contextRegistry.register(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP_V_2025_1, V_2025_1, () -> dspWebhookAddress.get() + V_2025_1_PATH, new DidExtractionFunction(monitor)));
-    }
-
-    @Provider(isDefault = true)
-    public ParticipantIdentityResolver participantIdentityResolver() {
-        return new DefaultParticipantIdentityResolver(singleParticipantContextSupplier);
     }
 }

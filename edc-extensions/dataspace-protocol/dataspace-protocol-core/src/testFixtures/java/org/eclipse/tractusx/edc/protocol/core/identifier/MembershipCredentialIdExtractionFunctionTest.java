@@ -44,15 +44,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 
 public abstract class MembershipCredentialIdExtractionFunctionTest {
     
-    public static final String BPN = "bpn";
     public static final String DID = "did:web:example";
-
-    @ParameterizedTest
-    @ArgumentsSource(VerifiableCredentialArgumentProvider.class)
-    void apply(VerifiableCredential credential) {
-        var id = extractionFunction().apply(ClaimToken.Builder.newInstance().claim("vc", List.of(credential)).build());
-        assertThat(id).isEqualTo(expectedId());
-    }
     
     @Test
     void apply_fails_WhenCredentialNotFound() {
@@ -91,17 +83,7 @@ public abstract class MembershipCredentialIdExtractionFunctionTest {
                 .hasMessageContaining("Failed to fetch credentials from the claim token: ClaimToken contains a 'vc' claim but it did not contain any VerifiableCredentials.");
     }
     
-    private static class VerifiableCredentialArgumentProvider implements ArgumentsProvider {
-        @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                    Arguments.of(vc("MembershipCredential", Map.of("id", DID, "holderIdentifier", BPN))),
-                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", DID, "holderIdentifier", BPN))),
-                    Arguments.of(vc(CX_CREDENTIAL_NS + "MembershipCredential", Map.of("id", DID, CX_CREDENTIAL_NS + "holderIdentifier", BPN))));
-        }
-    }
-    
-    private static VerifiableCredential vc(String type, Map<String, Object> claims) {
+    public static VerifiableCredential vc(String type, Map<String, Object> claims) {
         return VerifiableCredential.Builder.newInstance().type(type)
                 .issuanceDate(Instant.now())
                 .issuer(new Issuer("issuer", Map.of()))
