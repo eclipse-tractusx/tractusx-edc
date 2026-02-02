@@ -23,6 +23,7 @@ package org.eclipse.tractusx.edc.compatibility.tests.fixtures;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 
 import java.util.HashMap;
@@ -104,7 +105,7 @@ public class RemoteParticipant extends IatpParticipant {
         );
     }
 
-    public static class Builder extends IatpParticipant.Builder {
+    public static class Builder extends TractusxIatpParticipantBase.Builder<RemoteParticipant, Builder> {
 
         protected Builder() {
             super(new RemoteParticipant());
@@ -115,46 +116,9 @@ public class RemoteParticipant extends IatpParticipant {
         }
 
         @Override
-        public Builder name(String name) {
-            super.name(name);
-            return this;
-        }
-
-        @Override
-        public Builder id(String id) {
-            super.id(id);
-            return this;
-        }
-
-        @Override
-        public Builder stsUri(org.eclipse.edc.junit.utils.LazySupplier<java.net.URI> stsUri) {
-            super.stsUri(stsUri);
-            return this;
-        }
-
-        @Override
-        public Builder did(String did) {
-            super.did(did);
-            return this;
-        }
-
-        @Override
-        public Builder trustedIssuer(String trustedIssuer) {
-            super.trustedIssuer(trustedIssuer);
-            return this;
-        }
-
-        @Override
-        public Builder bpn(String bpn) {
-            super.bpn(bpn);
-            return this;
-        }
-
-        @Override
         public RemoteParticipant build() {
-            /*RemoteParticipant remoteParticipant = (RemoteParticipant) this.participant;
-            remoteParticipant.enrichManagementRequest = request -> request.header("x-api-key", MANAGEMENT_API_KEY);*/
-            return (RemoteParticipant) super.build();
+            super.build();
+            return participant;
         }
     }
 }

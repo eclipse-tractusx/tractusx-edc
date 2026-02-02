@@ -29,7 +29,7 @@ import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialSto
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
 
 import java.util.Base64;
 
@@ -63,7 +63,7 @@ public class DcpHelperFunctions {
         vault.storeSecret(issuer.getPrivateKeyAlias(), issuer.getPrivateKeyAsString());
     }
 
-    public static void configureParticipant(IatpParticipant participant, DataspaceIssuer issuer, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
+    public static void configureParticipant(TractusxIatpParticipantBase participant, DataspaceIssuer issuer, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
         configureParticipantContext(participant, identityHubParticipant, identityHubRuntime);
 
         var accountService = identityHubRuntime.getService(StsAccountService.class);
@@ -79,7 +79,7 @@ public class DcpHelperFunctions {
 
     }
 
-    public static void configureParticipantContext(IatpParticipant participant, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
+    public static void configureParticipantContext(TractusxIatpParticipantBase participant, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
         var participantContextService = identityHubRuntime.getService(ParticipantContextService.class);
 
         var participantKey = participant.getKeyPairAsJwk();

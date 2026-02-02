@@ -26,10 +26,9 @@ import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import java.net.URL;
 
 public enum Runtimes {
-    //TODO: move to runtime-postgresql as soon as ISSUE-2226 is implemented.
     SNAPSHOT_CONNECTOR(":edc-tests:runtime:runtime-compatibility:snapshot:connector-snapshot"),
     STABLE_CONNECTOR(":edc-tests:runtime:runtime-compatibility:stable:connector-stable"),
-    IDENTITY_HUB(":edc-tests:runtime:runtime-compatibility:snapshot:identityhub-snapshot");
+    IDENTITY_HUB(":edc-tests:runtime:iatp:runtime-memory-sts");
 
     private final String[] modules;
     private URL[] classpathEntries;
