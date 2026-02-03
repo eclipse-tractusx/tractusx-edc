@@ -150,6 +150,8 @@ spec:
               value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote }}
             - name: "EDC_IAM_ISSUER_ID"
               value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote }}
+            - name: "EDC_PARTICIPANT_CONTEXT_ID"
+              value: {{ .Values.participant.contextId | required ".Values.participant.contextId is required" | quote }}
             - name: "TRACTUSX_EDC_PARTICIPANT_BPN"
               value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
 

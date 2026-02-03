@@ -51,6 +51,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +72,8 @@ public class ConnectorPostgresqlMigrationTest {
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(Map.of(
                 "edc.datasource.default.url", postgresql.getJdbcUrl(),
                 "edc.datasource.default.user", postgresql.getUsername(),
-                "edc.datasource.default.password", postgresql.getPassword()
+                "edc.datasource.default.password", postgresql.getPassword(),
+                "edc.participant.context.id", UUID.randomUUID().toString()
         )));
     }
 

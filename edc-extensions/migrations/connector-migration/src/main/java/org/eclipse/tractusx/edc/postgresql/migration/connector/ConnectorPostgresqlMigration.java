@@ -22,11 +22,16 @@ package org.eclipse.tractusx.edc.postgresql.migration.connector;
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.postgresql.migration.DatabaseMigrationConfiguration;
 import org.flywaydb.core.Flyway;
+
+import java.util.Map;
+import java.util.UUID;
 
 import static org.eclipse.tractusx.edc.postgresql.migration.connector.ConnectorPostgresqlMigration.NAME;
 import static org.flywaydb.core.api.MigrationVersion.LATEST;
@@ -48,6 +53,18 @@ public class ConnectorPostgresqlMigration implements ServiceExtension {
     }
 
     @Override
+    public void initialize(ServiceExtensionContext context) {
+        if (configuration.enabled() && configuration.participantContextId() == null) {
+            throw new EdcException("The participant context id has not been set, it is a mandatory setting now. You can " +
+                    "use this UUID generated randomly for you: %s, or you can generate one by yourself. Please note that"
+                            .formatted(UUID.randomUUID().toString()) +
+                    " once set, it must never change. Depending on how you are configuring the Connector, set it on the " +
+                    "`edc.participant.context.id` setting/system property or `EDC_PARTICIPANT_CONTEXT_ID` environment " +
+                    "variable, then restart the Connector");
+        }
+    }
+
+    @Override
     public void prepare() {
         if (!configuration.enabled()) {
             monitor.info("Migration for connector disabled");
@@ -64,6 +81,7 @@ public class ConnectorPostgresqlMigration implements ServiceExtension {
                 .table("flyway_schema_history")
                 .locations("classpath:migrations/connector")
                 .defaultSchema(configuration.schema())
+                .placeholders(Map.of("ParticipantContextId", configuration.participantContextId()))
                 .target(LATEST)
                 .load();
 
