@@ -32,7 +32,9 @@ configurations.all {
 }
 
 dependencies {
-    runtimeOnly(libs.edc.bom.controlplane.base)
+    runtimeOnly(libs.edc.bom.controlplane.base) {
+        exclude(module = "dsp-2024")
+    }
     runtimeOnly(libs.edc.bom.controlplane.dcp)
 
     runtimeOnly(libs.edc.bom.federatedcatalog.base)
