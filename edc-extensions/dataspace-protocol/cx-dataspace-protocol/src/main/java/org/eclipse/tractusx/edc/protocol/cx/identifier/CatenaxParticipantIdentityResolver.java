@@ -27,7 +27,6 @@ import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
-import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2024Constants.DATASPACE_PROTOCOL_HTTP_V_2024_1;
 
 public class CatenaxParticipantIdentityResolver implements ParticipantIdentityResolver {
     private final String bpn;
@@ -41,7 +40,7 @@ public class CatenaxParticipantIdentityResolver implements ParticipantIdentityRe
     @Nullable
     @Override
     public String getParticipantId(String participantContextId, String protocol) {
-        if (DATASPACE_PROTOCOL_HTTP.equals(protocol) || DATASPACE_PROTOCOL_HTTP_V_2024_1.equals(protocol)) {
+        if (DATASPACE_PROTOCOL_HTTP.equals(protocol)) {
             return bpn;
         }
         return participantContextSupplier.get().map(ParticipantContext::getIdentity)
