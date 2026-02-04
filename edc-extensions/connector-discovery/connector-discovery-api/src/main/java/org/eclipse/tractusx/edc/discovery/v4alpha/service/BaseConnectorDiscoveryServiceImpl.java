@@ -199,14 +199,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      * Just removes all leading and prevailing slashes of a path to ensure, that no unneeded slashes are added to a path.
      */
     private String removeSurroundingSlash(String path) {
-        var result = path;
-        while (result.startsWith("/")) {
-            result = result.substring(1);
-        }
-        while (result.endsWith("/")) {
-            result = result.substring(0, result.length() - 1);
-        }
-        return result;
+        return path.replaceAll("^/++|/++$", "");
     }
 
     /*
