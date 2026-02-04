@@ -184,7 +184,7 @@ public class ConnectorParameterDiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("cannot be mapped to a did");
+                .contains("No did found for identifier");
     }
 
     @Test
@@ -203,7 +203,7 @@ public class ConnectorParameterDiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("Neither 'counterPartyId' nor 'bpnl' property given");
+                .contains("Neither 'https://w3id.org/edc/v0.0.1/ns/counterPartyId' nor 'https://w3id.org/tractusx/v0.0.1/ns/bpnl' property given");
     }
 
     @Test

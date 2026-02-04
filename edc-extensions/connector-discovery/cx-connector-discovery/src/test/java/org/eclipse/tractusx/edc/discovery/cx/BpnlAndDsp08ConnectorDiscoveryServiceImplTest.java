@@ -173,7 +173,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
                 .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
-                .hasMessageContaining("cannot be mapped to a");
+                .hasMessageContaining("found for identifier");
     }
 
 
@@ -190,7 +190,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
                 .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
-                .hasMessageContaining("cannot be mapped to a");
+                .hasMessageContaining("found for identifier");
     }
 
     @ParameterizedTest
@@ -207,7 +207,7 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
                 .isInstanceOf(CompletionException.class)
                 .hasCauseInstanceOf(InvalidRequestException.class)
-                .hasMessageContaining("is of unknown type");
+                .hasMessageContaining("found for identifier");
     }
 
     private static class VersionMetadataProvider implements ArgumentsProvider {
