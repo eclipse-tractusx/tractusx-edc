@@ -23,11 +23,13 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -37,6 +39,9 @@ import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryR
 
 public class JsonObjectToConnectorDiscoveryRequest extends
         AbstractJsonLdTransformer<JsonObject, ConnectorDiscoveryRequest> {
+
+    private Monitor monitor;
+
     public JsonObjectToConnectorDiscoveryRequest() {
         super(JsonObject.class, ConnectorDiscoveryRequest.class);
     }
@@ -46,18 +51,31 @@ public class JsonObjectToConnectorDiscoveryRequest extends
                                                          @NotNull TransformerContext transformerContext) {
         var counterPartyId = transformString(
                 jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE), transformerContext);
-        var knownConnectors = Optional.ofNullable(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE))
-                .map(JsonValue::asJsonArray)
-                .map(a -> a.stream()
-                        .map(v -> ((JsonString) v).getString())
-                        .collect(toList()))
-                .orElse(emptyList());
 
         if (counterPartyId == null) {
-            transformerContext.reportProblem("Missing required attribute in ConnectorDiscoveryRequest: tx:counterPartyId");
+            transformerContext.reportProblem("Missing required attribute in ConnectorDiscoveryRequest: %s"
+                    .formatted(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE));
             return null;
         }
 
+        var knownConnectors = safeExtractKnowns(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE));
+
         return new ConnectorDiscoveryRequest(counterPartyId, knownConnectors);
+    }
+
+    private List<String> safeExtractKnowns(JsonValue input) {
+        try {
+            return Optional.ofNullable(input)
+                    .map(JsonValue::asJsonArray)
+                    .map(a -> a.stream()
+                            .map(v -> ((JsonString) v).getString())
+                            .collect(toList()))
+                    .orElse(emptyList());
+
+        } catch (Throwable t) {
+            monitor.debug("Input parameter '%s' is not meeting expectations: %s"
+                    .formatted(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, t.getMessage()));
+            return emptyList();
+        }
     }
 }

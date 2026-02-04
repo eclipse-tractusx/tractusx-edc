@@ -89,6 +89,7 @@ public class JsonObjectToConnectorDiscoveryRequestTest {
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNull();
-        verify(transformerContext).reportProblem("Missing required attribute in ConnectorDiscoveryRequest: tx:counterPartyId");
+        verify(transformerContext).reportProblem("Missing required attribute in ConnectorDiscoveryRequest: %s"
+                .formatted(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE));
     }
 }

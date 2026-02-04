@@ -65,7 +65,10 @@ public class ConnectorParamsDiscoveryRequestValidator {
                     return ValidationResult.success();
                 }
                 return ValidationResult.failure(
-                        violation("Neither 'counterPartyId' nor 'bpnl' property given", path.toString()));
+                        violation("Neither '%s' nor '%s' property given"
+                                .formatted(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE,
+                                        DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY),
+                                path.toString()));
             }
 
             return new MandatoryValue(path).validate(input);

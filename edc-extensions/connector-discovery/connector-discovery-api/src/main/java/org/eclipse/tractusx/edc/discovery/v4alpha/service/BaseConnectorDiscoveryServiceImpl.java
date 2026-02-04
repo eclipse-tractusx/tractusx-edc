@@ -23,7 +23,6 @@ package org.eclipse.tractusx.edc.discovery.v4alpha.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -56,6 +55,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
@@ -147,17 +147,19 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
 
         return httpClient.executeAsync(wellKnownRequest, emptyList())
                 .thenApply(response -> {
-                    if (!response.isSuccessful()) {
-                        var msg = "Counterparty well-known endpoint has failed with status %s and message: %s"
-                                .formatted(response.code(), response.message());
-                        monitor.warning(msg);
-                        throw new BadGatewayException(msg);
-                    }
+                    try (response) {
+                        if (!response.isSuccessful()) {
+                            var msg = "Counterparty well-known endpoint has failed with status %s and message: %s"
+                                    .formatted(response.code(), response.message());
+                            monitor.warning(msg);
+                            throw new BadGatewayException(msg);
+                        }
 
-                    var protocolVersion = extractLatestSupportedVersion(parseResponseBody(response));
-                    var resultObject = createResultObjectFromProtocolVersionData(request, protocolVersion);
-                    versionsCache.put(versionEndpoint, new TimestampedValue<>(protocolVersion, cacheValidity));
-                    return resultObject;
+                        var protocolVersion = extractLatestSupportedVersion(parseResponseBody(response));
+                        var resultObject = createResultObjectFromProtocolVersionData(request, protocolVersion);
+                        versionsCache.put(versionEndpoint, new TimestampedValue<>(protocolVersion, cacheValidity));
+                        return resultObject;
+                    }
                 });
     }
 
@@ -198,10 +200,10 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      */
     private String removeSurroundingSlash(String path) {
         var result = path;
-        if (result.startsWith("/")) {
+        while (result.startsWith("/")) {
             result = result.substring(1);
         }
-        if (result.endsWith("/")) {
+        while (result.endsWith("/")) {
             result = result.substring(0, result.length() - 1);
         }
         return result;
@@ -219,7 +221,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                                 versionInformation.version()))
                 .map(this::createVersionParameterRecord)
                 .orElseThrow(() -> {
-                    var joined = supportedVersions.stream().collect(joining(", ", "", ""));
+                    var joined = String.join(", ", supportedVersions);
                     return new InvalidRequestException(
                             "The counterparty does not support any of the expected protocol versions (%s)"
                                     .formatted(joined));
@@ -231,9 +233,9 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      * method for the translation of the official 'version' information to the protocol string used in the
      * management api.
      *
-     * @param counterPartyId The counterparty identifier to use when addressing the target connector.
+     * @param counterPartyId      The counterparty identifier to use when addressing the target connector.
      * @param counterPartyAddress The DSP base address of the target connector for the corresponding version.
-     * @param version The official 'version' to use when addressing the target connector.
+     * @param version             The official 'version' to use when addressing the target connector.
      */
     public record VersionParameters(String counterPartyId, String counterPartyAddress, String version) {
         /**
@@ -283,8 +285,8 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      * Parses the response of a version metadata endpoint and translates it into a list of 'ProtocolVersion' objects
      */
     private ProtocolVersions parseResponseBody(Response response) {
-        try {
-            var bytesBody = response.body().bytes();
+        try (var body = response.body()) {
+            var bytesBody = body.bytes();
             return Optional.ofNullable(mapper.readValue(bytesBody, ProtocolVersions.class))
                     .filter(r -> r.protocolVersions() != null)
                     .orElseThrow(() -> new BadGatewayException("No protocol versions found"));
@@ -378,7 +380,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      * Failing endpoints will simply be ignored. There is only an error, if no data is found.
      */
     private JsonArray resolveVersionEndpoints(String counterPartyId, List<String> endpoints) {
-        JsonArrayBuilder returnArrayBuilder = Json.createArrayBuilder();
+        var resultObjects = new ConcurrentLinkedQueue<JsonObject>();
         var discoveryCalls = new CompletableFuture[endpoints.size()];
 
         for (int i = 0; i < endpoints.size(); i++) {
@@ -388,13 +390,18 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                         if (throwable != null) {
                             monitor.severe("Exception during connector discovery, omit endpoint result", throwable);
                         } else {
-                            returnArrayBuilder.add(result);
+                            resultObjects.add(result);
                         }
                         return null;
                     });
         }
 
         CompletableFuture.allOf(discoveryCalls).join();
+
+        var returnArrayBuilder = Json.createArrayBuilder();
+        for (var result : resultObjects) {
+            returnArrayBuilder.add(result);
+        }
         var returnArray = returnArrayBuilder.build();
         if (returnArray.isEmpty()) {
             throw new InvalidRequestException("No connector endpoints found for counterPartyId %s".formatted(counterPartyId));

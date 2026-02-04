@@ -41,6 +41,10 @@ public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDisc
 
     private static final String BPNL_PREFIX = "bpnl";
 
+    // The constant LEGACY_V_08_VERSION_IDENTIFIER is for backward compatibility, because CX-0018 wrongly
+    // mentioned 0.8 as version identifier in a former version
+    private static final String LEGACY_V_08_VERSION_IDENTIFIER = "0.8";
+
     private final BdrsClient bdrsClient;
 
     public BpnlAndDsp08ConnectorDiscoveryServiceImpl(
@@ -66,31 +70,45 @@ public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDisc
             String counterPartyId, String versionAddress, String version) {
         if (Dsp2025Constants.V_2025_1_VERSION.equals(version)) {
             return new VersionParameters(mapToDid(counterPartyId), versionAddress, Dsp2025Constants.V_2025_1_VERSION);
-        } else if (Dsp08Constants.V_08_VERSION.equals(version) || "0.8".equals(version)) {
-            // The or condition with "0.8" is for backward compatibility, because CX-0018 wrongly
-            // mentioned 0.8 as version identifier
+        } else if (Dsp08Constants.V_08_VERSION.equals(version) || LEGACY_V_08_VERSION_IDENTIFIER.equals(version)) {
             return new VersionParameters(mapToBpn(counterPartyId), versionAddress, Dsp08Constants.V_08_VERSION);
         }
         return null;
     }
 
     private String mapToDid(String identifier) {
-        if (identifier.toLowerCase().startsWith(DID_PREFIX)) {
-            return identifier;
-        } else if (identifier.toLowerCase().startsWith(BPNL_PREFIX)) {
-            return Optional.ofNullable(bdrsClient.resolveDid(identifier))
-                    .orElseThrow(() -> new InvalidRequestException("Bpnl %s cannot be mapped to a did".formatted(identifier)));
-        }
-        throw new InvalidRequestException("Given counterPartyId %s is of unknown type".formatted(identifier));
+        return extractType(identifier)
+                .map(t -> {
+                    return switch (t) {
+                        case DID_PREFIX -> identifier;
+                        case BPNL_PREFIX -> bdrsClient.resolveDid(identifier);
+                        default -> null;
+                    };
+                })
+                .orElseThrow(() -> new InvalidRequestException("No did found for identifier %s".formatted(identifier)));
     }
 
     private String mapToBpn(String identifier) {
-        if (identifier.toLowerCase().startsWith(BPNL_PREFIX)) {
-            return identifier;
-        } else if (identifier.toLowerCase().startsWith(DID_PREFIX)) {
-            return Optional.ofNullable(bdrsClient.resolveBpn(identifier))
-                    .orElseThrow(() -> new InvalidRequestException("Did %s cannot be mapped to a bpnl".formatted(identifier)));
-        }
-        throw new InvalidRequestException("Given counterPartyId %s is of unknown type".formatted(identifier));
+        return extractType(identifier)
+                .map(t -> {
+                    return switch (t) {
+                        case DID_PREFIX -> bdrsClient.resolveBpn(identifier);
+                        case BPNL_PREFIX -> identifier;
+                        default -> null;
+                    };
+                })
+                .orElseThrow(() -> new InvalidRequestException("No bpnl found for identifier %s".formatted(identifier)));
+    }
+
+    private Optional<String> extractType(String identifier) {
+        return Optional.ofNullable(identifier)
+                .map(String::toLowerCase)
+                .filter(i -> i.startsWith(DID_PREFIX) || i.startsWith(BPNL_PREFIX))
+                .map(i -> {
+                    if (i.startsWith(DID_PREFIX)) {
+                        return DID_PREFIX;
+                    }
+                    return BPNL_PREFIX;
+                });
     }
 }

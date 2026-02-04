@@ -85,7 +85,9 @@ class JsonObjectToConnectorParamsDiscoveryRequestTest {
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNull();
-        verify(transformerContext).reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: edc:counterPartyId or edc:counterPartyAddress");
+        verify(transformerContext).reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: %s or %s"
+                .formatted(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE,
+                        DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE));
     }
 
 
@@ -98,6 +100,8 @@ class JsonObjectToConnectorParamsDiscoveryRequestTest {
         var request = transformer.transform(jsonObject, transformerContext);
 
         assertThat(request).isNull();
-        verify(transformerContext).reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: edc:counterPartyId or edc:counterPartyAddress");
+        verify(transformerContext).reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: %s or %s"
+                .formatted(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE,
+                        DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE));
     }
 }

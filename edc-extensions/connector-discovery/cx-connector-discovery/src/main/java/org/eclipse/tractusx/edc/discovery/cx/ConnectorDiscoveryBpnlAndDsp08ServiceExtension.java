@@ -36,10 +36,10 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.time.Clock;
 
-import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.NAME;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.DEFAULT_CACHE_EXPIRY_MS;
 import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY;
 
-@Extension(value = NAME)
+@Extension(value = ConnectorDiscoveryBpnlAndDsp08ServiceExtension.NAME)
 public class ConnectorDiscoveryBpnlAndDsp08ServiceExtension implements ServiceExtension {
 
     public static final String NAME = "Default Connector Discovery Service Extension";
@@ -63,7 +63,7 @@ public class ConnectorDiscoveryBpnlAndDsp08ServiceExtension implements ServiceEx
     private Monitor monitor;
 
     @Setting(description = "Expiry time for caching protocol version information in milliseconds",
-            key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = 1000 * 60 * 120 + "")
+            key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = DEFAULT_CACHE_EXPIRY_MS)
     private long connectorDiscoveryCacheExpiry;
 
     @Provider

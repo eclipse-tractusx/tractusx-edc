@@ -52,7 +52,9 @@ public class JsonObjectToConnectorParamsDiscoveryRequest
                 jsonObject.get(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE), transformerContext);
 
         if (identifier == null || counterPartyAddress == null) {
-            transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: edc:counterPartyId or edc:counterPartyAddress");
+            transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: %s or %s"
+                    .formatted(DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE,
+                            DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE));
             return null;
         }
 

@@ -59,6 +59,8 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
 
     public static final String NAME = "Connector Discovery API Extension";
 
+    public static final String DEFAULT_CACHE_EXPIRY_MS = 1000 * 60 * 120 + "";
+
     @Override
     public String name() {
         return NAME;
@@ -86,7 +88,7 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
     private Monitor monitor;
 
     @Setting(description = "Expiry time for caching protocol version information in milliseconds",
-             key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = 1000 * 60 * 120 + "")
+             key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = DEFAULT_CACHE_EXPIRY_MS)
     private long connectorDiscoveryCacheExpiry;
 
     @Override
