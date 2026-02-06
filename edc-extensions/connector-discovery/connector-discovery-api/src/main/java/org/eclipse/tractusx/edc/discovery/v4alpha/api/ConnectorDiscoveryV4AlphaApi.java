@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,60 +30,94 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.JsonObject;
+import jakarta.ws.rs.container.AsyncResponse;
+import jakarta.ws.rs.container.Suspended;
+import org.eclipse.edc.jsonld.spi.JsonLdKeywords;
 import org.eclipse.edc.web.spi.ApiErrorDetail;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 
-
-@OpenAPIDefinition(info = @Info(description = "With this API clients discover EDC requesting parameters according to different DSP versions", title = "Connector Discovery API"))
+@OpenAPIDefinition(info = @Info(
+        description = "With this API clients discover connectors based on published services in a DID document and " +
+                "discover the right version parameters according to different DSP versions.",
+        title = "Connector Discovery API"))
 @Tag(name = "Connector Discovery")
 public interface ConnectorDiscoveryV4AlphaApi {
 
-    @Operation(description = "Discover supported connector parameters.",
-            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Params Discovery Request", implementation = ConnectorParamsDiscoveryRequestSchema.class))),
+    @Operation(description = "Discover supported connector parameters for a given connector endpoint.",
+            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Params Discovery Request",
+                    implementation = ConnectorParamsDiscoveryRequestSchema.class))),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "A list of connector parameters per DSP version",
-                            content = @Content(array = @ArraySchema(schema = @Schema(name = "Connector Discovery Response", implementation = ConnectorDiscoveryResponse.class)))),
+                    @ApiResponse(responseCode = "200",
+                            description = "A list of connector parameters for the DSP version to use with the given connector.",
+                            content = @Content(schema = @Schema(name = "Connector Discovery Response",
+                                    implementation = ConnectorParamsDiscoveryResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Discovery failed due to an internal error",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
-                    @ApiResponse(responseCode = "502", description = "Discovery failed due to connection to counter party",
+                    @ApiResponse(responseCode = "502", description = "Discovery failed due to connection issues to counter party",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    JsonObject discoverDspVersionParamsV4Alpha(JsonObject querySpecJson);
+    void discoverDspVersionParamsV4Alpha(JsonObject querySpecJson, @Suspended AsyncResponse response);
 
+    @Operation(description = "Searches for 'DataService' entries in the DID document of a participant and provides " +
+            "the connection parameters for all found connectors by applying the connector param discovery request for each.",
+            requestBody = @RequestBody(content = @Content(schema = @Schema(name = "Connector Discovery Request",
+                    implementation = ConnectorDiscoveryRequestSchema.class))),
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "A list of connector endpoint parameters for the version to use for each found connector",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(
+                                            name = "Service Discovery Response",
+                                            implementation = ConnectorParamsDiscoveryResponse.class))
+                            )),
+                    @ApiResponse(responseCode = "400", description = "Request body was malformed",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
+                    @ApiResponse(responseCode = "404", description = "Given Id could not be resolved to a DID document",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
+                    @ApiResponse(responseCode = "500", description = "Discovery failed due to an internal error",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class)))),
+                    @ApiResponse(responseCode = "502", description = "Discovery failed due to connection to counter party",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
+            })
+    void discoverConnectorServicesV4Alpha(JsonObject querySpecJson, @Suspended AsyncResponse response);
 
-    @Schema(name = "ConnectorParamsDiscoveryRequest", example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
+    @Schema(name = "ConnectorParamsDiscoveryRequest",
+            description = "Note: In former versions, the property 'counterPartyId' was named 'bpnl', " +
+                    "for convenience this value is still allowed",
+            example = ConnectorParamsDiscoveryRequestSchema.EXAMPLE)
     record ConnectorParamsDiscoveryRequestSchema(
             @Schema(name = CONTEXT, requiredMode = REQUIRED)
             Object context,
-            @Schema(name = TYPE, example = ConnectorParamsDiscoveryRequest.TYPE)
+            @Schema(name = JsonLdKeywords.TYPE, example = ConnectorParamsDiscoveryRequest.TYPE)
             String type,
             @Schema(requiredMode = REQUIRED)
-            String bpnl,
+            String counterPartyId,
             @Schema(requiredMode = REQUIRED)
             String counterPartyAddress
     ) {
         public static final String EXAMPLE = """
                 {
                     "@context": {
-                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-                        "edc": "https://w3id.org/edc/v0.0.1/ns/"
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
                     },
                     "@type": "tx:ConnectorParamsDiscoveryRequest",
-                    "tx:bpnl": "BPNL1234567890",
+                    "edc:counterPartyId": "BPNL1234567890",
                     "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
                 }
                 """;
     }
 
-
-    @Schema(name = "ConnectorDiscoveryResponse", example = ConnectorDiscoveryResponse.EXAMPLE)
-    record ConnectorDiscoveryResponse(
+    @Schema(name = "ConnectorParamsDiscoveryResponse", example = ConnectorParamsDiscoveryResponse.EXAMPLE)
+    record ConnectorParamsDiscoveryResponse(
             Object context,
             String counterPartyId,
             String counterPartyAddress,
@@ -92,8 +127,7 @@ public interface ConnectorDiscoveryV4AlphaApi {
         public static final String EXAMPLE = """
                 {
                     "@context": {
-                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/"
                     },
                     "edc:counterPartyId": "did:web:one-example.com",
                     "edc:counterPartyAddress": "https://provider.domain.com/api/dsp/2025-1",
@@ -102,4 +136,30 @@ public interface ConnectorDiscoveryV4AlphaApi {
                 """;
     }
 
+    @Schema(name = "ConnectorDiscoveryRequestSchema", example = ConnectorDiscoveryRequestSchema.EXAMPLE)
+    record ConnectorDiscoveryRequestSchema(
+            @Schema(name = CONTEXT, requiredMode = REQUIRED)
+            Object context,
+            @Schema(name = JsonLdKeywords.TYPE, example = ConnectorDiscoveryRequest.TYPE)
+            String type,
+            @Schema(requiredMode = REQUIRED)
+            String counterPartyId,
+            @Schema(requiredMode = NOT_REQUIRED)
+            String[] knownConnectors
+    ) {
+        public static final String EXAMPLE = """
+                {
+                    "@context": {
+                        "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                        "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+                    },
+                    "@type": "tx:ConnectorParamsDiscoveryRequest",
+                    "edc:counterPartyId": "did:web:one-example.com",
+                    "tx:knownConnectors": [
+                        "https://provider.domain.com/conn1/api/dsp",
+                        "https://provider.domain.com/conn2/api/v1/dsp",
+                    ]
+                }
+                """;
+    }
 }

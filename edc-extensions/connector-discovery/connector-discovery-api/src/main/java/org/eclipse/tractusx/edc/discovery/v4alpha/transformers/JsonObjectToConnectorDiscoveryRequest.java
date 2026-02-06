@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,36 +20,62 @@
 package org.eclipse.tractusx.edc.discovery.v4alpha.transformers;
 
 import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TransformerContext;
-import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorParamsDiscoveryRequest.DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE;
+import java.util.List;
+import java.util.Optional;
 
-public class JsonObjectToConnectorDiscoveryRequest extends AbstractJsonLdTransformer<JsonObject, ConnectorParamsDiscoveryRequest> {
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE;
+import static org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest.CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE;
 
+public class JsonObjectToConnectorDiscoveryRequest extends
+        AbstractJsonLdTransformer<JsonObject, ConnectorDiscoveryRequest> {
+
+    private Monitor monitor;
 
     public JsonObjectToConnectorDiscoveryRequest() {
-        super(JsonObject.class, ConnectorParamsDiscoveryRequest.class);
-
+        super(JsonObject.class, ConnectorDiscoveryRequest.class);
     }
 
     @Override
-    public @Nullable ConnectorParamsDiscoveryRequest transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext transformerContext) {
+    public @Nullable ConnectorDiscoveryRequest transform(@NotNull JsonObject jsonObject,
+                                                         @NotNull TransformerContext transformerContext) {
+        var counterPartyId = transformString(
+                jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE), transformerContext);
 
-        var bpnl = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE), transformerContext);
-        var counterPartyAddress = transformString(jsonObject.get(DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE), transformerContext);
-
-        if (bpnl == null || counterPartyAddress == null) {
-            transformerContext.reportProblem("Missing required attributes in ConnectorParamsDiscoveryRequest: tx:bpnl or edc:counterPartyAddress");
+        if (counterPartyId == null) {
+            transformerContext.reportProblem("Missing required attribute in ConnectorDiscoveryRequest: %s"
+                    .formatted(CONNECTOR_DISCOVERY_REQUEST_COUNTERPARTYID_ATTRIBUTE));
             return null;
         }
 
-        return new ConnectorParamsDiscoveryRequest(bpnl, counterPartyAddress);
+        var knownConnectors = safeExtractKnowns(jsonObject.get(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE));
 
+        return new ConnectorDiscoveryRequest(counterPartyId, knownConnectors);
+    }
+
+    private List<String> safeExtractKnowns(JsonValue input) {
+        try {
+            return Optional.ofNullable(input)
+                    .map(JsonValue::asJsonArray)
+                    .map(a -> a.stream()
+                            .map(v -> ((JsonString) v).getString())
+                            .collect(toList()))
+                    .orElse(emptyList());
+
+        } catch (Throwable t) {
+            monitor.debug("Input parameter '%s' is not meeting expectations: %s"
+                    .formatted(CONNECTOR_DISCOVERY_REQUEST_KNOWNCONNECTORS_ATTRIBUTE, t.getMessage()));
+            return emptyList();
+        }
     }
 }
-

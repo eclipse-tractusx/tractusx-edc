@@ -19,7 +19,6 @@
 
 plugins {
     `java-library`
-    id(libs.plugins.swagger.get().pluginId)
 }
 
 dependencies {
@@ -27,8 +26,8 @@ dependencies {
     api(project(":spi:core-spi"))
     api(project(":spi:bdrs-client-spi"))
 
-    api(libs.edc.spi.transform)
     api(libs.edc.spi.web)
+    api(libs.edc.spi.boot)
     api(libs.edc.spi.http)
     api(libs.edc.spi.jsonld)
     api(libs.edc.spi.controlplane)
@@ -36,12 +35,9 @@ dependencies {
     api(libs.dsp.spi.v2025)
     api(libs.edc.spi.identity.did)
 
-    implementation(libs.edc.lib.jersey.providers)
-    implementation(libs.edc.lib.validator)
-    implementation(libs.edc.lib.util)
+    implementation(project(":edc-extensions:connector-discovery:connector-discovery-api"))
+
     implementation(libs.edc.boot)
-    implementation(libs.edc.api.management.config)
-    implementation(libs.jakarta.rsApi)
 
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)

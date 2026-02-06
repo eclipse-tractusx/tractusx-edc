@@ -47,7 +47,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 
 @EndToEndTest
-public class DiscoveryTest {
+public class ConnectorParameterDiscoveryTest {
+    private static final String UNKNOWN_BPNL = "BPNL1234567890AB";
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
             .name(CONSUMER_NAME)
@@ -78,7 +79,9 @@ public class DiscoveryTest {
 
     @RegisterExtension
     static final RuntimeExtension CONSUMER_RUNTIME = Runtimes.discoveryRuntimeFullDsp(CONSUMER)
-            .registerServiceMock(BdrsClient.class, new MockBdrsClient(DiscoveryTest::resolveProviderDid, (s) -> s));
+            .registerServiceMock(BdrsClient.class, new MockBdrsClient(
+                    ConnectorParameterDiscoveryTest::resolveProviderDid,
+                    ConnectorParameterDiscoveryTest::resolveProviderBpn));
 
 
     @RegisterExtension
@@ -91,14 +94,18 @@ public class DiscoveryTest {
     static final RuntimeExtension PROVIDER_RUNTIME_NO_PROTOCOLS = Runtimes.discoveryRuntimeNoProtocols(PROVIDER_NO_PROTOCOLS);
 
     private static String resolveProviderDid(String bpn) {
-        if (Objects.equals(bpn, "unresolvableBpnl")) {
+        if (Objects.equals(bpn, UNKNOWN_BPNL)) {
             return null;
         }
         return PROVIDER_FULL_DSP.getDid();
     }
 
+    private static String resolveProviderBpn(String did) {
+        return PROVIDER_FULL_DSP.getBpn();
+    }
+
     @Test
-    void discoveryShouldReturn2025DspParams() {
+    void discoveryShouldReturn2025DspParams_BpnAsIdentifier() {
 
         var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl());
 
@@ -112,13 +119,12 @@ public class DiscoveryTest {
                 .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl() + "/2025-1\"")
                 .contains("\"counterPartyId\":\"" + PROVIDER_FULL_DSP.getDid() + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http:2025-1" + "\"");
-
     }
 
     @Test
-    void discoveryShouldReturn08DspParams_whenDidNotResolvable() {
+    void discoveryShouldReturn2025DspParams_DidAsIdentifier() {
 
-        var requestBody = createRequestBody("unresolvableBpnl", PROVIDER_FULL_DSP.getProtocolUrl());
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), PROVIDER_FULL_DSP.getProtocolUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
@@ -127,14 +133,13 @@ public class DiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl())
-                .contains("\"counterPartyId\":\"" + "unresolvableBpnl" + "\"")
-                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
-
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl() + "/2025-1\"")
+                .contains("\"counterPartyId\":\"" + PROVIDER_FULL_DSP.getDid() + "\"")
+                .contains("\"protocol\":\"" + "dataspace-protocol-http:2025-1" + "\"");
     }
 
     @Test
-    void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable() {
+    void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable_BpnAsIdentifier() {
 
         var requestBody = createRequestBody(PROVIDER_DSP_V08.getBpn(), PROVIDER_DSP_V08.getProtocolUrl());
 
@@ -148,7 +153,38 @@ public class DiscoveryTest {
                 .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
                 .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
+    }
 
+    @Test
+    void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable_DidAsIdentifier() {
+
+        var requestBody = createRequestBody(PROVIDER_DSP_V08.getDid(), PROVIDER_DSP_V08.getProtocolUrl());
+
+        var response = CONSUMER.discoverDspParameters(requestBody);
+
+        var body = response.statusCode(200)
+                .extract().body().asString();
+
+        assertThat(body)
+                .isNotNull()
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
+                .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
+                .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
+    }
+
+    @Test
+    void discoveryShouldReturn400_whenDidNotResolvable() {
+
+        var requestBody = createRequestBody(UNKNOWN_BPNL, PROVIDER_FULL_DSP.getProtocolUrl());
+
+        var response = CONSUMER.discoverDspParameters(requestBody);
+
+        var body = response.statusCode(400)
+                .extract().body().asString();
+
+        assertThat(body)
+                .isNotNull()
+                .contains("No did found for identifier");
     }
 
     @Test
@@ -167,24 +203,22 @@ public class DiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("mandatory value 'https://w3id.org/tractusx/v0.0.1/ns/bpnl' is missing or it is blank");
-
+                .contains("Neither 'https://w3id.org/edc/v0.0.1/ns/counterPartyId' nor 'https://w3id.org/tractusx/v0.0.1/ns/bpnl' property given");
     }
 
     @Test
-    void discoveryShouldReturn500_ifMetadaEndpointNotReachable() {
+    void discoveryShouldReturn502_ifMetadaEndpointNotReachable() {
 
         var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl() + "/not-existing");
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
-        var body = response.statusCode(500)
+        var body = response.statusCode(502)
                 .extract().body().asString();
 
         assertThat(body)
                 .isNotNull()
-                .contains("Counter party well-known endpoint has failed with status 404 and message: Not Found");
-
+                .contains("Counterparty well-known endpoint has failed with status 404 and message: Not Found");
     }
 
     @Test
@@ -194,37 +228,30 @@ public class DiscoveryTest {
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
-        var body = response.statusCode(500)
+        response.statusCode(500)
                 .extract().body().asString();
-
-        assertThat(body)
-                .isNotNull()
-                .contains("An exception with the following message occurred while executing dsp version request:");
-
     }
 
     @Test
-    void discoveryShouldReturn500_whenNoProtocolsAvailable() {
+    void discoveryShouldReturn400_whenNoProtocolsAvailable() {
 
         var requestBody = createRequestBody(PROVIDER_NO_PROTOCOLS.getBpn(), PROVIDER_NO_PROTOCOLS.getProtocolUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
-
-        var body = response.statusCode(500)
+        var body = response.statusCode(400)
                 .extract().body().asString();
 
         assertThat(body)
                 .isNotNull()
-                .contains("No valid protocol version found for the counter party.");
-
+                .contains("The counterparty does not support any of the expected protocol versions");
     }
 
-    private JsonObject createRequestBody(String bpn, String counterPartyAddress) {
+    private JsonObject createRequestBody(String counterPartyId, String counterPartyAddress) {
         return createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
                 .add(TYPE, "tx:ConnectorDiscoveryRequest")
-                .add("tx:bpnl", bpn)
+                .add("edc:counterPartyId", counterPartyId)
                 .add("edc:counterPartyAddress", counterPartyAddress)
                 .build();
     }
