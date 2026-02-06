@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
+package org.eclipse.tractusx.edc.tests.participant;
 
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.store.StsAccountStore;
@@ -31,29 +32,19 @@ import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManif
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 
-import java.net.URI;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static org.eclipse.edc.util.io.Ports.getFreePort;
-
 public class IatpParticipant extends TractusxIatpParticipantBase {
-
-    protected final LazySupplier<URI> csService = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/resolution"));
-    protected LazySupplier<URI> dimUri;
-    protected LazySupplier<URI> credentialServiceUri;
-
-    private DidDocument didDocument;
+    protected DidDocument didDocument;
 
     public DidDocument getDidDocument() {
         return didDocument;
@@ -141,7 +132,11 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
     public static class Builder extends TractusxIatpParticipantBase.Builder<IatpParticipant, Builder> {
 
         protected Builder() {
-            super(new IatpParticipant());
+            this(new IatpParticipant());
+        }
+
+        protected Builder(IatpParticipant participant) {
+            super(participant);
         }
 
         public static Builder newInstance() {
@@ -155,15 +150,6 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
             return participant;
         }
 
-        public Builder dimUri(LazySupplier<URI> dimUri) {
-            participant.dimUri = dimUri;
-            return self();
-        }
-
-        public Builder credentialServiceUri(LazySupplier<URI> credentialServiceUri) {
-            participant.credentialServiceUri = credentialServiceUri;
-            return self();
-        }
 
         private DidDocument generateDidDocument() {
             var service = new Service();
@@ -184,7 +170,7 @@ public class IatpParticipant extends TractusxIatpParticipantBase {
             return DidDocument.Builder.newInstance()
                     .id(participant.did)
                     .service(List.of(service))
-                    .authentication(List.of("#key1"))
+                    .authentication(List.of("#key-1"))
                     .verificationMethod(List.of(verificationMethod))
                     .build();
         }

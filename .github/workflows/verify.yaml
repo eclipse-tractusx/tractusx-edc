@@ -191,6 +191,20 @@ jobs:
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
+  compatibility-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-java
+
+      - name: Build docker images
+        run: ./gradlew :edc-tests:runtime:runtime-compatibility:stable:connector-stable:dockerize_stable
+
+      - name: Run Compatibility tests
+        run: ./gradlew test -DincludeTags="CompatibilityTest" -PverboseTest=true --no-build-cache
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
+
   generate-allure-report:
     runs-on: ubuntu-latest
     needs: end-to-end-tests

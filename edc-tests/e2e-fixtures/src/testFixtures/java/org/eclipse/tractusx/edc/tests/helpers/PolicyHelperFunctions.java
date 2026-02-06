@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -192,6 +193,22 @@ public class PolicyHelperFunctions {
                         .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorEnd, endDate, false))
                         .add(frameworkAgreementConstraint())
                         .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        return policy(List.of(Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", constraint)
+                .build()));
+    }
+
+    public static JsonObject inForceDatePolicyLegacy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
+        var constraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorStart, startDate, false))
+                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorEnd, endDate, false))
+                        .add(atomicConstraint("https://w3id.org/catenax/policy/Membership", "eq", "active", false))
                         .build())
                 .build();
 
