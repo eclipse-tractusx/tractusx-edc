@@ -130,13 +130,13 @@ edc-sql-test-fixtures = { module = "org.eclipse.edc:sql-test-fixtures", version.
 # azure stuff
 azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
-edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
+edc-azure-blob-provision = { module = "org.eclipse.edc.azure:data-plane-provision-blob", version.ref = "edc" }
 
 # EDC aws s3 stuff
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
 edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
-edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:provision-aws-s3", version.ref = "edc" }
+edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:data-plane-provision-aws-s3", version.ref = "edc" }
 
 # DCP Modules
 edc-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
