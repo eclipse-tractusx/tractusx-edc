@@ -69,8 +69,6 @@ dependencies {
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
-    runtimeOnly(libs.edc.azure.blob.provision)
-    runtimeOnly(libs.edc.aws.provision.s3)
     runtimeOnly(libs.edc.controlplane.callback.staticendpoint)
     runtimeOnly(libs.edc.validator.data.address.http.data)
     runtimeOnly(libs.log4j2.core)
