@@ -23,13 +23,13 @@ package org.eclipse.tractusx.edc.tests;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.validation.jti.JtiValidationStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 public class MockIdentityServiceExtension implements ServiceExtension {
     @Inject
-    private IdentityService identityService;
+    private IdentityService identityService;    //ensure the original IdentityService dependencies are injected before overriding with the mocked class
 
     @Inject
     private JtiValidationStore jtiValidationStore;
@@ -45,12 +45,10 @@ public class MockIdentityServiceExtension implements ServiceExtension {
         this.did = did;
     }
 
-    @Override
-    public void initialize(ServiceExtensionContext context) {
-
+    @Provider
+    public IdentityService mockIdentityService() {
         var mockTokenValidationService = new MockTokenValidationService();
         var mockTokenValidationAction = new MockTokenValidationAction(mockTokenValidationService, didPublicKeyResolver, jtiValidationStore);
-        var mockVcIdentityService = new MockVcIdentityService(bpn, did, mockTokenValidationAction);
-        context.registerService(IdentityService.class, mockVcIdentityService);
+        return new MockVcIdentityService(bpn, did, mockTokenValidationAction);
     }
 }

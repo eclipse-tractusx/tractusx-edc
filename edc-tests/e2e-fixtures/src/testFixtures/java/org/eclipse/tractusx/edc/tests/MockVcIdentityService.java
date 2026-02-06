@@ -79,7 +79,7 @@ public class MockVcIdentityService implements IdentityService {
         var claimTokenResult = tokenValidationAction.validate(participantContextId, tokenRepresentation);
 
         if (claimTokenResult.failed()) {
-            return claimTokenResult.mapEmpty();
+            return claimTokenResult;
         }
 
         var claimToken = claimTokenResult.getContent();
