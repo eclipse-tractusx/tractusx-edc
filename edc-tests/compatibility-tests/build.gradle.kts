@@ -22,6 +22,10 @@ plugins {
     `java-library`
 }
 
+configurations.all {
+    exclude("org.eclipse.edc", "decentralized-claims-core")
+}
+
 dependencies {
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.lib.cryptocommon)

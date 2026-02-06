@@ -91,6 +91,7 @@ edc-api-management-config = { module = "org.eclipse.edc:management-api-configura
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-management-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
+edc-iam-decentralized-claims-core = { module = "org.eclipse.edc:decentralized-claims-core", version.ref = "edc" }
 edc-auth-tokenbased = { module = "org.eclipse.edc:auth-tokenbased", version.ref = "edc" }
 edc-auth-configuration = { module = "org.eclipse.edc:auth-configuration", version.ref = "edc" }
 edc-auth-delegated = { module = "org.eclipse.edc:auth-delegated", version.ref = "edc" }
@@ -152,6 +153,7 @@ edc-decentralized-claims-sts-remote-lib = { module = "org.eclipse.edc:decentrali
 edc-sts-core = { module = "org.eclipse.edc:sts-core", version.ref = "edc" }
 edc-sts-api = { module = "org.eclipse.edc:sts-api", version.ref = "edc" }
 edc-sts-account-provisioner = { module = "org.eclipse.edc:sts-account-provisioner", version.ref = "edc" }
+edc-verifiablecredentials-jwt = { module = "org.eclipse.edc:jwt-verifiable-credentials", version.ref = "edc" }
 
 # DCP-TCK libraries
 dcp-testcases = { module = "org.eclipse.dataspacetck.dcp:dcp-testcases", version.ref = "dcp-tck" }

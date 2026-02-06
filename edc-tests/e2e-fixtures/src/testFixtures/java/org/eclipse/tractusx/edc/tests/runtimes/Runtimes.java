@@ -24,13 +24,13 @@ import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.protocol.spi.DefaultParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.iam.AudienceResolver;
-import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
-import org.eclipse.tractusx.edc.tests.MockVcIdentityService;
+import org.eclipse.tractusx.edc.tests.MockIdentityServiceExtension;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
 import java.util.function.Function;
@@ -53,9 +53,9 @@ public interface Runtimes {
                 new EmbeddedRuntime(participant.getName(), ":edc-tests:runtime:runtime-postgresql")
                         .configurationProvider(() -> participant.getConfig().merge(postgres.getConfig(participant.getName())))
                         .configurationProvider(configurationProvider)
-                        .registerServiceMock(IdentityService.class, new MockVcIdentityService(participant.getBpn(), participant.getDid()))
                         .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
                         .registerServiceMock(BdrsClient.class, new MockBdrsClient(bpnToDid, didToBpn))
+                        .registerSystemExtension(ServiceExtension.class, new MockIdentityServiceExtension(participant.getBpn(), participant.getDid()))
                         .registerServiceMock(DefaultParticipantIdExtractionFunction.class, ct -> "id")
         );
     }
@@ -74,10 +74,9 @@ public interface Runtimes {
 
     static RuntimeExtension discoveryRuntime(TractusxParticipantBase participant, String module) {
         return new ParticipantRuntimeExtension(new EmbeddedRuntime(participant.getName(), module)
-                .registerServiceMock(IdentityService.class, new MockVcIdentityService(participant.getBpn(), participant.getDid()))
+                .registerSystemExtension(ServiceExtension.class, new MockIdentityServiceExtension(participant.getBpn(), participant.getDid()))
                 .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
                 .configurationProvider(participant::getConfig));
     }
-
 
 }
