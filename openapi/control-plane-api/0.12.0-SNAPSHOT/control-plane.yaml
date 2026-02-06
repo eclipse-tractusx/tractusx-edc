@@ -696,7 +696,7 @@ paths:
     post:
       tags:
       - Connector Discovery
-      description: Discover supported connector parameters.
+      description: Discover supported connector parameters for a given connector endpoint.
       operationId: discoverDspVersionParamsV4Alpha
       requestBody:
         content:
@@ -705,13 +705,12 @@ paths:
               $ref: "#/components/schemas/ConnectorParamsDiscoveryRequest"
       responses:
         "200":
-          description: A list of connector parameters per DSP version
+          description: A list of connector parameters for the DSP version to use with
+            the given connector.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ConnectorDiscoveryResponse"
+                $ref: "#/components/schemas/ConnectorParamsDiscoveryResponse"
         "400":
           description: Request body was malformed
           content:
@@ -729,7 +728,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
         "502":
-          description: Discovery failed due to connection to counter party
+          description: Discovery failed due to connection issues to counter party
           content:
             application/json:
               schema:
@@ -2405,6 +2404,61 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DataPlaneInstanceSchemaV3"
+  /v4alpha/connectordiscovery/connectors:
+    post:
+      tags:
+      - Connector Discovery
+      description: Searches for 'DataService' entries in the DID document of a participant
+        and provides the connection parameters for all found connectors by applying
+        the connector param discovery request for each.
+      operationId: discoverConnectorServicesV4Alpha
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectorDiscoveryRequestSchema"
+      responses:
+        "200":
+          description: A list of connector endpoint parameters for the version to
+            use for each found connector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConnectorParamsDiscoveryResponse"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "404":
+          description: Given Id could not be resolved to a DID document
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "500":
+          description: Discovery failed due to an internal error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "502":
+          description: Discovery failed due to connection to counter party
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
   /v4beta/contractnegotiations:
     post:
       tags:
@@ -3626,19 +3680,23 @@ components:
         dataAddress:
           '@type': '@type'
           type: type
+          example: ""
         '@type': '@type'
         dataplaneMetadata:
           '@type': '@type'
-          properties: "{}"
+          properties:
+            key: value
           labels:
           - labels
           - labels
         '@id': '@id'
-        privateProperties: "{}"
+        privateProperties:
+          privateKey: privateValue
         '@context':
         - '@context'
         - '@context'
-        properties: "{}"
+        properties:
+          key: value
       allOf:
       - $ref: "#/components/schemas/Asset"
     Asset:
@@ -3659,8 +3717,12 @@ components:
           type: string
         properties:
           type: object
+          example:
+            key: value
         privateProperties:
           type: object
+          example:
+            privateKey: privateValue
         dataAddress:
           $ref: "#/components/schemas/data-address-schema"
         dataplaneMetadata:
@@ -3671,6 +3733,7 @@ components:
       example:
         '@type': '@type'
         type: type
+        example: ""
       allOf:
       - $ref: "#/components/schemas/DataAddress_1"
     DataAddress_1:
@@ -3683,12 +3746,15 @@ components:
           type: string
         type:
           type: string
+        example:
+          type: type
     dataplane-metadata-schema:
       title: DataplaneMetadataSchema
       type: object
       example:
         '@type': '@type'
-        properties: "{}"
+        properties:
+          key: value
         labels:
         - labels
         - labels
@@ -3705,6 +3771,8 @@ components:
             type: string
         properties:
           type: object
+          example:
+            key: value
     ApiErrorDetail_1:
       type: object
       properties:
@@ -4174,7 +4242,7 @@ components:
           type: string
         createdAt:
           type: number
-    ConnectorDiscoveryResponse:
+    ConnectorParamsDiscoveryResponse:
       type: object
       properties:
         context:
@@ -4188,15 +4256,14 @@ components:
       example:
         '@context':
           edc: https://w3id.org/edc/v0.0.1/ns/
-          tx: https://w3id.org/tractusx/v0.0.1/ns/
         edc:counterPartyId: did:web:one-example.com
         edc:counterPartyAddress: https://provider.domain.com/api/dsp/2025-1
         edc:protocol: dataspace-protocol-http:2025-1
     ConnectorParamsDiscoveryRequest:
       required:
       - '@context'
-      - bpnl
       - counterPartyAddress
+      - counterPartyId
       type: object
       properties:
         '@context':
@@ -4204,16 +4271,18 @@ components:
         '@type':
           type: string
           example: https://w3id.org/tractusx/v0.0.1/ns/ConnectorParamsDiscoveryRequest
-        bpnl:
-          type: string
         counterPartyAddress:
           type: string
+        counterPartyId:
+          type: string
+      description: "Note: In former versions, the property 'counterPartyId' was named\
+        \ 'bpnl', for convenience this value is still allowed"
       example:
         '@context':
-          tx: https://w3id.org/tractusx/v0.0.1/ns/
           edc: https://w3id.org/edc/v0.0.1/ns/
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
         '@type': tx:ConnectorParamsDiscoveryRequest
-        tx:bpnl: BPNL1234567890
+        edc:counterPartyId: BPNL1234567890
         edc:counterPartyAddress: https://provider.domain.com/api/dsp
     contract-agreement-schema:
       title: ContractAgreementSchema
@@ -4938,7 +5007,8 @@ components:
         assetId: assetId
         dataplaneMetadata:
           '@type': '@type'
-          properties: "{}"
+          properties:
+            key: value
           labels:
           - labels
           - labels
@@ -4965,6 +5035,7 @@ components:
         dataDestination:
           '@type': '@type'
           type: type
+          example: ""
         correlationId: correlationId
         '@id': '@id'
         state: state
@@ -5640,7 +5711,8 @@ components:
       example:
         '@type': '@type'
         '@id': '@id'
-        privateProperties: "{}"
+        privateProperties:
+          privateKey: privateValue
         '@context':
         - '@context'
         - '@context'
@@ -5742,6 +5814,8 @@ components:
           $ref: "#/components/schemas/PolicyClass_1"
         privateProperties:
           type: object
+          example:
+            privateKey: privateValue
     PolicyClass_1:
       required:
       - '@type'
@@ -5898,6 +5972,36 @@ components:
         - transfer-type
         state: AVAILABLE
         stateTimestamp: 1688465655
+    ConnectorDiscoveryRequestSchema:
+      required:
+      - '@context'
+      - counterPartyId
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@type':
+          type: string
+          example: https://w3id.org/tractusx/v0.0.1/ns/ConnectorServiceDiscoveryRequest
+        counterPartyId:
+          type: string
+        knownConnectors:
+          type: array
+          items:
+            type: string
+      example: |
+        {
+            "@context": {
+                "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
+            },
+            "@type": "tx:ConnectorParamsDiscoveryRequest",
+            "edc:counterPartyId": "did:web:one-example.com",
+            "tx:knownConnectors": [
+                "https://provider.domain.com/conn1/api/dsp",
+                "https://provider.domain.com/conn2/api/v1/dsp",
+            ]
+        }
     contract-request-schema:
       title: ContractRequestSchema
       type: object
