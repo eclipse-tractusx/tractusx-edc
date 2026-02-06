@@ -18,4 +18,3 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension
-org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryDefaultServiceExtension

@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,10 +36,10 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
+import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.StsParticipant;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

@@ -27,11 +27,16 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.eclipse.edc.util.io.Ports.getFreePort;
+
 /**
  * Specialized version of {@link TractusxParticipantBase} with IATP configurations
  */
 public abstract class TractusxIatpParticipantBase extends TractusxParticipantBase {
 
+    protected final LazySupplier<URI> csService = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/resolution"));
+    protected LazySupplier<URI> dimUri;
+    protected LazySupplier<URI> credentialServiceUri;
     protected LazySupplier<URI> stsUri;
     protected String stsClientId;
     protected String trustedIssuer;
@@ -71,6 +76,16 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
 
         public B trustedIssuer(String trustedIssuer) {
             participant.trustedIssuer = trustedIssuer;
+            return self();
+        }
+
+        public B dimUri(LazySupplier<URI> dimUri) {
+            participant.dimUri = dimUri;
+            return self();
+        }
+
+        public B credentialServiceUri(LazySupplier<URI> credentialServiceUri) {
+            participant.credentialServiceUri = credentialServiceUri;
             return self();
         }
 

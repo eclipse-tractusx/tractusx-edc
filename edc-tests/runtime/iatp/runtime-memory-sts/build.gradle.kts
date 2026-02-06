@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,7 +26,7 @@ plugins {
 dependencies {
     // use basic (all in-mem) control plane
 //    implementation(project(":edc-controlplane:edc-controlplane-base"))
-    implementation("org.eclipse.edc:identityhub-bom:0.15.1") // TODO: put in version catalog
+    implementation(libs.edc.bom.identityhub)
     implementation(project(":edc-extensions:single-participant-vault"))
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))

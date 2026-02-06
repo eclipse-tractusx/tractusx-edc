@@ -93,6 +93,7 @@ public class EdcCompatibilityPostgresTest {
         return ConfigFactory.fromMap(new HashMap<>() {
             {
                 put("edc.participant.id", CONNECTOR_UNDER_TEST);
+                put("edc.participant.context.id", CONNECTOR_UNDER_TEST + "_context");
                 put("web.http.port", "8080");
                 put("web.http.path", "/api");
                 put("web.http.control.port", String.valueOf(CONTROL_URL.getPort()));

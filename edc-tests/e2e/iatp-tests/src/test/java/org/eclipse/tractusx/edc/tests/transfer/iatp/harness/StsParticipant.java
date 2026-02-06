@@ -23,6 +23,7 @@ package org.eclipse.tractusx.edc.tests.transfer.iatp.harness;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 
 import java.net.URI;

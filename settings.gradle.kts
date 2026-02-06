@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2023 Contributors to the Eclipse Foundation
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +27,21 @@ pluginManagement {
         mavenCentral()
         maven {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("stableLibs") {
+            from(files("./gradle/libs.stable.versions.toml"))
         }
     }
 }
@@ -72,8 +88,11 @@ include(":edc-extensions:dcp:verifiable-presentation-cache")
 include(":edc-extensions:data-flow-properties-provider")
 include(":edc-extensions:validators:empty-asset-selector")
 include(":edc-extensions:log4j2-monitor")
-include("edc-extensions:connector-discovery:connector-discovery-api")
+include(":edc-extensions:connector-discovery:connector-discovery-api")
+include(":edc-extensions:connector-discovery:cx-connector-discovery")
 include(":edc-extensions:dataspace-protocol")
+include(":edc-extensions:dataspace-protocol:cx-dataspace-protocol")
+include(":edc-extensions:dataspace-protocol:dataspace-protocol-core")
 include(":edc-extensions:did-document:did-document-service-self-registration")
 include(":edc-extensions:did-document:did-document-service-dim")
 
@@ -118,6 +137,7 @@ include(":edc-tests:e2e:transfer-tests")
 include("edc-tests:e2e:discovery-tests")
 include(":edc-tests:e2e:dcp-tck-tests")
 include(":edc-tests:e2e:dsp-compatibility-tests")
+include(":edc-tests:compatibility-tests")
 include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-dsp")
 include(":edc-tests:runtime:iatp:iatp-extensions")
@@ -129,6 +149,10 @@ include(":edc-tests:runtime:runtime-postgresql")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-base")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-no-protocols")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08")
+include("edc-tests:runtime:runtime-compatibility:stable:extensions")
+include("edc-tests:runtime:runtime-compatibility:stable:connector-stable")
+include("edc-tests:runtime:runtime-compatibility:snapshot:connector-snapshot")
+
 
 
 // modules for controlplane artifacts

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,24 +24,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.runtime.metamodel)
-
-    implementation(libs.edc.spi.boot)
-    implementation(libs.edc.spi.core)
-    implementation(libs.edc.spi.decentralized.claims)
-    implementation(libs.edc.spi.participant.context.single)
-    implementation(libs.edc.ih.spi.credentials)
-
-    implementation(libs.dsp.spi.http)
-    implementation(libs.dsp.spi.v08)
-    implementation(libs.dsp.spi.v2024)
-    implementation(libs.dsp.spi.v2025)
-
-    implementation(libs.edc.spi.participant)
-    implementation(libs.edc.spi.protocol)
-
-    implementation(project(":spi:core-spi"))
-    implementation(project(":core:core-utils"))
-
-    testImplementation(libs.edc.junit)
+    api(project(":edc-extensions:dataspace-protocol:dataspace-protocol-core"))
+    api(project(":edc-extensions:dataspace-protocol:cx-dataspace-protocol"))
 }

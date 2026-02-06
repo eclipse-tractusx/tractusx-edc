@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -37,13 +38,13 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
+import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
 import org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 import org.eclipse.tractusx.edc.tests.transfer.extension.BdrsServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.extension.DidServerExtension;
 import org.eclipse.tractusx.edc.tests.transfer.iatp.dispatchers.DimDispatcher;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.transfer.iatp.harness.IatpParticipant;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

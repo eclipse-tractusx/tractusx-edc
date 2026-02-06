@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,27 +24,16 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 /**
- * Request object for discovering connector parameters for a specific counterparty.
- * Contains the necessary information to identify and locate a counterparty connector
- * for DSP (Dataspace Protocol) communication.
+ * Request object for the connector parameter discovery request input the required parameters to the service implementation.
  *
- * @param bpnl the Business Partner Number Legal (BPNL) identifier of the counterparty
- * @param counterPartyAddress the base address/URL of the counterparty's DSP endpoint
+ * @param counterPartyId The identifier for the participant whose connector endpoints are requested, typically the DID.
+ * @param counterPartyAddress The base address or the full path to the '/.well-known/dspace-version' endpoint of
+ *                            the counterparty's DSP service
  */
-public record ConnectorParamsDiscoveryRequest(String bpnl, String counterPartyAddress) {
+public record ConnectorParamsDiscoveryRequest(String counterPartyId, String counterPartyAddress) {
 
     public static final String TYPE = TX_NAMESPACE +  "ConnectorParamsDiscoveryRequest";
-    public static final String DISCOVERY_PARAMS_REQUEST_BPNL_ATTRIBUTE = TX_NAMESPACE + "bpnl";
+    public static final String DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE_LEGACY = TX_NAMESPACE + "bpnl";
+    public static final String DISCOVERY_PARAMS_REQUEST_IDENTIFIER_ATTRIBUTE = EDC_NAMESPACE + "counterPartyId";
     public static final String DISCOVERY_PARAMS_REQUEST_COUNTER_PARTY_ADDRESS_ATTRIBUTE = EDC_NAMESPACE + "counterPartyAddress";
-
-    public static final String EXAMPLE = """
-            {
-                "@context": {
-                    "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
-                    "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                },
-                "tx:bpnl": "BPNL1234567890",
-                "edc:counterPartyAddress": "https://provider.domain.com/api/dsp"
-            }
-            """;
 }

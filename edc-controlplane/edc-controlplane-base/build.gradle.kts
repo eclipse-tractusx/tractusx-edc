@@ -32,7 +32,9 @@ configurations.all {
 }
 
 dependencies {
-    runtimeOnly(libs.edc.bom.controlplane.base)
+    runtimeOnly(libs.edc.bom.controlplane.base) {
+        exclude(module = "dsp-2024")
+    }
     runtimeOnly(libs.edc.bom.controlplane.dcp)
 
     runtimeOnly(libs.edc.bom.federatedcatalog.base)
@@ -58,6 +60,7 @@ dependencies {
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:validators:empty-asset-selector"))
     implementation(project(":edc-extensions:connector-discovery:connector-discovery-api"))
+    implementation(project(":edc-extensions:connector-discovery:cx-connector-discovery"))
     implementation(project(":edc-extensions:dataspace-protocol"))
     implementation(project(":edc-extensions:token-interceptor"))
     implementation(project(":edc-extensions:event-subscriber"))

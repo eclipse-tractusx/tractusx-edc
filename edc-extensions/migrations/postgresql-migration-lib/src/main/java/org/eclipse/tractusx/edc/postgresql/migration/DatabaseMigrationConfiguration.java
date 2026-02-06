@@ -59,7 +59,15 @@ public record DatabaseMigrationConfiguration(
                 key = "edc.datasource.default.password",
                 description = "DataSource JDBC password"
         )
-        String password
+        String password,
+
+        @Setting(
+                key = "edc.participant.context.id",
+                required = false
+        )
+        String participantContextId
+
+
 ) {
     private static final String DEFAULT_MIGRATION_ENABLED = "true";
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";

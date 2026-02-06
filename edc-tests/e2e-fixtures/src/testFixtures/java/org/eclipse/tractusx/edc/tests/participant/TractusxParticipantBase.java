@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,7 +28,6 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.tractusx.edc.tests.IdentityParticipant;
 import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
 import org.eclipse.tractusx.edc.tests.ParticipantEdrApi;
@@ -70,8 +70,8 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     private static final String CONSUMER_PROXY_API_KEY = "consumerProxyKey";
     private static final String API_KEY_HEADER_NAME = "x-api-key";
     protected final LazySupplier<URI> dataPlaneProxy = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
-    private final LazySupplier<URI> dataPlanePublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
-    private final LazySupplier<URI> federatedCatalog = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/catalog"));
+    protected final LazySupplier<URI> dataPlanePublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
+    protected final LazySupplier<URI> federatedCatalog = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/catalog"));
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
     protected ParticipantConsumerDataPlaneApi dataPlane;
@@ -139,7 +139,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.catalog.cache.execution.delay.seconds", "2");
                 put("edc.catalog.cache.execution.period.seconds", "2");
                 put("edc.policy.validation.enabled", "true");
+                put("edc.iam.did.web.use.https", "false");
+                put("edc.participant.context.id", "general-test-id");
                 put("tractusx.edc.participant.bpn", getBpn());
+                put("edc.iam.did.web.use.https", "false");
             }
         };
 
@@ -313,6 +316,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .then();
     }
 
+    public ValidatableResponse discoverConnectorServices(JsonObject requestBody) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(requestBody)
+                .when()
+                .post("/v4alpha/connectordiscovery/connectors")
+                .then();
+    }
+
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
         protected Builder(P participant) {
             super(participant);
@@ -320,6 +332,11 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         
         public B bpn(String bpn) {
             this.participant.bpn = bpn;
+            return self();
+        }
+
+        public B did(String did) {
+            this.participant.did = did;
             return self();
         }
         
@@ -330,8 +347,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
         @Override
         public P build() {
-            participant.did = participant.id;
-            
+            if (participant.did == null) {
+                participant.did = participant.id;
+            }
+
             if (participant.bpn == null) {
                 participant.bpn = participant.name.toLowerCase() + BPN_SUFFIX;
             }
