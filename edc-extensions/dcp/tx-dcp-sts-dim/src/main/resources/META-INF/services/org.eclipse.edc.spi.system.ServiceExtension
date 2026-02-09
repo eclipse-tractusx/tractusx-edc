@@ -17,6 +17,7 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+org.eclipse.tractusx.edc.iam.dcp.sts.DimOauthClientExtension
 org.eclipse.tractusx.edc.iam.dcp.sts.RemoteTokenServiceClientExtension
 org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension
 
