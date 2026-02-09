@@ -477,7 +477,7 @@ maven/mavencentral/org.eclipse.edc/asset-index-sql/0.11.1, Apache-2.0, approved,
 maven/mavencentral/org.eclipse.edc/asset-index-sql/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/asset-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/asset-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-configuration/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-configuration/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/auth-delegated/0.11.1, Apache-2.0, approved, technology.edc
@@ -491,7 +491,7 @@ maven/mavencentral/org.eclipse.edc/boot-lib/0.11.1, Apache-2.0, approved, techno
 maven/mavencentral/org.eclipse.edc/boot-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/boot-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/boot-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/boot/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/callback-event-dispatcher/0.11.1, Apache-2.0, approved, technology.edc
@@ -504,7 +504,7 @@ maven/mavencentral/org.eclipse.edc/catalog-api/0.11.1, Apache-2.0, approved, tec
 maven/mavencentral/org.eclipse.edc/catalog-api/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/catalog-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/catalog-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-util-lib/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/catalog-util-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/common-core/0.15.1, Apache-2.0, approved, technology.edc
@@ -514,7 +514,7 @@ maven/mavencentral/org.eclipse.edc/configuration-filesystem/0.15.1, Apache-2.0, 
 maven/mavencentral/org.eclipse.edc/connector-core/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/connector-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/connector-participant-context-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/connector-participant-context-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/connector-participant-context-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/contract-agreement-api/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/contract-agreement-api/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/contract-definition-api/0.11.1, Apache-2.0, approved, technology.edc
@@ -527,7 +527,7 @@ maven/mavencentral/org.eclipse.edc/contract-negotiation-store-sql/0.11.1, Apache
 maven/mavencentral/org.eclipse.edc/contract-negotiation-store-sql/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/contract-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/contract-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/contract-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/contract-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-api-configuration/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-api-configuration/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-plane-aggregate-services/0.11.1, Apache-2.0, approved, technology.edc
@@ -548,7 +548,7 @@ maven/mavencentral/org.eclipse.edc/control-plane-policies-lib/0.11.1, Apache-2.0
 maven/mavencentral/org.eclipse.edc/control-plane-policies-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-plane-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-plane-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/control-plane-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/control-plane-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-plane-sql/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-plane-transfer-manager/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/control-plane-transfer-provision-lib/0.15.1, Apache-2.0, approved, technology.edc
@@ -561,7 +561,7 @@ maven/mavencentral/org.eclipse.edc/controlplane-dcp-bom/0.15.1, Apache-2.0, appr
 maven/mavencentral/org.eclipse.edc/controlplane-feature-sql-bom/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/core-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/core-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/core-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/core-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/crawler-core/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/crawler-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/crawler-spi/0.11.1, Apache-2.0, approved, technology.edc
@@ -607,7 +607,7 @@ maven/mavencentral/org.eclipse.edc/data-plane-signaling-transform/0.11.1, Apache
 maven/mavencentral/org.eclipse.edc/data-plane-signaling-transform/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/data-plane-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/data-plane-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-store-sql/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-store-sql/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/data-plane-util/0.11.1, Apache-2.0, approved, technology.edc
@@ -832,12 +832,12 @@ maven/mavencentral/org.eclipse.edc/participant-context-config-spi/0.15.1, Apache
 maven/mavencentral/org.eclipse.edc/participant-context-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/participant-context-single-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/participant-context-single-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/participant-context-single-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/participant-context-single-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/participant-context-spi/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/participant-context-validators/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/participant-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/participant-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/participant-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/participant-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-definition-api/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-definition-api/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-definition-store-sql/0.11.1, Apache-2.0, approved, technology.edc
@@ -846,12 +846,12 @@ maven/mavencentral/org.eclipse.edc/policy-engine-lib/0.11.1, Apache-2.0, approve
 maven/mavencentral/org.eclipse.edc/policy-engine-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-evaluator-lib/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-evaluator-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-model/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-model/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/policy-model/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/policy-model/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-monitor-core/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-monitor-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-monitor-spi/0.11.1, Apache-2.0, approved, technology.edc
@@ -860,21 +860,21 @@ maven/mavencentral/org.eclipse.edc/policy-monitor-store-sql/0.11.1, Apache-2.0, 
 maven/mavencentral/org.eclipse.edc/policy-monitor-store-sql/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/policy-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/policy-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/presentation-api/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/protocol-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/protocol-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/protocol-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/protocol-version-api/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/protocol-version-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/query-lib/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/query-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/request-policy-context-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/request-policy-context-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/request-policy-context-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/request-policy-context-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/runtime-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/secrets-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/secrets-spi/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sql-bootstrapper/0.11.1, Apache-2.0, approved, technology.edc
@@ -900,8 +900,8 @@ maven/mavencentral/org.eclipse.edc/sts-account-service-local/0.15.1, Apache-2.0,
 maven/mavencentral/org.eclipse.edc/sts-api/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sts-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/sts-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/tck-extension/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/tck-lib/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/tck-extension/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/tck-lib/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/token-core/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/token-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/token-lib/0.11.1, Apache-2.0, approved, technology.edc
@@ -914,7 +914,7 @@ maven/mavencentral/org.eclipse.edc/transaction-local/0.11.1, Apache-2.0, approve
 maven/mavencentral/org.eclipse.edc/transaction-local/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transaction-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transaction-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/transaction-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/transaction-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-data-plane-signaling/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-data-plane-signaling/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-data-plane-spi/0.11.1, Apache-2.0, approved, technology.edc
@@ -925,7 +925,7 @@ maven/mavencentral/org.eclipse.edc/transfer-process-store-sql/0.15.1, Apache-2.0
 maven/mavencentral/org.eclipse.edc/transfer-pull-http-dynamic-receiver/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/transfer-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/transfer-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-lib/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-spi/0.11.1, Apache-2.0, approved, technology.edc
@@ -938,7 +938,7 @@ maven/mavencentral/org.eclipse.edc/validator-lib/0.11.1, Apache-2.0, approved, t
 maven/mavencentral/org.eclipse.edc/validator-lib/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/validator-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/validator-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-hashicorp-spi/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/vault-hashicorp/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/verifiable-credential-spi/0.15.1, Apache-2.0, approved, technology.edc
@@ -951,7 +951,7 @@ maven/mavencentral/org.eclipse.edc/verifiable-credentials/0.15.1, Apache-2.0, ap
 maven/mavencentral/org.eclipse.edc/version-api/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/web-spi/0.11.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/web-spi/0.15.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/web-spi/0.16.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/web-spi/0.16.0-20260206-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.jetty.ee10/jetty-ee10-bom/12.0.30, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty.ee10/jetty-ee10-servlet/12.0.30, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty.ee10/jetty-ee10-servlet/12.1.4, EPL-2.0 OR Apache-2.0, approved, rt.jetty
