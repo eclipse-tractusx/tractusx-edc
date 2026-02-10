@@ -38,10 +38,6 @@ edc-bom-dataplane-base = { module = "org.eclipse.edc:dataplane-base-bom", versio
 edc-bom-dataplane-feature-sql = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
 edc-bom-identityhub = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
 
-edc-bom-federatedcatalog-base = { module = "org.eclipse.edc:federatedcatalog-base-bom", version.ref = "edc" }
-edc-bom-federatedcatalog-dcp = { module = "org.eclipse.edc:federatedcatalog-dcp-bom", version.ref = "edc" }
-edc-bom-federatedcatalog-feature-sql = { module = "org.eclipse.edc:federatedcatalog-feature-sql-bom", version.ref = "edc" }
-
 edc-spi-auth = { module = "org.eclipse.edc:auth-spi", version.ref = "edc" }
 edc-spi-boot = { module = "org.eclipse.edc:boot-spi", version.ref = "edc" }
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
@@ -176,9 +172,6 @@ tck-lib = { module = "org.eclipse.edc:tck-lib", version = "0.16.0-SNAPSHOT" }
 dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
 dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
 dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
-
-# Federated Catalog modules
-edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }
 
 ## IH for testing
 

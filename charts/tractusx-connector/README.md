@@ -71,12 +71,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.12.0-SNAPSHO
 | controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | controlplane.bdrs.cache_validity_seconds | int | `600` | Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min) |
 | controlplane.bdrs.server.url | string | `nil` | URL of the BPN/DID Resolution Service |
-| controlplane.catalog | object | `{"crawler":{"initialDelay":null,"num":null,"period":null,"targetsFile":null},"enabled":false}` | configuration for the built-in federated catalog crawler |
-| controlplane.catalog.crawler.initialDelay | string | `nil` | Initial delay for the crawling to start. Leave blank for a random delay |
-| controlplane.catalog.crawler.num | string | `nil` | Number of desired crawlers. Final number might be different, based on number of crawl targets |
-| controlplane.catalog.crawler.period | string | `nil` | Period between two crawl runs in seconds. Default is 60 seconds. |
-| controlplane.catalog.crawler.targetsFile | string | `nil` | File path to a JSON file containing TargetNode entries |
-| controlplane.catalog.enabled | bool | `false` | Flag to globally enable/disable the FC feature |
 | controlplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | controlplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | controlplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |

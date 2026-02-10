@@ -323,31 +323,6 @@ spec:
             - name: "TX_EDC_VAULT_SECRETS"
               value: {{ .Values.vault.secrets | quote}}
 
-
-            ###############################
-            ## FEDERATED CATALOG CRAWLER ##
-            ###############################
-            {{- if .Values.runtime.catalog.crawler.period }}
-            - name: "EDC_CATALOG_CACHE_EXECUTION_PERIOD_SECONDS"
-              value: {{ .Values.runtime.catalog.crawler.period | quote}}
-            {{- end }}
-
-            {{- if .Values.runtime.catalog.crawler.initialDelay }}
-            - name: "EDC_CATALOG_CACHE_EXECUTION_DELAY_SECONDS"
-              value: {{ .Values.runtime.catalog.crawler.initialDelay | quote }}
-            {{- end }}
-
-            {{- if .Values.runtime.catalog.crawler.num }}
-            - name: "EDC_CATALOG_CACHE_PARTITION_NUM_CRAWLERS"
-              value: {{ .Values.runtime.catalog.crawler.num }}
-            {{- end }}
-
-            - name: "EDC_CATALOG_CACHE_EXECUTION_ENABLED"
-              value: {{ .Values.runtime.catalog.enabled | quote }}
-
-            - name: "TX_EDC_CATALOG_NODE_LIST_FILE"
-              value: {{ .Values.runtime.catalog.crawler.targetsFile }}
-
             ###################
             ## POLICY ENGINE ##
             ###################

@@ -52,10 +52,6 @@ public class RemoteParticipant extends IatpParticipant {
                 put("web.http.management.path", controlPlaneManagement.get().getPath());
                 put("web.http.control.port", String.valueOf(getFreePort()));
                 put("web.http.control.path", "/control");
-                put("web.http.catalog.port", String.valueOf(federatedCatalog.get().getPort()));
-                put("web.http.catalog.path", federatedCatalog.get().getPath());
-                put("web.http.catalog.auth.type", "tokenbased");
-                put("web.http.catalog.auth.key", MANAGEMENT_API_KEY);
                 put("edc.transfer.send.retry.limit", "1");
                 put("edc.transfer.send.retry.base-delay.ms", "100");
                 put("edc.dsp.callback.address", controlPlaneProtocol.get().toString());

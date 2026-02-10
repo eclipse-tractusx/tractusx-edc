@@ -302,32 +302,6 @@ spec:
               value: {{ .Values.vault.hashicorp.paths.folder | quote }}
             {{- end }}
 
-
-            ###############################
-            ## FEDERATED CATALOG CRAWLER ##
-            ###############################
-            {{- if .Values.controlplane.catalog.crawler.period }}
-            - name: "EDC_CATALOG_CACHE_EXECUTION_PERIOD_SECONDS"
-              value: {{ .Values.controlplane.catalog.crawler.period | quote}}
-            {{- end }}
-
-            {{- if .Values.controlplane.catalog.crawler.initialDelay }}
-            - name: "EDC_CATALOG_CACHE_EXECUTION_DELAY_SECONDS"
-              value: {{ .Values.controlplane.catalog.crawler.initialDelay | quote }}
-            {{- end }}
-
-            {{- if .Values.controlplane.catalog.crawler.num }}
-            - name: "EDC_CATALOG_CACHE_PARTITION_NUM_CRAWLERS"
-              value: {{ .Values.controlplane.catalog.crawler.num }}
-            {{- end }}
-
-            - name: "EDC_CATALOG_CACHE_EXECUTION_ENABLED"
-              value: {{ .Values.controlplane.catalog.enabled | quote }}
-
-            - name: "TX_EDC_CATALOG_NODE_LIST_FILE"
-              value: {{ .Values.controlplane.catalog.crawler.targetsFile }}
-
-
             ###################
             ## POLICY ENGINE ##
             ###################

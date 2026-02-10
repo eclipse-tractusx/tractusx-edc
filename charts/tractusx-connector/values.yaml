@@ -220,19 +220,6 @@ controlplane:
       # -- URL of the BPN/DID Resolution Service
       url:
 
-  # -- configuration for the built-in federated catalog crawler
-  catalog:
-    # -- Flag to globally enable/disable the FC feature
-    enabled: false
-    crawler:
-      # -- Number of desired crawlers. Final number might be different, based on number of crawl targets
-      num:
-      # -- Period between two crawl runs in seconds. Default is 60 seconds.
-      period:
-      # -- Initial delay for the crawling to start. Leave blank for a random delay
-      initialDelay:
-      # -- File path to a JSON file containing TargetNode entries
-      targetsFile:
   # -- configuration for policy engine
   policy:
     validation:
