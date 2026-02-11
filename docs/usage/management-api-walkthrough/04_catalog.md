@@ -174,7 +174,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
         "action": "use",
         "constraint": {
           "leftOperand": "FrameworkAgreement",
-          "operand": "eq",
+          "operator": "eq",
           "rightOperand": "DataExchangeGovernance:1.0"
         },
         "prohibition": [],
