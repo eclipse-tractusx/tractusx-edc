@@ -196,14 +196,6 @@ spec:
               value: {{ .Values.controlplane.endpoints.protocol.path | quote }}
             - name: "EDC_CONTROL_ENDPOINT"
               value: {{ include "txdc.controlplane.url.control" .}}
-            - name: "WEB_HTTP_CATALOG_PORT"
-              value: {{ .Values.controlplane.endpoints.catalog.port | quote }}
-            - name: "WEB_HTTP_CATALOG_PATH"
-              value: {{ .Values.controlplane.endpoints.catalog.path | quote }}
-            - name: "WEB_HTTP_CATALOG_AUTH_TYPE"
-              value: "tokenbased"
-            - name: "WEB_HTTP_CATALOG_AUTH_KEY"
-              value: {{ .Values.controlplane.endpoints.catalog.authKey | required ".Values.controlplane.endpoints.catalog.authKey is required" | quote }}
 
 
             #########

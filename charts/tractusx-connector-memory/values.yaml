@@ -207,14 +207,6 @@ runtime:
       # -- authentication key, must be attached to each request as `X-Api-Key` header
       authKey: "password"
 
-    catalog:
-      # -- port for incoming catalog cache query requests
-      port: 8085
-      # -- path for incoming catalog cache query requests
-      path: /catalog
-      # -- authentication key, must be attached to each request as `X-Api-Key` header
-      authKey: "password"
-
   token:
     refresh:
       # -- TTL in seconds for access tokens (also known as EDR token)

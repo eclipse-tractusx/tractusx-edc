@@ -210,14 +210,6 @@ spec:
               value: {{ .Values.runtime.endpoints.public.port | quote }}
             - name: "WEB_HTTP_PUBLIC_PATH"
               value: {{ .Values.runtime.endpoints.public.path | quote }}
-            - name: "WEB_HTTP_CATALOG_PORT"
-              value: {{ .Values.runtime.endpoints.catalog.port | quote }}
-            - name: "WEB_HTTP_CATALOG_PATH"
-              value: {{ .Values.runtime.endpoints.catalog.path | quote }}
-            - name: "WEB_HTTP_CATALOG_AUTH_TYPE"
-              value: "tokenbased"
-            - name: "WEB_HTTP_CATALOG_AUTH_KEY"
-              value: {{ .Values.runtime.endpoints.catalog.authKey | required ".Values.runtime.endpoints.catalog.authKey is required" | quote }}
 
             #########
             ## DSP ##
