@@ -32,6 +32,11 @@ on:
         required: true
         type: boolean
         default: false
+      previous_tag:
+        description: "Generate release notes starting from tag"
+        type: string
+        required: true
+        default: ""
 
 
 jobs:
@@ -48,6 +53,8 @@ jobs:
       update_main_branch_version: ${{ steps.update-main.outputs.update_main_branch_version }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Output release version
         id: release-version
         run: |
@@ -79,6 +86,10 @@ jobs:
             echo "This workflow can not be executed for SNAPSHOT versions."
             exit 1
           fi
+      - name: Validate previous_tag exists
+        run: |
+          git show-ref --tags --verify --quiet "refs/tags/${{ inputs.previous_tag }}" \
+            || (echo "Tag '${{ inputs.previous_tag }}' not found." && exit 1)
   
 
   # Release: Maven Artifacts
@@ -169,6 +180,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           generateReleaseNotes: true
+          generateReleaseNotesPreviousTag: ${{ inputs.previous_tag }}
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           makeLatest: ${{ inputs.latest }}
