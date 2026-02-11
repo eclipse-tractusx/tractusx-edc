@@ -37,9 +37,6 @@ dependencies {
     }
     runtimeOnly(libs.edc.bom.controlplane.dcp)
 
-    runtimeOnly(libs.edc.bom.federatedcatalog.base)
-    runtimeOnly(libs.edc.bom.federatedcatalog.dcp)
-
     implementation(project(":core:edr-core"))
     implementation(project(":core:json-ld-core"))
     implementation(project(":edc-extensions:log4j2-monitor"))
@@ -55,7 +52,6 @@ dependencies {
     implementation(project(":edc-extensions:dcp:verifiable-presentation-cache"))
     implementation(project(":edc-extensions:edr:edr-api-v2"))
     implementation(project(":edc-extensions:edr:edr-callback"))
-    implementation(project(":edc-extensions:federated-catalog"))
     implementation(project(":edc-extensions:provision-additional-headers"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:validators:empty-asset-selector"))
