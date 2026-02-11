@@ -153,11 +153,11 @@ public interface ConnectorDiscoveryV4AlphaApi {
                         "edc": "https://w3id.org/edc/v0.0.1/ns/",
                         "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
                     },
-                    "@type": "tx:ConnectorParamsDiscoveryRequest",
+                    "@type": "tx:ConnectorServiceDiscoveryRequest",
                     "edc:counterPartyId": "did:web:one-example.com",
                     "tx:knownConnectors": [
                         "https://provider.domain.com/conn1/api/dsp",
-                        "https://provider.domain.com/conn2/api/v1/dsp",
+                        "https://provider.domain.com/conn2/api/v1/dsp"
                     ]
                 }
                 """;
