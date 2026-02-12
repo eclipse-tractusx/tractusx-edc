@@ -27,9 +27,10 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.core.utils.PathUtils;
 import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauth2Client;
 import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClient;
+
+import java.net.URI;
 
 @Provides(DidDocumentServiceClient.class)
 public class DidDocumentServiceDimClientExtension implements ServiceExtension {
@@ -62,7 +63,7 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
                     httpClient,
                     dimOauth2Client,
                     typeManager.getMapper(),
-                    PathUtils.removeTrailingSlash(dimUrl),
+                    URI.create(dimUrl).getAuthority(),
                     ownDid,
                     monitor);
             context.registerService(DidDocumentServiceClient.class, client);

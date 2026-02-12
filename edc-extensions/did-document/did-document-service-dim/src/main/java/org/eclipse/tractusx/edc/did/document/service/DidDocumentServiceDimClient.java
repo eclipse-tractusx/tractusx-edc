@@ -91,13 +91,13 @@ public class DidDocumentServiceDimClient implements DidDocumentServiceClient {
     private final AtomicReference<String> companyIdentity = new AtomicReference<>();
 
     public DidDocumentServiceDimClient(EdcHttpClient httpClient,
-                                       DimOauth2Client dimOauth2Client, ObjectMapper mapper, String dimUrl, String ownDid, Monitor monitor) {
+                                       DimOauth2Client dimOauth2Client, ObjectMapper mapper, String dimHost, String ownDid, Monitor monitor) {
         this.httpClient = httpClient;
         this.dimOauth2Client = dimOauth2Client;
         this.mapper = mapper;
         this.ownDid = ownDid;
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
-        this.didDocApiUrl = String.join("", dimUrl, DID_DOC_API_PATH);
+        this.didDocApiUrl = String.join("", dimHost, DID_DOC_API_PATH);
     }
 
     @Override
