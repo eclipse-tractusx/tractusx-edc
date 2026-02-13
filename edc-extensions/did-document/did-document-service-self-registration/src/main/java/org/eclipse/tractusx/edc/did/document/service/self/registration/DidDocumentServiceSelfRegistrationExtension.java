@@ -80,7 +80,7 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
         var wellKnownUrl = String.join("", dspBaseAddress.get(), VERSION_METADATA_ENDPOINT_PATH);
         validatedServiceId(serviceId)
                 .onFailure(failure -> monitor.severe(failure.getFailureDetail()))
-                .map(serviceId -> new Service(serviceId, DATA_SERVICE_TYPE, wellKnownUrl))
+                .map(validatedServiceId -> new Service(validatedServiceId, DATA_SERVICE_TYPE, wellKnownUrl))
                 .onSuccess(service ->
                         client.update(service)
                                 .onFailure(failure -> monitor.severe("Failed to self-register DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
@@ -91,8 +91,8 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     private void selfUnregisterDidDocumentService(@NotNull DidDocumentServiceClient client) {
 
         validatedServiceId(serviceId)
-                .onSuccess(serviceId ->
-                        client.deleteById(serviceId)
+                .onSuccess(validatedServiceId ->
+                        client.deleteById(validatedServiceId)
                                 .onFailure(failure -> monitor.severe("Failed to unregister DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
                                 .onSuccess(result -> monitor.info("Successfully unregistered DID Document service"))
                 );
