@@ -2827,33 +2827,665 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
   /v4beta/policydefinitions/{id}/evaluationplan:
-    $ref: "./policy-definition-api.yaml#/paths/~1v4beta~1policydefinitions~1{id}~1evaluationplan"
+    post:
+      tags:
+      - Policy Definition v4beta
+      description: "Creates an execution plane for an existing Policy, If the Policy\
+        \ is not found, an error is reported"
+      operationId: createExecutionPlanV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/policy-evaluation-plan-request-schema"
+      responses:
+        "200":
+          description: Returns the evaluation plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/policy-evaluation-plan-schema"
+        "404":
+          description: "An evaluation plan could not be created, because the policy\
+            \ definition does not exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-error-schema"
   /v3/edrs/{transferProcessId}:
-    $ref: "./edr-api-v2.yaml#/paths/~1v3~1edrs~1{transferProcessId}"
+    delete:
+      tags:
+      - Control Plane EDR Api
+      description: Removes an EDR entry given the transfer process ID
+      operationId: removeEdrEntryV3
+      parameters:
+      - name: transferProcessId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: EDR entry was deleted successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: An EDR entry with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/policydefinitions:
-    $ref: ./policy-definition-api.yaml#/paths/~1v3~1policydefinitions
+    post:
+      tags:
+      - Policy Definition v3
+      description: Creates a new policy definition
+      operationId: createPolicyDefinitionV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PolicyDefinitionInputV3"
+      responses:
+        "200":
+          description: policy definition was created successfully. Returns the Policy
+            Definition Id and created timestamp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResponse"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "409":
+          description: "Could not create policy definition, because a contract definition\
+            \ with that ID already exists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/transferprocesses/{id}/resume:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1resume"
+    post:
+      tags:
+      - Transfer Process V3
+      description: "Requests the resumption of a suspended transfer process. Due to\
+        \ the asynchronous nature of transfers, a successful response only indicates\
+        \ that the request was successfully received. This may take a long time, so\
+        \ clients must poll the /{id}/state endpoint to track the state."
+      operationId: resumeTransferProcessV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Request to resume the transfer process was successfully received
+          links:
+            poll-state:
+              operationId: resumeTransferProcessV3
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: A transfer process with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/contractagreements/{id}/negotiation:
-    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}~1negotiation"
+    get:
+      tags:
+      - Contract Agreement V3
+      description: Gets a contract negotiation with the given contract agreement ID
+      operationId: getNegotiationByAgreementIdV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract negotiation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiation"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: An contract agreement with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/policydefinitions/{id}/validate:
-    $ref: "./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1{id}~1validate"
+    post:
+      tags:
+      - Policy Definition v3
+      description: "Validates an existing Policy, If the Policy is not found, an error\
+        \ is reported"
+      operationId: validatePolicyDefinitionV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Returns the validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyValidationResultSchemaV3"
+        "404":
+          description: "policy definition could not be validated, because it does\
+            \ not exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorDetail"
   /v4beta/contractdefinitions:
-    $ref: ./contract-definition-api.yaml#/paths/~1v4beta~1contractdefinitions
+    put:
+      tags:
+      - Contract Definition v4beta
+      description: Updated a contract definition with the given ID. The supplied JSON
+        structure must be a valid JSON-LD object
+      operationId: updateContractDefinitionV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contract-definition-schema"
+      responses:
+        "204":
+          description: Contract definition was updated successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: A contract definition with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+    post:
+      tags:
+      - Contract Definition v4beta
+      description: Creates a new contract definition
+      operationId: createContractDefinitionV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contract-definition-schema"
+      responses:
+        "200":
+          description: contract definition was created successfully. Returns the Contract
+            Definition Id and created timestamp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "Could not create contract definition, because a contract definition\
+            \ with that ID already exists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v4beta/policydefinitions/{id}:
-    $ref: "./policy-definition-api.yaml#/paths/~1v4beta~1policydefinitions~1{id}"
+    get:
+      tags:
+      - Policy Definition v4beta
+      description: Gets a policy definition with the given ID
+      operationId: getPolicyDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The  policy definition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/policy-definition-schema"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An  policy definition with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+    put:
+      tags:
+      - Policy Definition v4beta
+      description: "Updates an existing Policy, If the Policy is not found, an error\
+        \ is reported"
+      operationId: updatePolicyDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/policy-definition-schema"
+      responses:
+        "204":
+          description: policy definition was updated successfully.
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: "policy definition could not be updated, because it does not\
+            \ exists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/api-error-schema"
+    delete:
+      tags:
+      - Policy Definition v4beta
+      description: "Removes a policy definition with the given ID if possible. Deleting\
+        \ a policy definition is only possible if that policy definition is not yet\
+        \ referenced by a contract definition, in which case an error is returned.\
+        \ DANGER ZONE: Note that deleting policy definitions can have unexpected results,\
+        \ do this at your own risk!"
+      operationId: deletePolicyDefinitionV4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Policy definition was deleted successfully
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "404":
+          description: An policy definition with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+        "409":
+          description: "The policy definition cannot be deleted, because it is referenced\
+            \ by a contract definition"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractnegotiations/{id}:
-    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}"
+    get:
+      tags:
+      - Contract Negotiation V3
+      description: Gets a contract negotiation with the given ID
+      operationId: getNegotiationV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract negotiation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiation"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: An contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+    delete:
+      tags:
+      - Contract Negotiation V3
+      description: Deletes the contract negotiation with the given ID. Only terminated
+        negotiations without agreement will be deleted
+      operationId: deleteNegotiationV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ContractNegotiation is deleted
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: A contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "409":
+          description: The given contract negotiation cannot be deleted due to a wrong
+            state or has existing contract agreement
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v4beta/catalog/dataset/request:
-    $ref: ./catalog-api.yaml#/paths/~1v4beta~1catalog~1dataset~1request
+    post:
+      tags:
+      - Catalog v4beta
+      operationId: getDatasetV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/catalog-request-schema"
+      responses:
+        default:
+          description: Gets single dataset from a connector
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dataset-schema"
   /v3/transferprocesses:
-    $ref: ./transfer-process-api.yaml#/paths/~1v3~1transferprocesses
+    post:
+      tags:
+      - Transfer Process V3
+      description: "Initiates a data transfer with the given parameters. Due to the\
+        \ asynchronous nature of transfers, a successful response only indicates that\
+        \ the request was successfully received. This may take a long time, so clients\
+        \ must poll the /{id}/state endpoint to track the state."
+      operationId: initiateTransferProcessV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequestV3"
+      responses:
+        "200":
+          description: The transfer was successfully initiated. Returns the transfer
+            process ID and created timestamp
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResponse"
+          links:
+            poll-state:
+              operationId: getTransferProcessStateV3
+              parameters:
+                id: $response.body#/id
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /business-partner-groups/{bpn}:
-    $ref: "./bpn-validation-api.yaml#/paths/~1business-partner-groups~1{bpn}"
+    get:
+      tags:
+      - Business Partner Group
+      description: Resolves all groups for a particular BPN
+      operationId: resolveV1
+      parameters:
+      - name: bpn
+        in: path
+        description: The business partner number
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: An object containing an array with the assigned groups
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "404":
+          description: No entry for the given BPN was found
+      deprecated: true
+    delete:
+      tags:
+      - Business Partner Group
+      description: Deletes the entry for a particular BPN
+      operationId: deleteEntryV1
+      parameters:
+      - name: bpn
+        in: path
+        description: The business partner number
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The object was successfully deleted
+        "400":
+          description: Request body was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "404":
+          description: No entry for the given BPN was found
+      deprecated: true
   /v3/edrs/{transferProcessId}/refresh:
-    $ref: "./edr-api-v2.yaml#/paths/~1v3~1edrs~1{transferProcessId}~1refresh"
+    post:
+      tags:
+      - Control Plane EDR Api
+      description: Refreshes and returns the EDR data address with the given transfer
+        process ID
+      operationId: refreshEdrV3
+      parameters:
+      - name: transferProcessId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The data address
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataAddress"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: An EDR data address with the given transfer process ID does
+            not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
   /v3/contractnegotiations/{id}/state:
-    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1state"
+    get:
+      tags:
+      - Contract Negotiation V3
+      description: Gets the state of a contract negotiation with the given ID
+      operationId: getNegotiationStateV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The contract negotiation's state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NegotiationState"
+        "400":
+          description: "Request was malformed, e.g. id was null"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+        "404":
+          description: An contract negotiation with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
 components:
   schemas:
     AssetOutputV3:
@@ -2868,11 +3500,11 @@ components:
           type: integer
           format: int64
         dataAddress:
-          $ref: ./asset-api.yaml#/components/schemas/DataAddress
+          $ref: "#/components/schemas/DataAddress"
         privateProperties:
-          $ref: ./asset-api.yaml#/components/schemas/Properties
+          type: object
         properties:
-          $ref: ./asset-api.yaml#/components/schemas/Properties
+          type: object
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -2977,12 +3609,17 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         state:
           type: string
       example:
         state: state
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
     context-schema:
       title: ContextSchema
       type: array
@@ -3056,13 +3693,24 @@ components:
       title: AssetSchema
       type: object
       example:
-        dataAddress: "{}"
+        dataAddress:
+          '@type': '@type'
+          type: type
+          example: ""
         '@type': '@type'
-        dataplaneMetadata: "{}"
+        dataplaneMetadata:
+          '@type': '@type'
+          properties:
+            key: value
+          labels:
+          - labels
+          - labels
         '@id': '@id'
         privateProperties:
           privateKey: privateValue
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
         properties:
           key: value
       allOf:
@@ -3075,7 +3723,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -3089,12 +3740,16 @@ components:
           example:
             privateKey: privateValue
         dataAddress:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/data-address-schema.json
+          $ref: "#/components/schemas/data-address-schema"
         dataplaneMetadata:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/dataplane-metadata-schema.json
+          $ref: "#/components/schemas/dataplane-metadata-schema"
     data-address-schema:
       title: DataAddressSchema
       type: object
+      example:
+        '@type': '@type'
+        type: type
+        example: ""
       allOf:
       - $ref: "#/components/schemas/DataAddress_1"
     DataAddress_1:
@@ -3112,6 +3767,13 @@ components:
     dataplane-metadata-schema:
       title: DataplaneMetadataSchema
       type: object
+      example:
+        '@type': '@type'
+        properties:
+          key: value
+        labels:
+        - labels
+        - labels
       allOf:
       - $ref: "#/components/schemas/DataplaneMetadata"
     DataplaneMetadata:
@@ -3158,7 +3820,22 @@ components:
           type: integer
           format: int64
         policy:
-          $ref: ./contract-negotiation-api.yaml#/components/schemas/Policy
+          type: object
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
         providerId:
           type: string
       example:
@@ -3200,13 +3877,21 @@ components:
       example:
         accessPolicyId: accessPolicyId
         assetsSelector:
-        - "{}"
-        - "{}"
+        - operandRight: ""
+          '@type': '@type'
+          operandLeft: operandLeft
+          operator: operator
+        - operandRight: ""
+          '@type': '@type'
+          operandLeft: operandLeft
+          operator: operator
         '@type': '@type'
         contractPolicyId: contractPolicyId
         '@id': '@id'
         privateProperties: "{}"
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
       allOf:
       - $ref: "#/components/schemas/ContractDefinition"
     ContractDefinition:
@@ -3218,7 +3903,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -3232,7 +3920,7 @@ components:
         assetsSelector:
           type: array
           items:
-            $ref: https://w3id.org/edc/connector/management/schema/v4/query-spec-schema.json#/definitions/Criterion
+            $ref: "#/components/schemas/Criterion_1"
     Criterion_1:
       required:
       - '@type'
@@ -3248,6 +3936,11 @@ components:
         operandRight: {}
         operator:
           type: string
+      example:
+        operandRight: ""
+        '@type': '@type'
+        operandLeft: operandLeft
+        operator: operator
     query-spec-schema:
       title: QuerySpecSchema
       type: object
@@ -3261,7 +3954,7 @@ components:
       allOf:
       - properties:
           '@context':
-            $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+            $ref: "#/components/schemas/context-schema"
       - $ref: "#/components/schemas/QuerySpec_1"
     QuerySpec_1:
       required:
@@ -3286,7 +3979,7 @@ components:
         filterExpression:
           type: array
           items:
-            $ref: https://w3id.org/edc/connector/management/schema/v4/query-spec-schema.json#/definitions/Criterion
+            $ref: "#/components/schemas/Criterion_1"
     IdResponse:
       type: object
       properties:
@@ -3320,7 +4013,7 @@ components:
         counterPartyAddress:
           type: string
         policy:
-          $ref: ./contract-negotiation-api.yaml#/components/schemas/OfferV3
+          $ref: "#/components/schemas/OfferV3"
         protocol:
           type: string
       example:
@@ -3457,7 +4150,22 @@ components:
           type: integer
           format: int64
         policy:
-          $ref: ./contract-agreement-api.yaml#/components/schemas/Policy
+          type: object
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
         providerId:
           type: string
       example:
@@ -3510,7 +4218,9 @@ components:
         createdAt: 0.8008281904610115
         '@type': '@type'
         '@id': '@id'
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
       allOf:
       - $ref: "#/components/schemas/IdResponse_1"
     IdResponse_1:
@@ -3522,7 +4232,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -3581,8 +4294,90 @@ components:
         providerId: providerId
         consumerId: consumerId
         '@id': '@id'
-        '@context': "{}"
-        policy: "{}"
+        '@context':
+        - '@context'
+        - '@context'
+        policy:
+          obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          '@type': '@type'
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          assigner: assigner
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          '@id': '@id'
+          assignee: assignee
+          target: target
+          timestamp: timestamp
       allOf:
       - $ref: "#/components/schemas/ContractAgreement_2"
     ContractAgreement_2:
@@ -3598,7 +4393,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -3612,7 +4410,7 @@ components:
         contractSigningDate:
           type: integer
         policy:
-          $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Agreement
+          $ref: "#/components/schemas/Agreement"
     Agreement:
       required:
       - '@type'
@@ -3620,6 +4418,87 @@ components:
       - assigner
       - target
       type: object
+      example:
+        obligation:
+        - action: null
+          constraint:
+          - null
+          - null
+        - action: null
+          constraint:
+          - null
+          - null
+        '@type': '@type'
+        profile:
+        - PolicyClass_profile
+        - PolicyClass_profile
+        assigner: assigner
+        prohibition:
+        - action: action
+          constraint:
+          - null
+          - null
+        - action: action
+          constraint:
+          - null
+          - null
+        permission:
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        '@id': '@id'
+        assignee: assignee
+        target: target
+        timestamp: timestamp
       allOf:
       - $ref: "#/components/schemas/PolicyClass"
       - properties:
@@ -3662,6 +4541,33 @@ components:
             $ref: "#/components/schemas/Duty"
     Permission:
       type: object
+      example:
+        action: action
+        constraint:
+        - or:
+          - null
+          - null
+          andSequence:
+          - null
+          - null
+          and:
+          - null
+          - null
+          xone:
+          - null
+          - null
+        - or:
+          - null
+          - null
+          andSequence:
+          - null
+          - null
+          and:
+          - null
+          - null
+          xone:
+          - null
+          - null
       allOf:
       - $ref: "#/components/schemas/Rule"
     Rule:
@@ -3670,7 +4576,7 @@ components:
       type: object
       properties:
         action:
-          $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Action
+          type: string
         constraint:
           type: array
           items:
@@ -3702,6 +4608,19 @@ components:
           items:
             $ref: "#/components/schemas/Constraint"
       nullable: true
+      example:
+        or:
+        - null
+        - null
+        andSequence:
+        - null
+        - null
+        and:
+        - null
+        - null
+        xone:
+        - null
+        - null
     AtomicConstraint:
       required:
       - leftOperand
@@ -3710,11 +4629,11 @@ components:
       type: object
       properties:
         rightOperand:
-          $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/RightOperand
+          $ref: "#/components/schemas/RightOperand"
         leftOperand:
-          $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/LeftOperand
+          type: string
         operator:
-          $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Operator
+          $ref: "#/components/schemas/Operator"
     RightOperand:
       oneOf:
       - type: string
@@ -3743,10 +4662,20 @@ components:
       - neq
     Prohibition:
       type: object
+      example:
+        action: action
+        constraint:
+        - null
+        - null
       allOf:
       - $ref: "#/components/schemas/Rule"
     Duty:
       type: object
+      example:
+        action: null
+        constraint:
+        - null
+        - null
       allOf:
       - required:
         - action
@@ -3777,7 +4706,7 @@ components:
         counterPartyAddress:
           type: string
         policy:
-          $ref: ./edr-api-v2.yaml#/components/schemas/OfferV3
+          $ref: "#/components/schemas/OfferV3"
         protocol:
           type: string
       example:
@@ -3855,7 +4784,22 @@ components:
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
         policy:
-          $ref: ./policy-definition-api.yaml#/components/schemas/Policy
+          type: object
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -3886,10 +4830,18 @@ components:
         isSystemHealthy: true
         componentResults:
         - component: component
-          failure: "{}"
+          failure:
+            failureDetail: failureDetail
+            messages:
+            - messages
+            - messages
           isHealthy: true
         - component: component
-          failure: "{}"
+          failure:
+            failureDetail: failureDetail
+            messages:
+            - messages
+            - messages
           isHealthy: true
     HealthCheckResult:
       type: object
@@ -3897,12 +4849,16 @@ components:
         component:
           type: string
         failure:
-          $ref: ./api-observability.yaml#/components/schemas/Failure
+          $ref: "#/components/schemas/Failure"
         isHealthy:
           type: boolean
       example:
         component: component
-        failure: "{}"
+        failure:
+          failureDetail: failureDetail
+          messages:
+          - messages
+          - messages
         isHealthy: true
     Failure:
       type: object
@@ -3913,6 +4869,11 @@ components:
           type: array
           items:
             type: string
+      example:
+        failureDetail: failureDetail
+        messages:
+        - messages
+        - messages
     transfer-request-schema:
       title: TransferRequestSchema
       type: object
@@ -3929,7 +4890,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -3945,16 +4909,25 @@ components:
         privateProperties:
           type: object
         dataDestination:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/data-address-schema.json
+          $ref: "#/components/schemas/data-address-schema"
         callbackAddresses:
           type: array
           items:
-            $ref: https://w3id.org/edc/connector/management/schema/v4/callback-address-schema.json
+            $ref: "#/components/schemas/callback-address-schema"
         dataplaneMetadata:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/dataplane-metadata-schema.json
+          $ref: "#/components/schemas/dataplane-metadata-schema"
     callback-address-schema:
       title: CallbackAddressSchema
       type: object
+      example:
+        authKey: authKey
+        '@type': '@type'
+        authCodeId: authCodeId
+        uri: uri
+        transactional: true
+        events:
+        - events
+        - events
       allOf:
       - $ref: "#/components/schemas/CallbackAddress_1"
     CallbackAddress_1:
@@ -4028,16 +5001,41 @@ components:
         stateTimestamp: 0
         '@type': '@type'
         type: CONSUMER
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
         assetId: assetId
-        dataplaneMetadata: "{}"
+        dataplaneMetadata:
+          '@type': '@type'
+          properties:
+            key: value
+          labels:
+          - labels
+          - labels
         callbackAddresses:
-        - "{}"
-        - "{}"
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
         contractId: contractId
         transferType: transferType
         errorDetail: errorDetail
-        dataDestination: "{}"
+        dataDestination:
+          '@type': '@type'
+          type: type
+          example: ""
         correlationId: correlationId
         '@id': '@id'
         state: state
@@ -4054,7 +5052,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -4071,7 +5072,7 @@ components:
         callbackAddresses:
           type: array
           items:
-            $ref: https://w3id.org/edc/connector/management/schema/v4/callback-address-schema.json
+            $ref: "#/components/schemas/callback-address-schema"
         correlationId:
           type: string
         assetId:
@@ -4083,15 +5084,15 @@ components:
         errorDetail:
           type: string
         dataDestination:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/data-address-schema.json
+          $ref: "#/components/schemas/data-address-schema"
         dataplaneMetadata:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/dataplane-metadata-schema.json
+          $ref: "#/components/schemas/dataplane-metadata-schema"
     catalog-schema:
       title: CatalogSchema
       type: object
       example:
         participantId: participantId
-        '@context': "{}"
+        '@context': {}
       allOf:
       - $ref: "#/components/schemas/RootCatalog"
     RootCatalog:
@@ -4104,7 +5105,7 @@ components:
         type: object
         properties:
           '@context':
-            $ref: https://w3id.org/dspace/2025/1/common/context-schema.json
+            $ref: "#/components/schemas/context-schema_1"
           participantId:
             type: string
         example: null
@@ -4115,7 +5116,7 @@ components:
       - '@type'
       type: object
       allOf:
-      - $ref: https://w3id.org/dspace/2025/1/catalog/dataset-schema.json#/definitions/AbstractDataset
+      - $ref: "#/components/schemas/AbstractDataset"
       - properties:
           '@type':
             type: string
@@ -4123,7 +5124,7 @@ components:
             minItems: 1
             type: array
             items:
-              $ref: https://w3id.org/dspace/2025/1/catalog/dataset-schema.json#/definitions/Dataset
+              $ref: "#/components/schemas/Dataset"
           catalog:
             minItems: 1
             type: array
@@ -4133,7 +5134,7 @@ components:
             minItems: 1
             type: array
             items:
-              $ref: https://w3id.org/dspace/2025/1/catalog/dataset-schema.json#/definitions/DataService
+              $ref: "#/components/schemas/DataService"
       anyOf:
       - not:
           required:
@@ -4165,16 +5166,249 @@ components:
           minItems: 1
           type: array
           items:
-            $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Offer
+            $ref: "#/components/schemas/Offer"
         accessService:
           $ref: "#/components/schemas/Distribution_accessService"
         format:
           type: string
+      example:
+        hasPolicy:
+        - obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          '@type': '@type'
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          '@id': '@id'
+        - obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          '@type': '@type'
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          '@id': '@id'
+        accessService: Distribution_accessService
+        format: format
     Offer:
       type: object
       not:
         required:
         - target
+      example:
+        obligation:
+        - action: null
+          constraint:
+          - null
+          - null
+        - action: null
+          constraint:
+          - null
+          - null
+        '@type': '@type'
+        profile:
+        - PolicyClass_profile
+        - PolicyClass_profile
+        prohibition:
+        - action: action
+          constraint:
+          - null
+          - null
+        - action: action
+          constraint:
+          - null
+          - null
+        permission:
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        '@id': '@id'
       allOf:
       - $ref: "#/components/schemas/PolicyClass"
       - properties:
@@ -4210,12 +5444,13 @@ components:
             minItems: 1
             type: array
             items:
-              $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Offer
+              $ref: "#/components/schemas/Offer"
         example: null
       example: null
     context-schema_1:
       title: ContextSchema
       type: array
+      example: {}
       items:
         type: string
     catalog-request-schema:
@@ -4233,7 +5468,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -4249,14 +5487,16 @@ components:
           items:
             type: string
         querySpec:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/query-spec-schema.json#/definitions/QuerySpec
+          $ref: "#/components/schemas/QuerySpec_1"
     policy-validation-result-schema:
       title: PolicyValidationResultSchema
       type: object
       example:
         '@type': '@type'
         isValid: true
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
         errors:
         - errors
         - errors
@@ -4271,7 +5511,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         isValid:
@@ -4288,14 +5531,30 @@ components:
         '@type': '@type'
         counterPartyId: counterPartyId
         type: CONSUMER
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
         counterPartyAddress: counterPartyAddress
         createdAt: 6
         protocol: protocol
         assetId: assetId
         callbackAddresses:
-        - "{}"
-        - "{}"
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
         errorDetail: errorDetail
         contractAgreementId: contractAgreementId
         correlationId: correlationId
@@ -4317,7 +5576,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -4338,7 +5600,7 @@ components:
         callbackAddresses:
           type: array
           items:
-            $ref: https://w3id.org/edc/connector/management/schema/v4/callback-address-schema.json
+            $ref: "#/components/schemas/callback-address-schema"
         counterPartyAddress:
           type: string
         counterPartyId:
@@ -4359,12 +5621,17 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         state:
           type: string
       example:
         state: state
-        '@context': "{}"
+        '@context':
+        - '@context'
+        - '@context'
     transfer-suspend-schema:
       title: TransferSuspendSchema
       type: object
@@ -4377,7 +5644,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         reason:
@@ -4397,11 +5667,11 @@ components:
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/Asset
         dataAddress:
-          $ref: ./asset-api.yaml#/components/schemas/DataAddress
+          $ref: "#/components/schemas/DataAddress"
         privateProperties:
-          $ref: ./asset-api.yaml#/components/schemas/Properties
+          type: object
         properties:
-          $ref: ./asset-api.yaml#/components/schemas/Properties
+          type: object
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -4425,7 +5695,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         reason:
@@ -4457,7 +5730,22 @@ components:
           type: string
           example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
         policy:
-          $ref: ./policy-definition-api.yaml#/components/schemas/Policy
+          type: object
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -4546,7 +5834,7 @@ components:
         protocol:
           type: string
         querySpec:
-          $ref: ./catalog-api.yaml#/components/schemas/QuerySpec
+          $ref: "#/components/schemas/QuerySpec"
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -4588,7 +5876,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         reason:
@@ -4656,8 +5947,85 @@ components:
         '@id': '@id'
         privateProperties:
           privateKey: privateValue
-        '@context': "{}"
-        policy: "{}"
+        '@context':
+        - '@context'
+        - '@context'
+        policy:
+          '@type': '@type'
+          obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
       allOf:
       - $ref: "#/components/schemas/PolicyDefinition"
     PolicyDefinition:
@@ -4668,13 +6036,16 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
           type: string
         policy:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/policy-definition-schema.json#/definitions/PolicyClass
+          $ref: "#/components/schemas/PolicyClass_1"
         privateProperties:
           type: object
           example:
@@ -4692,17 +6063,93 @@ components:
           minItems: 1
           type: array
           items:
-            $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Permission
+            $ref: "#/components/schemas/Permission"
         prohibition:
           minItems: 1
           type: array
           items:
-            $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Prohibition
+            $ref: "#/components/schemas/Prohibition"
         obligation:
           minItems: 1
           type: array
           items:
-            $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/Duty
+            $ref: "#/components/schemas/Duty"
+      example:
+        '@type': '@type'
+        obligation:
+        - action: null
+          constraint:
+          - null
+          - null
+        - action: null
+          constraint:
+          - null
+          - null
+        profile:
+        - PolicyClass_profile
+        - PolicyClass_profile
+        prohibition:
+        - action: action
+          constraint:
+          - null
+          - null
+        - action: action
+          constraint:
+          - null
+          - null
+        permission:
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        - action: action
+          constraint:
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - or:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            and:
+            - null
+            - null
+            xone:
+            - null
+            - null
     DataPlaneInstanceSchemaV3:
       required:
       - '@context'
@@ -4800,7 +6247,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         '@id':
@@ -4810,11 +6260,11 @@ components:
         protocol:
           type: string
         policy:
-          $ref: https://w3id.org/edc/connector/management/schema/v4/contract-offer-schema.json
+          $ref: "#/components/schemas/contract-offer-schema"
         callbackAddresses:
           type: array
           items:
-            $ref: https://w3id.org/edc/connector/management/schema/v4/callback-address-schema.json
+            $ref: "#/components/schemas/callback-address-schema"
     contract-offer-schema:
       title: ContractOfferSchema
       type: object
@@ -4826,7 +6276,7 @@ components:
       - target
       type: object
       allOf:
-      - $ref: https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/MessageOffer
+      - $ref: "#/components/schemas/MessageOffer"
       - properties:
           assigner:
             type: string
@@ -4895,7 +6345,7 @@ components:
         protocol:
           type: string
         querySpec:
-          $ref: ./catalog-api.yaml#/components/schemas/QuerySpec
+          $ref: "#/components/schemas/QuerySpec"
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
@@ -4923,11 +6373,11 @@ components:
         counterPartyId:
           type: string
         dataDestination:
-          $ref: ./transfer-process-api.yaml#/components/schemas/DataAddress
+          $ref: "#/components/schemas/DataAddress"
         errorDetail:
           type: string
         privateProperties:
-          $ref: ./transfer-process-api.yaml#/components/schemas/Properties
+          type: object
         protocol:
           type: string
         state:
@@ -4979,6 +6429,144 @@ components:
     policy-evaluation-plan-schema:
       title: PolicyEvaluationPlanSchema
       type: object
+      example:
+        '@type': '@type'
+        preValidators:
+        - preValidators
+        - preValidators
+        permissionSteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          dutySteps:
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          isFiltered: true
+          constraintSteps:
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          dutySteps:
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          - ruleFunctions:
+            - ruleFunctions
+            - ruleFunctions
+            filteringReasons:
+            - filteringReasons
+            - filteringReasons
+            '@type': '@type'
+            isFiltered: true
+            constraintSteps:
+            - null
+            - null
+          isFiltered: true
+          constraintSteps:
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+          - '@type': '@type'
+            constraintSteps:
+            - null
+            - null
+        dutySteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        prohibitionSteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        '@context':
+        - '@context'
+        - '@context'
+        postValidators:
+        - postValidators
+        - postValidators
       allOf:
       - $ref: "#/components/schemas/PolicyEvaluationPlan"
     PolicyEvaluationPlan:
@@ -4988,7 +6576,10 @@ components:
       type: object
       properties:
         '@context':
-          $ref: https://w3id.org/edc/connector/management/schema/v4/context-schema.json
+          title: ContextSchema
+          type: array
+          items:
+            type: string
         '@type':
           type: string
         preValidators:
@@ -5015,6 +6606,47 @@ components:
       required:
       - '@type'
       type: object
+      example:
+        ruleFunctions:
+        - ruleFunctions
+        - ruleFunctions
+        filteringReasons:
+        - filteringReasons
+        - filteringReasons
+        '@type': '@type'
+        dutySteps:
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        - ruleFunctions:
+          - ruleFunctions
+          - ruleFunctions
+          filteringReasons:
+          - filteringReasons
+          - filteringReasons
+          '@type': '@type'
+          isFiltered: true
+          constraintSteps:
+          - null
+          - null
+        isFiltered: true
+        constraintSteps:
+        - '@type': '@type'
+          constraintSteps:
+          - null
+          - null
+        - '@type': '@type'
+          constraintSteps:
+          - null
+          - null
       allOf:
       - $ref: "#/components/schemas/RuleStep"
       - properties:
@@ -5051,6 +6683,11 @@ components:
       required:
       - '@type'
       type: object
+      example:
+        '@type': '@type'
+        constraintSteps:
+        - null
+        - null
       allOf:
       - $ref: "#/components/schemas/MultiplicityConstraintStep"
       - properties:
@@ -5106,6 +6743,18 @@ components:
       required:
       - '@type'
       type: object
+      example:
+        ruleFunctions:
+        - ruleFunctions
+        - ruleFunctions
+        filteringReasons:
+        - filteringReasons
+        - filteringReasons
+        '@type': '@type'
+        isFiltered: true
+        constraintSteps:
+        - null
+        - null
       allOf:
       - $ref: "#/components/schemas/RuleStep"
       - properties:
@@ -5115,11 +6764,603 @@ components:
       required:
       - '@type'
       type: object
+      example:
+        ruleFunctions:
+        - ruleFunctions
+        - ruleFunctions
+        filteringReasons:
+        - filteringReasons
+        - filteringReasons
+        '@type': '@type'
+        isFiltered: true
+        constraintSteps:
+        - null
+        - null
       allOf:
       - $ref: "#/components/schemas/RuleStep"
       - properties:
           '@type':
             type: string
+    policy-evaluation-plan-request-schema:
+      title: PolicyEvaluationPlanRequestSchema
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/PolicyEvaluationPlanRequest"
+    PolicyEvaluationPlanRequest:
+      required:
+      - '@context'
+      - '@type'
+      - policyScope
+      type: object
+      properties:
+        '@context':
+          title: ContextSchema
+          type: array
+          items:
+            type: string
+        '@type':
+          type: string
+        policyScope:
+          type: string
+    PolicyValidationResultSchemaV3:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        isValid:
+          type: boolean
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': PolicyValidationResult
+        isValid: false
+        errors:
+        - error1
+        - error2
+    dataset-schema:
+      title: DatasetSchema
+      type: object
+      example:
+        hasPolicy:
+        - obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          '@type': '@type'
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          '@id': '@id'
+        - obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
+          '@type': '@type'
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          permission:
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - or:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              and:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          '@id': '@id'
+        '@id': '@id'
+        distribution:
+        - hasPolicy:
+          - obligation:
+            - action: null
+              constraint:
+              - null
+              - null
+            - action: null
+              constraint:
+              - null
+              - null
+            '@type': '@type'
+            profile:
+            - PolicyClass_profile
+            - PolicyClass_profile
+            prohibition:
+            - action: action
+              constraint:
+              - null
+              - null
+            - action: action
+              constraint:
+              - null
+              - null
+            permission:
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            '@id': '@id'
+          - obligation:
+            - action: null
+              constraint:
+              - null
+              - null
+            - action: null
+              constraint:
+              - null
+              - null
+            '@type': '@type'
+            profile:
+            - PolicyClass_profile
+            - PolicyClass_profile
+            prohibition:
+            - action: action
+              constraint:
+              - null
+              - null
+            - action: action
+              constraint:
+              - null
+              - null
+            permission:
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            '@id': '@id'
+          accessService: Distribution_accessService
+          format: format
+        - hasPolicy:
+          - obligation:
+            - action: null
+              constraint:
+              - null
+              - null
+            - action: null
+              constraint:
+              - null
+              - null
+            '@type': '@type'
+            profile:
+            - PolicyClass_profile
+            - PolicyClass_profile
+            prohibition:
+            - action: action
+              constraint:
+              - null
+              - null
+            - action: action
+              constraint:
+              - null
+              - null
+            permission:
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            '@id': '@id'
+          - obligation:
+            - action: null
+              constraint:
+              - null
+              - null
+            - action: null
+              constraint:
+              - null
+              - null
+            '@type': '@type'
+            profile:
+            - PolicyClass_profile
+            - PolicyClass_profile
+            prohibition:
+            - action: action
+              constraint:
+              - null
+              - null
+            - action: action
+              constraint:
+              - null
+              - null
+            permission:
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            - action: action
+              constraint:
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+              - or:
+                - null
+                - null
+                andSequence:
+                - null
+                - null
+                and:
+                - null
+                - null
+                xone:
+                - null
+                - null
+            '@id': '@id'
+          accessService: Distribution_accessService
+          format: format
+        '@context': {}
+      allOf:
+      - $ref: "#/components/schemas/RootDataset"
+    RootDataset:
+      type: object
+      allOf:
+      - $ref: "#/components/schemas/Dataset"
+      - required:
+        - '@context'
+        type: object
+        properties:
+          '@context':
+            $ref: "#/components/schemas/context-schema_1"
+        example: null
+      example: null
+    TransferRequestV3:
+      required:
+      - '@context'
+      - contractId
+      - counterPartyAddress
+      - protocol
+      - transferType
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        assetId:
+          type: string
+          deprecated: true
+        callbackAddresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/CallbackAddress"
+        contractId:
+          type: string
+        counterPartyAddress:
+          type: string
+        dataDestination:
+          $ref: "#/components/schemas/DataAddress"
+        privateProperties:
+          type: object
+        protocol:
+          type: string
+        transferType:
+          type: string
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        protocol: dataspace-protocol-http
+        counterPartyAddress: http://provider-address
+        contractId: contract-id
+        transferType: transferType
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        callbackAddresses:
+        - transactional: false
+          uri: http://callback/url
+          events:
+          - contract.negotiation
+          - transfer.process
+          authKey: auth-key
+          authCodeId: auth-code-id
+    NegotiationState_1:
+      type: object
+      properties:
+        state:
+          type: string
     initiateEdrNegotiationV3_request:
       type: object
       properties:
