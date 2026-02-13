@@ -63,10 +63,15 @@ public class DidDocumentServiceDimClientExtension implements ServiceExtension {
                     httpClient,
                     dimOauth2Client,
                     typeManager.getMapper(),
-                    URI.create(dimUrl).getAuthority(),
+                    getHostWithScheme(dimUrl),
                     ownDid,
                     monitor);
             context.registerService(DidDocumentServiceClient.class, client);
         }
+    }
+
+    private String getHostWithScheme(String url) {
+        var uri = URI.create(url);
+        return "%s://%s".formatted(uri.getScheme(), uri.getAuthority());
     }
 }
