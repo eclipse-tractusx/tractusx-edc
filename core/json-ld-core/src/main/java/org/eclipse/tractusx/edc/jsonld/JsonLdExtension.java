@@ -83,7 +83,7 @@ public class JsonLdExtension implements ServiceExtension {
         jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, DSP_SCOPE_V_2025_1);
         jsonLdService.registerContext(CX_ODRL_CONTEXT, DSP_SCOPE_V_2025_1);
 
-        jsonLdService.registerContext(TX_AUTH_CONTEXT, MANAGEMENT_SCOPE);
+        jsonLdService.registerNamespace(TX_AUTH_PREFIX, TX_AUTH_NS, MANAGEMENT_SCOPE);
         jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, MANAGEMENT_SCOPE);
 
         FILES.entrySet().stream().map(this::mapToFile)
