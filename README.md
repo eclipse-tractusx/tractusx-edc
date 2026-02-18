@@ -62,6 +62,10 @@ Build Tractus-X EDC together with its Container Images
   - [Internal Issue](https://github.com/eclipse-tractusx/tractusx-edc/issues/1772)
   - [Hashicorp Vault Issue](https://github.com/hashicorp/vault/issues/29357)
 
+
+## Contributing
+See [CONTRIBUTING](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/CONTRIBUTING.md).
+
 ## License
 
 Distributed under the Apache 2.0 License.
