@@ -48,12 +48,9 @@ runs:
           find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ steps.resolver.outputs.version }}" 
             | .version = "${{ steps.resolver.outputs.version }}"'
     - name: Update Chart READMEs
-      uses: addnab/docker-run-action@v3
-      with:
-        image: jnorwood/helm-docs:v1.10.0
-        options: -v ${{ github.workspace }}/charts:/helm-docs
-        run: |
-          helm-docs --log-level debug
+      shell: bash
+      run: |
+          docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
     - name: Update version in gradle.properties
       shell: bash
       run: |-
