@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.jsonld;
+package org.eclipse.tractusx.edc.cx;
 
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -38,28 +38,20 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_SCOPE;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDC_CONTEXT;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_PREFIX;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_PREFIX;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_PREFIX;
 
-public class JsonLdExtension implements ServiceExtension {
+public class CxJsonLdExtension implements ServiceExtension {
 
-    public static final String CREDENTIALS_V_1 = "https://www.w3.org/2018/credentials/v1";
-
-    public static final String SECURITY_JWS_V1 = "https://w3id.org/security/suites/jws-2020/v1";
-    public static final String SECURITY_ED25519_V1 = "https://w3id.org/security/suites/ed25519-2020/v1";
-
-    public static final String TX_AUTH_CONTEXT = "https://w3id.org/tractusx/auth/v1.0.0";
+    @Deprecated(since = "0.11.0")
+    public static final String CX_POLICY_CONTEXT = "https://w3id.org/tractusx/policy/v1.0.0";
+    public static final String CX_ODRL_CONTEXT = "https://w3id.org/catenax/2025/9/policy/odrl.jsonld";
+    public static final String CX_POLICY_2025_09_CONTEXT = "https://w3id.org/catenax/2025/9/policy/context.jsonld";
 
     private static final String PREFIX = "document" + File.separator;
     private static final Map<String, String> FILES = Map.of(
-            CREDENTIALS_V_1, PREFIX + "credential-v1.jsonld",
-            SECURITY_JWS_V1, PREFIX + "security-jws-2020.jsonld",
-            SECURITY_ED25519_V1, PREFIX + "security-ed25519-2020.jsonld",
-            TX_AUTH_CONTEXT, PREFIX + "tx-auth-v1.jsonld",
-            EDC_CONTEXT, PREFIX + "edc-v1.jsonld");
+            CX_POLICY_2025_09_CONTEXT, PREFIX + "cx-policy-v1.jsonld",
+            CX_ODRL_CONTEXT, PREFIX + "cx-odrl.jsonld");
     @Inject
     private JsonLd jsonLdService;
 
@@ -68,12 +60,12 @@ public class JsonLdExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        jsonLdService.registerNamespace(TX_PREFIX, TX_NAMESPACE, DSP_SCOPE_V_08);
-        jsonLdService.registerNamespace(TX_AUTH_PREFIX, TX_AUTH_NS, DSP_SCOPE_V_08);
+        jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_NS, DSP_SCOPE_V_08);
 
-        jsonLdService.registerContext(TX_AUTH_CONTEXT, DSP_SCOPE_V_2025_1);
+        jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, DSP_SCOPE_V_2025_1);
+        jsonLdService.registerContext(CX_ODRL_CONTEXT, DSP_SCOPE_V_2025_1);
 
-        jsonLdService.registerNamespace(TX_AUTH_PREFIX, TX_AUTH_NS, MANAGEMENT_SCOPE);
+        jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, MANAGEMENT_SCOPE);
 
         FILES.entrySet().stream().map(this::mapToFile)
                 .forEach(result -> result.onSuccess(entry -> jsonLdService.registerCachedDocument(entry.getKey(), entry.getValue().toURI()))
