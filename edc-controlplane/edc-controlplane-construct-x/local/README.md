@@ -98,6 +98,13 @@ are interested
 in a more detailed explanation of these interactions, please see
 the [EDC Samples](https://github.com/eclipse-edc/Samples/tree/main/transfer).
 
+NOTE: The requests in the `transactions/consumer` folder are definitely not suited for being run in batch mode. Instead, 
+especially before you run the `InitiateNegotiation` or the `Get EDR` requests, it is strongly recommended that you make sure 
+that a healthy timespan (like 2 seconds) lies between them and the respective previous request. This is because the 
+EDC controlplane needs some time to complete the negotiation process respectively retrieve the EDR token from the provider side. 
+
+
+### Clean restart
 When you're done testing and want to end your session (using 'CTRL-C' on the terminal, where you started docker
 compose),
 you may want to run

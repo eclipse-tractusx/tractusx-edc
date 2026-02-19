@@ -20,8 +20,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-set -euo pipefail
-
 VAULT="${VAULT_ADDR:-http://shared-vault:8200}"
 TOKEN="${VAULT_TOKEN:?missing VAULT_TOKEN}"
 
