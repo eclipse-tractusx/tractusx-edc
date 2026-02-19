@@ -196,14 +196,6 @@ spec:
               value: {{ .Values.controlplane.endpoints.protocol.path | quote }}
             - name: "EDC_CONTROL_ENDPOINT"
               value: {{ include "txdc.controlplane.url.control" .}}
-            - name: "WEB_HTTP_CATALOG_PORT"
-              value: {{ .Values.controlplane.endpoints.catalog.port | quote }}
-            - name: "WEB_HTTP_CATALOG_PATH"
-              value: {{ .Values.controlplane.endpoints.catalog.path | quote }}
-            - name: "WEB_HTTP_CATALOG_AUTH_TYPE"
-              value: "tokenbased"
-            - name: "WEB_HTTP_CATALOG_AUTH_KEY"
-              value: {{ .Values.controlplane.endpoints.catalog.authKey | required ".Values.controlplane.endpoints.catalog.authKey is required" | quote }}
 
 
             #########
@@ -301,32 +293,6 @@ spec:
             - name: "EDC_VAULT_HASHICORP_FOLDER"
               value: {{ .Values.vault.hashicorp.paths.folder | quote }}
             {{- end }}
-
-
-            ###############################
-            ## FEDERATED CATALOG CRAWLER ##
-            ###############################
-            {{- if .Values.controlplane.catalog.crawler.period }}
-            - name: "EDC_CATALOG_CACHE_EXECUTION_PERIOD_SECONDS"
-              value: {{ .Values.controlplane.catalog.crawler.period | quote}}
-            {{- end }}
-
-            {{- if .Values.controlplane.catalog.crawler.initialDelay }}
-            - name: "EDC_CATALOG_CACHE_EXECUTION_DELAY_SECONDS"
-              value: {{ .Values.controlplane.catalog.crawler.initialDelay | quote }}
-            {{- end }}
-
-            {{- if .Values.controlplane.catalog.crawler.num }}
-            - name: "EDC_CATALOG_CACHE_PARTITION_NUM_CRAWLERS"
-              value: {{ .Values.controlplane.catalog.crawler.num }}
-            {{- end }}
-
-            - name: "EDC_CATALOG_CACHE_EXECUTION_ENABLED"
-              value: {{ .Values.controlplane.catalog.enabled | quote }}
-
-            - name: "TX_EDC_CATALOG_NODE_LIST_FILE"
-              value: {{ .Values.controlplane.catalog.crawler.targetsFile }}
-
 
             ###################
             ## POLICY ENGINE ##

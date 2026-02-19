@@ -25,6 +25,5 @@ This extension applies SQL migrations to these stores:
 | tx.edc.postgresql.migration.agreementretirement.enabled | Enable migration for agreement retirement tables    |           | true     |
 | tx.edc.postgresql.migration.bpn.enabled                 | Enable migration for business partner group tables  |           | true     |
 | tx.edc.postgresql.migration.dataplaneinstance.enabled   | Enable migration for dataplane instance tables      |           | true     |
-| tx.edc.postgresql.migration.federatedcatalog.enabled    | Enable migration for federated catalog tables       |           | true     |
 | tx.edc.postgresql.migration.jti-validation.enabled      | Enable migration for jti-validation tables          |           | true     |
 | tx.edc.postgresql.migration.schema                      | The DB schema to be used during migration           |           | "public" |
