@@ -1,5 +1,6 @@
 #################################################################################
-#  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2026 SAP SE
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -17,33 +18,4 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-
----
-name: Publish JSON-LD context
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'core/json-ld-core/src/main/resources/document/**'
-      - 'core/cx-json-ld/src/main/resources/document/**'
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
-    steps:
-      - uses: actions/checkout@v6
-      - name: copy contexts into public folder
-        run: |
-          mkdir -p public/context
-          cp core/json-ld-core/src/main/resources/document/tx-auth-v1.jsonld public/context/
-
-      - name: deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          keep_files: true
+org.eclipse.tractusx.edc.cx.CxJsonLdExtension

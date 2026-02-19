@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.edc.bom.identityhub)
     implementation(project(":edc-extensions:single-participant-vault"))
     implementation(project(":core:json-ld-core"))
+    implementation(project(":core:cx-json-ld"))
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))
 
     implementation(libs.edc.iam.mock)
