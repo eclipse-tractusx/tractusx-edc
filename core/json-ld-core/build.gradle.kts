@@ -23,6 +23,7 @@ plugins {
 
 dependencies {
     implementation(project(":spi:core-spi"))
+    implementation(project(":core:core-utils"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.jsonld)
     implementation(libs.dsp.spi.v2025)
