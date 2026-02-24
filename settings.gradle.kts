@@ -60,7 +60,7 @@ include(":spi:did-document-service-spi")
 // core modules
 include(":core:edr-core")
 include(":core:json-ld-core")
-include(":core:cx-json-ld")
+include(":core:json-ld-cx")
 include(":core:core-utils")
 
 // extensions - control plane
