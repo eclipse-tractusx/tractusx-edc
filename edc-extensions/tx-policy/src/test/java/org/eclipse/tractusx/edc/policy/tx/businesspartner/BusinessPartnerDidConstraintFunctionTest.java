@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 class BusinessPartnerDidConstraintFunctionTest {
 
-    private static final String TEST_DID = "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL00000003CRHK";
+    private static final String TEST_DID = "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000003CRHK";
     private static final String OTHER_DID = "did:web:other.example.com";
 
     private final ParticipantAgent participantAgent = mock();
@@ -63,7 +63,7 @@ class BusinessPartnerDidConstraintFunctionTest {
     }
 
     @Test
-    void evaluate_isAnyOf_whenOneOfMultipleDidsMatches_thenTrue() {
+    void evaluate_isAnyOf_whenOneOfMultipleDidMatches_thenTrue() {
         var rightValue = List.of(
                 Map.of("@value", Map.of("string", OTHER_DID)),
                 Map.of("@value", Map.of("string", TEST_DID))
@@ -106,10 +106,10 @@ class BusinessPartnerDidConstraintFunctionTest {
         assertThat(context.getProblems()).anyMatch(p -> p.contains("not supported"));
     }
 
-    // ─── validate() ──────────────────────────────────────────────────────────
+    // ─── verify() ────────────────────────────────────────────────────────────
 
     @Test
-    void validate_whenIsAnyOfAndValidDids_thenSuccess() {
+    void verify_whenIsAnyOfAndValidDids_thenSuccess() {
         var did1 = Json.createValue(TEST_DID);
         var did2 = Json.createValue(OTHER_DID);
         var rightValue = List.of(Map.of("@value", did1), Map.of("@value", did2));
@@ -118,22 +118,22 @@ class BusinessPartnerDidConstraintFunctionTest {
     }
 
     @Test
-    void validate_whenIsNoneOfAndValidDid_thenSuccess() {
+    void verify_whenIsNoneOfAndValidDid_thenSuccess() {
         var did1 = Json.createValue(TEST_DID);
         assertThat(function.validate(Operator.IS_NONE_OF, List.of(Map.of("@value", did1)), null).succeeded()).isTrue();
     }
 
     @Test
-    void validate_whenRightValueIsNotADid_thenFailure() {
-        var notADid = Json.createValue("BPNL00000000001A");
-        var result = function.validate(Operator.IS_ANY_OF, List.of(Map.of("@value", notADid)), null);
+    void verify_whenRightValueIsNotValidDid_thenFailure() {
+        var invalidDid = Json.createValue("BPNL00000000001A");
+        var result = function.validate(Operator.IS_ANY_OF, List.of(Map.of("@value", invalidDid)), null);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid right-operand");
     }
 
     @Test
-    void validate_whenInvalidOperator_thenFailure() {
+    void verify_whenInvalidOperator_thenFailure() {
         var result = function.validate(Operator.EQ, List.of(TEST_DID), null);
 
         assertThat(result.failed()).isTrue();
