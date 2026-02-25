@@ -64,7 +64,7 @@ policies are enforced.
     "@type": "Set",
     "permission": [
       {
-        "action": "use",
+        "action": "access",
         "constraint": {
           "leftOperand": "tx:BusinessPartnerDID",
           "operator": "isAnyOf",
@@ -94,7 +94,7 @@ Provide a JSON array as the `rightOperand` to allow more than one counterparty:
     "@type": "Set",
     "permission": [
       {
-        "action": "use",
+        "action": "access",
         "constraint": {
           "leftOperand": "tx:BusinessPartnerDID",
           "operator": "isAnyOf",
