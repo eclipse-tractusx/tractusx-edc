@@ -68,7 +68,7 @@ policies are enforced.
         "constraint": {
           "leftOperand": "tx:BusinessPartnerDID",
           "operator": "isAnyOf",
-          "rightOperand": "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL00000003CRHK"
+          "rightOperand": "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000003CRHK"
         }
       }
     ]
@@ -99,8 +99,8 @@ Provide a JSON array as the `rightOperand` to allow more than one counterparty:
           "leftOperand": "tx:BusinessPartnerDID",
           "operator": "isAnyOf",
           "rightOperand": [
-            "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL00000003CRHK",
-            "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL00000000001A"
+            "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000003CRHK",
+            "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000000001A"
           ]
         }
       }
@@ -118,7 +118,7 @@ Use `isNoneOf` to deny access to a specific DID while allowing everyone else:
   "constraint": {
     "leftOperand": "tx:BusinessPartnerDID",
     "operator": "isNoneOf",
-    "rightOperand": "did:web:portal-backend.int.catena-x.net:api:administration:staticdata:did:BPNL00000003CRHK"
+    "rightOperand": "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000003CRHK"
   }
 }
 ```
