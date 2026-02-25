@@ -56,7 +56,7 @@ policies are enforced.
    "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
      "https://w3id.org/catenax/2025/9/policy/context.jsonld",
      {
-         "tx": "https://w3id.org/tractusx/policy/v2.0.0",
+         "tx-policy": "https://w3id.org/tractusx/policy/v2.0.0",
          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
      }
   ],
@@ -88,7 +88,7 @@ Provide a JSON array as the `rightOperand` to allow more than one counterparty:
      "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
      "https://w3id.org/catenax/2025/9/policy/context.jsonld",
      {
-         "tx": "https://w3id.org/tractusx/policy/v2.0.0",
+         "tx-policy": "https://w3id.org/tractusx/policy/v2.0.0",
          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
      }
   ],
@@ -100,7 +100,7 @@ Provide a JSON array as the `rightOperand` to allow more than one counterparty:
       {
         "action": "access",
         "constraint": {
-          "leftOperand": "tx:BusinessPartnerDID",
+          "leftOperand": "tx-policy:BusinessPartnerDID",
           "operator": "isAnyOf",
           "rightOperand": [
             "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000003CRHK",
@@ -120,7 +120,7 @@ Use `isNoneOf` to deny access to a specific DID while allowing everyone else:
 ```json
 {
   "constraint": {
-    "leftOperand": "tx:BusinessPartnerDID",
+    "leftOperand": "tx-policy:BusinessPartnerDID",
     "operator": "isNoneOf",
     "rightOperand": "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000003CRHK"
   }
