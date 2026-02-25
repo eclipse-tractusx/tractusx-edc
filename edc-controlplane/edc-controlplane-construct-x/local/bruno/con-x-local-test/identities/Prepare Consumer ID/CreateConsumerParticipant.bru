@@ -23,11 +23,11 @@ body:json {
         "serviceEndpoint": "http://consumer-idhub:13131/api/credentials/v1/participants/{{B64_CONS_ID}}"
       }],
       "active": true,
-      "participantContextId": "did:web:consumer-idhub:user:consumer",
-      "did": "did:web:consumer-idhub:user:consumer",
+      "participantContextId": "{{CONS_ID}}",
+      "did": "{{CONS_ID}}",
       "key":{
-          "keyId": "did:web:consumer-idhub:user:consumer#key-1",
-          "privateKeyAlias": "did:web:consumer-idhub:user:consumer-alias",
+          "keyId": "{{CONS_ID}}#key-1",
+          "privateKeyAlias": "{{CONS_ID}}-alias",
           "keyGeneratorParams":{
               "algorithm": "EdDSA",
               "curve": "Ed25519"
