@@ -53,10 +53,12 @@ policies are enforced.
 ```json
 {
   "@context": [
-    "https://w3id.org/edc/v0.0.1/ns/",
-    {
-      "tx": "https://w3id.org/tractusx/policy/2.0.0/"
-    }
+   "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
+     "https://w3id.org/catenax/2025/9/policy/context.jsonld",
+     {
+         "tx": "https://w3id.org/tractusx/policy/v2.0.0",
+         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+     }
   ],
   "@type": "PolicyDefinition",
   "@id": "did-access-policy-001",
@@ -83,10 +85,12 @@ Provide a JSON array as the `rightOperand` to allow more than one counterparty:
 ```json
 {
   "@context": [
-    "https://w3id.org/edc/v0.0.1/ns/",
-    {
-      "tx": "https://w3id.org/tractusx/policy/2.0.0/"
-    }
+     "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
+     "https://w3id.org/catenax/2025/9/policy/context.jsonld",
+     {
+         "tx": "https://w3id.org/tractusx/policy/v2.0.0",
+         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+     }
   ],
   "@type": "PolicyDefinition",
   "@id": "did-access-policy-002",
