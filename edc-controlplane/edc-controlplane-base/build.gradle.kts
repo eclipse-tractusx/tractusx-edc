@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2022 Mercedes-Benz Tech Innovation GmbH
- * Copyright (c) 2021,2022 Contributors to the Eclipse Foundation
+ * Copyright (c) 2021, 2026 Contributors to the Eclipse Foundation
+ * Copyright (c) 2026 Catena-X Automotive Network e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -49,6 +50,7 @@ dependencies {
     implementation(project(":edc-extensions:bpn-validation"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
+    implementation(project(":edc-extensions:tx-policy"))
     implementation(project(":edc-extensions:data-flow-properties-provider"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))

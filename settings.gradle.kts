@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2023 Contributors to the Eclipse Foundation
  * Copyright (c) 2026 Cofinity-X GmbH
+ * Copyright (c) 2026 Catena-X Automotive Network e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -82,6 +83,7 @@ include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:edr:edr-index-lock-sql")
 include(":edc-extensions:cx-policy")
 include(":edc-extensions:cx-policy-legacy")
+include(":edc-extensions:tx-policy")
 include(":edc-extensions:dcp:tx-dcp")
 include(":edc-extensions:dcp:tx-dcp-sts-dim")
 include(":edc-extensions:dcp:verifiable-presentation-cache")
