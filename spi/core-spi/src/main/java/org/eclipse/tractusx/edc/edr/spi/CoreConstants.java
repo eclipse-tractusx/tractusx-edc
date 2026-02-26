@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Catena-X Automotive Network e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,6 +36,7 @@ public final class CoreConstants {
     @Deprecated(since = "0.11.0")
     public static final String CX_POLICY_NS = "https://w3id.org/catenax/policy/";
     public static final String CX_POLICY_2025_09_NS = "https://w3id.org/catenax/2025/9/policy/";
+    public static final String TX_POLICY_V2_NS = "https://w3id.org/tractusx/policy/2.0.0/";
 
     // constants related to token refresh/renewal
     public static final String EDR_PROPERTY_AUTHORIZATION = EDC_NAMESPACE + "authorization";
