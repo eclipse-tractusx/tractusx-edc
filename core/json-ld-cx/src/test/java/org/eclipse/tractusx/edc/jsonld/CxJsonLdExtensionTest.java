@@ -23,21 +23,21 @@ package org.eclipse.tractusx.edc.jsonld;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.tractusx.edc.cx.CxJsonLdExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.URI;
 
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CREDENTIALS_V_1;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_ED25519_V1;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_JWS_V1;
+import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_ODRL_CONTEXT;
+import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class JsonLdExtensionTest {
+public class CxJsonLdExtensionTest {
 
     JsonLd jsonLdService = mock(JsonLd.class);
 
@@ -47,11 +47,9 @@ public class JsonLdExtensionTest {
     }
 
     @Test
-    void initialize(ServiceExtensionContext context, JsonLdExtension extension) {
+    void initialize(ServiceExtensionContext context, CxJsonLdExtension extension) {
         extension.initialize(context);
-        jsonLdService.registerCachedDocument(eq(CREDENTIALS_V_1), any(URI.class));
-        jsonLdService.registerCachedDocument(eq(SECURITY_JWS_V1), any(URI.class));
-        jsonLdService.registerCachedDocument(eq(SECURITY_ED25519_V1), any(URI.class));
-
+        jsonLdService.registerCachedDocument(eq(CX_POLICY_2025_09_CONTEXT), any(URI.class));
+        jsonLdService.registerCachedDocument(eq(CX_ODRL_CONTEXT), any(URI.class));
     }
 }
