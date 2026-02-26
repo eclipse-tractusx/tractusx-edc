@@ -1,0 +1,34 @@
+meta {
+  name: Simulated DCP Flow
+  seq: 5
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  This section is meant to show in principle, what happens during a DCP protocol validated interaction between two controlplanes. It also serves as a final test. If these requests do succeed, then we can be sure that all previous steps went well. 
+  
+  Let's assume that the consumer intends to obtain the DSP catolog from the provider. 
+  Then the consumer will request a self signed SI token from his own Identity-Hub's secure token service (STS), see the "Consumer Token" request. 
+  
+  In that request body, the consumer informs the STS about the intended audience and the credential type he wants to show to the other side. 
+  
+  In the request body, we should receive an access token in JWT format, the "consumer-access-token". 
+  
+  Please feel free to decode the "consumer-access-token" with a tool of your choice and observe that token's payload. You will find, that this payload itself contains another JWT inside the "token" claim. 
+  
+  The entire "consumer-access-token" will now be sent by the consumer-side-EDC to the provider-side-EDC via the "Authentication" header of a request to the according DSP-catolog request api endpoint. Since the "consumer-access-token" is signed with the consumer private key, the provider can now download the consumer's DID document, read the consumer's public key and use it to check that the JWT's signature is valid. 
+  
+  We are not doing the signature check here in this small simulation, so let's just assume that it turned out positive. 
+  
+  Now the provider wants to see, which credentials the consumer is going to show him. For that, he needs to retrieve it from the consumer's credential service. The URL can be found in the consumer's DID document. 
+  
+  But first, he needs to talk to his own secure token service (STS). So he is unwrapping the "token" claim and sending it to his own STS, see the "Post Request Script" of the "Consumer Token" request and the request body in the "Provider Token" request. 
+  
+  The response of the provider's STS will contain another access token, we are calling it "provider access token". This "provider access token" can now be attached as an "authorization" header to the provider's request to the consumer's credential service. 
+  
+  The response of the consumer credential service contains the verifiable presentation, which itself now contains the verfiable credential, which the trusted issuer initially handed out to the consumer. 
+  
+}

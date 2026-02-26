@@ -1,0 +1,59 @@
+meta {
+  name: CreateConsumerParticipant
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{CONSUMER_IDHUB_ID_API}}/v1alpha/participants
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-api-key: YWRtaW4.adminKey
+}
+
+body:json {
+  {
+      "roles":[],
+      "serviceEndpoints":[{
+        "id": "ConsumerCredentialService-ID",
+        "type": "CredentialService", 
+        "serviceEndpoint": "http://consumer-idhub:13131/api/credentials/v1/participants/{{B64_CONS_ID}}"
+      }],
+      "active": true,
+      "participantContextId": "{{CONS_ID}}",
+      "did": "{{CONS_ID}}",
+      "key":{
+          "keyId": "{{CONS_ID}}#key-1",
+          "privateKeyAlias": "{{CONS_ID}}-alias",
+          "keyGeneratorParams":{
+              "algorithm": "EdDSA",
+              "curve": "Ed25519"
+          }
+      }
+  }
+}
+
+script:pre-request {
+  const btoa = require("btoa");
+  const cons_id = bru.getEnvVar("CONS_ID");
+  bru.setEnvVar("B64_CONS_ID", btoa(cons_id));
+}
+
+script:post-response {
+  const apiKey = res.getBody().apiKey.trim();
+  if (apiKey) {
+    bru.setEnvVar("CONSUMER_IH_APIKEY", apiKey);
+  }
+  const stsSecret = res.getBody().clientSecret.trim();
+  if (stsSecret) {
+    bru.setEnvVar("CONSUMER_STS_SECRET", stsSecret)
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

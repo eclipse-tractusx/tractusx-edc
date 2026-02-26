@@ -1,0 +1,39 @@
+meta {
+  name: CreateAsset
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{PROVIDER_MANAGEMENT}}/v3/assets
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "@id": "assetId",
+    "properties": {
+      "name": "product description",
+      "contenttype": "application/json"
+    },
+    "dataAddress": {
+      "type": "HttpData",
+      "name": "Test asset",
+      "baseUrl": "https://jsonplaceholder.typicode.com/users",
+      "proxyPath": "true", 
+      "proxyMethod": "true",
+      "proxyBody": "true", 
+      "authKey": "x-api-key", 
+      "authCode": "someAuthCode"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

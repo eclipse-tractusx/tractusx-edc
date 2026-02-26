@@ -1,0 +1,25 @@
+meta {
+  name: CheckNegotiationResult
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{CONSUMER_MANAGEMENT}}/v3/contractnegotiations/{{negotiation-id}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Accept: application/json
+}
+
+script:post-response {
+  const contractId = res.getBody()['contractAgreementId']; 
+  bru.setEnvVar("contractId", contractId);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

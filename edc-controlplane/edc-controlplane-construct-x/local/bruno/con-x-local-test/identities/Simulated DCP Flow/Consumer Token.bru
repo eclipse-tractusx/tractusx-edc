@@ -1,0 +1,35 @@
+meta {
+  name: Consumer Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{CONSUMER_IDHUB_STS_API}}/token
+  body: formUrlEncoded
+  auth: inherit
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  client_secret: {{CONSUMER_STS_SECRET}}
+  client_id: {{CONS_ID}}
+  audience: {{PROV_ID}}
+  bearer_access_scope: org.eclipse.tractusx.vc.type:MembershipCredential:read
+}
+
+script:post-response {
+  const atob = require("atob");
+  const accessToken = res.getBody().access_token.trim();
+  const parts = accessToken.split(".");
+  const payload = atob(parts[1]);
+  const payloadObject = JSON.parse(payload);
+  const internalToken = payloadObject.token.trim();
+  
+  bru.setEnvVar("cons_access_token", internalToken);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,30 @@
+meta {
+  name: Provider Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{PROVIDER_IDHUB_STS_API}}/token
+  body: formUrlEncoded
+  auth: inherit
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  client_secret: {{PROVIDER_STS_SECRET}}
+  client_id: {{PROV_ID}}
+  audience: {{CONS_ID}}
+  token: {{cons_access_token}}
+}
+
+script:post-response {
+  const accessToken = res.getBody().access_token.trim();
+  
+  bru.setEnvVar("prov_access_token", accessToken);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,10 @@
+{
+  "MC-Cred-Def": {
+    "blackList": [],
+    "default": {
+      "credentialSubject": {
+        "isMember": true
+      }
+    }
+  }
+}

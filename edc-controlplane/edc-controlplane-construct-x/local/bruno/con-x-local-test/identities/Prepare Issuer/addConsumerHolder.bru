@@ -1,0 +1,35 @@
+meta {
+  name: addConsumerHolder
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ISSUER_ISS_API}}/v1alpha/participants/{{B64_ISS_ID}}/holders
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "holderId" : "{{CONS_ID}}", 
+    "did" : "{{CONS_ID}}", 
+    "name" : "{{CONS_ID}}"
+  }
+}
+
+script:pre-request {
+  const btoa = require("btoa");
+  const iss_id = bru.getEnvVar("ISS_ID");
+  bru.setEnvVar("B64_ISS_ID", btoa(iss_id));
+  
+  const cons_id = bru.getEnvVar("CONS_ID");
+  bru.setEnvVar("B64_CONS_ID", btoa(cons_id));
+  
+  req.setHeader("x-api-key", bru.getEnvVar("ISSUER_APIKEY"));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

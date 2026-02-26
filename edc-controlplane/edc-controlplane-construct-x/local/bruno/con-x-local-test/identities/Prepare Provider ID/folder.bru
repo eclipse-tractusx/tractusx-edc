@@ -1,0 +1,13 @@
+meta {
+  name: Prepare Provider ID
+  seq: 3
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  The requests in this folder are necessary for creating the identity of the provider participant. 
+  We are doing an initial registration at the identity hub. Then we take a look at the created DID document. Then we trigger a credential request toward the trusted issuer. And also, we are storing the STS secret that the identity hub gave us, at the vault. 
+}

@@ -1,0 +1,34 @@
+meta {
+  name: RequestProviderCatalog
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{CONSUMER_MANAGEMENT}}/v3/catalog/request
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "counterPartyAddress": "http://provider-controlplane:9020/dsp",
+    "counterPartyId": "{{PROV_ID}}",
+    "protocol": "dataspace-protocol-http"
+  
+  }
+}
+
+script:post-response {
+  const offerId = res.getBody()['dcat:dataset']['odrl:hasPolicy']['@id'];
+  
+  bru.setEnvVar("offerId", offerId);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

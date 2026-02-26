@@ -1,0 +1,34 @@
+meta {
+  name: addProviderHolder
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ISSUER_ISS_API}}/v1alpha/participants/{{B64_ISS_ID}}/holders
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "holderId" : "{{PROV_ID}}", 
+    "did" : "{{PROV_ID}}",  
+    "name" : "{{PROV_ID}}"
+  }
+}
+
+script:pre-request {
+  const btoa = require("btoa");
+  const iss_id = bru.getEnvVar("ISS_ID");
+  bru.setEnvVar("B64_ISS_ID", btoa(iss_id));
+  const prov_id = bru.getEnvVar("PROV_ID");
+  bru.setEnvVar("B64_PROV_ID", btoa(prov_id));
+  
+  req.setHeader("x-api-key", bru.getEnvVar("ISSUER_APIKEY"));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

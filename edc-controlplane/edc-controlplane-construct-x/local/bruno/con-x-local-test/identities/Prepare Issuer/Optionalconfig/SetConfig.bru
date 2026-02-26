@@ -1,0 +1,39 @@
+meta {
+  name: SetConfig
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ISSUER_ISS_API}}/v1alpha/credentialsetup/{{B64_ISS_ID}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-api-key: YWRtaW4.adminKey
+}
+
+body:json {
+  {
+    "MC-Cred-Def": {
+      "blackList": [],
+      "default": {
+        "credentialSubject": {
+          "isMember": true
+        }
+      }
+    }
+  }
+}
+
+script:pre-request {
+  const btoa = require("btoa");
+  const iss_id = bru.getEnvVar("ISS_ID");
+  bru.setEnvVar("B64_ISS_ID", btoa(iss_id));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

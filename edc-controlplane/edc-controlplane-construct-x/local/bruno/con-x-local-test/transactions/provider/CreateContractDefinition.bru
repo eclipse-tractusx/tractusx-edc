@@ -1,0 +1,28 @@
+meta {
+  name: CreateContractDefinition
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{PROVIDER_MANAGEMENT}}/v3/contractdefinitions
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    },
+    "@id": "1",
+    "accessPolicyId": "aPolicy",
+    "contractPolicyId": "aPolicy",
+    "assetsSelector": []
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

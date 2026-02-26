@@ -1,0 +1,22 @@
+meta {
+  name: Prepare Issuer
+  seq: 1
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  This folder contains the initial steps for setting up our own dataspace. First, we need to define the participant that is universally trusted by all regular dataspace members, the so-called "trusted issuer". 
+  
+  First we register him under his own did:web id at the issuer service host. 
+  
+  Then we will announce the existence of other regular members. This is done in the "addXXXHolder" requests. 
+  
+  Then we have to tell to issuer participant that there shall be membership credentials, which can be handed out to the entities, which we had announced as holders. 
+  
+  Since the primary motivation for this collection is not to be a guide for handling the administration of data space issuers, the details of the "createAttestation" and "createCredentialDef" requests don't matter much at this point. It suffices to say that they are technically required to enable the credential issuance process. 
+  
+  
+}

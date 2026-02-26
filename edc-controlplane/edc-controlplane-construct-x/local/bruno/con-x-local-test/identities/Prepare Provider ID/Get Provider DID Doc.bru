@@ -1,0 +1,20 @@
+meta {
+  name: Get Provider DID Doc
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{PROVIDER_IDHUB_DID_API}}/user/provider
+  body: none
+  auth: inherit
+}
+
+headers {
+  Host: provider-idhub
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

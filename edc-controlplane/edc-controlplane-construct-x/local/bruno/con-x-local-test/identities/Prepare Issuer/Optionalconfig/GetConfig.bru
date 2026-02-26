@@ -1,0 +1,26 @@
+meta {
+  name: GetConfig
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ISSUER_ISS_API}}/v1alpha/credentialsetup/{{B64_ISS_ID}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  x-api-key: YWRtaW4.adminKey
+}
+
+script:pre-request {
+  const btoa = require("btoa");
+  const iss_id = bru.getEnvVar("ISS_ID");
+  bru.setEnvVar("B64_ISS_ID", btoa(iss_id));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

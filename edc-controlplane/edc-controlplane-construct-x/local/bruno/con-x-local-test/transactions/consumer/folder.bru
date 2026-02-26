@@ -1,0 +1,20 @@
+meta {
+  name: consumer
+  seq: 2
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  Here, we are taking the role of the consumer participant. 
+  
+  First, we inspect the providers catalog. There we should find the asset, that was prepared in the previous stage. 
+  
+  Then we trigger a negotiation process, and check its (hopefully positive) outcome. 
+  
+  After that, we initiate a transfer process based on the previously negotiated contract. In the following step, we retrieve the authorization token, which the provider will give us. 
+  
+  And finally, we are using that token to get access to the data, that was placed inside the provider's asset. 
+}

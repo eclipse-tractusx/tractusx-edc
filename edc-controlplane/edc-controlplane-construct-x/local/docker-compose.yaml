@@ -1,0 +1,409 @@
+#
+# Copyright (c) 2026 Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. (represented by Fraunhofer ISST)
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License, Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+services:
+  local-issuer-service:
+    container_name: local-issuer-service
+    image: issuerservice-dev:latest
+    pull_policy: never
+    depends_on:
+      shared-postgres:
+        condition: service_healthy
+      shared-vault:
+        condition: service_healthy
+    ports:
+      - "1044:1044"       # debugger
+      - "10000:80"        # did API           -> /
+      - "10100:15151"     # identity API      -> /api/identity
+      - "10200:15152"     # issueradmin API   -> /api/issuer
+#      - "9292:9292"      # sts API           -> /api/sts
+#      - "8181:8181"      # default API       -> /api
+#      - "9999:9999"      # statuslist API    -> /statuslist
+#      - "13132:13132"    # issuance API      -> /api/issuance
+
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:1044
+      - edc.statuslist.callback.address=http://local-issuer-service:9999/statuslist
+      - edc.hostname=local-issuer-service
+      - edc.ih.issuer.dev.defaultconfig=/app/setup.json
+      - edc.issuer.issuance.send.retry.limit=0
+      - edc.iam.did.web.use.https=false
+      - edc.ih.api.superuser.id=admin
+      - edc.ih.api.superuser.key=YWRtaW4.adminKey
+      - edc.issuer.statuslist.signing.key.alias=foo
+      - web.http.did.port=80
+      - edc.sql.schema.autocreate=true
+      - edc.datasource.default.url=jdbc:postgresql://shared-postgres:5432/iss_db
+      - edc.datasource.default.user=admin
+      - edc.datasource.default.password=password
+      - edc.vault.hashicorp.url=http://shared-vault:8200
+      - edc.vault.hashicorp.health.check.enabled=true
+      - edc.vault.hashicorp.token=vaultsecret0123456789
+    volumes:
+      - ./additional_config/mc-cred-def.json:/app/setup.json
+      - ./additional_config/logging.properties:/app/logging.properties
+    networks:
+      - con-x-test-network
+
+  shared-postgres:
+    container_name: shared-postgres
+    image: postgres:16.4-alpine
+    pull_policy: if_not_present
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./additional_config/pg_init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -h 127.0.0.1 || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks:
+      - con-x-test-network
+
+  shared-vault:
+    container_name: shared-vault
+    image: vault:1.13.3
+    pull_policy: if_not_present
+    command: server -dev -dev-root-token-id=vaultsecret0123456789 -dev-listen-address=0.0.0.0:8200
+    environment:
+      VAULT_ADDR: http://0.0.0.0:8200
+      SKIP_SETCAP: "true"
+      SKIP_CHOWN: "true"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "VAULT_ADDR=http://127.0.0.1:8200 vault status >/dev/null 2>&1"]
+      interval: 4s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "8200:8200"
+    networks:
+      - con-x-test-network
+
+  vault-init:
+    container_name: vault-init
+    image: alpine:3.19
+    pull_policy: if_not_present
+    depends_on:
+      shared-vault:
+        condition: service_healthy
+    environment:
+      VAULT_ADDR: http://shared-vault:8200
+      VAULT_TOKEN: vaultsecret0123456789
+    volumes:
+      - ./additional_config/vault-init.sh:/scripts/init.sh:ro
+
+    entrypoint: [
+      "sh", "-c",
+      "apk add --no-check-certificate --no-cache curl jq openssl \
+       && tr -d '\r' < /scripts/init.sh > /tmp/init.sh \
+       && sh /tmp/init.sh"
+    ]
+    restart: "no"
+    networks:
+      - con-x-test-network
+
+  consumer-idhub:
+    container_name: consumer-idhub
+    image: identityhub-dev:latest
+    pull_policy: never
+    depends_on:
+      shared-postgres:
+        condition: service_healthy
+      shared-vault:
+        condition: service_healthy
+    ports:
+      - "1045:1045"         # debugger
+      - "20000:80"          # did API           -> /
+      - "20100:15151"       # identity API      -> /api/identity
+      - "20500:9292"        # sts API           -> /api/sts
+      - "20600:13131"       # credentials API   -> /api/credentials
+#      - "8181:8181"        # default API       -> /api
+#      - "9999:9999"        # statuslist API    -> /statuslist
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:1045
+      - edc.hostname=consumer-idhub
+      - edc.iam.did.web.use.https=false
+      - edc.ih.api.superuser.id=admin
+      - edc.ih.api.superuser.key=YWRtaW4.adminKey
+      - web.http.did.port=80
+      - edc.sql.schema.autocreate=true
+      - edc.datasource.default.url=jdbc:postgresql://shared-postgres:5432/cons_ih_db
+      - edc.datasource.default.user=admin
+      - edc.datasource.default.password=password
+      - edc.vault.hashicorp.url=http://shared-vault:8200
+      - edc.vault.hashicorp.health.check.enabled=true
+      - edc.vault.hashicorp.token=vaultsecret0123456789
+    volumes:
+      - ./additional_config/logging.properties:/app/logging.properties
+    networks:
+      - con-x-test-network
+
+  provider-idhub:
+    container_name: provider-idhub
+    image: identityhub-dev:latest
+    pull_policy: never
+    depends_on:
+      shared-postgres:
+        condition: service_healthy
+      shared-vault:
+        condition: service_healthy
+    ports:
+      - "1046:1045"         # debugger
+      - "21000:80"          # did API           -> /
+      - "21100:15151"       # identity API      -> /api/identity
+      - "21500:9292"        # sts API           -> /api/sts
+      - "21600:13131"       # credentials API   -> /api/credentials
+    #      - "8181:8181"        # default API       -> /api
+    #      - "9999:9999"        # statuslist API    -> /statuslist
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:1045
+      - edc.hostname=provider-idhub
+      - edc.iam.did.web.use.https=false
+      - edc.ih.api.superuser.id=admin
+      - edc.ih.api.superuser.key=YWRtaW4.adminKey
+      - web.http.did.port=80
+      - edc.sql.schema.autocreate=true
+      - edc.datasource.default.url=jdbc:postgresql://shared-postgres:5432/prov_ih_db
+      - edc.datasource.default.user=admin
+      - edc.datasource.default.password=password
+      - edc.vault.hashicorp.url=http://shared-vault:8200
+      - edc.vault.hashicorp.health.check.enabled=true
+      - edc.vault.hashicorp.token=vaultsecret0123456789
+    volumes:
+      - ./additional_config/logging.properties:/app/logging.properties
+    networks:
+      - con-x-test-network
+
+  consumer-controlplane:
+    container_name: consumer-controlplane
+    image: con-x-controlplane-postgresql-hashicorp-vault:latest
+    pull_policy: never
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
+      - tx.edc.postgresql.migration.asset.enabled=false
+      - tx.edc.postgresql.migration.agreementbpns.enabled=false
+      - tx.edc.postgresql.migration.bpn.enabled=false
+      - tx.edc.postgresql.migration.contractdefinition.enabled=false
+      - tx.edc.postgresql.migration.contractnegotiation.enabled=false
+      - tx.edc.postgresql.migration.dataplaneinstance.enabled=false
+      - tx.edc.postgresql.migration.edr.enabled=false
+      - tx.edc.postgresql.migration.federatedcatalog.enabled=false
+      - tx.edc.postgresql.migration.jti-validation.enabled=false
+      - tx.edc.postgresql.migration.policy-monitor.enabled=false
+      - tx.edc.postgresql.migration.policy.enabled=false
+      - tx.edc.postgresql.migration.transferprocess.enabled=false
+      - edc.iam.trusted-issuer.example.id=did:web:local-issuer-service:con-x-issuer
+      - edc.iam.did.web.use.https=false
+      - edc.iam.sts.oauth.client.secret.alias=consumersecret
+      - edc.iam.credential.revocation.mimetype=application/json
+      - edc.iam.sts.oauth.token.url=http://consumer-idhub:9292/api/sts/token
+      - edc.iam.sts.oauth.client.id=did:web:consumer-idhub:user:consumer
+      - edc.iam.issuer.id=did:web:consumer-idhub:user:consumer
+      - web.http.port=9000
+      - web.http.path=/api
+      - web.http.management.port=9010
+      - web.http.management.path=/management
+      - web.http.protocol.port=9020
+      - web.http.protocol.path=/dsp
+      - web.http.validation.port=9030
+      - web.http.validation.path=/validation
+      - web.http.control.port=9050
+      - web.http.control.path=/control
+      - edc.hostname=consumer-controlplane
+      - edc.participant.id=did:web:consumer-idhub:user:consumer
+      - edc.dsp.callback.address=http://consumer-controlplane:9020/dsp
+      - edc.sql.schema.autocreate=true
+      - edc.datasource.default.url=jdbc:postgresql://shared-postgres:5432/cons_cpl
+      - edc.datasource.default.user=admin
+      - edc.datasource.default.password=password
+      - edc.vault.hashicorp.url=http://shared-vault:8200
+      - edc.vault.hashicorp.health.check.enabled=true
+      - edc.vault.hashicorp.token=vaultsecret0123456789
+    volumes:
+      - ./additional_config/logging.properties:/app/dataspaceconnector-configuration.properties
+    depends_on:
+        shared-postgres:
+          condition: service_healthy
+        shared-vault:
+          condition: service_healthy
+    entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
+    ports:
+      - "5005:5005"   # Debugger
+      - "29000:9000"  # Default port
+      - "29010:9010"  # Management API
+      - "29020:9020" # DSP API
+    networks:
+      - con-x-test-network
+
+  consumer-dataplane:
+    container_name: consumer-dataplane
+    image: con-x-dataplane-postgresql-hashicorp-vault:latest
+    pull_policy: never
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
+      - web.http.public.port=9500
+      - web.http.public.path=/public
+      - web.http.management.port=9510
+      - web.http.management.path=/management
+      - web.http.control.port=9550
+      - web.http.control.path=/control
+      - edc.hostname=consumer-dataplane
+      - edc.dpf.selector.url=http://consumer-controlplane:9050/control/v1/dataplanes
+      - edc.data.plane.self.unregistration=true
+      - edc.datasource.default.url=jdbc:postgresql://shared-postgres:5432/cons_dpl
+      - edc.datasource.default.user=admin
+      - edc.datasource.default.password=password
+      - edc.sql.schema.autocreate=true
+      - edc.transfer.proxy.token.signer.privatekey.alias=cons_priv
+      - edc.transfer.proxy.token.verifier.publickey.alias=cons_pub
+      - edc.vault.hashicorp.url=http://shared-vault:8200
+      - edc.vault.hashicorp.health.check.enabled=true
+      - edc.vault.hashicorp.token=vaultsecret0123456789
+      - edc.iam.trusted-issuer.example.id=did:web:local-issuer-service:con-x-issuer
+      - edc.iam.did.web.use.https=false
+      - edc.iam.sts.oauth.client.secret.alias=consumersecret
+      - edc.iam.credential.revocation.mimetype=application/json
+      - edc.iam.sts.oauth.token.url=http://consumer-idhub:9292/api/sts/token
+      - edc.iam.sts.oauth.client.id=did:web:consumer-idhub:user:consumer
+      - edc.iam.issuer.id=did:web:consumer-idhub:user:consumer
+    depends_on:
+      shared-postgres:
+        condition: service_healthy
+      shared-vault:
+        condition: service_healthy
+    entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
+    ports:
+      - "5008:5005"   # Debugger
+      - "9600:9500" # Public API
+    networks:
+      - con-x-test-network
+
+  provider-controlplane:
+    container_name: provider-controlplane
+    image: con-x-controlplane-postgresql-hashicorp-vault:latest
+    pull_policy: never
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
+      - tx.edc.postgresql.migration.asset.enabled=false
+      - tx.edc.postgresql.migration.agreementbpns.enabled=false
+      - tx.edc.postgresql.migration.bpn.enabled=false
+      - tx.edc.postgresql.migration.contractdefinition.enabled=false
+      - tx.edc.postgresql.migration.contractnegotiation.enabled=false
+      - tx.edc.postgresql.migration.dataplaneinstance.enabled=false
+      - tx.edc.postgresql.migration.edr.enabled=false
+      - tx.edc.postgresql.migration.federatedcatalog.enabled=false
+      - tx.edc.postgresql.migration.jti-validation.enabled=false
+      - tx.edc.postgresql.migration.policy-monitor.enabled=false
+      - tx.edc.postgresql.migration.policy.enabled=false
+      - tx.edc.postgresql.migration.transferprocess.enabled=false
+      - edc.iam.trusted-issuer.example.id=did:web:local-issuer-service:con-x-issuer
+      - edc.iam.did.web.use.https=false
+      - edc.iam.sts.oauth.client.secret.alias=providersecret
+      - edc.iam.credential.revocation.mimetype=application/json
+      - edc.iam.sts.oauth.token.url=http://provider-idhub:9292/api/sts/token
+      - edc.iam.sts.oauth.client.id=did:web:provider-idhub:user:provider
+      - edc.iam.issuer.id=did:web:provider-idhub:user:provider
+      - web.http.port=9000
+      - web.http.path=/api
+      - web.http.management.port=9010
+      - web.http.management.path=/management
+      - web.http.protocol.port=9020
+      - web.http.protocol.path=/dsp
+      - web.http.validation.port=9030
+      - web.http.validation.path=/validation
+      - web.http.control.port=9050
+      - web.http.control.path=/control
+      - edc.hostname=provider-controlplane
+      - edc.participant.id=did:web:provider-idhub:user:provider
+      - edc.dsp.callback.address=http://provider-controlplane:9020/dsp
+      - edc.sql.schema.autocreate=true
+      - edc.datasource.default.url=jdbc:postgresql://shared-postgres:5432/prov_cpl
+      - edc.datasource.default.user=admin
+      - edc.datasource.default.password=password
+      - edc.vault.hashicorp.url=http://shared-vault:8200
+      - edc.vault.hashicorp.health.check.enabled=true
+      - edc.vault.hashicorp.token=vaultsecret0123456789
+    volumes:
+      - ./additional_config/logging.properties:/app/dataspaceconnector-configuration.properties
+    depends_on:
+        shared-postgres:
+          condition: service_healthy
+        shared-vault:
+          condition: service_healthy
+    entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
+    ports:
+      - "5006:5005"   # Debugger
+      - "39000:9000"  # Default port
+      - "39010:9010"  # Management API
+      - "39020:9020" # DSP API
+
+    networks:
+      - con-x-test-network
+
+  provider-dataplane:
+    container_name: provider-dataplane
+    image: con-x-dataplane-postgresql-hashicorp-vault:latest
+    pull_policy: if_not_present
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
+      - web.http.public.port=9500
+      - web.http.public.path=/public
+      - web.http.management.port=9510
+      - web.http.management.path=/management
+      - web.http.control.port=9550
+      - web.http.control.path=/control
+      - edc.hostname=provider-dataplane
+      - edc.dpf.selector.url=http://provider-controlplane:9050/control/v1/dataplanes
+      - edc.data.plane.self.unregistration=true
+      - edc.datasource.default.url=jdbc:postgresql://shared-postgres:5432/prov_dpl
+      - edc.datasource.default.user=admin
+      - edc.datasource.default.password=password
+      - edc.sql.schema.autocreate=true
+      - edc.transfer.proxy.token.signer.privatekey.alias=prov_priv
+      - edc.transfer.proxy.token.verifier.publickey.alias=prov_pub
+      - edc.vault.hashicorp.url=http://shared-vault:8200
+      - edc.vault.hashicorp.health.check.enabled=true
+      - edc.vault.hashicorp.token=vaultsecret0123456789
+      - edc.iam.trusted-issuer.example.id=did:web:local-issuer-service:con-x-issuer
+      - edc.iam.did.web.use.https=false
+      - edc.iam.sts.oauth.client.secret.alias=providersecret
+      - edc.iam.credential.revocation.mimetype=application/json
+      - edc.iam.sts.oauth.token.url=http://provider-idhub:9292/api/sts/token
+      - edc.iam.sts.oauth.client.id=did:web:provider-idhub:user:provider
+      - edc.iam.issuer.id=did:web:provider-idhub:user:provider
+
+    depends_on:
+      shared-postgres:
+        condition: service_healthy
+      shared-vault:
+        condition: service_healthy
+    entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
+    ports:
+      - "5007:5005"   # Debugger
+      - "9500:9500" # Public API
+    networks:
+      - con-x-test-network
+
+networks:
+  con-x-test-network:
+    name: con-x-test-network
+    driver: bridge

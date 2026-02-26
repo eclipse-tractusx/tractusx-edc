@@ -1,0 +1,20 @@
+meta {
+  name: PullAssetData
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{PROVIDER_DATAPLANE_PUBLIC}}
+  body: none
+  auth: inherit
+}
+
+script:pre-request {
+  req.setHeader("Authorization", bru.getEnvVar("pullSecret"));
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

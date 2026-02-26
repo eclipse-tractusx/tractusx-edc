@@ -1,0 +1,57 @@
+meta {
+  name: CreateIssuerParticipant
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ISSUER_ID_API}}/v1alpha/participants
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-api-key: YWRtaW4.adminKey
+}
+
+body:json {
+  {
+    "roles": [],
+    "serviceEndpoints": [
+      {
+        "id": "Issuer-IssuerService", 
+        "type": "IssuerService", 
+        "serviceEndpoint": "http://local-issuer-service:13132/api/issuance/v1alpha/participants/{{B64_ISS_ID}}"
+      }
+    ],
+    "active": true,
+    "participantContextId": "{{ISS_ID}}",
+    "did": "{{ISS_ID}}",
+    "key": {
+      "keyId": "{{ISS_ID}}#key-1",
+      "privateKeyAlias": "{{ISS_ID}}-alias",
+      "keyGeneratorParams": {
+        "algorithm": "EdDSA",
+        "curve": "Ed25519"
+      }
+    }
+  }
+}
+
+script:pre-request {
+  const btoa = require("btoa");
+  const iss_id = bru.getEnvVar("ISS_ID");
+  bru.setEnvVar("B64_ISS_ID", btoa(iss_id));
+}
+
+script:post-response {
+  const apiKey = res.getBody().apiKey.trim();
+  if (apiKey) {
+    bru.setEnvVar("ISSUER_APIKEY", apiKey);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

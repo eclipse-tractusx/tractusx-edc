@@ -1,0 +1,35 @@
+meta {
+  name: InitPullTransfer
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{CONSUMER_MANAGEMENT}}/v3/transferprocesses
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "@context": {
+          "edc": "https://w3id.org/edc/v0.0.1/ns/"
+      },
+      "@type": "TransferRequestDto",
+      "protocol": "dataspace-protocol-http",
+      "contractId": "{{contractId}}",
+      "counterPartyAddress": "http://provider-controlplane:9020/dsp",
+      "connectorId": "{{PROV_ID}}",
+      "transferType": "HttpData-PULL"
+  }
+}
+
+script:post-response {
+  const transferId = res.getBody()['@id'];
+  bru.setEnvVar("transferId", transferId);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
