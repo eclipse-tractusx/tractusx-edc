@@ -34,7 +34,6 @@ import org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgres
 import org.eclipse.tractusx.edc.postgresql.migration.DataPlaneInstancePostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.DataPlanePostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.EdrIndexPostgresqlMigrationExtension;
-import org.eclipse.tractusx.edc.postgresql.migration.FederatedCatalogCacheMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.JtiValidationPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.PolicyMonitorPostgresqlMigrationExtension;
 import org.eclipse.tractusx.edc.postgresql.migration.PolicyPostgresqlMigrationExtension;
@@ -106,8 +105,6 @@ public class ConnectorPostgresqlMigrationTest {
                 objectFactory.constructInstance(ContractNegotiationPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(DataPlaneInstancePostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(EdrIndexPostgresqlMigrationExtension.class),
-                objectFactory.constructInstance(FederatedCatalogCacheMigrationExtension.class),
-                objectFactory.constructInstance(FederatedCatalogCacheMigrationExtension.class),
                 objectFactory.constructInstance(JtiValidationPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(PolicyMonitorPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(PolicyPostgresqlMigrationExtension.class),
