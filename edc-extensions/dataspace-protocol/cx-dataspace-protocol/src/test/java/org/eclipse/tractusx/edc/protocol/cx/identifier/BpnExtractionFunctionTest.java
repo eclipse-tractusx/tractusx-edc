@@ -23,8 +23,6 @@ package org.eclipse.tractusx.edc.protocol.cx.identifier;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.protocol.core.identifier.MembershipCredentialIdExtractionFunction;
-import org.eclipse.tractusx.edc.protocol.core.identifier.MembershipCredentialIdExtractionFunctionTest;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
