@@ -169,7 +169,7 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
     "@type": "Dataset",
     "hasPolicy": {
       "@id": "MQ==:MQ==:M2ZmZDRhY2MtMzkyNy00NGI4LWJlZDItNDcwY2RiZGRjN2Ex",
-      "@type": "odrl:Offer",
+      "@type": "Offer",
       "permission": {
         "action": "use",
         "constraint": {
@@ -183,51 +183,47 @@ The returned payload is a `dcat:Catalog` as specified by the DSP version used in
     },
     "distribution": [
       {
-        "@type": "dcat:Distribution",
-        "format": {
-          "@id": "AzureStorage-PUSH"
-        },
+        "@type": "Distribution",
+        "format": "AzureStorage-PUSH",
         "accessService": {
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
           "@type": "DataService",
-          "terms": "connector",
-          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
-        }
-      },
-      {
-        "@type": "dcat:Distribution",
-        "format": {
-          "@id": "HttpData-PULL"
-        },
-        "accessService": {
-          "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
-          "@type": "DataService",
-          "terms": "connector",
-          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
+          "endpointDescription": "dspace:connector",
+          "endpointURL": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       },
       {
         "@type": "Distribution",
-        "format": {
-          "@id": "AmazonS3-PUSH"
-        },
+        "format": "HttpData-PULL",
         "accessService": {
           "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
-          "@type": "dcat:DataService",
-          "terms": "connector",
-          "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
+          "@type": "DataService",
+          "endpointDescription": "dspace:connector",
+          "endpointURL": "https://provider.domain.com/api/v1/dsp/2025-1"
+        }
+      },
+      {
+        "@type": "Distribution",
+        "format":"AmazonS3-PUSH",
+        "accessService": {
+          "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
+          "@type": "DataService",
+          "endpointDescription": "dspace:connector",
+          "endpointURL": "https://provider.domain.com/api/v1/dsp/2025-1"
         }
       }
     ],
     "description": "Product Connector Demo Asset 1",
     "id": "1"
   },
-  "service": {
-    "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
-    "@type": "dcat:DataService",
-    "terms": "connector",
-    "endpointUrl": "https://provider.domain.com/api/v1/dsp/2025-1"
-  },
+  "service": [
+    {
+        "@id": "1338f9ac-1728-4a7e-b3dc-31fe5bc109f6",
+        "@type": "DataService",
+        "endpointDescription": "dspace:connector",
+        "endpointURL": "https://provider.domain.com/api/v1/dsp/2025-1"
+    }
+  ],
   "@context": [
     "https://w3id.org/tractusx/auth/v1.0.0",
     "https://w3id.org/catenax/2025/9/policy/context.jsonld",
