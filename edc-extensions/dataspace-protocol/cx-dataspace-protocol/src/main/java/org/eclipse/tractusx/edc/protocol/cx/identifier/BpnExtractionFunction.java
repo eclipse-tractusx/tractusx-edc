@@ -21,30 +21,76 @@
 package org.eclipse.tractusx.edc.protocol.cx.identifier;
 
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
+import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 
 /**
  * Extracts the BPN (= holderIdentifier property) from the MembershipCredential as the participant id.
  * Used to handle id extraction for DSP 0.8.
  */
-public class BpnExtractionFunction extends MembershipCredentialIdExtractionFunction {
-    
+public class BpnExtractionFunction implements ParticipantIdExtractionFunction {
+
+    private static final String VC_CLAIM = "vc";
+    private static final String IDENTITY_CREDENTIAL = "MembershipCredential";
     private static final String IDENTITY_PROPERTY = "holderIdentifier";
 
+    private final CredentialTypePredicate typePredicate = new CredentialTypePredicate(CX_CREDENTIAL_NS, IDENTITY_CREDENTIAL);
+    private final Monitor monitor;
+
     public BpnExtractionFunction(Monitor monitor) {
-        super(monitor);
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
-    public String identityProperty() {
-        return IDENTITY_PROPERTY;
+    public String apply(ClaimToken claimToken) {
+        var credentials = getCredentialList(claimToken)
+                .orElseThrow(failure -> new EdcException("Failed to fetch credentials from the claim token: %s".formatted(failure.getFailureDetail())));
+
+        return credentials.stream()
+                .filter(typePredicate)
+                .findFirst()
+                .flatMap(this::getIdentifier)
+                .orElseThrow(() -> {
+                    var msg = "Required credential type '%s' not present in ClaimToken, cannot extract property '%s'".formatted(IDENTITY_CREDENTIAL, IDENTITY_PROPERTY);
+                    monitor.warning(msg);
+                    return new EdcException(msg);
+                });
     }
-    
-    @Override
-    public Optional<String> getIdentifier(VerifiableCredential vc) {
+
+    @SuppressWarnings("unchecked")
+    private Result<List<VerifiableCredential>> getCredentialList(ClaimToken claimToken) {
+        var vcListClaim = claimToken.getClaims().get(VC_CLAIM);
+
+        if (vcListClaim == null) {
+            var msg = "ClaimToken did not contain a '%s' claim.".formatted(VC_CLAIM);
+            monitor.warning(msg);
+            return Result.failure(msg);
+        }
+        if (!(vcListClaim instanceof List)) {
+            var msg = "ClaimToken contains a '%s' claim, but the type is incorrect. Expected %s, got %s.".formatted(VC_CLAIM, List.class.getName(), vcListClaim.getClass().getName());
+            monitor.warning(msg);
+            return Result.failure(msg);
+        }
+        var vcList = (List<VerifiableCredential>) vcListClaim;
+        if (vcList.isEmpty()) {
+            var msg = "ClaimToken contains a '%s' claim but it did not contain any VerifiableCredentials.".formatted(VC_CLAIM);
+            monitor.warning(msg);
+            return Result.failure(msg);
+        }
+        return Result.success(vcList);
+    }
+
+    private Optional<String> getIdentifier(VerifiableCredential vc) {
         return vc.getCredentialSubject().stream()
                 .flatMap(credentialSubject -> credentialSubject.getClaims().entrySet().stream())
                 .filter(entry -> entry.getKey().endsWith(IDENTITY_PROPERTY))
