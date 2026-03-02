@@ -288,7 +288,7 @@ maven/mavencentral/io.netty/netty-transport/4.1.128.Final, Apache-2.0 AND BSD-3-
 maven/mavencentral/io.netty/netty-transport/4.1.130.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.2.9.Final, Apache-2.0, approved, #16113
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.24.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.25.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.26.0-alpha-SNAPSHOT, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.26.0-SNAPSHOT, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.26.0-alpha-SNAPSHOT, , restricted, clearlydefined
@@ -296,12 +296,9 @@ maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-
 maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.40.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.59.0-alpha, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
-maven/mavencentral/io.opentelemetry/opentelemetry-api/1.58.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.59.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-common/1.58.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-common/1.59.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.32.0, Apache-2.0, approved, #11683
-maven/mavencentral/io.opentelemetry/opentelemetry-context/1.58.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.59.0, , restricted, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.2.10, Apache-2.0, approved, #23393
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.2.13, Apache-2.0, approved, #23393
