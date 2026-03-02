@@ -57,7 +57,7 @@ jobs:
         run: ./gradlew resolve
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: openapi-spec
           path: resources/openapi/yaml
@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: openapi-spec
           path: resources/openapi/yaml
@@ -117,7 +117,7 @@ jobs:
           spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.apiGroup.name }}-api
           path: dist
@@ -128,7 +128,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           path: openapi
           pattern: "*-api"
