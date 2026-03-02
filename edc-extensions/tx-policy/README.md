@@ -68,7 +68,7 @@ policies are enforced.
       {
         "action": "access",
         "constraint": {
-          "leftOperand": "tx:BusinessPartnerDID",
+          "leftOperand": "tx-policy:BusinessPartnerDID",
           "operator": "isAnyOf",
           "rightOperand": "did:web:portal-backend.tractus-x.com:api:administration:staticdata:did:BPNL00000003CRHK"
         }
