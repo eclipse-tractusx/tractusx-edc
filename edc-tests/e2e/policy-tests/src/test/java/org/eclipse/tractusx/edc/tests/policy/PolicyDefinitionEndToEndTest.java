@@ -46,7 +46,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_ODRL_CONTEXT;
 import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
@@ -54,6 +53,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.ODRL_CONTEXT;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkConstraint;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
@@ -245,7 +245,7 @@ public class PolicyDefinitionEndToEndTest {
             rulesArrayBuilder.add(rule);
         }
         var contextArrayBuilder = Json.createArrayBuilder();
-        contextArrayBuilder.add(CX_ODRL_CONTEXT);
+        contextArrayBuilder.add(ODRL_CONTEXT);
         if (!policyDefinition.isBlank()) {
             contextArrayBuilder.add(policyDefinition);
         }
@@ -264,7 +264,7 @@ public class PolicyDefinitionEndToEndTest {
         var rulesArrayBuilder = Json.createArrayBuilder();
         rulesArrayBuilder.add(rule);
         var contextArrayBuilder = Json.createArrayBuilder();
-        contextArrayBuilder.add(CX_ODRL_CONTEXT);
+        contextArrayBuilder.add(ODRL_CONTEXT);
         contextArrayBuilder.add(policyContext);
 
         return Json.createObjectBuilder()

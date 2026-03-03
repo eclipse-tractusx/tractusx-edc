@@ -152,8 +152,6 @@ public class EdcCompatibilityPostgresTest {
                 "/etc/tck/tx-auth-v1.jsonld");
         TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/cx-policy-v1.jsonld"),
                 "/etc/tck/cx-policy-v1.jsonld");
-        TCK_CONTAINER.withCopyFileToContainer(MountableFile.forClasspathResource("document/cx-odrl.jsonld"),
-                "/etc/tck/cx-odrl.jsonld");
         TCK_CONTAINER.withExtraHost("host.docker.internal",
                 "host-gateway");
         TCK_CONTAINER.withLogConsumer(outputFrame -> monitor.info(outputFrame.getUtf8String()));
