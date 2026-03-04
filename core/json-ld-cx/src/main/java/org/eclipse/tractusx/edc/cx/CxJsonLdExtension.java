@@ -41,6 +41,7 @@ public class CxJsonLdExtension implements ServiceExtension {
 
     @Deprecated(since = "0.11.0")
     public static final String CX_POLICY_CONTEXT = "https://w3id.org/tractusx/policy/v1.0.0";
+    @Deprecated(since = "0.12.0")
     public static final String CX_ODRL_CONTEXT = "https://w3id.org/catenax/2025/9/policy/odrl.jsonld";
     public static final String CX_POLICY_2025_09_CONTEXT = "https://w3id.org/catenax/2025/9/policy/context.jsonld";
 
@@ -59,7 +60,6 @@ public class CxJsonLdExtension implements ServiceExtension {
         jsonLdService.registerNamespace(CX_POLICY_PREFIX, CX_POLICY_NS, DSP_SCOPE_V_08);
 
         jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, DSP_SCOPE_V_2025_1);
-        jsonLdService.registerContext(CX_ODRL_CONTEXT, DSP_SCOPE_V_2025_1);
 
         jsonLdService.registerContext(CX_POLICY_2025_09_CONTEXT, MANAGEMENT_SCOPE);
 
