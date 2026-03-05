@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base"))
     implementation(project(":edc-extensions:single-participant-vault"))
     implementation(project(":core:json-ld-core"))
+    implementation(project(":core:json-ld-cx"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))

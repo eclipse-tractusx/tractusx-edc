@@ -42,13 +42,11 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "TransferRequest",
-  "assetId": "{{ASSET_ID}}",
   "contractId": "{{CONTRACT_AGREEMENT_ID}}",
   "counterPartyAddress": "{{CONNECTOR_ADDRESS}}",
   "dataDestination": {
     "type": "<supported-transfer-type>"
   },
-  "privateProperties": {},
   "protocol": "dataspace-protocol-http:2025-1",
   "transferType": "HttpData-PULL",
   "callbackAddresses": [
@@ -68,7 +66,6 @@ Content-Type: application/json
 }
 ```
 
-- `assetId` is the id of the [asset](01_assets.md) that a transfer process should be triggered for.
 - `counterPartyAddress` is the DSP-endpoint of the Data Provider (usually ending on /api/v1/dsp).
 - `contractId` represents the Contract Agreement that the Provider and Consumer agreed on during the [Contract Negotiation](05_contractnegotiations.md)
   phase.

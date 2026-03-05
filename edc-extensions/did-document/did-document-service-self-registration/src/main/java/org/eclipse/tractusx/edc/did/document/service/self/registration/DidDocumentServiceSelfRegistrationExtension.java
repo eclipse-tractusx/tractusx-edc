@@ -40,7 +40,6 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     public static final String TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID = "tx.edc.did.service.self.registration.id";
 
     public static final String DATA_SERVICE_TYPE = "DataService";
-    private static final String DATA_SERVICE_ID_WITH_TYPE_TEMPLATE = "%s#%s";
     public static final String VERSION_METADATA_ENDPOINT_PATH = "/.well-known/dspace-version";
 
     @Inject
@@ -81,8 +80,7 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
         var wellKnownUrl = String.join("", dspBaseAddress.get(), VERSION_METADATA_ENDPOINT_PATH);
         validatedServiceId(serviceId)
                 .onFailure(failure -> monitor.severe(failure.getFailureDetail()))
-                .map(id -> DATA_SERVICE_ID_WITH_TYPE_TEMPLATE.formatted(id, DATA_SERVICE_TYPE))
-                .map(serviceIdWithType -> new Service(serviceIdWithType, DATA_SERVICE_TYPE, wellKnownUrl))
+                .map(validatedServiceId -> new Service(validatedServiceId, DATA_SERVICE_TYPE, wellKnownUrl))
                 .onSuccess(service ->
                         client.update(service)
                                 .onFailure(failure -> monitor.severe("Failed to self-register DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
@@ -93,9 +91,8 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     private void selfUnregisterDidDocumentService(@NotNull DidDocumentServiceClient client) {
 
         validatedServiceId(serviceId)
-                .map(id -> DATA_SERVICE_ID_WITH_TYPE_TEMPLATE.formatted(id, DATA_SERVICE_TYPE))
-                .onSuccess(serviceIdWithType ->
-                        client.deleteById(serviceIdWithType)
+                .onSuccess(validatedServiceId ->
+                        client.deleteById(validatedServiceId)
                                 .onFailure(failure -> monitor.severe("Failed to unregister DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
                                 .onSuccess(result -> monitor.info("Successfully unregistered DID Document service"))
                 );

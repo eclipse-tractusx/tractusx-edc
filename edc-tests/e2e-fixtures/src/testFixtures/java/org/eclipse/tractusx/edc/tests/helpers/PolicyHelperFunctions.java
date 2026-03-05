@@ -49,9 +49,10 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONST
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CX_ODRL_CONTEXT;
 
 public class PolicyHelperFunctions {
+
+    public static final String ODRL_CONTEXT = "https://w3id.org/dspace/2025/1/odrl-profile.jsonld";
 
     private static final String BUSINESS_PARTNER_EVALUATION_KEY = "BusinessPartnerNumber";
 
@@ -83,7 +84,7 @@ public class PolicyHelperFunctions {
 
     public static JsonObject frameworkPolicy(Map<String, String> permissions, String action) {
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(frameworkConstraint(new HashMap<>(permissions), action, Operator.EQ, false)))
@@ -96,7 +97,7 @@ public class PolicyHelperFunctions {
 
     public static JsonObject frameworkPolicy(Map<String, String> permissions, String action, Operator operator) {
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(frameworkConstraint(new HashMap<>(permissions), action, operator, false)))
@@ -106,7 +107,7 @@ public class PolicyHelperFunctions {
 
     public static JsonObject emptyPolicy() {
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .build();
     }
@@ -138,7 +139,7 @@ public class PolicyHelperFunctions {
                 .build();
 
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
@@ -179,7 +180,7 @@ public class PolicyHelperFunctions {
                 .build();
         
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
@@ -230,7 +231,7 @@ public class PolicyHelperFunctions {
 
     public static JsonObject bpnPolicy(String... bpns) {
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(permission(bpns)))
@@ -256,7 +257,7 @@ public class PolicyHelperFunctions {
                         .build())
                 .build();
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder()
                         .add(permission))
@@ -276,7 +277,7 @@ public class PolicyHelperFunctions {
                 .build();
 
         return Json.createObjectBuilder()
-                .add(CONTEXT, CX_ODRL_CONTEXT)
+                .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", permission)
                 .build();

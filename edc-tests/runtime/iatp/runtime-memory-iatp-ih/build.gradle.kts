@@ -30,6 +30,7 @@ dependencies {
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":core:json-ld-core"))
+    implementation(project(":core:json-ld-cx"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
 
     implementation(project(":edc-tests:runtime:iatp:iatp-extensions"))

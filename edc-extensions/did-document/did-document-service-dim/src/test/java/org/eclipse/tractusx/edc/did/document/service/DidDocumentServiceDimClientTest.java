@@ -73,8 +73,8 @@ class DidDocumentServiceDimClientTest {
     private final DimOauth2Client dimOauth2Client = mock(DimOauth2Client.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final Monitor monitor = mock(Monitor.class);
-    private final String dimUrl = "https://div.example.com";
-    private final String didDocApiUrl = String.join("", dimUrl, "/api/v2.0.0/companyIdentities");
+    private final String dimHost = "https://div.example.com";
+    private final String didDocApiUrl = String.join("", dimHost, "/api/v2.0.0/companyIdentities");
     private final String tenantBaseUrl = String.join("/", didDocApiUrl, COMPANY_ID);
     private final String didUpdateStatusUrl = String.join("", tenantBaseUrl + "/status");
     private final String ownDid = "did:web:example.com:123";
@@ -84,7 +84,7 @@ class DidDocumentServiceDimClientTest {
     @BeforeEach
     void setUp() {
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
-        client = new DidDocumentServiceDimClient(httpClient, dimOauth2Client, mapper, dimUrl, ownDid, monitor);
+        client = new DidDocumentServiceDimClient(httpClient, dimOauth2Client, mapper, dimHost, ownDid, monitor);
     }
 
     @Test

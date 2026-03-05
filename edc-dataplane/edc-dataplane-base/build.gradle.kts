@@ -23,6 +23,10 @@ plugins {
     id(libs.plugins.swagger.get().pluginId)
 }
 
+configurations.all {
+    exclude(group = "org.eclipse.edc", module = "data-plane-util")
+}
+
 dependencies {
     runtimeOnly(libs.edc.bom.dataplane.base)
 

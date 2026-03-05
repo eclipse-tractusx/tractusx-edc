@@ -1,6 +1,7 @@
 #################################################################################
 #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
 #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#  Copyright (c) 2026 Cofinity-X GmbH
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -65,9 +66,9 @@ jobs:
       fail-fast: false
       # this will verify that the official distribution of the Tractus-X EDC Helm chart runs on the last 3 Kubernetes versions
       matrix:
-        k8s-version: [ "v1.33.1",
-                       "v1.32.5",
-                       "v1.31.9" ]
+        k8s-version: [ "v1.35.1",
+                       "v1.34.3",
+                       "v1.33.7" ]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
