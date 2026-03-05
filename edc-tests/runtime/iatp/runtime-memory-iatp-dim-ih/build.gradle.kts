@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":core:json-ld-cx"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
+    implementation(project(":edc-extensions:dcp:cx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
 

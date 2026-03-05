@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp.scope;
+package org.eclipse.tractusx.edc.iam.dcp.cx.scope;
 
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreementMessage;
@@ -50,7 +50,7 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
-import static org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor.FRAMEWORK_AGREEMENT_LEFT_OPERAND;
+import static org.eclipse.tractusx.edc.iam.dcp.cx.scope.CredentialScopeExtractor.FRAMEWORK_AGREEMENT_LEFT_OPERAND;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.common.AbstractDynamicCredentialConstraintFunction.ACTIVE;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;

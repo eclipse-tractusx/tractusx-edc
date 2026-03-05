@@ -51,6 +51,7 @@ dependencies {
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":edc-extensions:data-flow-properties-provider"))
+    implementation(project(":edc-extensions:dcp:cx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
     implementation(project(":edc-extensions:dcp:verifiable-presentation-cache"))
