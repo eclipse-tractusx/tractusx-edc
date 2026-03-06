@@ -63,4 +63,6 @@ dependencies {
     runtimeOnly(libs.log4j2.core)
     runtimeOnly(libs.log4j2.json.template)
     runtimeOnly(libs.opentelemetry.log4j.appender)
+    runtimeOnly(libs.jacksonJsonP)
+    runtimeOnly(libs.jackson.tool.core)
 }
