@@ -28,6 +28,14 @@ configurations.all {
 }
 
 dependencies {
+    constraints {
+        implementation("tools.jackson.core:jackson-core:3.1.0") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("com.fasterxml.jackson.core:jackson-core:2.21.1") {
+            because("older version has vulnerability")
+        }
+    }
     runtimeOnly(libs.edc.bom.dataplane.base)
 
     implementation(project(":core:edr-core"))
