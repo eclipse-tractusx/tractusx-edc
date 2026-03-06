@@ -54,38 +54,10 @@ jobs:
             --wait-for-jobs --timeout=120s --dependency-update
             
             # wait for the pod to become ready
-            kubectl rollout status deployment tx-inmem --timeout=180s
+            kubectl rollout status deployment tx-inmem
             
-            # Print pod status before test
-            echo "=== Pod Status Before Test ==="
-            kubectl get pods -o wide
-            kubectl logs -l app.kubernetes.io/instance=tx-inmem --all-containers=true --tail=100
-            
-            # execute the helm test with longer timeout
-            set +e  # Don't exit on error
-            helm test tx-inmem --logs --timeout=10m
-            TEST_EXIT_CODE=$?
-            
-            # Capture full logs if test failed
-            if [ $TEST_EXIT_CODE -ne 0 ]; then
-              echo "=== TEST FAILED - Capturing Full Logs ==="
-              kubectl get pods -A
-              
-              # Get logs from both test containers
-              echo "=== Test Pod 'readiness' Container Logs ==="
-              kubectl logs tx-inmem-test -c readiness || echo "Container 'readiness' logs not available"
-              
-              echo "=== Test Pod 'mgmt-api-bpn-store' Container Logs ==="
-              kubectl logs tx-inmem-test -c mgmt-api-bpn-store || echo "Container 'mgmt-api-bpn-store' logs not available"
-              
-              echo "=== EDC Runtime Logs ==="
-              kubectl logs -l app.kubernetes.io/instance=tx-inmem --all-containers=true --tail=500
-              
-              kubectl describe pods -l app.kubernetes.io/instance=tx-inmem
-              kubectl describe pod tx-inmem-test
-              kubectl get events --sort-by='.lastTimestamp' | tail -50
-              exit $TEST_EXIT_CODE
-            fi
+            # execute the helm test
+            helm test tx-inmem
 
   test-hashicorp-postgres:
     runs-on: ubuntu-latest
@@ -113,31 +85,8 @@ jobs:
             --wait-for-jobs --timeout=120s    
 
             # wait for the pod to become ready
-            kubectl rollout status deployment tx-prod-controlplane --timeout=180s
-            kubectl rollout status deployment tx-prod-dataplane --timeout=180s
+            kubectl rollout status deployment tx-prod-controlplane
+            kubectl rollout status deployment tx-prod-dataplane
 
-            # Print status before test
-            echo "=== Pod Status Before Test ==="
-            kubectl get pods -o wide
-            kubectl logs -l app.kubernetes.io/instance=tx-prod --all-containers=true --tail=100
-            
             # execute the helm test using token based auth in the Management API
-            set +e
-            helm test tx-prod --logs --timeout=10m
-            TEST_EXIT_CODE=$?
-            
-            if [ $TEST_EXIT_CODE -ne 0 ]; then
-              echo "=== TEST FAILED - Full Logs ==="
-              kubectl get pods -A
-              
-              # Get logs from test containers if they exist
-              echo "=== Test Pod Container Logs ==="
-              kubectl logs tx-prod-test -c readiness 2>/dev/null || echo "No 'readiness' container in test pod"
-              kubectl logs tx-prod-test -c mgmt-api-bpn-store 2>/dev/null || echo "No 'mgmt-api-bpn-store' container in test pod"
-              
-              echo "=== EDC Runtime Logs ==="
-              kubectl logs -l app.kubernetes.io/instance=tx-prod --all-containers=true --tail=500
-              kubectl describe pods
-              kubectl get events --sort-by='.lastTimestamp' | tail -50
-              exit $TEST_EXIT_CODE
-            fi
+            helm test tx-prod

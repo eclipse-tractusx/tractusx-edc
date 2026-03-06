@@ -79,8 +79,8 @@ jobs:
             --version $RELEASE
           
           # wait for the pod to become ready
-          kubectl rollout status deployment tx-prod-controlplane --timeout=180s
-          kubectl rollout status deployment tx-prod-dataplane --timeout=180s
+          kubectl rollout status deployment tx-prod-controlplane
+          kubectl rollout status deployment tx-prod-dataplane
 
       - uses: ./.github/actions/setup-java
 
@@ -105,34 +105,11 @@ jobs:
             --wait-for-jobs --timeout=120s
           
            # wait for the pod to become ready
-          kubectl rollout status deployment tx-prod-controlplane --timeout=180s
-          kubectl rollout status deployment tx-prod-dataplane --timeout=180s
-          
-          # Print status before test
-          echo "=== Pod Status Before Test ==="
-          kubectl get pods -o wide
-          kubectl logs -l app.kubernetes.io/instance=tx-prod --all-containers=true --tail=100
+          kubectl rollout status deployment tx-prod-controlplane
+          kubectl rollout status deployment tx-prod-dataplane
           
           # execute the helm test
-          set +e
-          helm test tx-prod --logs --timeout=10m
-          TEST_EXIT_CODE=$?
-          
-          if [ $TEST_EXIT_CODE -ne 0 ]; then
-            echo "=== TEST FAILED - Full Logs ==="
-            kubectl get pods -A
-            
-            # Get logs from test containers if they exist
-            echo "=== Test Pod Container Logs ==="
-            kubectl logs tx-prod-test -c readiness 2>/dev/null || echo "No 'readiness' container in test pod"
-            kubectl logs tx-prod-test -c mgmt-api-bpn-store 2>/dev/null || echo "No 'mgmt-api-bpn-store' container in test pod"
-            
-            echo "=== EDC Runtime Logs ==="
-            kubectl logs -l app.kubernetes.io/instance=tx-prod --all-containers=true --tail=500
-            kubectl describe pods
-            kubectl get events --sort-by='.lastTimestamp' | tail -50
-            exit $TEST_EXIT_CODE
-          fi
+          helm test tx-prod
 
       - name: Print logs
         if: failure()

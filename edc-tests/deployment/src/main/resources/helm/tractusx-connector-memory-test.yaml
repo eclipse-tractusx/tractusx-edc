@@ -48,28 +48,6 @@ runtime:
   securityContext:
     # avoids some errors in the log: cannot write temp files of large multipart requests when R/O
     readOnlyRootFilesystem: false
-
-  # Jetty 12.1.6 compatibility settings
-  env:
-    EDC_WEB_HTTP_IDLE_TIMEOUT: "60000"
-    EDC_WEB_HTTP_THREAD_POOL_MIN: "8"
-
-  # Adjust readiness probe for Jetty 12.1.6
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 6
-
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 45
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-
   bdrs:
     server:
       url: "https://bdrs.test.org"
