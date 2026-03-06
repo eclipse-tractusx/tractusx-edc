@@ -32,6 +32,11 @@ configurations.all {
 }
 
 dependencies {
+    constraints {
+        implementation("tools.jackson.core:jackson-core:3.1.0") {
+            because("older version has vulnerability")
+        }
+    }
     runtimeOnly(libs.edc.bom.controlplane.base) {
         exclude(module = "dsp-2024")
     }
