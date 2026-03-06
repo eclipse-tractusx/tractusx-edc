@@ -33,7 +33,7 @@ configurations.all {
 
 dependencies {
     constraints {
-        implementation("org.eclipse.jetty:jetty-server:12.1.6") {
+        implementation("tools.jackson.core:jackson-core:3.1.0") {
             because("older version has vulnerability")
         }
     }
