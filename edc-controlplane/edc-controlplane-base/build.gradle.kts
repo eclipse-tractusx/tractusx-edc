@@ -77,4 +77,5 @@ dependencies {
     runtimeOnly(libs.opentelemetry.log4j.appender)
     runtimeOnly(libs.jacksonJsonP)
     runtimeOnly(libs.jackson.tool.core)
+    runtimeOnly(libs.jetty.server)
 }
