@@ -28,6 +28,17 @@ configurations.all {
 }
 
 dependencies {
+    constraints {
+        runtimeOnly("tools.jackson.core:jackson-core:3.1.0") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("com.fasterxml.jackson.core:jackson-core:2.21.1") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-server:12.1.7") {
+            because("older version has vulnerability")
+        }
+    }
     runtimeOnly(libs.edc.bom.dataplane.base)
 
     implementation(project(":core:edr-core"))
@@ -63,7 +74,4 @@ dependencies {
     runtimeOnly(libs.log4j2.core)
     runtimeOnly(libs.log4j2.json.template)
     runtimeOnly(libs.opentelemetry.log4j.appender)
-    runtimeOnly(libs.jacksonJsonP)
-    runtimeOnly(libs.jackson.tool.core)
-    runtimeOnly(libs.jetty.server)
 }
