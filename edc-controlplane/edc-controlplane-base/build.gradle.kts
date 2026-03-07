@@ -33,10 +33,28 @@ configurations.all {
 
 dependencies {
     constraints {
-        implementation("tools.jackson.core:jackson-core:3.1.0") {
+        runtimeOnly("tools.jackson.core:jackson-core:3.1.0") {
             because("older version has vulnerability")
         }
         runtimeOnly("com.fasterxml.jackson.core:jackson-core:2.21.1") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-server:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-http:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-security:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty.ee10:jetty-ee10-servlet:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty.websocket:jetty-websocket:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-session:12.1.7") {
             because("older version has vulnerability")
         }
     }
