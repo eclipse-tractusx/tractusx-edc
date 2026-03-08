@@ -1,3 +1,6 @@
+{{- if .Values.iatp.sts.dim.url }}
+⚠️ WARNING: '.Values.iatp.sts.dim.url' is deprecated, use `.Values.iatp.sts.div.url` instead.
+{{- end }}
 {{- range $.Values.controlplane.ingresses }}
   {{- if .enabled }}
     {{- if  (has "management" .endpoints) }}

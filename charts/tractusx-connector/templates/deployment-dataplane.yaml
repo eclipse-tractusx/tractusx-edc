@@ -230,9 +230,9 @@ spec:
               value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
               value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
-            {{- if .Values.iatp.sts.div.url }}
+            {{- if or .Values.iatp.sts.div.url .Values.iatp.sts.dim.url }}
             - name: "TX_EDC_IAM_STS_DIV_URL"
-              value: {{ .Values.iatp.sts.div.url | quote}}
+              value: {{ .Values.iatp.sts.div.url | default .Values.iatp.sts.dim.url | quote }}
             {{- end }}
 
             ################
