@@ -35,8 +35,8 @@ import java.util.function.Supplier;
 
 public interface Runtimes {
 
-    static RuntimeExtension dimRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
-        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih", keyPair, configurationProvider)
+    static RuntimeExtension divRuntime(String name, KeyPair keyPair, Supplier<Config> configurationProvider) {
+        return genericRuntime(name, ":edc-tests:runtime:iatp:runtime-memory-iatp-div-ih", keyPair, configurationProvider)
                 .registerSystemExtension(ServiceExtension.class, new VaultSeedExtension(Map.of("client_secret_alias", "client_secret")));
     }
 

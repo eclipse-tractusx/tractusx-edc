@@ -25,8 +25,8 @@ plugins {
 
 dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
-        exclude(module = "cx-dcp")
-        exclude(module = "tx-dcp-sts-dim")
+        exclude(module = "tx-dcp")
+        exclude(module = "tx-dcp-sts-div")
     }
 
     implementation(project(":edc-dataplane:edc-dataplane-base")) {
