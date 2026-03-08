@@ -48,16 +48,16 @@ iatp:
   #     - "MembershipCredential"
   # - "did:web:example2.com"
   sts:
-    dim:
+    div:
       # -- URL where connectors can request SI tokens
       url:
     oauth:
-      # -- URL where connectors can request OAuth2 access tokens for DIM access
+      # -- URL where connectors can request OAuth2 access tokens for DIV access
       token_url:
       client:
-        # -- Client ID for requesting OAuth2 access token for DIM access
+        # -- Client ID for requesting OAuth2 access token for DIV access
         id:
-        # -- Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIM access
+        # -- Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access
         secret_alias:
   didService:
     selfRegistration:
