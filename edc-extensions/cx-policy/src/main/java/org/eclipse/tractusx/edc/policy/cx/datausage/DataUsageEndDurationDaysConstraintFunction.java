@@ -63,8 +63,8 @@ public class DataUsageEndDurationDaysConstraintFunction<C extends AgreementPolic
                         .plus(rightValue, ChronoUnit.DAYS))
                 .map(expiryDate -> Instant.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate))
                 .orElse(failure -> {
-                        context.reportProblem("Failed to evaluate constraint due to invalid right operand: '%s'. Problems: %s".formatted(rightOperand, failure));
-                        return false;
+                    context.reportProblem("Failed to evaluate constraint due to invalid right operand: '%s'. Problems: %s".formatted(rightOperand, failure));
+                    return false;
                 });
     }
 
