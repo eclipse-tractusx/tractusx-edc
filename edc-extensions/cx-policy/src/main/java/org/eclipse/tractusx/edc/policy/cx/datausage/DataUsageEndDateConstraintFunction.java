@@ -45,11 +45,6 @@ public class DataUsageEndDateConstraintFunction<C extends AgreementPolicyContext
 
     @Override
     public boolean evaluate(Operator operator, Object rightOperand, Permission rule, C context) {
-        if (rightOperand == null) {
-            context.reportProblem("Right-value is null.");
-            return false;
-        }
-
         try {
             var expiryDate = Instant.parse(rightOperand.toString());
             return Instant.now().truncatedTo(ChronoUnit.SECONDS).isBefore(expiryDate);
@@ -61,6 +56,10 @@ public class DataUsageEndDateConstraintFunction<C extends AgreementPolicyContext
 
     @Override
     public Result<Void> validate(Operator operator, Object rightOperand, Permission rule) {
+        if (rightOperand == null) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received null.".formatted(ALLOWED_OPERATORS));
+        }
+
         if (!ALLOWED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }

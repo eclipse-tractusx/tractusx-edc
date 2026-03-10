@@ -40,61 +40,44 @@ public class DataUsageEndDurationDaysConstraintFunction<C extends AgreementPolic
             Operator.EQ
     );
 
-    private Integer extractRightValue(Object rightOperand, C context) {
+    private Result<Integer> extractRightValue(Object rightOperand) {
         if (rightOperand instanceof Integer) {
-            return (Integer) rightOperand;
+            return Result.success((Integer) rightOperand);
         } else if (rightOperand instanceof String rightValue) {
             try {
-                return Integer.parseInt(rightValue);
+                return Result.success(Integer.parseInt(rightValue));
             } catch (NumberFormatException e) {
-                context.reportProblem("Right-value string is not a valid integer: " + rightOperand);
-                return null;
-            }
-        }
-
-        context.reportProblem("Right-value expected to be integer or string, but was " + rightOperand.getClass());
-        return null;
-    }
-
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C context) {
-        if (rightOperand == null) {
-            context.reportProblem("Right-value is null.");
-            return false;
-        }
-
-        Integer rightValue = extractRightValue(rightOperand, context);
-        if (rightValue == null) {
-            return false;
-        }
-
-        Instant expiryDate = Instant.ofEpochSecond(context.contractAgreement().getContractSigningDate())
-                .truncatedTo(ChronoUnit.DAYS)
-                .plus(rightValue, ChronoUnit.DAYS);
-
-        return Instant.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate);
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        if (rightValue instanceof Integer) {
-            return Result.success();
-        }
-
-        if (rightValue instanceof String operand) {
-            try {
-                Integer.parseInt(operand);
-                return Result.success();
-            } catch (NumberFormatException e) {
-                return Result.failure("Invalid right-operand: value must be a valid integer, but got '%s'.".formatted(operand));
+                return Result.failure("Invalid right-operand: value must be a valid integer, but got '%s'.".formatted(rightOperand));
             }
         }
 
         return Result.failure("Invalid right-operand: this constraint only allows integer values or strings representing integers, but got '%s'."
-                .formatted(rightValue != null ? rightValue.getClass().getName() : "null"));
+                .formatted(rightOperand != null ? rightOperand.getClass().getName() : "null"));
+    }
+
+    @Override
+    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C context) {
+        return extractRightValue(rightOperand)
+                .map(rightValue -> Instant.ofEpochSecond(context.contractAgreement().getContractSigningDate())
+                        .truncatedTo(ChronoUnit.DAYS)
+                        .plus(rightValue, ChronoUnit.DAYS))
+                .map(expiryDate -> Instant.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate))
+                .orElse(failure -> {
+                        context.reportProblem("Failed to evaluate constraint due to invalid right operand: '%s'. Problems: %s".formatted(rightOperand, failure));
+                        return false;
+                });
+    }
+
+    @Override
+    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
+        if (rightValue == null) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received null.".formatted(ALLOWED_OPERATORS));
+        }
+
+        if (!ALLOWED_OPERATORS.contains(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
+        }
+
+        return extractRightValue(rightValue).mapEmpty();
     }
 }
