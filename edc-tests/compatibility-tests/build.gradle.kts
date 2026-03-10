@@ -24,6 +24,7 @@ plugins {
 
 configurations.all {
     exclude("org.eclipse.edc", "decentralized-claims-core")
+    exclude("org.eclipse.tractusx.edc", "cx-policy")
 }
 
 dependencies {

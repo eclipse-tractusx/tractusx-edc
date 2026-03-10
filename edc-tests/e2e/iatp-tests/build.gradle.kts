@@ -25,6 +25,7 @@ plugins {
 configurations.all {
     exclude("com.networknt", "json-schema-validator")
     exclude("org.eclipse.edc", "decentralized-claims-core")
+    exclude("org.eclipse.tractusx.edc", "cx-policy")
 }
 
 dependencies {
