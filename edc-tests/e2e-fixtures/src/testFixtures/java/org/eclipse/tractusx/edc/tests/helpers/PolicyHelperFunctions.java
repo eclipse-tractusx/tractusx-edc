@@ -49,6 +49,8 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONST
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DATE_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_USAGE_END_DURATION_LITERAL;
 
 public class PolicyHelperFunctions {
 
@@ -338,5 +340,37 @@ public class PolicyHelperFunctions {
             builder.add("rightOperand", rightOperand.toString());
         }
         return builder.build();
+    }
+
+    public static JsonObject dataUsageEndDurationDays(Integer duration) {
+        var constraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint(DATA_USAGE_END_DURATION_LITERAL, "eq", duration, false))
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        return policy(List.of(Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", constraint)
+                .build()));
+    }
+
+    public static JsonObject dataUsageEndDate(String endDate) {
+        var constraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint(DATA_USAGE_END_DATE_LITERAL, "eq", endDate, false))
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        return policy(List.of(Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", constraint)
+                .build()));
     }
 }

@@ -30,6 +30,7 @@ dependencies {
     testFixturesApi(project(":edc-extensions:agreements:retirement-evaluation-spi"))
     testFixturesApi(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
     testFixturesApi(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
+    testFixturesApi(project(":edc-extensions:cx-policy"))
     testFixturesApi(project(":core:json-ld-core"))
     testFixturesApi(project(":core:json-ld-cx"))
 

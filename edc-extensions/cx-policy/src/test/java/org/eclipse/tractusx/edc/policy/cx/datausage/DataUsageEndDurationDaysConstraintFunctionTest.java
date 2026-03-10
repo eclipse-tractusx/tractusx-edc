@@ -19,25 +19,40 @@
 
 package org.eclipse.tractusx.edc.policy.cx.datausage;
 
-import org.eclipse.edc.participant.spi.ParticipantAgent;
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.tractusx.edc.policy.cx.TestAgreementPolicyContext;
 import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.mockito.Mockito.mock;
 
 class DataUsageEndDurationDaysConstraintFunctionTest {
 
-    private final ParticipantAgent participantAgent = mock();
-    private final DataUsageEndDurationDaysConstraintFunction<ParticipantAgentPolicyContext> function = new DataUsageEndDurationDaysConstraintFunction<>();
-    private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
+    private final DataUsageEndDurationDaysConstraintFunction<AgreementPolicyContext> function = new DataUsageEndDurationDaysConstraintFunction<>();
 
     @Test
-    void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, 1, null, context)).isTrue();
+    void evaluate_whenPolicyIsValid_thenTrue() {
+        var validContext = new TestAgreementPolicyContext();
+        var result = function.evaluate(Operator.EQ, 1, null, validContext);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void evaluate_whenPolicyIsInSameDay_thenFalse() {
+        var expiredContext = new TestAgreementPolicyContext();
+        var result = function.evaluate(Operator.EQ, 0, null, expiredContext);
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void evaluate_whenPolicyIsExpired_thenFalse() {
+        var expiredContext = new TestAgreementPolicyContext(Instant.now().minus(1, ChronoUnit.DAYS));
+        var result = function.evaluate(Operator.EQ, -1, null, expiredContext);
+        assertThat(result).isFalse();
     }
 
     @Test

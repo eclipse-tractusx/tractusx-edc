@@ -19,27 +19,60 @@
 
 package org.eclipse.tractusx.edc.policy.cx.datausage;
 
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.Result;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 /**
- * This is a placeholder constraint function for DataUsageEndDurationDays. It always returns true but allows
- * the validation of policies to be strictly enforced.
+ * This is a constraint function for DataUsageEndDurationDays. It evaluates to true if the current date is before the
+ * expiry date, which is calculated by adding the specified number of days to the contract signing date. The contract
+ * signing date is retrieved from the agreement context.
  */
-public class DataUsageEndDurationDaysConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class DataUsageEndDurationDaysConstraintFunction<C extends AgreementPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String DATA_USAGE_END_DURATION_DAYS = "DataUsageEndDurationDays";
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
     );
 
+    private Integer extractRightValue(Object rightOperand, C context) {
+        if (rightOperand instanceof Integer) {
+            return (Integer) rightOperand;
+        } else if (rightOperand instanceof String rightValue) {
+            try {
+                return Integer.parseInt(rightValue);
+            } catch (NumberFormatException e) {
+                context.reportProblem("Right-value string is not a valid integer: " + rightOperand);
+                return null;
+            }
+        }
+
+        context.reportProblem("Right-value expected to be integer or string, but was " + rightOperand.getClass());
+        return null;
+    }
+
     @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
+    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C context) {
+        if (rightOperand == null) {
+            context.reportProblem("Right-value is null.");
+            return false;
+        }
+
+        Integer rightValue = extractRightValue(rightOperand, context);
+        if (rightValue == null) {
+            return false;
+        }
+
+        Instant expiryDate = Instant.ofEpochSecond(context.contractAgreement().getContractSigningDate())
+                .truncatedTo(ChronoUnit.DAYS)
+                .plus(rightValue, ChronoUnit.DAYS);
+
+        return Instant.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate);
     }
 
     @Override
