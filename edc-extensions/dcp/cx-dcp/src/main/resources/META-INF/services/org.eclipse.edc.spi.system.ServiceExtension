@@ -19,4 +19,4 @@
 #################################################################################
 
 org.eclipse.tractusx.edc.iam.dcp.cx.CxDcpDefaultScopeExtension
-org.eclipse.tractusx.edc.iam.dcp.cx.IatpScopeExtractorExtension
+org.eclipse.tractusx.edc.iam.dcp.cx.CxDcpScopeExtractorExtension

@@ -20,31 +20,32 @@
 package org.eclipse.tractusx.edc.iam.dcp.cx;
 
 import org.eclipse.edc.iam.decentralizedclaims.spi.scope.ScopeExtractorRegistry;
-import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.iam.dcp.cx.scope.CredentialScopeExtractor;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.eclipse.tractusx.edc.iam.dcp.cx.scope.CxCredentialScopeExtractor;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.eclipse.tractusx.edc.iam.dcp.cx.CxDcpScopeExtractorExtension.NAME;
 
-@ExtendWith(DependencyInjectionExtension.class)
-public class IatpScopeExtractorExtensionTest {
+@Extension(NAME)
+public class CxDcpScopeExtractorExtension implements ServiceExtension {
+    static final String NAME = "Tractusx scope extractor extension";
 
-    private final ScopeExtractorRegistry extractorRegistry = mock();
+    @Inject
+    private ScopeExtractorRegistry scopeExtractorRegistry;
 
-    @BeforeEach
-    void setup(ServiceExtensionContext context) {
-        context.registerService(ScopeExtractorRegistry.class, extractorRegistry);
+    @Inject
+    private Monitor monitor;
+
+    @Override
+    public String name() {
+        return NAME;
     }
 
-    @Test
-    void initialize(ServiceExtensionContext context, IatpScopeExtractorExtension extension) {
-        extension.initialize(context);
-
-        verify(extractorRegistry).registerScopeExtractor(isA(CredentialScopeExtractor.class));
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        scopeExtractorRegistry.registerScopeExtractor(new CxCredentialScopeExtractor(monitor));
     }
 }
