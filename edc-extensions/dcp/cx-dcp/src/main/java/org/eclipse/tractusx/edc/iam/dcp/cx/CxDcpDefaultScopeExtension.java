@@ -41,7 +41,6 @@ import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V
 import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.dcp.cx.CxDcpDefaultScopeExtension.NAME;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
 
 @Extension(NAME)
 public class CxDcpDefaultScopeExtension implements ServiceExtension {
@@ -61,22 +60,16 @@ public class CxDcpDefaultScopeExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var defaultScopes = defaultScopes(context);
-        if (!defaultScopes.isEmpty()) {
-            policyEngine.registerPostValidator(RequestCatalogPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
-            policyEngine.registerPostValidator(RequestContractNegotiationPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
-            policyEngine.registerPostValidator(RequestTransferProcessPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
-        }
+        policyEngine.registerPostValidator(RequestCatalogPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
+        policyEngine.registerPostValidator(RequestContractNegotiationPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
+        policyEngine.registerPostValidator(RequestTransferProcessPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
     }
 
     private Map<String, Set<String>> defaultScopes(ServiceExtensionContext context) {
-        var config = context.getConfig(TX_IATP_DEFAULT_SCOPE_PREFIX);
         var scopesByVersion = new HashMap<String, Set<String>>();
-        if (config.getEntries().isEmpty()) {
-            monitor.info(format("No default scope from configuration. Using the default ones %s for %s and %s for %s",
-                    DSP_SCOPE_V_2025_1, DEFAULT_SCOPES, DSP_SCOPE_V_08, V08_DEFAULT_SCOPES));
-            scopesByVersion.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
-            scopesByVersion.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);
-        }
+        scopesByVersion.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
+        scopesByVersion.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);
+        monitor.info(format("Registering catena-x default scopes %s", scopesByVersion));
         return scopesByVersion;
     }
 }

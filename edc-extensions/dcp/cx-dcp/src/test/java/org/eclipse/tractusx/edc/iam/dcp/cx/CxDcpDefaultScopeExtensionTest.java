@@ -42,11 +42,9 @@ import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V
 import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,9 +83,13 @@ public class CxDcpDefaultScopeExtensionTest {
         when(context.getConfig(TX_IATP_DEFAULT_SCOPE_PREFIX)).thenReturn(cfg);
         extension.initialize(context);
 
-        verify(policyEngine, never()).registerPostValidator(eq(RequestCatalogPolicyContext.class), any());
-        verify(policyEngine, never()).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), any());
-        verify(policyEngine, never()).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), any());
+        var scopes = new HashMap<String, Set<String>>();
+        scopes.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
+        scopes.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);
+
+        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(scopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(scopes)));
+        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(scopes)));
     }
 
     private record ScopeMatcher(Map<String, Set<String>> expectedScopes) implements ArgumentMatcher<DefaultScopeExtractor> {
