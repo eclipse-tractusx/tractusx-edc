@@ -39,12 +39,14 @@ import org.eclipse.tractusx.edc.iam.dcp.sts.div.DivSecureTokenService;
 import org.eclipse.tractusx.edc.iam.dcp.sts.div.oauth.DivOauth2Client;
 
 import static java.util.Optional.ofNullable;
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.propertyCompatibility;
 
 @Extension(RemoteTokenServiceClientExtension.NAME)
 public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     @Setting(value = "STS Div endpoint")
     public static final String DIV_URL = "tx.edc.iam.sts.div.url";
+    public static final String DIM_URL_DEPRECATED = "tx.edc.iam.sts.dim.url";
     protected static final String NAME = "Secure Token Service (STS) client extension";
 
     @Inject
@@ -69,7 +71,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     @Provider
     public SecureTokenService secureTokenService(ServiceExtensionContext context) {
-        var divUrlConfig = context.getSetting(DIV_URL, null);
+        var divUrlConfig = propertyCompatibility(context, DIV_URL, DIM_URL_DEPRECATED, null);
         return ofNullable(divUrlConfig)
                 .map(PathUtils::removeTrailingSlash)
                 .map(divUrl -> {
