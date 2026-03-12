@@ -47,6 +47,10 @@ public class DidDocumentServiceDivClientExtension implements ServiceExtension {
     @Inject
     private Monitor monitor;
 
+    @Deprecated(since = "0.13.0")
+    @Setting(key = "tx.edc.iam.sts.dim.url", description = "STS Dim endpoint (Deprecated)", required = false)
+    private String dimUrlDeprecated;
+
     @Setting(key = "tx.edc.iam.sts.div.url", description = "STS Div endpoint", required = false)
     private String divUrl;
 
@@ -56,14 +60,15 @@ public class DidDocumentServiceDivClientExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
 
-        if (divUrl == null || divUrl.isBlank() || divOauth2Client == null) {
+        var divUrlConfig = divUrl != null ? divUrl : dimUrlDeprecated;
+        if (divUrlConfig == null || divUrlConfig.isBlank() || divOauth2Client == null) {
             monitor.info("DidDocumentServiceDIVClient will not be registered because DIV URL not configured or an implementation of DivOauth2Client is missing");
         } else {
             var client = new DidDocumentServiceDivClient(
                     httpClient,
                     divOauth2Client,
                     typeManager.getMapper(),
-                    getHostWithScheme(divUrl),
+                    getHostWithScheme(divUrlConfig),
                     ownDid,
                     monitor);
             context.registerService(DidDocumentServiceClient.class, client);
