@@ -48,6 +48,9 @@ iatp:
   #     - "MembershipCredential"
   # - "did:web:example2.com"
   sts:
+    dim:
+      # -- Deprecated (Will be removed in future release): use `div.url` instead.
+      url:
     div:
       # -- URL where connectors can request SI tokens
       url:
