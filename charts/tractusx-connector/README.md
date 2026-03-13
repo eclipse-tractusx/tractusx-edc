@@ -13,8 +13,8 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 
 ### Preconditions
 
-- You'll need an account with DIM, the wallet for VerifiableCredentials
-- the necessary set of VerifiableCredentials for this participant must already be issued to your DIM tenant. This is typically done by the
+- You'll need an account with DIV, the wallet for VerifiableCredentials
+- the necessary set of VerifiableCredentials for this participant must already be issued to your DIV tenant. This is typically done by the
   Portal during participant onboarding
 - the client ID and client secret corresponding to that account must be known
 
@@ -27,10 +27,10 @@ This chart is intended for use with an _existing_ PostgreSQL database and an _ex
 ### Configure the chart
 
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
-- `iatp.sts.oauth.token_url`: the token endpoint of DIM
-- `iatp.sts.oauth.client.id`: the client ID of your tenant in DIM
-- `iatp.sts.oauth.client.secret_alias`: alias under which you saved your DIM client secret in the vault
-- `iatp.sts.dim.url`: the base URL for DIM
+- `iatp.sts.oauth.token_url`: the token endpoint of DIV
+- `iatp.sts.oauth.client.id`: the client ID of your tenant in DIV
+- `iatp.sts.oauth.client.secret_alias`: alias under which you saved your DIV client secret in the vault
+- `iatp.sts.div.url`: the base URL for DIV
 
 In addition, in order to map BPNs to DIDs, a new service is required, called the BPN-DID Resolution Service, which
 must be configured:
@@ -272,10 +272,11 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | iatp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
 | iatp.didService.selfRegistration.id | string | `"did:web:changeme"` | Unique id of connector to be used for register / unregister service inside did document (must be valid URI) |
 | iatp.id | string | `"did:web:changeme"` | Decentralized IDentifier (DID) of the connector |
-| iatp.sts.dim.url | string | `nil` | URL where connectors can request SI tokens |
-| iatp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIM access |
-| iatp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIM access |
-| iatp.sts.oauth.token_url | string | `nil` | URL where connectors can request OAuth2 access tokens for DIM access |
+| iatp.sts.dim.url | string | `nil` | Deprecated (Will be removed in future release): use `div.url` instead. |
+| iatp.sts.div.url | string | `nil` | URL where connectors can request SI tokens |
+| iatp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIV access |
+| iatp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
+| iatp.sts.oauth.token_url | string | `nil` | URL where connectors can request OAuth2 access tokens for DIV access |
 | iatp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | install.postgresql | bool | `true` | Deploying a PostgreSQL instance |
