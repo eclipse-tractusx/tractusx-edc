@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp.scope;
+package org.eclipse.tractusx.edc.iam.dcp.cx.scope;
 
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequestMessage;
@@ -45,7 +45,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
  * Extract and map from the Credential DSL the required credential type
  * The left operand should be bound to the namespace {@link org.eclipse.tractusx.edc.edr.spi.CoreConstants#CX_CREDENTIAL_NS}
  */
-public class CredentialScopeExtractor implements ScopeExtractor {
+public class CxCredentialScopeExtractor implements ScopeExtractor {
     public static final String FRAMEWORK_AGREEMENT_LEFT_OPERAND = "FrameworkAgreement";
     public static final String DATA_EXCHANGE_GOVERNANCE = "DataExchangeGovernance";
     public static final String SCOPE_FORMAT = "%s:%s:read";
@@ -61,7 +61,7 @@ public class CredentialScopeExtractor implements ScopeExtractor {
 
     private final Monitor monitor;
 
-    public CredentialScopeExtractor(Monitor monitor) {
+    public CxCredentialScopeExtractor(Monitor monitor) {
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 

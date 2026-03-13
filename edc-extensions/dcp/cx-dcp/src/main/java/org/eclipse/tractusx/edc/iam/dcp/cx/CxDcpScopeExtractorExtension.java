@@ -17,7 +17,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp;
+package org.eclipse.tractusx.edc.iam.dcp.cx;
 
 import org.eclipse.edc.iam.decentralizedclaims.spi.scope.ScopeExtractorRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -25,13 +25,12 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor;
+import org.eclipse.tractusx.edc.iam.dcp.cx.scope.CxCredentialScopeExtractor;
 
-import static org.eclipse.tractusx.edc.iam.iatp.IatpScopeExtractorExtension.NAME;
-
+import static org.eclipse.tractusx.edc.iam.dcp.cx.CxDcpScopeExtractorExtension.NAME;
 
 @Extension(NAME)
-public class IatpScopeExtractorExtension implements ServiceExtension {
+public class CxDcpScopeExtractorExtension implements ServiceExtension {
     static final String NAME = "Tractusx scope extractor extension";
 
     @Inject
@@ -47,6 +46,6 @@ public class IatpScopeExtractorExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        scopeExtractorRegistry.registerScopeExtractor(new CredentialScopeExtractor(monitor));
+        scopeExtractorRegistry.registerScopeExtractor(new CxCredentialScopeExtractor(monitor));
     }
 }
