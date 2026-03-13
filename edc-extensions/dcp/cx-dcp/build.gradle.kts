@@ -26,13 +26,15 @@ plugins {
 dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.policyengine)
+    implementation(libs.edc.spi.decentralized.claims)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.transfer)
     implementation(libs.edc.spi.catalog)
     implementation(libs.dsp.spi.v2025)
     implementation(libs.dsp.spi.v08)
     implementation(project(":spi:core-spi"))
-    implementation(project(":core:core-utils"))
+    implementation(project(":edc-extensions:dcp:tx-dcp"))
 
     testImplementation(libs.edc.junit)
+    testImplementation(project(":edc-extensions:cx-policy-legacy"))
 }

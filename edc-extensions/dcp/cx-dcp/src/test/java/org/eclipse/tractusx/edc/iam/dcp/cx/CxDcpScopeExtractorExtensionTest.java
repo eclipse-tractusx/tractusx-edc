@@ -17,12 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp;
+package org.eclipse.tractusx.edc.iam.dcp.cx;
 
 import org.eclipse.edc.iam.decentralizedclaims.spi.scope.ScopeExtractorRegistry;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor;
+import org.eclipse.tractusx.edc.iam.dcp.cx.scope.CxCredentialScopeExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class IatpScopeExtractorExtensionTest {
+public class CxDcpScopeExtractorExtensionTest {
 
     private final ScopeExtractorRegistry extractorRegistry = mock();
 
@@ -42,9 +42,9 @@ public class IatpScopeExtractorExtensionTest {
     }
 
     @Test
-    void initialize(ServiceExtensionContext context, IatpScopeExtractorExtension extension) {
+    void initialize(ServiceExtensionContext context, CxDcpScopeExtractorExtension extension) {
         extension.initialize(context);
 
-        verify(extractorRegistry).registerScopeExtractor(isA(CredentialScopeExtractor.class));
+        verify(extractorRegistry).registerScopeExtractor(isA(CxCredentialScopeExtractor.class));
     }
 }

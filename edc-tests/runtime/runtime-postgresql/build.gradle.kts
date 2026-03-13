@@ -26,7 +26,7 @@ plugins {
 dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
         exclude("org.eclipse.edc", "vault-hashicorp")
-        exclude(module = "tx-dcp")
+        exclude(module = "cx-dcp")
         exclude(module = "tx-dcp-sts-dim")
     }
 
