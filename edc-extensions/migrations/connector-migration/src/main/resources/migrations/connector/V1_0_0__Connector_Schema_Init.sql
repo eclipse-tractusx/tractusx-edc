@@ -82,12 +82,6 @@ CREATE TABLE edc_edr_entry (
     created_at bigint NOT NULL
 );
 
-CREATE TABLE edc_federated_catalog (
-    id character varying NOT NULL,
-    catalog json,
-    marked boolean DEFAULT false
-);
-
 CREATE TABLE edc_jti_validation (
     token_id character varying NOT NULL,
     expires_at bigint
@@ -185,9 +179,6 @@ ALTER TABLE ONLY edc_data_plane_instance
 
 ALTER TABLE ONLY edc_edr_entry
     ADD CONSTRAINT edc_edr_entry_pkey PRIMARY KEY (transfer_process_id);
-
-ALTER TABLE ONLY edc_federated_catalog
-    ADD CONSTRAINT edc_federated_catalog_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY edc_jti_validation
     ADD CONSTRAINT edc_jti_validation_pkey PRIMARY KEY (token_id);

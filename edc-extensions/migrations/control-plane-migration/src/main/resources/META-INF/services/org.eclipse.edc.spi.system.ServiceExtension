@@ -26,7 +26,6 @@ org.eclipse.tractusx.edc.postgresql.migration.ContractDefinitionPostgresqlMigrat
 org.eclipse.tractusx.edc.postgresql.migration.ContractNegotiationPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.DataPlaneInstancePostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.EdrIndexPostgresqlMigrationExtension
-org.eclipse.tractusx.edc.postgresql.migration.FederatedCatalogCacheMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.JtiValidationPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.PolicyMonitorPostgresqlMigrationExtension
 org.eclipse.tractusx.edc.postgresql.migration.PolicyPostgresqlMigrationExtension
