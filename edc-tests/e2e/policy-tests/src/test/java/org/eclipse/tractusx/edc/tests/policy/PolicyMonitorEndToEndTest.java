@@ -30,6 +30,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,8 +50,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_P
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataUsageEndDate;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -89,7 +91,7 @@ public class PolicyMonitorEndToEndTest {
     }
 
     @Test
-    void shouldTerminateTransfer_whenPolicyExpires() {
+    void shouldTerminateTransfer_whenDataUsageEndDatePolicyExpires() {
         var assetId = UUID.randomUUID().toString();
 
         Map<String, Object> dataAddress = Map.of(
@@ -103,10 +105,9 @@ public class PolicyMonitorEndToEndTest {
 
         var accessPolicy = emptyPolicy();
         var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy);
-        var usagePolicy = inForceDateUsagePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
+        var usagePolicy = dataUsageEndDate(Instant.now().plusSeconds(30).truncatedTo(ChronoUnit.SECONDS).toString());
         var usagePolicyId = PROVIDER.createPolicyDefinition(usagePolicy);
         PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), accessPolicyId, usagePolicyId);
-
 
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("HttpData-PULL")

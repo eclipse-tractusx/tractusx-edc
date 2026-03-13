@@ -19,24 +19,62 @@
 
 package org.eclipse.tractusx.edc.policy.cx.datausage;
 
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
+import org.eclipse.edc.spi.result.Result;
 
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
- * This is a placeholder constraint function for DataUsageEndDate. It always returns true but allows
- * the validation of policies to be strictly enforced.
+ * This is a constraint function for DataUsageEndDate. It evaluates to true if the current date is before the specified
+ * expiry date. The expiry date is expected to be in ISO-8061 UTC date-time format (e.g. "2024-12-31T23:59:59Z").
  */
-public class DataUsageEndDateConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
+public class DataUsageEndDateConstraintFunction<C extends AgreementPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
     public static final String DATA_USAGE_END_DATE = "DataUsageEndDate";
+    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
+            Operator.EQ
+    );
 
-    public DataUsageEndDateConstraintFunction() {
-        super(
-                Set.of(Operator.EQ),
-                "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$"
-        );
+    private static final String DATE_PATTERN = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$";
+
+    @Override
+    public boolean evaluate(Operator operator, Object rightOperand, Permission rule, C context) {
+        try {
+            var expiryDate = Instant.parse(rightOperand.toString());
+            return Instant.now().truncatedTo(ChronoUnit.SECONDS).isBefore(expiryDate);
+        } catch (DateTimeParseException e) {
+            context.reportProblem("Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN));
+            return false;
+        }
+    }
+
+    @Override
+    public Result<Void> validate(Operator operator, Object rightOperand, Permission rule) {
+        if (rightOperand == null) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received null.".formatted(ALLOWED_OPERATORS));
+        }
+
+        if (!ALLOWED_OPERATORS.contains(operator)) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
+        }
+
+        var compiledPattern = Pattern.compile(DATE_PATTERN);
+        if (!(rightOperand instanceof String rightValue && compiledPattern.matcher(rightValue).matches())) {
+            return Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN));
+        }
+
+        try {
+            Instant.parse(rightValue);
+        } catch (DateTimeParseException e) {
+            return Result.failure("Invalid right-operand: right operand must be a valid ISO-8061 UTC date-time string matching pattern '%s'".formatted(DATE_PATTERN));
+        }
+
+        return Result.success();
     }
 }
