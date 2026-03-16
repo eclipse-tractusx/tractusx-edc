@@ -272,7 +272,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | iatp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
 | iatp.didService.selfRegistration.id | string | `"did:web:changeme"` | Unique id of connector to be used for register / unregister service inside did document (must be valid URI) |
 | iatp.id | string | `"did:web:changeme"` | Decentralized IDentifier (DID) of the connector |
-| iatp.sts.dim.url | string | `nil` | Deprecated (Will be removed in future release): use `div.url` instead. |
 | iatp.sts.div.url | string | `nil` | URL where connectors can request SI tokens |
 | iatp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIV access |
 | iatp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
