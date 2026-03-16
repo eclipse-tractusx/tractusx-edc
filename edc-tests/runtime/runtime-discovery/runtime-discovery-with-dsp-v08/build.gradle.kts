@@ -26,7 +26,7 @@ plugins {
 dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "cx-dcp")
-        exclude(module = "tx-dcp-sts-dim")
+        exclude(module = "tx-dcp-sts-div")
         exclude(module = "dataspace-protocol")
         exclude(module= "dsp-2024")
         exclude(module= "dsp-2025")

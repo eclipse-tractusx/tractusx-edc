@@ -35,7 +35,7 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 public abstract class TractusxIatpParticipantBase extends TractusxParticipantBase {
 
     protected final LazySupplier<URI> csService = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/resolution"));
-    protected LazySupplier<URI> dimUri;
+    protected LazySupplier<URI> divUri;
     protected LazySupplier<URI> credentialServiceUri;
     protected LazySupplier<URI> stsUri;
     protected String stsClientId;
@@ -79,8 +79,8 @@ public abstract class TractusxIatpParticipantBase extends TractusxParticipantBas
             return self();
         }
 
-        public B dimUri(LazySupplier<URI> dimUri) {
-            participant.dimUri = dimUri;
+        public B divUri(LazySupplier<URI> divUri) {
+            participant.divUri = divUri;
             return self();
         }
 

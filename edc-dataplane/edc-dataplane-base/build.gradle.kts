@@ -60,7 +60,7 @@ dependencies {
     implementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     implementation(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
     implementation(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
-    implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    implementation(project(":edc-extensions:dcp:tx-dcp-sts-div"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:event-subscriber"))
     implementation(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"))

@@ -27,7 +27,7 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
         exclude("org.eclipse.edc", "vault-hashicorp")
         exclude(module = "cx-dcp")
-        exclude(module = "tx-dcp-sts-dim")
+        exclude(module = "tx-dcp-sts-div")
     }
 
     implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
