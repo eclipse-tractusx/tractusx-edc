@@ -19,48 +19,65 @@
 
 package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.result.Result;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 /**
- * This is a placeholder constraint function for DataProvisioningEndDurationDays. It always returns true but allows
- * the validation of policies to be strictly enforced.
+ * This is a constraint function for DataProvisioningEndDurationDays. It evaluates to true if the current date is before the
+ * expiry date, which is calculated by adding the specified number of days to the contract signing date. The contract
+ * signing date is retrieved from the agreement context.
  */
-public class DataProvisioningEndDurationDaysConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Duty, C> {
+public class DataProvisioningEndDurationDaysConstraintFunction<C extends AgreementPolicyContext> implements AtomicConstraintRuleFunction<Duty, C> {
     public static final String DATA_PROVISIONING_END_DURATION_DAYS = "DataProvisioningEndDurationDays";
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
     );
 
+    private Result<Integer> extractRightValue(Object rightOperand) {
+        if (rightOperand instanceof Integer) {
+            return Result.success((Integer) rightOperand);
+        } else if (rightOperand instanceof String rightValue) {
+            try {
+                return Result.success(Integer.parseInt(rightValue));
+            } catch (NumberFormatException e) {
+                return Result.failure("Invalid right-operand: value must be a valid integer, but got '%s'.".formatted(rightOperand));
+            }
+        }
+
+        return Result.failure("Invalid right-operand: this constraint only allows integer values or strings representing integers, but got '%s'."
+                .formatted(rightOperand != null ? rightOperand.getClass().getName() : "null"));
+    }
+
     @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Duty permission, C c) {
-        return true;
+    public boolean evaluate(Operator operator, Object rightOperand, Duty permission, C context) {
+        return extractRightValue(rightOperand)
+                .map(rightValue -> Instant.ofEpochSecond(context.contractAgreement().getContractSigningDate())
+                        .truncatedTo(ChronoUnit.DAYS)
+                        .plus(rightValue, ChronoUnit.DAYS))
+                .map(expiryDate -> Instant.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate))
+                .orElse(failure -> {
+                    context.reportProblem("Failed to evaluate constraint due to invalid right operand: '%s'. Problems: %s".formatted(rightOperand, failure));
+                    return false;
+                });
     }
 
     @Override
     public Result<Void> validate(Operator operator, Object rightValue, Duty rule) {
+        if (rightValue == null) {
+            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received null.".formatted(ALLOWED_OPERATORS));
+        }
+
         if (!ALLOWED_OPERATORS.contains(operator)) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
         }
 
-        if (rightValue instanceof Integer) {
-            return Result.success();
-        }
-
-        if (rightValue instanceof String stringValue) {
-            try {
-                Integer.parseInt(stringValue);
-                return Result.success();
-            } catch (NumberFormatException e) {
-                return Result.failure("Invalid right-operand: String value must be a valid integer value, but got '%s'.".formatted(stringValue));
-            }
-        }
-
-        return Result.failure("Invalid right-operand: right operand must be an integer value");
+        return extractRightValue(rightValue).mapEmpty();
     }
 }

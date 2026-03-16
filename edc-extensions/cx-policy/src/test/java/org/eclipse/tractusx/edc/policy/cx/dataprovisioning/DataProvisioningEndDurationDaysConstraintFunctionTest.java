@@ -19,25 +19,40 @@
 
 package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
-import org.eclipse.edc.participant.spi.ParticipantAgent;
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.tractusx.edc.policy.cx.TestAgreementPolicyContext;
 import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.mockito.Mockito.mock;
 
 class DataProvisioningEndDurationDaysConstraintFunctionTest {
 
-    private final ParticipantAgent participantAgent = mock();
-    private final DataProvisioningEndDurationDaysConstraintFunction<ParticipantAgentPolicyContext> function = new DataProvisioningEndDurationDaysConstraintFunction<>();
-    private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
+    private final DataProvisioningEndDurationDaysConstraintFunction<AgreementPolicyContext> function = new DataProvisioningEndDurationDaysConstraintFunction<>();
 
     @Test
-    void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, 1, null, context)).isTrue();
+    void evaluate_whenPolicyIsValid_thenTrue() {
+        var validContext = new TestAgreementPolicyContext();
+        var result = function.evaluate(Operator.EQ, 1, null, validContext);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void evaluate_whenPolicyIsInSameDay_thenFalse() {
+        var expiredContext = new TestAgreementPolicyContext();
+        var result = function.evaluate(Operator.EQ, 0, null, expiredContext);
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void evaluate_whenPolicyIsExpired_thenFalse() {
+        var expiredContext = new TestAgreementPolicyContext(Instant.now().minus(1, ChronoUnit.DAYS));
+        var result = function.evaluate(Operator.EQ, -1, null, expiredContext);
+        assertThat(result).isFalse();
     }
 
     @Test
@@ -55,12 +70,14 @@ class DataProvisioningEndDurationDaysConstraintFunctionTest {
     @Test
     void validate_whenInvalidOperator_thenFailure() {
         var result = function.validate(Operator.IS_ANY_OF, 1, null);
-        assertThat(result).isFailed().detail().contains("Invalid operator");
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid operator");
     }
 
     @Test
     void validate_whenInvalidValue_thenFailure() {
         var result = function.validate(Operator.EQ, "invalid-test", null);
-        assertThat(result).isFailed().detail().contains("Invalid right-operand:");
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
     }
 }

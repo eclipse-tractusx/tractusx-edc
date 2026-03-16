@@ -19,25 +19,53 @@
 
 package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
-import org.eclipse.edc.participant.spi.ParticipantAgent;
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.tractusx.edc.policy.cx.TestAgreementPolicyContext;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.mockito.Mockito.mock;
 
 class DataProvisioningEndDateConstraintFunctionTest {
 
-    private final ParticipantAgent participantAgent = mock();
-    private final DataProvisioningEndDateConstraintFunction<ParticipantAgentPolicyContext> function = new DataProvisioningEndDateConstraintFunction<>();
-    private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
+    private final DataProvisioningEndDateConstraintFunction<AgreementPolicyContext> function = new DataProvisioningEndDateConstraintFunction<>();
+    private final AgreementPolicyContext context = new TestAgreementPolicyContext();
 
     @Test
-    void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "2025-06-30T14:30:00Z", null, context)).isTrue();
+    void evaluate_whenPolicyIsValid_thenTrue() {
+        var result = function.evaluate(
+                Operator.EQ,
+                context.now().plus(1, ChronoUnit.SECONDS).truncatedTo(ChronoUnit.SECONDS).toString(),
+                null, context);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void evaluate_whenPolicyIsSameTime_thenFalse() {
+        var fixedNow = context.now().truncatedTo(ChronoUnit.SECONDS);
+        // Ensure the Instant.now method called inside the evaluate function returns the fixedNow instant, to force equality comparison
+        try (var mockedInstant = Mockito.mockStatic(Instant.class, Mockito.CALLS_REAL_METHODS)) {
+            mockedInstant.when(Instant::now).thenReturn(fixedNow);
+            var result = function.evaluate(
+                    Operator.EQ,
+                    fixedNow.toString(),
+                    null, context);
+            assertThat(result).isFalse();
+        }
+    }
+
+    @Test
+    void evaluate_whenPolicyIsExpired_thenFalse() {
+        var result = function.evaluate(
+                Operator.EQ,
+                context.now().minus(1, ChronoUnit.SECONDS).truncatedTo(ChronoUnit.SECONDS).toString(),
+                null, context);
+        assertThat(result).isFalse();
     }
 
     @Test

@@ -156,11 +156,11 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(USAGE_RESTRICTION), new UsageRestrictionConstraintFunction<>());
 
         // Usage Duty Validators
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Duty.class,
+        engine.registerFunction(PolicyMonitorContext.class, Duty.class,
                 withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS), new DataProvisioningEndDurationDaysConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Duty.class,
                 withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS), new DataProvisioningEndDurationDaysConstraintFunction<>());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Duty.class,
+        engine.registerFunction(PolicyMonitorContext.class, Duty.class,
                 withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE), new DataProvisioningEndDateConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Duty.class,
                 withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE), new DataProvisioningEndDateConstraintFunction<>());
@@ -312,8 +312,6 @@ public class CxPolicyExtension implements ServiceExtension {
                 withCxPolicyNsPrefix(AFFILIATES_BPNL),
                 withCxPolicyNsPrefix(AFFILIATES_REGION),
                 withCxPolicyNsPrefix(DATA_FREQUENCY),
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS),
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE),
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION),
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION_REFERENCE),
                 withCxPolicyNsPrefix(LIABILITY),
@@ -357,7 +355,9 @@ public class CxPolicyExtension implements ServiceExtension {
         var namesInPolicyMonitorScope = Set.of(
                 withCxPolicyNsPrefix(DATA_USAGE_END_DATE),
                 withCxPolicyNsPrefix(DATA_USAGE_END_DEFINITION),
-                withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS)
+                withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS),
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS),
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE)
         );
         registerBindingSet(registry, namesInPolicyMonitorScope, POLICY_MONITOR_SCOPE);
     }
