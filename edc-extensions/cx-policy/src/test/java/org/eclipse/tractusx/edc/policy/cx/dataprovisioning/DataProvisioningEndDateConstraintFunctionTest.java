@@ -46,7 +46,7 @@ class DataProvisioningEndDateConstraintFunctionTest {
     }
 
     @Test
-    void evaluate_whenPolicyIsSameTime_thenFalse() {
+    void evaluate_whenPolicyIsSameTime_thenTrue() {
         var fixedNow = context.now().truncatedTo(ChronoUnit.SECONDS);
         // Ensure the Instant.now method called inside the evaluate function returns the fixedNow instant, to force equality comparison
         try (var mockedInstant = Mockito.mockStatic(Instant.class, Mockito.CALLS_REAL_METHODS)) {
@@ -55,7 +55,7 @@ class DataProvisioningEndDateConstraintFunctionTest {
                     Operator.EQ,
                     fixedNow.toString(),
                     null, context);
-            assertThat(result).isFalse();
+            assertThat(result).isTrue();
         }
     }
 

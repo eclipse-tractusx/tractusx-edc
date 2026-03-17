@@ -47,7 +47,7 @@ public class DataUsageEndDateConstraintFunction<C extends AgreementPolicyContext
     public boolean evaluate(Operator operator, Object rightOperand, Permission rule, C context) {
         try {
             var expiryDate = Instant.parse(rightOperand.toString());
-            return Instant.now().truncatedTo(ChronoUnit.SECONDS).isBefore(expiryDate);
+            return !Instant.now().truncatedTo(ChronoUnit.SECONDS).isAfter(expiryDate);
         } catch (DateTimeParseException e) {
             context.reportProblem("Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN));
             return false;
