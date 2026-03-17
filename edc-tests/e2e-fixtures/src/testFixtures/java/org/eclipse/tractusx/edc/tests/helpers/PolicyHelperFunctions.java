@@ -187,23 +187,6 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-    public static JsonObject inForceDateUsagePolicy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
-        var constraint = Json.createObjectBuilder()
-                .add("@type", "LogicalConstraint")
-                .add("and", Json.createArrayBuilder()
-                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorStart, startDate, false))
-                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorEnd, endDate, false))
-                        .add(frameworkAgreementConstraint())
-                        .add(usagePurposeConstraint())
-                        .build())
-                .build();
-
-        return policy(List.of(Json.createObjectBuilder()
-                .add("action", "use")
-                .add("constraint", constraint)
-                .build()));
-    }
-
     public static JsonObject inForceDatePolicyLegacy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
         var constraint = Json.createObjectBuilder()
                 .add("@type", "LogicalConstraint")
