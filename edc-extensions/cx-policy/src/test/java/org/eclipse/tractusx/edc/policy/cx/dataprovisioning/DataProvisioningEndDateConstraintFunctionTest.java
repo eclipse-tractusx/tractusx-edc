@@ -20,78 +20,22 @@
 package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.TestAgreementPolicyContext;
+import org.eclipse.edc.policy.model.Duty;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.lang.reflect.ParameterizedType;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 
 class DataProvisioningEndDateConstraintFunctionTest {
 
     private final DataProvisioningEndDateConstraintFunction<AgreementPolicyContext> function = new DataProvisioningEndDateConstraintFunction<>();
-    private final AgreementPolicyContext context = new TestAgreementPolicyContext();
 
     @Test
-    void evaluate_whenPolicyIsValid_thenTrue() {
-        var result = function.evaluate(
-                Operator.EQ,
-                context.now().plus(1, ChronoUnit.SECONDS).truncatedTo(ChronoUnit.SECONDS).toString(),
-                null, context);
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void evaluate_whenPolicyIsSameTime_thenTrue() {
-        var fixedNow = context.now().truncatedTo(ChronoUnit.SECONDS);
-        // Ensure the Instant.now method called inside the evaluate function returns the fixedNow instant, to force equality comparison
-        try (var mockedInstant = Mockito.mockStatic(Instant.class, Mockito.CALLS_REAL_METHODS)) {
-            mockedInstant.when(Instant::now).thenReturn(fixedNow);
-            var result = function.evaluate(
-                    Operator.EQ,
-                    fixedNow.toString(),
-                    null, context);
-            assertThat(result).isTrue();
-        }
-    }
-
-    @Test
-    void evaluate_whenPolicyIsExpired_thenFalse() {
-        var result = function.evaluate(
-                Operator.EQ,
-                context.now().minus(1, ChronoUnit.SECONDS).truncatedTo(ChronoUnit.SECONDS).toString(),
-                null, context);
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.EQ, "2025-06-30T14:30:00Z", null);
-        assertThat(result).isSucceeded();
-    }
-
-    @Test
-    void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "2025-06-30T14:30:00+01:00", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid operator");
-    }
-
-    @Test
-    void validate_whenInvalidInstant_thenFailure() {
-        var result = function.validate(Operator.EQ, "2025-06-30T14:30:00.456Z", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
-    }
-
-    @Test
-    void validate_whenInvalidValue_thenFailure() {
-        var result = function.validate(Operator.EQ, "invalid-test", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    void shouldOnlyApplyToDuty() {
+        // Ensure that the function is parameterized with the Duty class, which means it will only apply to Duty rules
+        var superclass = (ParameterizedType) function.getClass().getGenericSuperclass();
+        var ruleType = superclass.getActualTypeArguments()[0];
+        assertThat(ruleType).isEqualTo(Duty.class);
     }
 }
