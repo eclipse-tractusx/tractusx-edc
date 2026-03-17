@@ -20,55 +20,10 @@
 package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Duty;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDataEndDateConstraintFunction;
 
-import java.time.Instant;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
-import java.util.Set;
-import java.util.regex.Pattern;
 
-/**
- * This is a constraint function for DataProvisioningEndDate. It evaluates to true if the current date is before the specified
- * expiry date. The expiry date is expected to be in ISO-8061 UTC date-time format (e.g. "2024-12-31T23:59:59Z").
- */
-public class DataProvisioningEndDateConstraintFunction<C extends AgreementPolicyContext> implements AtomicConstraintRuleFunction<Duty, C> {
+public class DataProvisioningEndDateConstraintFunction<C extends AgreementPolicyContext> extends AbstractDataEndDateConstraintFunction<Duty, C> {
     public static final String DATA_PROVISIONING_END_DATE = "DataProvisioningEndDate";
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.EQ
-    );
-
-    private static final String DATE_PATTERN = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$";
-
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Duty rule, C context) {
-        try {
-            var expiryDate = Instant.parse(rightOperand.toString());
-            return !Instant.now().truncatedTo(ChronoUnit.SECONDS).isAfter(expiryDate);
-        } catch (DateTimeParseException e) {
-            context.reportProblem("Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN));
-            return false;
-        }
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightOperand, Duty rule) {
-        if (operator == null) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received null.".formatted(ALLOWED_OPERATORS));
-        }
-
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        var compiledPattern = Pattern.compile(DATE_PATTERN);
-        if (!(rightOperand instanceof String rightValue && compiledPattern.matcher(rightValue).matches())) {
-            return Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN));
-        }
-
-        return Result.success();
-    }
 }
