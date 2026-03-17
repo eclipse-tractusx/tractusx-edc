@@ -70,7 +70,7 @@ public class DataUsageEndDurationDaysConstraintFunction<C extends AgreementPolic
 
     @Override
     public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (rightValue == null) {
+        if (operator == null) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received null.".formatted(ALLOWED_OPERATORS));
         }
 

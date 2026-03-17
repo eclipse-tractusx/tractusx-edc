@@ -56,7 +56,7 @@ public class DataUsageEndDateConstraintFunction<C extends AgreementPolicyContext
 
     @Override
     public Result<Void> validate(Operator operator, Object rightOperand, Permission rule) {
-        if (rightOperand == null) {
+        if (operator == null) {
             return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received null.".formatted(ALLOWED_OPERATORS));
         }
 
