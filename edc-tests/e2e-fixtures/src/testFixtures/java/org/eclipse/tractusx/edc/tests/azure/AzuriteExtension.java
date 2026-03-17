@@ -62,6 +62,11 @@ public class AzuriteExtension implements BeforeAllCallback, AfterAllCallback {
             super(IMAGE_NAME);
             addEnv("AZURITE_ACCOUNTS", stream(accounts).map(it -> "%s:%s".formatted(it.name(), it.key())).collect(joining(";")));
             setPortBindings(List.of("%d:%d".formatted(azuriteHostPort, containerPort)));
+            // TODO remove when issue https://github.com/Azure/Azurite/issues/2623 is resolved
+            setCommand("azurite",
+                    "--blobHost", "0.0.0.0",
+                    "--blobPort", Integer.toString(containerPort),
+                    "--skipApiVersionCheck");
         }
 
         public AzureBlobClient getHelper(Account account) {

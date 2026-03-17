@@ -1,5 +1,6 @@
 /********************************************************************************
- * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,34 +18,38 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp;
+package org.eclipse.tractusx.edc.jsonld;
 
-import org.eclipse.edc.iam.decentralizedclaims.spi.scope.ScopeExtractorRegistry;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor;
+import org.eclipse.tractusx.edc.cx.CxJsonLdExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.mockito.ArgumentMatchers.isA;
+import java.net.URI;
+
+import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_ODRL_CONTEXT;
+import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(DependencyInjectionExtension.class)
-public class IatpScopeExtractorExtensionTest {
+public class CxJsonLdExtensionTest {
 
-    private final ScopeExtractorRegistry extractorRegistry = mock();
+    JsonLd jsonLdService = mock(JsonLd.class);
 
     @BeforeEach
     void setup(ServiceExtensionContext context) {
-        context.registerService(ScopeExtractorRegistry.class, extractorRegistry);
+        context.registerService(JsonLd.class, jsonLdService);
     }
 
     @Test
-    void initialize(ServiceExtensionContext context, IatpScopeExtractorExtension extension) {
+    void initialize(ServiceExtensionContext context, CxJsonLdExtension extension) {
         extension.initialize(context);
-
-        verify(extractorRegistry).registerScopeExtractor(isA(CredentialScopeExtractor.class));
+        jsonLdService.registerCachedDocument(eq(CX_POLICY_2025_09_CONTEXT), any(URI.class));
+        jsonLdService.registerCachedDocument(eq(CX_ODRL_CONTEXT), any(URI.class));
     }
 }

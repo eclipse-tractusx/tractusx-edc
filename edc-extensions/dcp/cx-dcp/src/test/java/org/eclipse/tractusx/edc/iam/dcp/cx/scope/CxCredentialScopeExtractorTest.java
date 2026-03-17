@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.tractusx.edc.iam.iatp.scope;
+package org.eclipse.tractusx.edc.iam.dcp.cx.scope;
 
 import org.eclipse.edc.connector.controlplane.catalog.spi.CatalogRequestMessage;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreementMessage;
@@ -50,7 +50,7 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
-import static org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor.FRAMEWORK_AGREEMENT_LEFT_OPERAND;
+import static org.eclipse.tractusx.edc.iam.dcp.cx.scope.CxCredentialScopeExtractor.FRAMEWORK_AGREEMENT_LEFT_OPERAND;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.common.AbstractDynamicCredentialConstraintFunction.ACTIVE;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.dismantler.DismantlerCredentialConstraintFunction.DISMANTLER_LITERAL;
 import static org.eclipse.tractusx.edc.policy.cx.legacy.membership.MembershipCredentialConstraintFunction.MEMBERSHIP_LITERAL;
@@ -58,18 +58,18 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CredentialScopeExtractorTest {
+public class CxCredentialScopeExtractorTest {
 
     private static final String DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE = "DataExchangeGovernance:1.0";
     private static final String DATA_EXCHANGE_GOVERNANCE_CREDENTIAL = "DataExchangeGovernanceCredential";
 
     private final Monitor monitor = mock();
-    private CredentialScopeExtractor extractor;
+    private CxCredentialScopeExtractor extractor;
 
     @BeforeEach
     void setup() {
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
-        extractor = new CredentialScopeExtractor(monitor);
+        extractor = new CxCredentialScopeExtractor(monitor);
     }
 
     @DisplayName("Scope extractor with supported messages")

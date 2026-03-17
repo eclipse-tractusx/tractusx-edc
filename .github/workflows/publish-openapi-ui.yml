@@ -55,9 +55,7 @@ jobs:
 
       - name: Generate openapi spec
         run: ./gradlew resolve
-        env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: openapi-spec
           path: resources/openapi/yaml
@@ -74,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: openapi-spec
           path: resources/openapi/yaml
@@ -93,14 +91,10 @@ jobs:
         run: |
           ./gradlew -p ${{ matrix.apiGroup.folder }} downloadOpenapi
           cp ${{ matrix.apiGroup.folder }}/build/docs/openapi/* resources/openapi/yaml/${{ matrix.apiGroup.name }}
-        env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Merge API specs
         run: |
           ./gradlew mergeOpenApiSpec --inputDir=${PWD}/resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=${{ matrix.apiGroup.name }}.yaml --infoTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" --infoDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" --infoVersion=${{ env.VERSION }}
-        env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Generate Swagger UI current version
         uses: Legion2/swagger-ui-action@v1
@@ -117,7 +111,7 @@ jobs:
           spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.apiGroup.name }}-api
           path: dist
@@ -128,7 +122,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           path: openapi
           pattern: "*-api"

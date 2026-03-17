@@ -49,6 +49,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LocalstackExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String S3_REGION = Region.US_WEST_2.id();
+    private static final String SYSTEM_PROPERTY_AWS_ACCESS_KEY_ID = "aws.accessKeyId";
+    private static final String SYSTEM_PROPERTY_AWS_SECRET_ACCESS_KEY = "aws.secretAccessKey";
 
     private final String accessKeyId = "test-access-key";
     private final String secretAccessKey = UUID.randomUUID().toString();
@@ -66,6 +68,8 @@ public class LocalstackExtension implements BeforeAllCallback, AfterAllCallback 
 
     @Override
     public void beforeAll(ExtensionContext context) {
+        System.setProperty(SYSTEM_PROPERTY_AWS_ACCESS_KEY_ID, accessKeyId);
+        System.setProperty(SYSTEM_PROPERTY_AWS_SECRET_ACCESS_KEY, secretAccessKey);
         localStackContainer.start();
     }
 

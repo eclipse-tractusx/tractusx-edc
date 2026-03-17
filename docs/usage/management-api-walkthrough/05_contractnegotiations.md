@@ -20,7 +20,7 @@ Content-Type: application/json
 ```json
 {
   "@context": [
-    "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
+    "https://w3id.org/dspace/2025/1/odrl-profile.jsonld",
     "https://w3id.org/catenax/2025/9/policy/context.jsonld",
     {
       "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
@@ -34,9 +34,9 @@ Content-Type: application/json
     "@id": "{{OFFER_ID}}",
     "target": "{{ASSET_ID}}",
     "assigner": "{{PROVIDER_IDENTIFIER}}",
-    "permission": {{OFFER_ODRL_PERMISSION}},
-    "prohibition": {{OFFER_ODRL_PROHIBITION}},
-    "obligation": {{OFFER_ODRL_OBLIGATION}}
+    "permission": [],
+    "prohibition": [],
+    "obligation": []
   },
   "callbackAddresses": [
     {
@@ -61,7 +61,9 @@ section which refers to an existing published context definition.
 - `protocol` is the providers' supported protocol
 - In the `policy` section, the Data Consumer specifies the Data Offer for the negotiation. As there may be multiple
   Data Offers for the same DataSet, the Data Consumer must choose one.
-  It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `odrl:hasPolicy` field plus:
+  It must hold an identical copy of the Data Offer's contract policy as provided via the catalog-API in the `odrl:hasPolicy`
+  field. Especially the `permission`, `prohibition` and `obligation` fields must contain the exact same `odrl` clauses as
+  found in the offer. In addition, two more properties are required:
     - `assigner` must hold the identifier of the Provider (BPN OR DID, as returned in the catalog response)
     - `target` must be the id of the EDC-Asset/dcat:DataSet that the offer was made for.
 - `callbackAddresses` is a list of Consumer-side endpoints that the Provider's Data Plane writes events to.
@@ -88,7 +90,6 @@ the `@id` property.
       "@context": [
         "https://w3id.org/tractusx/auth/v1.0.0",
         "https://w3id.org/catenax/2025/9/policy/context.jsonld",
-        "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
         "https://w3id.org/dspace/2025/1/context.jsonld",
         "https://w3id.org/edc/dspace/v0.0.1"
       ]
@@ -133,7 +134,6 @@ that will look like this:
   "@context": [
     "https://w3id.org/tractusx/auth/v1.0.0",
     "https://w3id.org/catenax/2025/9/policy/context.jsonld",
-    "https://w3id.org/catenax/2025/9/policy/odrl.jsonld",
     "https://w3id.org/dspace/2025/1/context.jsonld",
     "https://w3id.org/edc/dspace/v0.0.1"
   ]

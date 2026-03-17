@@ -3,24 +3,25 @@ format.version = "1.1"
 
 [versions]
 edc = "0.15.1"
-edc-build = "1.1.5"
-allure = "2.32.0"
+edc-next = "0.16.0"
+edc-build = "1.1.6"
+allure = "2.33.0"
 awaitility = "4.3.0"
-aws = "2.41.14"
-azure-storage-blob = "12.32.0"
+aws = "2.42.12"
+azure-storage-blob = "12.33.2"
 bouncyCastle-jdk18on = "1.83"
 dcp-tck = "1.0.0-RC6"
 dsp-tck = "1.0.0-RC6"
-flyway = "12.0.0"
-jackson = "2.21.0"
+flyway = "12.1.0"
+jackson = "2.21.1"
 jakarta-json = "2.1.3"
-junit = "6.0.2"
-nimbus = "10.7"
+junit = "6.0.3"
+nimbus = "10.8"
 okhttp = "5.3.2"
-opentelemetry = "2.24.0"
-opentelemetry-instrumentation = "2.24.0"
-opentelemetry-log4j-appender = "2.24.0-alpha"
-postgres = "42.7.9"
+opentelemetry = "2.25.0"
+opentelemetry-instrumentation = "2.25.0"
+opentelemetry-log4j-appender = "2.25.0-alpha"
+postgres = "42.7.10"
 restAssured = "6.0.0"
 rsApi = "4.0.0"
 testcontainers = "2.0.3"
@@ -82,7 +83,6 @@ edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-core = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
-edc-api-management-dataplaneselector = { module = "org.eclipse.edc:data-plane-selector-api", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-management-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
@@ -105,6 +105,7 @@ edc-lib-boot = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 edc-lib-cryptocommon = { module = "org.eclipse.edc:crypto-common-lib", version.ref = "edc" }
 edc-lib-http = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-lib-jersey-providers = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
+edc-lib-management-api = { module = "org.eclipse.edc:management-api-lib", version.ref = "edc" }
 edc-lib-jws2020 = { module = "org.eclipse.edc:jws2020-lib", version.ref = "edc" }
 edc-lib-query = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
 edc-lib-store = { module = "org.eclipse.edc:store-lib", version.ref = "edc" }
@@ -127,13 +128,13 @@ edc-sql-test-fixtures = { module = "org.eclipse.edc:sql-test-fixtures", version.
 # azure stuff
 azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
-edc-azure-blob-provision = { module = "org.eclipse.edc.azure:provision-blob", version.ref = "edc" }
+edc-azure-blob-provision = { module = "org.eclipse.edc.azure:data-plane-provision-blob", version.ref = "edc" }
 
 # EDC aws s3 stuff
 edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
 edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
-edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:provision-aws-s3", version.ref = "edc" }
+edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:data-plane-provision-aws-s3", version.ref = "edc" }
 
 # DCP Modules
 edc-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }
@@ -165,8 +166,7 @@ dsp-tck-catalog = { module = "org.eclipse.dataspacetck.dsp:dsp-catalog", version
 dsp-tck-contractnegotiation = { module = "org.eclipse.dataspacetck.dsp:dsp-contract-negotiation", version.ref = "dsp-tck" }
 dsp-tck-transferprocess = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer-process", version.ref = "dsp-tck" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
-tck-extension = { module = "org.eclipse.edc:tck-extension", version = "0.16.0-SNAPSHOT" }
-tck-lib = { module = "org.eclipse.edc:tck-lib", version = "0.16.0-SNAPSHOT" }
+tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc-next" }
 
 # DSP libraries
 dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
@@ -241,6 +241,6 @@ edc-sts = [
 
 [plugins]
 docker = { id = "com.bmuschko.docker-remote-api", version = "10.0.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.3.1" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.42" }
+shadow = { id = "com.gradleup.shadow", version = "9.3.2" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.44" }
 edc-build = { id = "org.eclipse.edc.edc-build", version.ref = "edc-build" }

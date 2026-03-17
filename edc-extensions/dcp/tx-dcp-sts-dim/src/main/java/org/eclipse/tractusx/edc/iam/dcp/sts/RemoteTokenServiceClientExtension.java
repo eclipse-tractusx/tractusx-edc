@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft
+ * Copyright (c) 2026 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,7 +25,6 @@ import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.decentralizedclaims.sts.remote.RemoteSecureTokenService;
 import org.eclipse.edc.iam.decentralizedclaims.sts.remote.StsRemoteClientConfiguration;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
-import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -37,9 +37,6 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.core.utils.PathUtils;
 import org.eclipse.tractusx.edc.iam.dcp.sts.dim.DimSecureTokenService;
 import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauth2Client;
-import org.eclipse.tractusx.edc.iam.dcp.sts.dim.oauth.DimOauthClientImpl;
-
-import java.time.Clock;
 
 import static java.util.Optional.ofNullable;
 
@@ -63,9 +60,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
     @Inject
     private Vault vault;
     @Inject
-    private Clock clock;
-    @Inject
-    private SingleParticipantContextSupplier singleParticipantContextSupplier;
+    private DimOauth2Client dimOauth2Client;
 
     @Override
     public String name() {
@@ -79,16 +74,11 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
                 .map(PathUtils::removeTrailingSlash)
                 .map(dimUrl -> {
                     monitor.info("DIM URL configured, will use DIM STS client");
-                    return (SecureTokenService) new DimSecureTokenService(httpClient, dimUrl, oauth2Client(), typeManager.getMapper(), monitor);
+                    return (SecureTokenService) new DimSecureTokenService(httpClient, dimUrl, dimOauth2Client, typeManager.getMapper(), monitor);
                 })
                 .orElseGet(() -> {
                     monitor.info("DIM URL not configured, will use the standard EDC Remote STS client");
                     return new RemoteSecureTokenService(oauth2Client, participantContextId -> clientConfiguration, vault);
                 });
     }
-
-    private DimOauth2Client oauth2Client() {
-        return new DimOauthClientImpl(oauth2Client, vault, clientConfiguration, clock, monitor, singleParticipantContextSupplier);
-    }
-
 }
