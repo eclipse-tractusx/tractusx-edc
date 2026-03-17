@@ -69,12 +69,6 @@ public class DataUsageEndDateConstraintFunction<C extends AgreementPolicyContext
             return Result.failure("Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN));
         }
 
-        try {
-            Instant.parse(rightValue);
-        } catch (DateTimeParseException e) {
-            return Result.failure("Invalid right-operand: right operand must be a valid ISO-8061 UTC date-time string matching pattern '%s'".formatted(DATE_PATTERN));
-        }
-
         return Result.success();
     }
 }

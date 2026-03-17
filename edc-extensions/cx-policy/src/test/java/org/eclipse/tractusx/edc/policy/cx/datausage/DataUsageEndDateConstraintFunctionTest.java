@@ -82,6 +82,13 @@ class DataUsageEndDateConstraintFunctionTest {
     }
 
     @Test
+    void validate_whenInvalidInstant_thenFailure() {
+        var result = function.validate(Operator.EQ, "2025-06-30T14:30:00.456Z", null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    }
+
+    @Test
     void validate_whenInvalidValue_thenFailure() {
         var result = function.validate(Operator.EQ, "invalid-test", null);
         assertThat(result.failed()).isTrue();
