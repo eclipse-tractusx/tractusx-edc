@@ -22,13 +22,11 @@
 package org.eclipse.tractusx.edc.tests.helpers;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
-import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.Operator;
 
