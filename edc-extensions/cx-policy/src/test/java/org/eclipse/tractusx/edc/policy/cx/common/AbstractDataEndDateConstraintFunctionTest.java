@@ -37,11 +37,15 @@ public class AbstractDataEndDateConstraintFunctionTest {
     private final AbstractDataEndDateConstraintFunction<Permission, AgreementPolicyContext> function = new AbstractDataEndDateConstraintFunction<>() {};
     private final AgreementPolicyContext context = new TestAgreementPolicyContext();
 
+    private Instant contextNowWithDelta(Integer delta, ChronoUnit unit) {
+        return context.now().plus(delta, unit).truncatedTo(ChronoUnit.SECONDS);
+    }
+
     @Test
     void evaluate_whenPolicyIsValid_thenTrue() {
         var result = function.evaluate(
                 Operator.EQ,
-                context.now().plus(1, ChronoUnit.SECONDS).truncatedTo(ChronoUnit.SECONDS).toString(),
+                contextNowWithDelta(1, ChronoUnit.SECONDS).toString(),
                 null, context);
         assertThat(result).isTrue();
     }
@@ -64,7 +68,7 @@ public class AbstractDataEndDateConstraintFunctionTest {
     void evaluate_whenPolicyIsExpired_thenFalse() {
         var result = function.evaluate(
                 Operator.EQ,
-                context.now().minus(1, ChronoUnit.SECONDS).truncatedTo(ChronoUnit.SECONDS).toString(),
+                contextNowWithDelta(-1, ChronoUnit.SECONDS).toString(),
                 null, context);
         assertThat(result).isFalse();
     }
