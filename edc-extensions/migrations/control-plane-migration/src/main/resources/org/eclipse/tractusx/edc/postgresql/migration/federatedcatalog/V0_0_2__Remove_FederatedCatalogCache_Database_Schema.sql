@@ -15,4 +15,4 @@
 -- table: edc_federated_catalog
 --
 
-DROP TABLE edc_federated_catalog;
+DROP TABLE IF EXISTS edc_federated_catalog;
