@@ -65,7 +65,6 @@ public class EdcCompatibilityPostgresTest {
     private static final String API_KEY = "password";
     private static final URI DATA_PLANE_PROXY = URI.create("http://localhost:" + getFreePort());
     private static final URI DATA_PLANE_PUBLIC = URI.create("http://localhost:" + getFreePort() + "/public");
-    private static final URI FEDERATED_CATALOG = URI.create("http://localhost:" + getFreePort() + "/api/catalog");
     private static final String CONNECTOR_UNDER_TEST = "participantContextId";
     
     private static final DataspaceProfileContextRegistry DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY = spy(DataspaceProfileContextRegistryImpl.class);
@@ -124,15 +123,9 @@ public class EdcCompatibilityPostgresTest {
                 put("edc.transfer.send.retry.base-delay.ms", "100");
                 put("tx.edc.dataplane.token.expiry", "3");
                 put("tx.edc.dataplane.token.expiry.tolerance", "0");
-                put("web.http.catalog.port", String.valueOf(FEDERATED_CATALOG.getPort()));
-                put("web.http.catalog.path", FEDERATED_CATALOG.getPath());
-                put("web.http.catalog.auth.type", "tokenbased");
-                put("web.http.catalog.auth.key", API_KEY);
                 put("web.http.public.path", DATA_PLANE_PUBLIC.getPath());
                 put("web.http.public.port", String.valueOf(DATA_PLANE_PUBLIC.getPort()));
                 put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(DATA_PLANE_PUBLIC));
-                put("edc.catalog.cache.execution.delay.seconds", "2");
-                put("edc.catalog.cache.execution.period.seconds", "2");
                 put("tractusx.edc.participant.bpn", CONNECTOR_UNDER_TEST);
             }
         });

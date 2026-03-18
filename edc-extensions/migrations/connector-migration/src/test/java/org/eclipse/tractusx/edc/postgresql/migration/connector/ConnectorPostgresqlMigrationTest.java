@@ -107,7 +107,6 @@ public class ConnectorPostgresqlMigrationTest {
                 objectFactory.constructInstance(DataPlaneInstancePostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(EdrIndexPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(FederatedCatalogCacheMigrationExtension.class),
-                objectFactory.constructInstance(FederatedCatalogCacheMigrationExtension.class),
                 objectFactory.constructInstance(JtiValidationPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(PolicyMonitorPostgresqlMigrationExtension.class),
                 objectFactory.constructInstance(PolicyPostgresqlMigrationExtension.class),
