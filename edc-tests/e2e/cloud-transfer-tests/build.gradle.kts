@@ -23,10 +23,6 @@ plugins {
     `java-library`
 }
 
-configurations.testImplementation {
-    exclude("org.eclipse.tractusx.edc", "cx-policy")
-}
-
 dependencies {
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
 
