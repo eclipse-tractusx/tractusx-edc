@@ -35,8 +35,8 @@ import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipantEx
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.Runtimes;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
-import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
-import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
+import org.eclipse.tractusx.edc.tests.participant.DcpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TractusxDcpParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,7 +90,7 @@ public class TransferEndToEndTest {
             .trustedIssuer(ISSUER.didUrl())
             .build();
 
-    static final IatpParticipant LOCAL_PARTICIPANT = IatpParticipant.Builder.newInstance()
+    static final DcpParticipant LOCAL_PARTICIPANT = DcpParticipant.Builder.newInstance()
             .name("local")
             .id("local")
             .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
@@ -113,7 +113,7 @@ public class TransferEndToEndTest {
     static final RuntimeExtension LOCAL_CONNECTOR = new RuntimePerClassExtension(
             Runtimes.SNAPSHOT_CONNECTOR.create("local-connector")
                     .configurationProvider(() -> POSTGRES.getConfig(LOCAL_PARTICIPANT.getName()))
-                    .configurationProvider(LOCAL_PARTICIPANT::iatpConfig)
+                    .configurationProvider(LOCAL_PARTICIPANT::dcpConfig)
                     .registerServiceMock(BdrsClient.class, new BdrsClient() {
                         @Override
                         public String resolveDid(String bpn) {
@@ -159,7 +159,7 @@ public class TransferEndToEndTest {
 
     @ParameterizedTest
     @ArgumentsSource(ParticipantsArgProvider.class)
-    void httpPullTransfer(TractusxIatpParticipantBase consumer, TractusxIatpParticipantBase provider, String protocol) {
+    void httpPullTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
@@ -193,7 +193,7 @@ public class TransferEndToEndTest {
 
     @ParameterizedTest
     @ArgumentsSource(ParticipantsArgProvider.class)
-    void suspendAndResume_httpPull_dataTransfer(TractusxIatpParticipantBase consumer, TractusxIatpParticipantBase provider, String protocol) {
+    void suspendAndResume_httpPull_dataTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
@@ -233,7 +233,7 @@ public class TransferEndToEndTest {
         providerDataSource.verify(getRequestedFor(urlPathEqualTo("/source")));
     }
 
-    protected void createResourcesOnProvider(TractusxIatpParticipantBase provider, String assetId, JsonObject contractPolicy, Map<String, Object> dataAddressProperties) {
+    protected void createResourcesOnProvider(TractusxDcpParticipantBase provider, String assetId, JsonObject contractPolicy, Map<String, Object> dataAddressProperties) {
         provider.createAsset(assetId, Map.of("description", "description"), dataAddressProperties);
         var contractPolicyId = provider.createPolicyDefinition(contractPolicy);
         var noConstraintPolicyId = provider.createPolicyDefinition(noConstraintPolicy());

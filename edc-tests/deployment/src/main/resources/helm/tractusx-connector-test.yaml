@@ -25,7 +25,7 @@ fullnameOverride: tx-prod
 participant:
   id: "test-participant"
   contextId: "test-participant-context"
-iatp:
+dcp:
   # Decentralized IDentifier
   id: "did:web:changeme"
   sts:

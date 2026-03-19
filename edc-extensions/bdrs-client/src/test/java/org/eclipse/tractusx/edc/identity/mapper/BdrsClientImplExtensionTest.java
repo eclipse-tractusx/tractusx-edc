@@ -84,7 +84,7 @@ class BdrsClientImplExtensionTest {
         extension.getBdrsClient(context);
 
         verify(monitor).withPrefix(anyString());
-        verify(monitor).warning("No config value found for 'tx.edc.iam.iatp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
+        verify(monitor).warning("No config value found for 'tx.edc.iam.dcp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
         verifyNoMoreInteractions(monitor);
     }
 
@@ -100,7 +100,7 @@ class BdrsClientImplExtensionTest {
         var client = extension.getBdrsClient(context);
 
         verify(monitor).withPrefix(anyString());
-        verify(monitor).warning("No config value found for 'tx.edc.iam.iatp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
+        verify(monitor).warning("No config value found for 'tx.edc.iam.dcp.credentialservice.url'. As a fallback, the credentialService URL from this connector's DID document will be resolved.");
 
         // the DID url resolver is only invoked on-demand, so no eager-loading of the DID document
         verify(monitor, never()).severe("Resolving the credentialService URL failed. This runtime won't be able to communicate with BDRS. Error: test failure.");
