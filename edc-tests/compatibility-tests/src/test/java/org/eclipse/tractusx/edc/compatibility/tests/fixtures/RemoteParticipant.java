@@ -22,8 +22,8 @@ package org.eclipse.tractusx.edc.compatibility.tests.fixtures;
 
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.tractusx.edc.tests.participant.IatpParticipant;
-import org.eclipse.tractusx.edc.tests.participant.TractusxIatpParticipantBase;
+import org.eclipse.tractusx.edc.tests.participant.DcpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TractusxDcpParticipantBase;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 
 import java.util.HashMap;
@@ -32,12 +32,12 @@ import java.util.Map;
 
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
-public class RemoteParticipant extends IatpParticipant {
+public class RemoteParticipant extends DcpParticipant {
     private final List<String> datasources = List.of("asset", "contractdefinition",
             "contractnegotiation", "policy", "transferprocess", "bpn",
             "policy-monitor", "edr", "dataplane", "accesstokendata", "dataplaneinstance");
 
-    public Config getConfig(IatpParticipant participant, PostgresExtension postgresql) {
+    public Config getConfig(DcpParticipant participant, PostgresExtension postgresql) {
         var postgresqlConfig = postgresql.getConfig(getName());
 
         Map<String, String> settings =  new HashMap<>() {
@@ -101,7 +101,7 @@ public class RemoteParticipant extends IatpParticipant {
         );
     }
 
-    public static class Builder extends TractusxIatpParticipantBase.Builder<RemoteParticipant, Builder> {
+    public static class Builder extends TractusxDcpParticipantBase.Builder<RemoteParticipant, Builder> {
 
         protected Builder() {
             super(new RemoteParticipant());

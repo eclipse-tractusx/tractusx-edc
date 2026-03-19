@@ -115,7 +115,7 @@ public class EdcCompatibilityPostgresTest {
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-client-id");
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
-                put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
+                put("tx.edc.iam.dcp.bdrs.server.url", "http://sts.example.com");
                 put("web.http.management.auth.key", API_KEY);
                 put("tx.edc.dpf.consumer.proxy.port", String.valueOf(DATA_PLANE_PROXY.getPort()));
                 put("tx.edc.dpf.consumer.proxy.auth.apikey", API_KEY);

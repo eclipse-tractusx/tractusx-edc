@@ -30,7 +30,7 @@ import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.tractusx.edc.TxIatpConstants;
+import org.eclipse.tractusx.edc.TxDcpConstants;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.io.IOException;
@@ -188,7 +188,7 @@ class BdrsClientImpl implements BdrsClient {
                 SUBJECT, ownDid,
                 AUDIENCE, ownDid
         );
-        var scope = TxIatpConstants.MEMBERSHIP_SCOPE;
+        var scope = TxDcpConstants.MEMBERSHIP_SCOPE;
 
         return participantContextSupplier.get().map(ParticipantContext::getParticipantContextId)
                 .flatMap(result -> {
