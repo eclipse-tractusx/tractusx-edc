@@ -115,6 +115,8 @@ edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-lib-validator = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-lib-dsp-catalog-http-api= { module = "org.eclipse.edc:dsp-catalog-http-api-lib", version.ref = "edc" }
+edc-lib-dsp-catalog-validation= { module = "org.eclipse.edc:dsp-catalog-validation-lib", version.ref = "edc" }
+edc-lib-dsp-catalog-transform= { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
 edc-lib-dsp-negotiation-http-api= { module = "org.eclipse.edc:dsp-negotiation-http-api-lib", version.ref = "edc" }
 edc-lib-dsp-transfer-http-api= { module = "org.eclipse.edc:dsp-transfer-process-http-api-lib", version.ref = "edc" }
 edc-lib-dcp = { module = "org.eclipse.edc:decentralized-claims-lib", version.ref = "edc" }

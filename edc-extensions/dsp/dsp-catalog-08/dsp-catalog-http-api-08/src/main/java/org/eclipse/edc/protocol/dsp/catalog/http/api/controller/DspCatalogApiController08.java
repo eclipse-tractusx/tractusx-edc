@@ -1,0 +1,47 @@
+/********************************************************************************
+ * Copyright (c) 2026 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+package org.eclipse.edc.protocol.dsp.catalog.http.api.controller;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogProtocolService;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.protocol.dsp.http.spi.message.ContinuationTokenManager;
+import org.eclipse.edc.protocol.dsp.http.spi.message.DspRequestHandler;
+
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.eclipse.edc.protocol.dsp.catalog.http.api.CatalogApiPaths.BASE_PATH;
+import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_NAMESPACE_V_08;
+
+/**
+ * Provides the HTTP endpoint for receiving catalog requests.
+ */
+@Consumes({APPLICATION_JSON})
+@Produces({APPLICATION_JSON})
+@Path(BASE_PATH)
+public class DspCatalogApiController08 extends BaseDspCatalogApiController {
+
+    public DspCatalogApiController08(CatalogProtocolService service, DspRequestHandler dspRequestHandler, ContinuationTokenManager continuationTokenManager, SingleParticipantContextSupplier participantContextSupplier) {
+        super(service, dspRequestHandler, continuationTokenManager, participantContextSupplier, DATASPACE_PROTOCOL_HTTP, DSP_NAMESPACE_V_08);
+    }
+
+}

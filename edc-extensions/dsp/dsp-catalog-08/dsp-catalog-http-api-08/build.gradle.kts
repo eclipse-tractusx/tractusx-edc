@@ -19,10 +19,33 @@
 
 plugins {
     `java-library`
+    id(libs.plugins.swagger.get().pluginId)
 }
 
 dependencies {
-    api(libs.dsp.spi)
-    //api(project(":data-protocols:dsp:dsp-spi"))
-    implementation(libs.edc.ext.jsonld)
+    api(project(":spi:dsp-spi-08"))
+    api(libs.dsp.spi.http)
+    api(libs.edc.spi.core)
+    api(libs.edc.spi.web)
+    api(libs.edc.spi.jsonld)
+
+    api(libs.edc.spi.controlplane)
+
+    implementation(libs.edc.lib.jersey.providers)
+    implementation(libs.edc.lib.dsp.catalog.validation)
+    implementation(libs.edc.lib.dsp.catalog.http.api)
+
+    implementation(libs.jakarta.rsApi)
+
+    testImplementation(libs.edc.core.jersey)
+    testImplementation(libs.edc.core.jersey)
+    testImplementation(libs.edc.junit)
+    testImplementation(libs.restAssured)
+    testImplementation(testFixtures(libs.edc.lib.dsp.catalog.http.api))
+}
+
+edcBuild {
+    swagger {
+        apiGroup.set("dsp-api")
+    }
 }
