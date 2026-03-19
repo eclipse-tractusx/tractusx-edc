@@ -22,6 +22,15 @@ plugins {
 }
 
 dependencies {
+    api(libs.edc.spi.transfer)
+    api(libs.edc.spi.transform)
+    api(libs.edc.ext.jsonld)
     api(libs.dsp.spi)
-    implementation(libs.edc.ext.jsonld)
+    api(project(":spi:dsp-spi-08"))
+    api(libs.dsp.spi.http)
+    implementation(libs.edc.lib.transform)
+    implementation(libs.edc.lib.dsp.transfer.process.transform)
+
+    testImplementation(libs.edc.ext.jsonld)
+    testImplementation(libs.edc.junit)
 }

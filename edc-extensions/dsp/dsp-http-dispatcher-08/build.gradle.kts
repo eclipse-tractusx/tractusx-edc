@@ -22,6 +22,6 @@ plugins {
 }
 
 dependencies {
-    api(libs.dsp.spi)
-    implementation(libs.edc.ext.jsonld)
+    api(libs.edc.spi.core)
+    api(libs.dsp.spi.http)
 }

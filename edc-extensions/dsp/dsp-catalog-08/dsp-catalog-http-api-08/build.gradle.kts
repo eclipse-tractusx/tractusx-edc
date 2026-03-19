@@ -37,8 +37,7 @@ dependencies {
 
     implementation(libs.jakarta.rsApi)
 
-    testImplementation(libs.edc.core.jersey)
-    testImplementation(libs.edc.core.jersey)
+    testImplementation(testFixtures(libs.edc.core.jersey))
     testImplementation(libs.edc.junit)
     testImplementation(libs.restAssured)
     testImplementation(testFixtures(libs.edc.lib.dsp.catalog.http.api))

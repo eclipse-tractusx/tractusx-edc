@@ -17,29 +17,28 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-package org.eclipse.edc.protocol.dsp.catalog.http.api.controller;
+package org.eclipse.edc.protocol.dsp.http.dispatcher;
 
-import org.eclipse.edc.jsonld.spi.JsonLdNamespace;
-import org.eclipse.edc.junit.annotations.ApiTest;
+import org.eclipse.edc.protocol.dsp.http.spi.dispatcher.DspHttpRemoteMessageDispatcher;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
-import static org.eclipse.edc.protocol.dsp.catalog.http.api.CatalogApiPaths.BASE_PATH;
-import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_NAMESPACE_V_08;
+import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
 
-@ApiTest
-class DspCatalogApiController08Test extends DspCatalogApiControllerTestBase {
-
+/**
+ * Registers the message dispatcher for DSP v0.8.
+ */
+public class DspHttpDispatcherV08Extension implements ServiceExtension {
+    
+    @Inject
+    private RemoteMessageDispatcherRegistry dispatcherRegistry;
+    @Inject
+    private DspHttpRemoteMessageDispatcher dispatcher;
+    
     @Override
-    protected String basePath() {
-        return BASE_PATH;
-    }
-
-    @Override
-    protected JsonLdNamespace namespace() {
-        return DSP_NAMESPACE_V_08;
-    }
-
-    @Override
-    protected Object controller() {
-        return new DspCatalogApiController08(service, dspRequestHandler, continuationTokenManager, participantContextSupplier);
+    public void initialize(ServiceExtensionContext context) {
+        dispatcherRegistry.register(DATASPACE_PROTOCOL_HTTP, dispatcher);
     }
 }

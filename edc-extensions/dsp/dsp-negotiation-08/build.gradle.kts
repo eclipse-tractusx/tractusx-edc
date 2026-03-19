@@ -22,6 +22,6 @@ plugins {
 }
 
 dependencies {
-    api(libs.dsp.spi)
-    implementation(libs.edc.ext.jsonld)
+    api(project(":edc-extensions:dsp:dsp-negotiation-08:dsp-negotiation-http-api-08"))
+    api(project(":edc-extensions:dsp:dsp-negotiation-08:dsp-negotiation-transform-08"))
 }

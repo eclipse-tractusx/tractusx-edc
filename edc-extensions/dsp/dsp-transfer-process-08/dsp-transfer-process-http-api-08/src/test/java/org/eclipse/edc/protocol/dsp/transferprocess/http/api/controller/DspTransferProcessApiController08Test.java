@@ -17,11 +17,29 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-}
+package org.eclipse.edc.protocol.dsp.transferprocess.http.api.controller;
 
-dependencies {
-    api(libs.dsp.spi)
-    implementation(libs.edc.ext.jsonld)
+import org.eclipse.edc.jsonld.spi.JsonLdNamespace;
+import org.eclipse.edc.junit.annotations.ApiTest;
+
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_NAMESPACE_V_08;
+import static org.eclipse.edc.protocol.dsp.transferprocess.http.api.TransferProcessApiPaths.BASE_PATH;
+
+@ApiTest
+class DspTransferProcessApiController08Test extends DspTransferProcessApiControllerBaseTest {
+
+    @Override
+    protected String basePath() {
+        return BASE_PATH;
+    }
+
+    @Override
+    protected JsonLdNamespace namespace() {
+        return DSP_NAMESPACE_V_08;
+    }
+
+    @Override
+    protected Object controller() {
+        return new DspTransferProcessApiController08(protocolService, dspRequestHandler, participantContextSupplier);
+    }
 }
