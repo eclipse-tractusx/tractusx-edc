@@ -22,13 +22,11 @@
 package org.eclipse.tractusx.edc.tests.helpers;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
-import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.Operator;
 
@@ -61,7 +59,10 @@ public class PolicyHelperFunctions {
     public static final String FRAMEWORK_AGREEMENT_LITERAL = CX_POLICY_2025_09_NS + "FrameworkAgreement";
     private static final String USAGE_PURPOSE_LITERAL = CX_POLICY_2025_09_NS + "UsagePurpose";
 
-    private static final ObjectMapper MAPPER = JacksonJsonLd.createObjectMapper();
+    public static final String DATA_PROVISIONING_END_DATE_LITERAL = CX_POLICY_2025_09_NS + "DataProvisioningEndDate";
+    public static final String DATA_PROVISIONING_END_DURATION_LITERAL = CX_POLICY_2025_09_NS + "DataProvisioningEndDurationDays";
+    public static final String DATA_USAGE_END_DATE_LITERAL = CX_POLICY_2025_09_NS + "DataUsageEndDate";
+    public static final String DATA_USAGE_END_DURATION_LITERAL = CX_POLICY_2025_09_NS + "DataUsageEndDurationDays";
 
     public static JsonObject bpnGroupPolicy(Operator operator, String... allowedGroups) {
         return bpnGroupPolicy(operator.getOdrlRepresentation(), false, allowedGroups);
@@ -162,15 +163,15 @@ public class PolicyHelperFunctions {
                 .add("rightOperand", "cx.pcf.base:1")
                 .build();
     }
-    
+
     public static JsonObject legacyFrameworkPolicy() {
         var constraint1 = atomicConstraint(CX_POLICY_NS + "FrameworkAgreement", Operator.EQ.getOdrlRepresentation(), "DataExchangeGovernance:1.0", false);
         var constraint2 = atomicConstraint(CX_POLICY_NS + "UsagePurpose", Operator.EQ.getOdrlRepresentation(), "cx.core.digitalTwinRegistry:1", false);
-        
+
         var constraintsBuilder = Json.createArrayBuilder()
                 .add(constraint1)
                 .add(constraint2);
-        
+
         var permission = Json.createObjectBuilder()
                 .add("action", "use")
                 .add("constraint", Json.createObjectBuilder()
@@ -178,29 +179,12 @@ public class PolicyHelperFunctions {
                         .add("and", constraintsBuilder.build())
                         .build())
                 .build();
-        
+
         return Json.createObjectBuilder()
                 .add(CONTEXT, ODRL_CONTEXT)
                 .add(TYPE, "Set")
                 .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
-    }
-
-    public static JsonObject inForceDateUsagePolicy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
-        var constraint = Json.createObjectBuilder()
-                .add("@type", "LogicalConstraint")
-                .add("and", Json.createArrayBuilder()
-                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorStart, startDate, false))
-                        .add(atomicConstraint("https://w3id.org/edc/v0.0.1/ns/inForceDate", operatorEnd, endDate, false))
-                        .add(frameworkAgreementConstraint())
-                        .add(usagePurposeConstraint())
-                        .build())
-                .build();
-
-        return policy(List.of(Json.createObjectBuilder()
-                .add("action", "use")
-                .add("constraint", constraint)
-                .build()));
     }
 
     public static JsonObject inForceDatePolicyLegacy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
@@ -338,5 +322,103 @@ public class PolicyHelperFunctions {
             builder.add("rightOperand", rightOperand.toString());
         }
         return builder.build();
+    }
+
+    public static JsonObject dataUsageEndDurationDays(Integer duration) {
+        var constraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint(DATA_USAGE_END_DURATION_LITERAL, "eq", duration, false))
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        return policy(List.of(Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", constraint)
+                .build()));
+    }
+
+    public static JsonObject dataUsageEndDate(String endDate) {
+        var constraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint(DATA_USAGE_END_DATE_LITERAL, "eq", endDate, false))
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        return policy(List.of(Json.createObjectBuilder()
+                .add("action", "use")
+                .add("constraint", constraint)
+                .build()));
+    }
+
+    public static JsonObject dataProvisioningEndDurationDays(Integer duration) {
+        var requiredUsagePermissionConstraints = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        var dataProvisioningConstraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL, "eq", duration, false))
+                        .build())
+                .build();
+
+        return Json.createObjectBuilder()
+                .add("@context", "http://www.w3.org/ns/odrl.jsonld")
+                .add("@type", "http://www.w3.org/ns/odrl/2/Set")
+                .add("permission", Json.createArrayBuilder(
+                        List.of(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", requiredUsagePermissionConstraints)
+                                .build())
+                ))
+                .add("obligation", Json.createArrayBuilder(
+                        List.of(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", dataProvisioningConstraint)
+                                .build())
+                )).build();
+    }
+
+    public static JsonObject dataProvisioningEndDate(String endDate) {
+        var requiredUsagePermissionConstraints = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        var dataProvisioningConstraint = Json.createObjectBuilder()
+                .add("@type", "LogicalConstraint")
+                .add("and", Json.createArrayBuilder()
+                        .add(atomicConstraint(DATA_PROVISIONING_END_DATE_LITERAL, "eq", endDate, false))
+                        .build())
+                .build();
+
+        return Json.createObjectBuilder()
+                .add("@context", "http://www.w3.org/ns/odrl.jsonld")
+                .add("@type", "http://www.w3.org/ns/odrl/2/Set")
+                .add("permission", Json.createArrayBuilder(
+                        List.of(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", requiredUsagePermissionConstraints)
+                                .build())
+                ))
+                .add("obligation", Json.createArrayBuilder(
+                        List.of(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", dataProvisioningConstraint)
+                                .build())
+                )).build();
     }
 }
