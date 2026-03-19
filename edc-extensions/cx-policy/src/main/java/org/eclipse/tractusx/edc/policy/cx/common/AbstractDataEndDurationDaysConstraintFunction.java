@@ -63,7 +63,7 @@ public abstract class AbstractDataEndDurationDaysConstraintFunction<R extends Ru
                 .map(rightValue -> Instant.ofEpochSecond(context.contractAgreement().getContractSigningDate())
                         .truncatedTo(ChronoUnit.DAYS)
                         .plus(rightValue, ChronoUnit.DAYS))
-                .map(expiryDate -> Instant.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate))
+                .map(expiryDate -> context.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate))
                 .orElse(failure -> {
                     context.reportProblem("Failed to evaluate constraint due to invalid right operand: '%s'. Problems: %s".formatted(rightOperand, failure));
                     return false;
