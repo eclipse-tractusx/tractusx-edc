@@ -55,6 +55,7 @@ include(":spi:bdrs-client-spi")
 include(":spi:dataflow-spi")
 include(":spi:dcp-spi")
 include(":spi:did-document-service-spi")
+include(":spi:dsp-spi-08")
 
 
 // core modules

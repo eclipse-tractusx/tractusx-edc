@@ -31,7 +31,8 @@ dependencies {
     api(libs.edc.spi.http)
     api(libs.edc.spi.jsonld)
     api(libs.edc.spi.controlplane)
-    api(libs.dsp.spi.v08)
+    api(project(":spi:dsp-spi-08"))
+    //api(libs.dsp.spi.v08)
     api(libs.dsp.spi.v2025)
     api(libs.edc.spi.identity.did)
 
