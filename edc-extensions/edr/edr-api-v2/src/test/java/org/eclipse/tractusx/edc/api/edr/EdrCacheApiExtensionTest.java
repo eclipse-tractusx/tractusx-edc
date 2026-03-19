@@ -25,7 +25,6 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
-import org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiV2Controller;
 import org.eclipse.tractusx.edc.api.edr.v3.EdrCacheApiV3Controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +57,6 @@ class EdrCacheApiExtensionTest {
     void initialize_shouldRegisterControllers(EdrCacheApiExtension extension, ServiceExtensionContext context) {
         extension.initialize(context);
 
-        verify(webService).registerResource(any(), isA(EdrCacheApiV2Controller.class));
         verify(webService).registerResource(any(), isA(EdrCacheApiV3Controller.class));
     }
 
