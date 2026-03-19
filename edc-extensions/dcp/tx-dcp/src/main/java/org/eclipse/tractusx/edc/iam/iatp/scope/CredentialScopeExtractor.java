@@ -52,16 +52,7 @@ public class CredentialScopeExtractor implements ScopeExtractor {
     private static final Set<String> CATENA_X_CREDENTIALS = Set.of(
             "MembershipCredential",
             "BpnCredential",
-            "FrameworkAgreementCredential",
             "DismantlerCredential",
-            "TraceabilityCredential",
-            "PcfCredential",
-            "QualityCredential",
-            "CircularEconomyCredential",
-            "DemandCapacityCredential",
-            "PurisCredential",
-            "BusinessPartnerCredential",
-            "BehavioralTwinCredential",
             "DataExchangeGovernanceCredential"
     );
 
