@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,6 +28,7 @@ import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractO
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferRequestMessage;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.protocol.TransferTerminationMessage;
 import org.eclipse.edc.policy.context.request.spi.RequestPolicyContext;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.iam.RequestContext;
 import org.eclipse.edc.spi.iam.RequestScope;
@@ -44,12 +46,16 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
 import static org.eclipse.tractusx.edc.iam.iatp.scope.CredentialScopeExtractor.FRAMEWORK_CREDENTIAL_PREFIX;
 import static org.mockito.Mockito.mock;
 
 public class CredentialScopeExtractorTest {
+
+    private static final String DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE = "DataExchangeGovernance:1.0";
+    private static final String DATA_EXCHANGE_GOVERNANCE_CREDENTIAL = "DataExchangeGovernanceCredential";
 
     private final Monitor monitor = mock();
     private CredentialScopeExtractor extractor;
@@ -66,9 +72,9 @@ public class CredentialScopeExtractorTest {
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
         var ctx = new TestRequestPolicyContext(requestContext, null);
 
-        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
+        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, ctx);
 
-        assertThat(scopes).contains(CREDENTIAL_TYPE_NAMESPACE + ":PfcCredential:read");
+        assertThat(scopes).contains(format("%s:%s:read", CREDENTIAL_TYPE_NAMESPACE, DATA_EXCHANGE_GOVERNANCE_CREDENTIAL));
     }
 
     @DisplayName("Scope extractor with not supported messages")
@@ -78,7 +84,16 @@ public class CredentialScopeExtractorTest {
         var requestContext = RequestContext.Builder.newInstance().message(message).direction(RequestContext.Direction.Egress).build();
         var ctx = new TestRequestPolicyContext(requestContext, null);
 
-        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX + ".pfc", null, null, ctx);
+        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + FRAMEWORK_CREDENTIAL_PREFIX, Operator.EQ, DATA_EXCHANGE_GOVERNANCE_RIGHT_VALUE, ctx);
+
+        assertThat(scopes).isEmpty();
+    }
+
+    @Test
+    void verify_extractScopes_isEmpty_whenLeftOperandDoesNotMapToCredential() {
+        var ctx = new TestRequestPolicyContext(null, null);
+
+        var scopes = extractor.extractScopes(CoreConstants.CX_POLICY_NS + "UsagePurpose", Operator.EQ, "cx.pcf.base:1", ctx);
 
         assertThat(scopes).isEmpty();
     }
