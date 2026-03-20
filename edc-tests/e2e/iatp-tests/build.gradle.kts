@@ -29,7 +29,7 @@ configurations.all {
 
 dependencies {
     constraints {
-        testImplementation("com.networknt:json-schema-validator:3.0.0") {
+        testImplementation("com.networknt:json-schema-validator:3.0.1") {
             because("older versions cause runtime issues")
         }
     }
