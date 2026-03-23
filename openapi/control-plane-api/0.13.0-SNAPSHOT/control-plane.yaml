@@ -173,35 +173,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
-  /v2/edrs/request:
-    post:
-      tags:
-      - Control Plane EDR Api
-      description: Request all Edr entries according to a particular query
-      operationId: requestEdrEntriesV2
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/QuerySpec"
-      responses:
-        "200":
-          description: The edr entries matching the query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/EndpointDataReferenceEntry"
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-      deprecated: true
   /v4beta/assets/{id}:
     get:
       tags:
@@ -284,55 +255,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/api-error-schema"
-  /business-partner-groups:
-    put:
-      tags:
-      - Business Partner Group
-      description: Updates the entry for a particular BPN
-      operationId: updateEntryV1
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/List"
-      responses:
-        "204":
-          description: The object was successfully updated
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail_1"
-        "404":
-          description: No entry for the given BPN was found
-      deprecated: true
-    post:
-      tags:
-      - Business Partner Group
-      description: Creates an entry for a particular BPN
-      operationId: createEntryV1
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/List"
-      responses:
-        "204":
-          description: The object was successfully created
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail_1"
-        "409":
-          description: An entry already exists for that BPN
-      deprecated: true
   /v3/contractnegotiations/{id}/agreement:
     get:
       tags:
@@ -1290,46 +1212,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/api-error-schema"
-  /v2/edrs/{transferProcessId}/refresh:
-    post:
-      tags:
-      - Control Plane EDR Api
-      description: Refreshes and returns the EDR data address with the given transfer
-        process ID
-      operationId: refreshEdrV2
-      parameters:
-      - name: transferProcessId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: The data address
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DataAddress"
-        "400":
-          description: "Request was malformed, e.g. id was null"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-        "404":
-          description: An EDR data address with the given transfer process ID does
-            not exist
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-      deprecated: true
   /v4beta/contractnegotiations/{id}:
     get:
       tags:
@@ -1802,36 +1684,6 @@ paths:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
         "409":
           description: An entry already exists for that BPN
-  /v2/edrs:
-    post:
-      tags:
-      - Control Plane EDR Api
-      description: Initiates an EDR negotiation by handling a contract negotiation
-        first and then a transfer process for a given offer and with the given counter
-        part. Please note that successfully invoking this endpoint only means that
-        the negotiation was initiated.
-      operationId: initiateEdrNegotiationV2
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/initiateEdrNegotiationV3_request"
-      responses:
-        "200":
-          description: The negotiation was successfully initiated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IdResponse"
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-      deprecated: true
   /check/readiness:
     get:
       tags:
@@ -2548,40 +2400,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DatasetV3"
-  /v2/edrs/{transferProcessId}:
-    delete:
-      tags:
-      - Control Plane EDR Api
-      description: Removes an EDR entry given the transfer process ID
-      operationId: removeEdrEntryV2
-      parameters:
-      - name: transferProcessId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "204":
-          description: EDR entry was deleted successfully
-        "400":
-          description: "Request was malformed, e.g. id was null"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-        "404":
-          description: An EDR entry with the given ID does not exist
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-      deprecated: true
   /v3/transferprocesses/request:
     post:
       tags:
@@ -2634,53 +2452,6 @@ paths:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
         "409":
           description: The contract agreement is already retired
-  /v2/edrs/{transferProcessId}/dataaddress:
-    get:
-      tags:
-      - Control Plane EDR Api
-      description: Gets the EDR data address with the given transfer process ID
-      operationId: getEdrEntryDataAddressV2
-      parameters:
-      - name: transferProcessId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      - name: auto_refresh
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: boolean
-          default: true
-      responses:
-        "200":
-          description: The data address
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DataAddress"
-        "400":
-          description: "Request was malformed, e.g. id was null"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-        "404":
-          description: An EDR data address with the given transfer process ID does
-            not exist
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-      deprecated: true
   /v3/transferprocesses/{id}:
     get:
       tags:
@@ -3353,63 +3124,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
-  /business-partner-groups/{bpn}:
-    get:
-      tags:
-      - Business Partner Group
-      description: Resolves all groups for a particular BPN
-      operationId: resolveV1
-      parameters:
-      - name: bpn
-        in: path
-        description: The business partner number
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: An object containing an array with the assigned groups
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail_1"
-        "404":
-          description: No entry for the given BPN was found
-      deprecated: true
-    delete:
-      tags:
-      - Business Partner Group
-      description: Deletes the entry for a particular BPN
-      operationId: deleteEntryV1
-      parameters:
-      - name: bpn
-        in: path
-        description: The business partner number
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "204":
-          description: The object was successfully deleted
-        "400":
-          description: Request body was malformed
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail_1"
-        "404":
-          description: No entry for the given BPN was found
-      deprecated: true
   /v3/edrs/{transferProcessId}/refresh:
     post:
       tags:
@@ -3671,24 +3385,6 @@ components:
         message: message
         type: type
         invalidValue: "{}"
-    EndpointDataReferenceEntry:
-      type: object
-      properties:
-        '@id':
-          type: string
-        '@type':
-          type: string
-          example: https://w3id.org/edc/v0.0.1/ns/EndpointDataReferenceEntry
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': transfer-process-id
-        transferProcessId: transfer-process-id
-        agreementId: agreement-id
-        contractNegotiationId: contract-negotiation-id
-        assetId: asset-id
-        providerId: provider-id
-        createdAt: 1688465655
     asset-schema:
       title: AssetSchema
       type: object
@@ -3762,21 +3458,6 @@ components:
           type: object
           example:
             key: value
-    List:
-      type: object
-      properties:
-        '@id':
-          type: string
-        groups:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
-      example:
-        '@context':
-          tx: https://w3id.org/tractusx/v0.0.1/ns/
-        '@id': BPN000001234
-        tx:groups: "group1,group2,group3"
     ContractAgreement:
       type: object
       properties:
@@ -5681,6 +5362,21 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
         state: STARTED
+    List:
+      type: object
+      properties:
+        '@id':
+          type: string
+        groups:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+      example:
+        '@context':
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+        '@id': BPN000001234
+        tx:groups: "group1,group2,group3"
     PolicyDefinitionInputV3:
       required:
       - '@context'
@@ -5728,6 +5424,24 @@ components:
               operator: eq
               rightOperand: https://www.wikidata.org/wiki/Q183
               comment: i.e Germany
+    EndpointDataReferenceEntry:
+      type: object
+      properties:
+        '@id':
+          type: string
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/EndpointDataReferenceEntry
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': transfer-process-id
+        transferProcessId: transfer-process-id
+        agreementId: agreement-id
+        contractNegotiationId: contract-negotiation-id
+        assetId: asset-id
+        providerId: provider-id
+        createdAt: 1688465655
     CatalogV3:
       type: object
       description: DCAT catalog
