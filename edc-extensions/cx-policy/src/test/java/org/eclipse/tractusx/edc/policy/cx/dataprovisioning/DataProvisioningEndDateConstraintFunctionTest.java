@@ -19,44 +19,23 @@
 
 package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
-import org.eclipse.edc.participant.spi.ParticipantAgent;
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
+import org.eclipse.edc.policy.model.Duty;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.ParameterizedType;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.mockito.Mockito.mock;
 
 class DataProvisioningEndDateConstraintFunctionTest {
 
-    private final ParticipantAgent participantAgent = mock();
-    private final DataProvisioningEndDateConstraintFunction<ParticipantAgentPolicyContext> function = new DataProvisioningEndDateConstraintFunction<>();
-    private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
+    private final DataProvisioningEndDateConstraintFunction<AgreementPolicyContext> function = new DataProvisioningEndDateConstraintFunction<>();
 
     @Test
-    void evaluate() {
-        assertThat(function.evaluate(Operator.EQ, "2025-06-30T14:30:00Z", null, context)).isTrue();
-    }
-
-    @Test
-    void validate_whenOperatorAndRightOperandAreValid_thenSuccess() {
-        var result = function.validate(Operator.EQ, "2025-06-30T14:30:00Z", null);
-        assertThat(result).isSucceeded();
-    }
-
-    @Test
-    void validate_whenInvalidOperator_thenFailure() {
-        var result = function.validate(Operator.IS_ANY_OF, "2025-06-30T14:30:00+01:00", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid operator");
-    }
-
-    @Test
-    void validate_whenInvalidValue_thenFailure() {
-        var result = function.validate(Operator.EQ, "invalid-test", null);
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    void shouldOnlyApplyToDuty() {
+        // Ensure that the function is parameterized with the Duty class, which means it will only apply to Duty rules
+        var superclass = (ParameterizedType) function.getClass().getGenericSuperclass();
+        var ruleType = superclass.getActualTypeArguments()[0];
+        assertThat(ruleType).isEqualTo(Duty.class);
     }
 }

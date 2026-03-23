@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -40,12 +41,12 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
-import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
-import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,13 +63,10 @@ public class IatpDefaultScopeExtensionTest {
     @Test
     void initialize(ServiceExtensionContext context, IatpDefaultScopeExtension extension) {
         extension.initialize(context);
-        var scopes = new HashMap<String, Set<String>>();
-        scopes.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
-        scopes.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);
 
-        verify(policyEngine).registerPostValidator(eq(RequestCatalogPolicyContext.class), argThat(new ScopeMatcher(scopes)));
-        verify(policyEngine).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), argThat(new ScopeMatcher(scopes)));
-        verify(policyEngine).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), argThat(new ScopeMatcher(scopes)));
+        verify(policyEngine, never()).registerPostValidator(eq(RequestCatalogPolicyContext.class), any());
+        verify(policyEngine, never()).registerPostValidator(eq(RequestContractNegotiationPolicyContext.class), any());
+        verify(policyEngine, never()).registerPostValidator(eq(RequestTransferProcessPolicyContext.class), any());
     }
 
     @Test

@@ -19,49 +19,11 @@
 
 package org.eclipse.tractusx.edc.policy.cx.datausage;
 
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
-import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDataEndDurationDaysConstraintFunction;
 
-import java.util.Set;
 
-/**
- * This is a placeholder constraint function for DataUsageEndDurationDays. It always returns true but allows
- * the validation of policies to be strictly enforced.
- */
-public class DataUsageEndDurationDaysConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class DataUsageEndDurationDaysConstraintFunction<C extends AgreementPolicyContext> extends AbstractDataEndDurationDaysConstraintFunction<Permission, C> {
     public static final String DATA_USAGE_END_DURATION_DAYS = "DataUsageEndDurationDays";
-    private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
-            Operator.EQ
-    );
-
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Permission permission, C c) {
-        return true;
-    }
-
-    @Override
-    public Result<Void> validate(Operator operator, Object rightValue, Permission rule) {
-        if (!ALLOWED_OPERATORS.contains(operator)) {
-            return Result.failure("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(ALLOWED_OPERATORS, operator));
-        }
-
-        if (rightValue instanceof Integer) {
-            return Result.success();
-        }
-
-        if (rightValue instanceof String operand) {
-            try {
-                Integer.parseInt(operand);
-                return Result.success();
-            } catch (NumberFormatException e) {
-                return Result.failure("Invalid right-operand: value must be a valid integer, but got '%s'.".formatted(operand));
-            }
-        }
-
-        return Result.failure("Invalid right-operand: this constraint only allows integer values or strings representing integers, but got '%s'."
-                .formatted(rightValue != null ? rightValue.getClass().getName() : "null"));
-    }
 }

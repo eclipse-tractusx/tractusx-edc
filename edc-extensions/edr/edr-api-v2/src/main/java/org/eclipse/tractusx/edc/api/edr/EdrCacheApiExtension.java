@@ -35,7 +35,6 @@ import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 import org.eclipse.tractusx.edc.api.edr.transform.JsonObjectFromEndpointDataReferenceEntryTransformer;
-import org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiV2Controller;
 import org.eclipse.tractusx.edc.api.edr.v3.EdrCacheApiV3Controller;
 import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 
@@ -71,9 +70,6 @@ public class EdrCacheApiExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var mgmtApiTransformerRegistry = transformerRegistry.forContext("management-api");
         mgmtApiTransformerRegistry.register(new JsonObjectFromEndpointDataReferenceEntryTransformer(Json.createBuilderFactory(Map.of())));
-        webService.registerResource(MANAGEMENT, new EdrCacheApiV2Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService, singleParticipantContextSupplier));
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, EdrCacheApiV2Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
-
         webService.registerResource(MANAGEMENT, new EdrCacheApiV3Controller(edrStore, mgmtApiTransformerRegistry, validatorRegistry, monitor, edrService, contractNegotiationService, singleParticipantContextSupplier));
         webService.registerDynamicResource(ApiContext.MANAGEMENT, EdrCacheApiV3Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
     }

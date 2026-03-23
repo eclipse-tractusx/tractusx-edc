@@ -37,6 +37,7 @@ dependencies {
 
     implementation(libs.edc.spi.participant)
     implementation(libs.edc.spi.protocol)
+    implementation(libs.edc.iam.decentralized.claims.core)
 
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))

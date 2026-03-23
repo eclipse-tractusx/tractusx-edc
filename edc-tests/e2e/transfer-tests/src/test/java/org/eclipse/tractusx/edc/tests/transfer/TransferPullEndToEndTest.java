@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -54,7 +56,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_P
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataProvisioningEndDate;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 @EndToEndTest
@@ -154,7 +156,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            var contractPolicyId = PROVIDER.createPolicyDefinition(dataProvisioningEndDatePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")
@@ -181,10 +183,9 @@ public class TransferPullEndToEndTest {
             server.verify(1, getRequestedFor(urlPathEqualTo(MOCK_BACKEND_PATH)));
         }
 
-        protected JsonObject inForcePolicy() {
-            return inForceDateUsagePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s");
+        protected JsonObject dataProvisioningEndDatePolicy() {
+            return dataProvisioningEndDate(Instant.now().plusSeconds(10).truncatedTo(ChronoUnit.SECONDS).toString());
         }
-
 
         @Test
         void transferData_successful_notReturnOriginalSourceResponseCode_withTerminate() {
@@ -199,7 +200,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            var contractPolicyId = PROVIDER.createPolicyDefinition(dataProvisioningEndDatePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")
@@ -236,7 +237,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            var contractPolicyId = PROVIDER.createPolicyDefinition(dataProvisioningEndDatePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")
@@ -269,7 +270,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            var contractPolicyId = PROVIDER.createPolicyDefinition(dataProvisioningEndDatePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")
@@ -308,7 +309,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            var contractPolicyId = PROVIDER.createPolicyDefinition(dataProvisioningEndDatePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")
@@ -347,7 +348,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            var contractPolicyId = PROVIDER.createPolicyDefinition(dataProvisioningEndDatePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")
@@ -382,7 +383,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(inForcePolicy());
+            var contractPolicyId = PROVIDER.createPolicyDefinition(dataProvisioningEndDatePolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")

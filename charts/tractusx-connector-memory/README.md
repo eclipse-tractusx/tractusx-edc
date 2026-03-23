@@ -1,6 +1,6 @@
 # tractusx-connector-memory
 
-![Version: 0.12.0-SNAPSHOT](https://img.shields.io/badge/Version-0.12.0--SNAPSHOT-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.0-SNAPSHOT](https://img.shields.io/badge/AppVersion-0.12.0--SNAPSHOT-informational?style=flat-square)
+![Version: 0.13.0-SNAPSHOT](https://img.shields.io/badge/Version-0.13.0--SNAPSHOT-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.13.0-SNAPSHOT](https://img.shields.io/badge/AppVersion-0.13.0--SNAPSHOT-informational?style=flat-square)
 
 A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please only use this for development or testing purposes, never in production workloads!
 
@@ -10,8 +10,8 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please 
 
 ### Preconditions
 
-- You'll need an account with DIM, the wallet for VerifiableCredentials
-- the necessary set of VerifiableCredentials for this participant must already be issued to your DIM tenant. This is typically done by the
+- You'll need an account with DIV, the wallet for VerifiableCredentials
+- the necessary set of VerifiableCredentials for this participant must already be issued to your DIV tenant. This is typically done by the
   Portal during participant onboarding
 - the client ID and client secret corresponding to that account must be known
 
@@ -24,10 +24,10 @@ A Helm chart for Tractus-X Eclipse Data Space Connector based on memory. Please 
 ### Configure the chart
 
 Be sure to provide the following configuration entries to your Tractus-X EDC Helm chart:
-- `iatp.sts.oauth.token_url`: the token endpoint of DIM
-- `iatp.sts.oauth.client.id`: the client ID of your tenant in DIM
-- `iatp.sts.oauth.client.secret_alias`: alias under which you saved your DIM client secret in the vault
-- `iatp.sts.dim.url`: the base URL for DIM
+- `iatp.sts.oauth.token_url`: the token endpoint of DIV
+- `iatp.sts.oauth.client.id`: the client ID of your tenant in DIV
+- `iatp.sts.oauth.client.secret_alias`: alias under which you saved your DIV client secret in the vault
+- `iatp.sts.div.url`: the base URL for DIV
 
 In addition, in order to map BPNs to DIDs, a new service is required, called the BPN-DID Resolution Service, which
 must be configured:
@@ -41,7 +41,7 @@ Combined, run this shell command to start the in-memory Tractus-X EDC runtime:
 
 ```shell
 helm repo add tractusx-edc https://eclipse-tractusx.github.io/charts/dev
-helm install my-release tractusx-edc/tractusx-connector-memory --version 0.12.0-SNAPSHOT \
+helm install my-release tractusx-edc/tractusx-connector-memory --version 0.13.0-SNAPSHOT \
      -f <path-to>/tractusx-connector-memory-test.yaml \
      --set vault.secrets="client-secret:$YOUR_CLIENT_SECRET"
 ```
@@ -62,10 +62,10 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.12.0-
 | iatp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
 | iatp.didService.selfRegistration.id | string | `"did:web:changeme"` | Unique id of connector to be used for register / unregister service inside did document (must be valid URI) |
 | iatp.id | string | `"did:web:changeme"` | Decentralized IDentifier (DID) of the connector |
-| iatp.sts.dim.url | string | `nil` | URL where connectors can request SI tokens |
-| iatp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIM access |
-| iatp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIM access |
-| iatp.sts.oauth.token_url | string | `nil` | URL where connectors can request OAuth2 access tokens for DIM access |
+| iatp.sts.div.url | string | `nil` | URL where connectors can request SI tokens |
+| iatp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIV access |
+| iatp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
+| iatp.sts.oauth.token_url | string | `nil` | URL where connectors can request OAuth2 access tokens for DIV access |
 | iatp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
 | log4j2.config | string | `"Appenders:\n  Console:\n    name: CONSOLE\n    JsonTemplateLayout:\n      eventTemplate: |-\n        {\n          \"timestamp\": {\n            \"$resolver\": \"timestamp\",\n            \"pattern\": {\n              \"format\": \"yyyy-MM-dd'T'HH:mm:ss.SSSSSSS\",\n              \"timeZone\": \"UTC\"\n            }\n          },\n          \"level\": {\n            \"$resolver\": \"level\",\n            \"field\": \"severity\",\n            \"severity\": {\n              \"field\": \"keyword\"\n            }\n          },\n          \"message\": {\n            \"$resolver\": \"message\"\n          }\n        }\nLoggers:\n  Root:\n    level: \"OFF\"\n  Logger:\n    name: org.eclipse.edc.monitor.logger\n    level: DEBUG\n    AppenderRef:\n      ref: CONSOLE"` | Log4j2 configuration for json log formatting. |
@@ -81,19 +81,10 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.12.0-
 | runtime.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | runtime.bdrs.cache_validity_seconds | int | `600` | Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min) |
 | runtime.bdrs.server.url | string | `nil` | URL of the BPN/DID Resolution Service |
-| runtime.catalog | object | `{"crawler":{"initialDelay":null,"num":null,"period":null,"targetsFile":null},"enabled":false}` | configuration for the built-in federated catalog crawler |
-| runtime.catalog.crawler.initialDelay | string | `nil` | Initial delay for the crawling to start. Leave blank for a random delay |
-| runtime.catalog.crawler.num | string | `nil` | Number of desired crawlers. Final number might be different, based on number of crawl targets |
-| runtime.catalog.crawler.period | string | `nil` | Period between two crawl runs in seconds. Default is 60 seconds. |
-| runtime.catalog.crawler.targetsFile | string | `nil` | File path to a JSON file containing TargetNode entries |
-| runtime.catalog.enabled | bool | `false` | Flag to globally enable/disable the FC feature |
 | runtime.debug.enabled | bool | `false` | Enables java debugging mode. |
 | runtime.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | runtime.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
-| runtime.endpoints | object | `{"catalog":{"authKey":"password","path":"/catalog","port":8085},"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","jwksUrl":null,"path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the controlplane |
-| runtime.endpoints.catalog.authKey | string | `"password"` | authentication key, must be attached to each request as `X-Api-Key` header |
-| runtime.endpoints.catalog.path | string | `"/catalog"` | path for incoming catalog cache query requests |
-| runtime.endpoints.catalog.port | int | `8085` | port for incoming catalog cache query requests |
+| runtime.endpoints | object | `{"control":{"path":"/control","port":8083},"default":{"path":"/api","port":8080},"management":{"authKey":"password","jwksUrl":null,"path":"/management","port":8081},"protocol":{"path":"/api/v1/dsp","port":8084},"proxy":{"authKey":"password","path":"/proxy","port":8186},"public":{"path":"/api/public","port":8086}}` | endpoints of the controlplane |
 | runtime.endpoints.control | object | `{"path":"/control","port":8083}` | control api, used for internal control calls. can be added to the internal ingress, but should probably not |
 | runtime.endpoints.control.path | string | `"/control"` | path for incoming api calls |
 | runtime.endpoints.control.port | int | `8083` | port for incoming api calls |
