@@ -37,10 +37,6 @@ import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 @Extension(value = "Database-level EDR Lock extension (PostgreSQL)")
 public class SqlEdrLockExtension implements ServiceExtension {
 
-
-    @Deprecated(since = "0.8.1")
-    public static final String DATASOURCE_SETTING_NAME = "edc.datasource.edr.name";
-
     @Setting(value = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
     public static final String DATASOURCE_NAME = "edc.sql.store.edr.datasource";
 
@@ -67,6 +63,4 @@ public class SqlEdrLockExtension implements ServiceExtension {
 
         context.registerService(EndpointDataReferenceLock.class, sqlStore);
     }
-
-
 }
