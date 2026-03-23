@@ -79,14 +79,14 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
         extension.start();
 
         verify(didDocumentServiceClient).update(argThat(service ->
-                service.getId().equals(SERVICE_ID + "#" + DATA_SERVICE_TYPE) &&
+                service.getId().equals(SERVICE_ID) &&
                 service.getType().equals(DATA_SERVICE_TYPE) &&
                 service.getServiceEndpoint().equals(DSP_URL + "/.well-known/dspace-version")));
         verify(monitor).info("Self Registration of DID Document service successful");
         verify(monitor, never()).info("Did Document Service Client not available or not enabled, skipping self-registration");
 
         extension.shutdown();
-        verify(didDocumentServiceClient).deleteById(SERVICE_ID + "#" + DATA_SERVICE_TYPE);
+        verify(didDocumentServiceClient).deleteById(SERVICE_ID);
         verify(monitor).info("Successfully unregistered DID Document service");
     }
 
@@ -105,14 +105,14 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
         extension.start();
 
         verify(didDocumentServiceClient).update(argThat(service ->
-                service.getId().equals(SERVICE_ID + "#" + DATA_SERVICE_TYPE) &&
+                service.getId().equals(SERVICE_ID) &&
                 service.getType().equals(DATA_SERVICE_TYPE) &&
                 service.getServiceEndpoint().equals(DSP_URL + "/.well-known/dspace-version")));
         verify(monitor).severe(contains("Failed to self-register DID Document service"));
         verify(monitor, never()).info("Did Document Service Client not available or not enabled, skipping self-registration");
 
         extension.shutdown();
-        verify(didDocumentServiceClient).deleteById(SERVICE_ID + "#" + DATA_SERVICE_TYPE);
+        verify(didDocumentServiceClient).deleteById(SERVICE_ID);
         verify(monitor).severe(contains("Failed to unregister DID Document service"));
     }
 

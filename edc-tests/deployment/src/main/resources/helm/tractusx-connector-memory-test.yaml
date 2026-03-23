@@ -28,8 +28,8 @@ iatp:
   # Decentralized IDentifier
   id: "did:web:changeme"
   sts:
-    dim:
-      url: "https://somewhere.dim.org"
+    div:
+      url: "https://somewhere.div.org"
     oauth:
       token_url: "https://changeme.org"
       client:

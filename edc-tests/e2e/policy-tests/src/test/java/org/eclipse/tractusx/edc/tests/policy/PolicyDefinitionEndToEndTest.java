@@ -39,6 +39,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -46,17 +48,18 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CX_ODRL_CONTEXT;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CX_POLICY_2025_09_CONTEXT;
+import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.ODRL_CONTEXT;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataUsageEndDate;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataUsageEndDurationDays;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkConstraint;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDateUsagePolicy;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 @EndToEndTest
@@ -187,9 +190,18 @@ public class PolicyDefinitionEndToEndTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.concat(super.provideArguments(extensionContext), Stream.of(
-                    Arguments.of(emptyPolicy(), "Empty Policy"),
-                    Arguments.of(policyWithEmptyRule("access", this.namespace), "Access policy with empty permission"),
-                    Arguments.of(inForceDateUsagePolicy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+10s"), "In force date policy")
+                    Arguments.of(
+                            emptyPolicy(),
+                            "Empty Policy"),
+                    Arguments.of(
+                            policyWithEmptyRule("access", this.namespace),
+                            "Access policy with empty permission"),
+                    Arguments.of(
+                            dataUsageEndDurationDays(1),
+                            "Enforce data usage end date 1 day in the future"),
+                    Arguments.of(
+                            dataUsageEndDate(Instant.now().plus(1, ChronoUnit.SECONDS).truncatedTo(ChronoUnit.SECONDS).toString()),
+                            "Enforce data usage end date 1 second in the future")
             ));
         }
     }
@@ -245,7 +257,7 @@ public class PolicyDefinitionEndToEndTest {
             rulesArrayBuilder.add(rule);
         }
         var contextArrayBuilder = Json.createArrayBuilder();
-        contextArrayBuilder.add(CX_ODRL_CONTEXT);
+        contextArrayBuilder.add(ODRL_CONTEXT);
         if (!policyDefinition.isBlank()) {
             contextArrayBuilder.add(policyDefinition);
         }
@@ -264,7 +276,7 @@ public class PolicyDefinitionEndToEndTest {
         var rulesArrayBuilder = Json.createArrayBuilder();
         rulesArrayBuilder.add(rule);
         var contextArrayBuilder = Json.createArrayBuilder();
-        contextArrayBuilder.add(CX_ODRL_CONTEXT);
+        contextArrayBuilder.add(ODRL_CONTEXT);
         contextArrayBuilder.add(policyContext);
 
         return Json.createObjectBuilder()

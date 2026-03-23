@@ -36,7 +36,7 @@ import static org.eclipse.edc.edr.spi.types.EndpointDataReferenceEntry.EDR_ENTRY
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.api.edr.v2.EdrCacheApiV2.EndpointDataReferenceEntrySchema.EDR_ENTRY_OUTPUT_EXAMPLE;
+import static org.eclipse.tractusx.edc.api.edr.v3.EdrCacheApiV3.EndpointDataReferenceEntrySchema.EDR_ENTRY_OUTPUT_EXAMPLE;
 import static org.mockito.Mockito.mock;
 
 public class EdrCacheApiTest {

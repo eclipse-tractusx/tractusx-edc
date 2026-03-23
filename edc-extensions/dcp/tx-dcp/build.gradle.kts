@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,16 +26,13 @@ plugins {
 dependencies {
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.policyengine)
-    implementation(libs.edc.spi.decentralized.claims)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.transfer)
     implementation(libs.edc.spi.catalog)
-    implementation(libs.edc.spi.request.policy.context)
     implementation(libs.dsp.spi.v2025)
     implementation(libs.dsp.spi.v08)
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
 
     testImplementation(libs.edc.junit)
-    testImplementation(project(":edc-extensions:cx-policy-legacy"))
 }

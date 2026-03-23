@@ -33,7 +33,9 @@ runs:
     - name: Generate dependency list
       shell: bash
       run: |
-        ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq > dependency-list
+        ./gradlew :edc-controlplane:allDependencies --configuration runtimeClasspath | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" > dependency-list-c
+        ./gradlew :edc-dataplane:allDependencies --configuration runtimeClasspath | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" > dependency-list-d
+        cat dependency-list-c dependency-list-d | sort | uniq > dependency-list
         cat dependency-list
 
     - name: Run dash

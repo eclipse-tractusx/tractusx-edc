@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.time.Duration.ofSeconds;
@@ -71,7 +70,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     private static final String API_KEY_HEADER_NAME = "x-api-key";
     protected final LazySupplier<URI> dataPlaneProxy = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
     protected final LazySupplier<URI> dataPlanePublic = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/public"));
-    protected final LazySupplier<URI> federatedCatalog = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/api/catalog"));
     protected ParticipantEdrApi edrs;
     protected ParticipantDataApi data;
     protected ParticipantConsumerDataPlaneApi dataPlane;
@@ -115,10 +113,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("web.http.management.auth.key", MANAGEMENT_API_KEY);
                 put("web.http.control.port", String.valueOf(getFreePort()));
                 put("web.http.control.path", "/control");
-                put("web.http.catalog.port", String.valueOf(federatedCatalog.get().getPort()));
-                put("web.http.catalog.path", federatedCatalog.get().getPath());
-                put("web.http.catalog.auth.type", "tokenbased");
-                put("web.http.catalog.auth.key", MANAGEMENT_API_KEY);
                 put("edc.dsp.callback.address", controlPlaneProtocol.get().toString());
                 put("web.http.public.path", dataPlanePublic.get().getPath());
                 put("web.http.public.port", String.valueOf(dataPlanePublic.get().getPort()));
@@ -136,8 +130,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
                 put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
                 put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(dataPlanePublic.get()));
-                put("edc.catalog.cache.execution.delay.seconds", "2");
-                put("edc.catalog.cache.execution.period.seconds", "2");
                 put("edc.policy.validation.enabled", "true");
                 put("edc.iam.did.web.use.https", "false");
                 put("edc.participant.context.id", "general-test-id");
@@ -268,24 +260,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .then();
 
     }
-
-    public ValidatableResponse getFederatedCatalog() {
-        var requestBodyBuilder = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
-                .add(TYPE, "QuerySpec");
-
-
-        return given()
-                .baseUri(federatedCatalog.get().toString())
-                .header("x-api-key", MANAGEMENT_API_KEY)
-                .contentType(JSON)
-                .when()
-                .body(requestBodyBuilder.build())
-                .post("/v1alpha/catalog/query")
-                .then();
-
-    }
-
+    
     public String getTransferProcessField(String transferProcessId, String fieldName) {
         return baseManagementRequest()
                 .contentType(JSON)

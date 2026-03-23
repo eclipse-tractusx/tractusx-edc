@@ -74,7 +74,7 @@ public class CredentialSpoofTest {
             .name("STS")
             .build();
 
-    private static final LazySupplier<URI> DIM_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
+    private static final LazySupplier<URI> DIV_URI = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort()));
     private static final DataspaceIssuer DATASPACE_ISSUER_PARTICIPANT = new DataspaceIssuer(DID_SERVER.didFor("issuer"));
 
     @RegisterExtension
@@ -109,7 +109,7 @@ public class CredentialSpoofTest {
                 .bpn(bpn)
                 .stsClientId(bpn)
                 .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
-                .dimUri(DIM_URI)
+                .divUri(DIV_URI)
                 .id(DID_SERVER.didFor(name))
                 .build();
     }

@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
     implementation(project(":spi:bdrs-client-spi"))
+    implementation(libs.edc.core.policy.monitor)
     implementation(libs.edc.spi.catalog)
     implementation(libs.edc.spi.contract)
     implementation(libs.edc.spi.decentralized.claims)

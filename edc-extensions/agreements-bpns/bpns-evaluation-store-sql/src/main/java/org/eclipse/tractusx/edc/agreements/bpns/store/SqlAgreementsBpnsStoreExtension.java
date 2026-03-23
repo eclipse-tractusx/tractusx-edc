@@ -29,6 +29,7 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.store.sql.PostgresAgreementsBpnsStatements;
 import org.eclipse.tractusx.edc.agreements.bpns.store.sql.SqlAgreementsBpnsStatements;
 import org.eclipse.tractusx.edc.agreements.bpns.store.sql.SqlAgreementsBpnsStore;
@@ -57,7 +58,7 @@ public class SqlAgreementsBpnsStoreExtension implements ServiceExtension {
     private SqlAgreementsBpnsStatements statements;
 
     @Provider
-    public SqlAgreementsBpnsStore sqlStore(ServiceExtensionContext context) {
+    public AgreementsBpnsStore sqlStore(ServiceExtensionContext context) {
         var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
         return new SqlAgreementsBpnsStore(dataSourceRegistry, dataSourceName, transactionContext,
                 typeManager.getMapper(), queryExecutor, getStatements());

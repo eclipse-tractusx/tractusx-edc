@@ -19,24 +19,11 @@
 
 package org.eclipse.tractusx.edc.policy.cx.datausage;
 
-import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.model.Permission;
-import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
+import org.eclipse.tractusx.edc.policy.cx.common.AbstractDataEndDateConstraintFunction;
 
-import java.util.Set;
 
-/**
- * This is a placeholder constraint function for DataUsageEndDate. It always returns true but allows
- * the validation of policies to be strictly enforced.
- */
-public class DataUsageEndDateConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
+public class DataUsageEndDateConstraintFunction<C extends AgreementPolicyContext> extends AbstractDataEndDateConstraintFunction<Permission, C> {
     public static final String DATA_USAGE_END_DATE = "DataUsageEndDate";
-
-    public DataUsageEndDateConstraintFunction() {
-        super(
-                Set.of(Operator.EQ),
-                "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$"
-        );
-    }
 }

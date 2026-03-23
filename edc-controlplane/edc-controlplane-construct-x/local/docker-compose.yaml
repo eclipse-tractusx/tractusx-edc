@@ -65,7 +65,6 @@ services:
   shared-postgres:
     container_name: shared-postgres
     image: postgres:16.4-alpine
-    pull_policy: if_not_present
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
@@ -82,7 +81,6 @@ services:
   shared-vault:
     container_name: shared-vault
     image: vault:1.13.3
-    pull_policy: if_not_present
     command: server -dev -dev-root-token-id=vaultsecret0123456789 -dev-listen-address=0.0.0.0:8200
     environment:
       VAULT_ADDR: http://0.0.0.0:8200
@@ -101,7 +99,6 @@ services:
   vault-init:
     container_name: vault-init
     image: alpine:3.19
-    pull_policy: if_not_present
     depends_on:
       shared-vault:
         condition: service_healthy
@@ -243,8 +240,8 @@ services:
     depends_on:
         shared-postgres:
           condition: service_healthy
-        shared-vault:
-          condition: service_healthy
+        vault-init:
+          condition: service_completed_successfully
     entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
     ports:
       - "5005:5005"   # Debugger
@@ -288,8 +285,8 @@ services:
     depends_on:
       shared-postgres:
         condition: service_healthy
-      shared-vault:
-        condition: service_healthy
+      vault-init:
+        condition: service_completed_successfully
     entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
     ports:
       - "5008:5005"   # Debugger
@@ -347,22 +344,21 @@ services:
     depends_on:
         shared-postgres:
           condition: service_healthy
-        shared-vault:
-          condition: service_healthy
+        vault-init:
+          condition: service_completed_successfully
     entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
     ports:
       - "5006:5005"   # Debugger
       - "39000:9000"  # Default port
       - "39010:9010"  # Management API
       - "39020:9020" # DSP API
-
     networks:
       - con-x-test-network
 
   provider-dataplane:
     container_name: provider-dataplane
     image: con-x-dataplane-postgresql-hashicorp-vault:latest
-    pull_policy: if_not_present
+    pull_policy: never
     environment:
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
       - web.http.public.port=9500
@@ -390,12 +386,11 @@ services:
       - edc.iam.sts.oauth.token.url=http://provider-idhub:9292/api/sts/token
       - edc.iam.sts.oauth.client.id=did:web:provider-idhub:user:provider
       - edc.iam.issuer.id=did:web:provider-idhub:user:provider
-
     depends_on:
       shared-postgres:
         condition: service_healthy
-      shared-vault:
-        condition: service_healthy
+      vault-init:
+        condition: service_completed_successfully
     entrypoint: [ "java", "-jar", "edc-runtime.jar", "--log-level=DEBUG" ]
     ports:
       - "5007:5005"   # Debugger

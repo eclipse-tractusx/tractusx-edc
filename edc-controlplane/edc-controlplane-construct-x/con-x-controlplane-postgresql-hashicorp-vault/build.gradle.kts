@@ -26,16 +26,17 @@ plugins {
 }
 
 dependencies {
-    val edcVersion = "0.14.1"
-    val txVersion = "0.11.2"
+    val edcVersion = "0.15.1"
+    val txVersion = "0.12.0"
     implementation("org.eclipse.edc:controlplane-dcp-bom:$edcVersion")
     implementation("org.eclipse.edc:controlplane-feature-sql-bom:$edcVersion")
 
     implementation("org.eclipse.edc:vault-hashicorp:$edcVersion")
+
     implementation("org.eclipse.tractusx.edc:agreements:$txVersion")
     implementation("org.eclipse.tractusx.edc:retirement-evaluation-store-sql:$txVersion")
     implementation("org.eclipse.tractusx.edc:control-plane-migration:$txVersion")
-    implementation("org.eclipse.tractusx.edc:tx-dcp:${txVersion}")
+    implementation("org.eclipse.tractusx.edc:tx-dcp:$txVersion")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
