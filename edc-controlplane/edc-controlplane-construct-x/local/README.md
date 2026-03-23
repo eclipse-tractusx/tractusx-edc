@@ -17,7 +17,7 @@ It will start the following containers on your local machine:
 
 Before anything else, please make sure you have the docker images for con-x-controlplane-postgresql-hashicorp-vault in your local docker repository, see [here](../con-x-controlplane-postgresql-hashicorp-vault/README.md) and [here](../../../edc-dataplane/edc-dataplane-construct-x/con-x-dataplane-postgresql-hashicorp-vault/README.md). 
 
-Beyond that, you need to obtain the docker images needed to run the identity hub and the issuer services. In order to do so, please checckout this [repository](https://github.com/FraunhoferISST/dev-identity-services) and clone it onto your local machine. The upper section of this [README](https://github.com/FraunhoferISST/dev-identity-services/blob/main/runtimes/dev/README.md) informs 
+Beyond that, you need to obtain the docker images needed to run the identity hub and the issuer services. In order to do so, please check out this [repository](https://github.com/FraunhoferISST/dev-identity-services) and clone it onto your local machine. The upper section of this [README](https://github.com/FraunhoferISST/dev-identity-services/blob/main/runtimes/dev/README.md) informs 
 you about the steps necessary to create the docker images. 
 
 

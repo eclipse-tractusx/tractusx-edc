@@ -30,14 +30,16 @@ configurations.all {
 }
 
 dependencies {
-    val edcVersion = "0.14.1"
-    val txVersion = "0.11.2"
+    val edcVersion = "0.15.1"
+    val txVersion = "0.12.0"
     implementation("org.eclipse.edc:dataplane-base-bom:$edcVersion")
-    implementation("org.eclipse.edc:dataplane-feature-sql-bom:${edcVersion}")
-    implementation("org.eclipse.edc:vault-hashicorp:${edcVersion}")
+    implementation("org.eclipse.edc:dataplane-feature-sql-bom:$edcVersion")
+    implementation("org.eclipse.edc:vault-hashicorp:$edcVersion")
+
+    implementation("org.eclipse.edc:participant-context-config-core:${edcVersion}")
 
     implementation("org.eclipse.tractusx.edc:dataplane-public-api-v2:$txVersion")
-    implementation("org.eclipse.tractusx.edc:dataplane-util:${txVersion}")
+    implementation("org.eclipse.tractusx.edc:dataplane-util:$txVersion")
 }
 
 
