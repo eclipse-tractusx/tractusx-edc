@@ -34,7 +34,6 @@ dependencies {
 
     implementation(libs.dsp.spi.http)
     implementation(project(":spi:dsp-spi-08"))
-    //implementation(libs.dsp.spi.v08)
 
     implementation(libs.edc.spi.participant)
     implementation(libs.edc.spi.protocol)

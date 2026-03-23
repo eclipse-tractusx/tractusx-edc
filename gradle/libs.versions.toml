@@ -126,9 +126,6 @@ edc-lib-dsp-transfer-process-validation= { module = "org.eclipse.edc:dsp-transfe
 edc-lib-dsp-transfer-process-http-api= { module = "org.eclipse.edc:dsp-transfer-process-http-api-lib", version.ref = "edc" }
 edc-lib-dsp-transfer-process-transform= { module = "org.eclipse.edc:dsp-transfer-process-transform-lib", version.ref = "edc" }
 edc-lib-dcp = { module = "org.eclipse.edc:decentralized-claims-lib", version.ref = "edc" }
-#edc-lib-dsp-catalog= { module = "org.eclipse.edc:dsp-catalog-lib", version.ref = "edc" }
-#edc-lib-dsp-negotiation= { module = "org.eclipse.edc:dsp-negotiation-lib", version.ref = "edc" }
-#edc-lib-dsp-transfer-process= { module = "org.eclipse.edc:dsp-transfer-process-lib", version.ref = "edc" }
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }
@@ -181,7 +178,6 @@ tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc-n
 
 # DSP libraries
 dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
-#dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
 dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
 dsp-spi= { module = "org.eclipse.edc:dsp-spi", version.ref = "edc" }
 

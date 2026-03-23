@@ -31,7 +31,6 @@ dependencies {
     implementation(libs.edc.spi.catalog)
     implementation(libs.dsp.spi.v2025)
     implementation(project(":spi:dsp-spi-08"))
-    //implementation(libs.dsp.spi.v08)
     implementation(project(":spi:core-spi"))
     implementation(project(":core:core-utils"))
 
