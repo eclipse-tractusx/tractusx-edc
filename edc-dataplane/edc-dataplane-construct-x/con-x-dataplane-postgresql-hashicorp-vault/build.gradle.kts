@@ -36,7 +36,7 @@ dependencies {
     implementation("org.eclipse.edc:dataplane-feature-sql-bom:$edcVersion")
     implementation("org.eclipse.edc:vault-hashicorp:$edcVersion")
 
-    implementation("org.eclipse.edc:participant-context-config-core:${edcVersion}")
+    implementation("org.eclipse.edc:participant-context-config-core:$edcVersion")
 
     implementation("org.eclipse.tractusx.edc:dataplane-public-api-v2:$txVersion")
     implementation("org.eclipse.tractusx.edc:dataplane-util:$txVersion")
