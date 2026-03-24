@@ -629,7 +629,7 @@ postgresql:
     repository: postgres
   jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
   persistence:
-    enabled: true
+    enabled: false
     size: 10Gi
     storageClass: standard
   resources:
