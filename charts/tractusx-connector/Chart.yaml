@@ -58,8 +58,8 @@ dependencies:
     repository: https://helm.releases.hashicorp.com
     condition: install.vault
   # PostgreSQL
-  - name: postgresql
+  - name: postgres
     alias: postgresql
-    version: "15.2.1"
-    repository: https://charts.bitnami.com/bitnami
+    version: "0.18.3"
+    repository: oci://registry-1.docker.io/cloudpirates
     condition: install.postgresql
