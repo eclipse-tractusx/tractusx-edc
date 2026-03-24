@@ -287,7 +287,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | postgresql.image.registry | string | `"docker.io"` |  |
 | postgresql.image.repository | string | `"postgres"` |  |
 | postgresql.jdbcUrl | string | `"jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"` |  |
-| postgresql.persistence.enabled | bool | `true` |  |
+| postgresql.persistence.enabled | bool | `false` |  |
 | postgresql.persistence.size | string | `"10Gi"` |  |
 | postgresql.persistence.storageClass | string | `"standard"` |  |
 | postgresql.resources.limits.cpu | int | `1` |  |
