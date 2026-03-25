@@ -32,6 +32,10 @@ jobs:
     permissions:
       issues: write
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - run: gh issue edit "$NUMBER" --add-label "$LABELS"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

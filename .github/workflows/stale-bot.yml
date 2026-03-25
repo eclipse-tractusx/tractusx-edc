@@ -35,6 +35,10 @@ jobs:
     permissions:
       issues: write
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f # v10.2.0
         with:
           operations-per-run: 1000

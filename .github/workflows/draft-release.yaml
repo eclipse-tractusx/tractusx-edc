@@ -35,11 +35,15 @@ jobs:
   validate-and-prepare:
     name: "Validate that tag does not already exist and prepare branch"
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'main' || github.ref_type == 'tag'  }}
+    if: ${{ github.ref_name == 'main' || github.ref_type == 'tag' }}
     outputs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
       is_official_release: ${{ steps.validation.outputs.is_official_release }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
@@ -87,53 +91,3 @@ jobs:
 
           tag=$(git tag -l ${{ inputs.version }})
 
-          if [ ! -z $tag ];
-          then
-            echo "Tag ${{ inputs.version }} already exists! Please choose another tag."
-            exit 1
-          fi
-      - id: resolve_branch
-        name: "Resolve branch name"
-        run: |
-          echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-
-  draft-new-release:
-    name: "Draft a new release"
-    runs-on: ubuntu-latest
-    needs: validate-and-prepare
-    permissions:
-      contents: write
-      packages: write
-      pages: write
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Create Release branch
-        run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
-      - uses: ./.github/actions/setup-java
-      - name: Version and Chart Updates
-        uses: ./.github/actions/update-version-and-charts
-        with:
-          version: ${{ inputs.version }}
-          bump_version: "false"
-      - name: Push new branch
-        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
-      - name: Check dependencies before release
-        uses: ./.github/actions/generate-and-check-dependencies
-        with:
-          run: ${{ needs.validate-and-prepare.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
-      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
-        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-      - name: Commit DEPENDENCIES changes
-        shell: bash
-        run: |
-          if git diff --quiet -- DEPENDENCIES; then
-            echo "No changes in DEPENDENCIES, skipping commit."
-            exit 0
-          fi
-          
-          git add DEPENDENCIES
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-          git commit --message "Update DEPENDENCIES file"
-          git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
-          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT

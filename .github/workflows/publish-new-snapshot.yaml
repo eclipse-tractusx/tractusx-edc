@@ -56,6 +56,10 @@ jobs:
       HAS_MVNCRED: ${{ steps.secret-presence.outputs.HAS_MVNCRED }}
       HAS_SWAGGER: ${{ steps.secret-presence.outputs.HAS_SWAGGER }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - name: Check whether secrets exist
         id: secret-presence
         run: |
@@ -75,6 +79,10 @@ jobs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
       DATED: ${{ steps.get-version.outputs.DATED }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: "Get version"
         id: get-version
@@ -133,6 +141,10 @@ jobs:
     needs: [ determine-version ]
     if: ${{ needs.determine-version.outputs.DATED == 'true' }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/publish-latest-versioned-snapshot
         env:

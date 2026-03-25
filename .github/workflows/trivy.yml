@@ -44,6 +44,10 @@ jobs:
     outputs:
       value: ${{ steps.git-sha7.outputs.SHA7 }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - name: Resolve git 7-chars sha
         id: git-sha7
         run: |
@@ -56,6 +60,10 @@ jobs:
       contents: read
       security-events: write
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
@@ -88,6 +96,10 @@ jobs:
           - edc-controlplane-postgresql-hashicorp-vault
           - edc-dataplane-hashicorp-vault
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
         ## This step will fail if the docker images is not found

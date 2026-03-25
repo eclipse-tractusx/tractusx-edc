@@ -42,6 +42,10 @@ jobs:
   helm-lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0
+        with:
+          egress-policy: audit
       ##############
       ### Set-Up ###
       ##############
