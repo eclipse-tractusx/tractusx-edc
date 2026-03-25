@@ -49,14 +49,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-java
 
     - uses: ./.github/actions/setup-helm
     - uses: ./.github/actions/setup-kubectl
 
     - name: Create k8s Kind Cluster
-      uses: helm/kind-action@v1.14.0
+      uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
       with:
         node_image: kindest/node:${{ inputs.k8sversion }}
 
