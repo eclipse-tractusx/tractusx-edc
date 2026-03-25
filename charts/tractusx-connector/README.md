@@ -56,7 +56,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://helm.releases.hashicorp.com | vault(vault) | 0.27.0 |
+| https://helm.releases.hashicorp.com | vault(vault) | 0.28.0 |
 | oci://registry-1.docker.io/cloudpirates | postgresql(postgres) | 0.18.3 |
 
 ## Values
