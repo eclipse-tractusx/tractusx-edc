@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2026 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2023 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,7 +30,6 @@ dependencies {
     api(libs.edc.spi.web)
     api(libs.edc.spi.controlplane)
     api(libs.edc.ext.jsonld)
-    //api(project(":extensions:common:json-ld"))
 
     implementation(libs.edc.lib.dsp.negotiation.validation)
     implementation(libs.edc.lib.dsp.negotiation.http.api)
