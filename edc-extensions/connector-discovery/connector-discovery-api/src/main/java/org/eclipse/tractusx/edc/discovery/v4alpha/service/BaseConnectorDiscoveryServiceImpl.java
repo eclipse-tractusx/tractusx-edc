@@ -146,22 +146,45 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
                 .build();
 
         return httpClient.executeAsync(wellKnownRequest, emptyList())
-                .thenApply(response -> {
+                .handle((response, throwable) -> {
+                    if (throwable != null) {
+                        var msg = "Counterparty well-known endpoint call has failed with message: %s"
+                                .formatted(throwable.getLocalizedMessage());
+                        monitor.warning(msg);
+                        throw new BadGatewayException(msg);
+                    }
                     try (response) {
-                        if (!response.isSuccessful()) {
-                            var msg = "Counterparty well-known endpoint has failed with status %s and message: %s"
-                                    .formatted(response.code(), response.message());
-                            monitor.warning(msg);
-                            throw new BadGatewayException(msg);
+                        ProtocolVersion protocolVersion;
+                        if (response.isSuccessful()) {
+                            protocolVersion = extractLatestSupportedVersion(parseResponseBody(response));
+                        } else {
+                            protocolVersion = handleSpecialStatusCode(response);
+                            if (protocolVersion == null) {
+                                var msg = "Counterparty well-known endpoint has failed with status %s and message: %s"
+                                        .formatted(response.code(), response.message());
+                                monitor.warning(msg);
+                                throw new BadGatewayException(msg);
+                            }
                         }
 
-                        var protocolVersion = extractLatestSupportedVersion(parseResponseBody(response));
                         var resultObject = createResultObjectFromProtocolVersionData(request, protocolVersion);
                         versionsCache.put(versionEndpoint, new TimestampedValue<>(protocolVersion, cacheValidity));
                         return resultObject;
                     }
                 });
     }
+
+    /**
+     * This method allows to handle certain status codes returned in the response of the version metadata call.
+     * Needed for older connector versions, as they had and access-restricted endpoint which results in a 401.
+     * Intention is, to allow to handle this status code instead of doing an authenticated call, as this is
+     * a temporary situation.
+     *
+     * @param response The response object of the version metadata request
+     * @return Either a default ProtocolVersion object, if the status code is caught or null, if the response does
+     *         not map to a default value
+     */
+    protected abstract ProtocolVersion handleSpecialStatusCode(Response response);
 
     /**
      * The connector discovery basically deals with two potential input root patterns. First input pattern is, that
@@ -182,7 +205,7 @@ public abstract class BaseConnectorDiscoveryServiceImpl implements ConnectorDisc
      * @return A joint path cleaned from unneeded slashes following the pattern 'root/subpath'
      * @throws InvalidRequestException If the created path, i.e., the root parameter is not a correct url.
      */
-    protected String createFullPath(String root, String subpath) {
+    private String createFullPath(String root, String subpath) {
         var input = root;
         if (root.endsWith(DSP_DISCOVERY_PATH)) {
             input = root.substring(0, root.length() - DSP_DISCOVERY_PATH.length() - 1);
