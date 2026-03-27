@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 public class DivSecureTokenServiceTest {
 
-    static final String DIV_URL = "http://localhost:8080/iatp";
+    static final String DIV_URL = "http://localhost:8080/dcp";
     private final Monitor monitor = mock(Monitor.class);
     private final DivOauth2Client oauth2Client = mock(DivOauth2Client.class);
     private final ObjectMapper mapper = new ObjectMapper();

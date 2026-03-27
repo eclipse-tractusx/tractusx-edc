@@ -45,13 +45,13 @@ public class BdrsClientExtension implements ServiceExtension {
 
     public static final int DEFAULT_BDRS_CACHE_VALIDITY = 15 * 60; // 15 minutes
     @Setting(value = "Base URL of the BDRS service", required = true)
-    public static final String BDRS_SERVER_URL_PROPERTY = "tx.edc.iam.iatp.bdrs.server.url";
+    public static final String BDRS_SERVER_URL_PROPERTY = "tx.edc.iam.dcp.bdrs.server.url";
 
     @Setting(value = "Base URL of the CredentialService, that belongs to this connector runtime. If not specified, the URL is resolved from this participant's DID document.")
-    public static final String CREDENTIAL_SERVICE_BASE_URL_PROPERTY = "tx.edc.iam.iatp.credentialservice.url";
+    public static final String CREDENTIAL_SERVICE_BASE_URL_PROPERTY = "tx.edc.iam.dcp.credentialservice.url";
 
     @Setting(value = "Validity period in seconds for the cached BPN/DID mappings. After this period a new resolution request will hit the server.", defaultValue = DEFAULT_BDRS_CACHE_VALIDITY + "")
-    public static final String BDRS_SERVER_CACHE_VALIDITY_PERIOD = "tx.edc.iam.iatp.bdrs.cache.validity";
+    public static final String BDRS_SERVER_CACHE_VALIDITY_PERIOD = "tx.edc.iam.dcp.bdrs.cache.validity";
 
     // this setting is already defined in IdentityAndTrustExtension
     public static final String CONNECTOR_DID_PROPERTY = "edc.iam.issuer.id";

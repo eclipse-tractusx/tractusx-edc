@@ -28,7 +28,7 @@ import java.net.URL;
 public enum Runtimes {
     SNAPSHOT_CONNECTOR(":edc-tests:runtime:runtime-compatibility:snapshot:connector-snapshot"),
     STABLE_CONNECTOR(":edc-tests:runtime:runtime-compatibility:stable:connector-stable"),
-    IDENTITY_HUB(":edc-tests:runtime:iatp:runtime-memory-sts");
+    IDENTITY_HUB(":edc-tests:runtime:dcp:runtime-memory-sts");
 
     private final String[] modules;
     private URL[] classpathEntries;

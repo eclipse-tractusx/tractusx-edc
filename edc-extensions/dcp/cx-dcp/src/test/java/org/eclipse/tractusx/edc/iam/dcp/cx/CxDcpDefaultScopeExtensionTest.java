@@ -27,7 +27,7 @@ import org.eclipse.edc.policy.context.request.spi.RequestTransferProcessPolicyCo
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.tractusx.edc.iam.iatp.scope.DefaultScopeExtractor;
+import org.eclipse.tractusx.edc.iam.dcp.scope.DefaultScopeExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,9 +39,9 @@ import java.util.Set;
 
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
-import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
-import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
-import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.TX_IATP_DEFAULT_SCOPE_PREFIX;
+import static org.eclipse.tractusx.edc.TxDcpConstants.DEFAULT_SCOPES;
+import static org.eclipse.tractusx.edc.TxDcpConstants.V08_DEFAULT_SCOPES;
+import static org.eclipse.tractusx.edc.iam.dcp.DcpDefaultScopeExtension.TX_DCP_DEFAULT_SCOPE_PREFIX;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -80,7 +80,7 @@ public class CxDcpDefaultScopeExtensionTest {
                 "bar.type", "BarCredential",
                 "bar.operation", "write"
         ));
-        when(context.getConfig(TX_IATP_DEFAULT_SCOPE_PREFIX)).thenReturn(cfg);
+        when(context.getConfig(TX_DCP_DEFAULT_SCOPE_PREFIX)).thenReturn(cfg);
         extension.initialize(context);
 
         var scopes = new HashMap<String, Set<String>>();
