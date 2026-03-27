@@ -1,0 +1,12 @@
+# zizmor configuration
+# https://docs.zizmor.sh/configuration/
+
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # eclipse-tractusx/sig-infra has no release tags and is a first-party
+        # Eclipse Tractus-X org repo — ref-pin (branch reference) is acceptable.
+        "eclipse-tractusx/*": ref-pin
+        # everything else must be fully hash-pinned
+        "*": hash-pin
