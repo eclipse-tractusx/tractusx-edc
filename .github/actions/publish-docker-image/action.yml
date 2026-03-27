@@ -75,8 +75,10 @@ runs:
     - uses: ./.github/actions/setup-java
     - name: Build Controlplane
       shell: bash
+      env:
+        ROOT_DIR: ${{ inputs.rootDir }}
       run: |-
-        ./gradlew -p ${{ inputs.rootDir }} shadowJar
+        ./gradlew -p "$ROOT_DIR" shadowJar
 
     ###############################
     # Set metadata of docker image
