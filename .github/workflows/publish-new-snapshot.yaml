@@ -91,11 +91,13 @@ jobs:
           persist-credentials: false
       - name: "Get version"
         id: get-version
+        env:
+          WORKFLOW_RUN_EVENT: ${{ github.event.workflow_run.event }}
+          DATED_SNAPSHOT: ${{ inputs.dated_snapshot }}
         run: |
-          
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}')
           
-          if [[ "${{ github.event.workflow_run.event }}" == "schedule" || "${{ inputs.dated_snapshot }}" == "true" ]]; then
+          if [[ "$WORKFLOW_RUN_EVENT" == "schedule" || "$DATED_SNAPSHOT" == "true" ]]; then
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT" >> "$GITHUB_OUTPUT"
             echo "DATED=true" >> "$GITHUB_OUTPUT"
           else

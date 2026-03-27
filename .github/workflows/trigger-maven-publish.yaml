@@ -54,14 +54,16 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-java
 
-      - run: |
-          echo "Input Version: ${{ inputs.version }}"
+      - name: Set version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          echo "Input Version: $INPUT_VERSION"
 
           # set the input version in gradle.properties, if passed
-          if [ ! -z ${{ inputs.version }} ];
+          if [ ! -z "$INPUT_VERSION" ];
           then
-            sed -i 's#^version=.*#version='"${{ inputs.version }}"'#g' $(find . -name "gradle.properties")
-            VERSION=${{ inputs.version }}
+            sed -i 's#^version=.*#version='"$INPUT_VERSION"'#g' $(find . -name "gradle.properties")
           fi
 
           grep version gradle.properties | (echo -n "Publishing using " && cat)

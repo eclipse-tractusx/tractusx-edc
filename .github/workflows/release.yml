@@ -70,8 +70,10 @@ jobs:
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
       - name: Output update main branch version
         id: update-main
+        env:
+          RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
         run: |
-          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ steps.release-version.outputs.RELEASE_VERSION }}" 
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$RELEASE_VERSION"
           if [[ $PATCH == '0' && -z $SNAPSHOT ]]; 
           then
             echo "update_main_branch_version=true" >> $GITHUB_OUTPUT
@@ -79,25 +81,31 @@ jobs:
             echo "update_main_branch_version=false" >> $GITHUB_OUTPUT
           fi
       - name: Validations
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
         run: |
-          if [[ "${{ github.repository }}" != "eclipse-tractusx/tractusx-edc" ]]; then
+          if [[ "$REPOSITORY" != "eclipse-tractusx/tractusx-edc" ]]; then
             echo "This workflow can only be run on the eclipse-tractusx/tractusx-edc repository."
             exit 1
           fi
 
-          if [[ ! "${{ github.ref_name }}" =~ ^release/ ]]; then
+          if [[ ! "$REF_NAME" =~ ^release/ ]]; then
             echo "This workflow can only be run on the branches starting with release/."
             exit 1
           fi
           
-          if [[ "${{steps.release-version.outputs.RELEASE_VERSION}}" =~ SNAPSHOT ]]; then
+          if [[ "$RELEASE_VERSION" =~ SNAPSHOT ]]; then
             echo "This workflow can not be executed for SNAPSHOT versions."
             exit 1
           fi
       - name: Validate previous_tag exists
+        env:
+          PREVIOUS_TAG: ${{ inputs.previous_tag }}
         run: |
-          git show-ref --tags --verify --quiet "refs/tags/${{ inputs.previous_tag }}" \
-            || (echo "Tag '${{ inputs.previous_tag }}' not found." && exit 1)
+          git show-ref --tags --verify --quiet "refs/tags/$PREVIOUS_TAG" \
+            || (echo "Tag '$PREVIOUS_TAG' not found." && exit 1)
   
 
   # Release: Maven Artifacts
@@ -140,8 +148,10 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/setup-helm
+          persist-credentials: true
       - name: Package helm, update index.yaml and push to gh-pages
+        env:
+          RELEASE_VERSION: ${{ needs.validation.outputs.RELEASE_VERSION }}
         run: |
           # Prepare git env
           git config user.name "eclipse-tractusx-bot"
@@ -158,7 +168,7 @@ jobs:
 
           # Commit and push to gh-pages
           git add index.yaml helm-charts
-          git commit -s -m "Release ${{ needs.validation.outputs.RELEASE_VERSION }}"
+          git commit -s -m "Release $RELEASE_VERSION"
 
           git push origin gh-pages
 
@@ -175,6 +185,8 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
       - name: Prepare Git Config
         shell: bash
         run: |
@@ -184,23 +196,32 @@ jobs:
       - name: Create Release Tag
         id: create_release_tag
         shell: bash
+        env:
+          RELEASE_VERSION: ${{ needs.validation.outputs.RELEASE_VERSION }}
         run: |
           # informative
           git branch -a
           git tag
 
           # Create & push tag
-          git tag ${{ needs.validation.outputs.RELEASE_VERSION }}
-          git push origin ${{ needs.validation.outputs.RELEASE_VERSION }}
+          git tag "$RELEASE_VERSION"
+          git push origin "$RELEASE_VERSION"
       - name: Create GitHub Release
-        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
-        with:
-          generateReleaseNotes: true
-          generateReleaseNotesPreviousTag: ${{ inputs.previous_tag }}
-          tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ inputs.latest }}
-          removeArtifacts: true
+        env:
+          RELEASE_VERSION: ${{ needs.validation.outputs.RELEASE_VERSION }}
+          PREVIOUS_TAG: ${{ inputs.previous_tag }}
+          MAKE_LATEST: ${{ inputs.latest }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_FLAG=""
+          if [[ "$MAKE_LATEST" == "true" ]]; then
+            LATEST_FLAG="--latest"
+          fi
+          gh release create "$RELEASE_VERSION" \
+            --generate-notes \
+            --notes-start-tag "$PREVIOUS_TAG" \
+            --verify-tag \
+            $LATEST_FLAG
 
   # Release: Publish specs to GitHub Pages
   publish-openapi-to-gh-pages:
@@ -227,15 +248,18 @@ jobs:
         uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
         with:
           egress-policy: audit
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
       - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          RELEASE_VERSION: ${{ needs.validation.outputs.RELEASE_VERSION }}
         with:
           script: |
             const { owner, repo } = context.repo;
-            const version = "${{ needs.validation.outputs.RELEASE_VERSION }}";
+            const version = process.env.RELEASE_VERSION;
             
             const { data: release } = await github.rest.repos.getReleaseByTag({
               owner,
@@ -272,6 +296,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
+          persist-credentials: true
       - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
         with:
