@@ -22,10 +22,12 @@ package org.eclipse.tractusx.edc.discovery.cx.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonArray;
+import okhttp3.Response;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
+import org.eclipse.edc.protocol.spi.ProtocolVersion;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
@@ -63,6 +65,18 @@ public class BpnlAndDsp08ConnectorDiscoveryServiceImpl extends BaseConnectorDisc
     public CompletableFuture<JsonArray> discoverConnectors(ConnectorDiscoveryRequest request) {
         return super.discoverConnectors(new ConnectorDiscoveryRequest(
                 mapToDid(request.counterPartyId()), request.knownConnectors()));
+    }
+
+    @Override
+    protected ProtocolVersion handleSpecialStatusCode(Response response) {
+        if (response.code() == 401) {
+            // Connectors of version 0.9.0 and earlier had access-control for the version metadata endpoint
+            // This way, we assume, that a 401 indicates such a case and therefore default the protocol version to be used
+            // Wrong endpoint urls result in a 404, so the assumption here should be valid, if not, no big harm is
+            // done, as the call to a dsp endpoint would simply fail anyway.
+            return new ProtocolVersion("v0.8", "", "");
+        }
+        return null;
     }
 
     @Override

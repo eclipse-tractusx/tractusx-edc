@@ -21,9 +21,11 @@
 package org.eclipse.tractusx.edc.discovery.v4alpha.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.Response;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
+import org.eclipse.edc.protocol.spi.ProtocolVersion;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
@@ -39,6 +41,11 @@ public class DefaultConnectorDiscoveryServiceImpl extends BaseConnectorDiscovery
             CacheConfig cacheConfig,
             Monitor monitor) {
         super(httpClient, didResolver, mapper, List.of(Dsp2025Constants.V_2025_1_VERSION), cacheConfig, monitor);
+    }
+
+    @Override
+    protected ProtocolVersion handleSpecialStatusCode(Response response) {
+        return null;
     }
 
     @Override
