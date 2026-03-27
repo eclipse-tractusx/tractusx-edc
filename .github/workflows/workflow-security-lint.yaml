@@ -39,7 +39,7 @@ permissions:
 
 jobs:
   zizmor:
-    name: "zizmor"
+    name: "Zizmor"
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -64,7 +64,7 @@ jobs:
           config: .github/zizmor.yml
 
   poutine:
-    name: "poutine"
+    name: "Poutine"
     runs-on: ubuntu-latest
     permissions:
       contents: read

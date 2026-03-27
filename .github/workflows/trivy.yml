@@ -68,6 +68,8 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
         with:
@@ -104,12 +106,17 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
         ## This step will fail if the docker images is not found
       - name: "Check if image exists"
         id: imageCheck
+        env:
+          IMAGE: ${{ matrix.image }}
+          SHA7: ${{ needs.git-sha7.outputs.value }}
         run: |
-          docker buildx imagetools inspect --format '{{ json . }}' tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}
+          docker buildx imagetools inspect --format '{{ json . }}' "tractusx/$IMAGE:sha-$SHA7"
         continue-on-error: true
 
         ## the next two steps will only execute if the image exists check was successful

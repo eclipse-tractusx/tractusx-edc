@@ -39,6 +39,8 @@ jobs:
         with:
           egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
       - uses: ./.github/actions/setup-java
       - name: Output release type
         id: release_type
@@ -74,6 +76,8 @@ jobs:
       - name: Commit DEPENDENCIES changes
         if: ${{ startsWith(github.ref_name, 'release/') }}
         shell: bash
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           if git diff --quiet -- DEPENDENCIES; then
            echo "No changes in DEPENDENCIES, skipping commit."
@@ -84,5 +88,5 @@ jobs:
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
           git commit --message "Update DEPENDENCIES file"
-          git push origin ${{ github.ref_name }}
+          git push origin "$REF_NAME"
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT

@@ -85,23 +85,31 @@ jobs:
           path: resources/openapi/yaml
 
       - name: Set version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [ -z ${{ inputs.version }} ]; then
-            export VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
+          if [ -z "$INPUT_VERSION" ]; then
+            VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           else
-            export VERSION=${{ inputs.version }}
+            VERSION="$INPUT_VERSION"
           fi
 
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Download upstream API specs for ${{ matrix.apiGroup.name }}
+        env:
+          API_FOLDER: ${{ matrix.apiGroup.folder }}
+          API_NAME: ${{ matrix.apiGroup.name }}
         run: |
-          ./gradlew -p ${{ matrix.apiGroup.folder }} downloadOpenapi
-          cp ${{ matrix.apiGroup.folder }}/build/docs/openapi/* resources/openapi/yaml/${{ matrix.apiGroup.name }}
+          ./gradlew -p "$API_FOLDER" downloadOpenapi
+          cp "$API_FOLDER/build/docs/openapi/"* "resources/openapi/yaml/$API_NAME"
 
       - name: Merge API specs
+        env:
+          API_NAME: ${{ matrix.apiGroup.name }}
+          VERSION: ${{ env.VERSION }}
         run: |
-          ./gradlew mergeOpenApiSpec --inputDir=${PWD}/resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=${{ matrix.apiGroup.name }}.yaml --infoTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" --infoDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" --infoVersion=${{ env.VERSION }}
+          ./gradlew mergeOpenApiSpec --inputDir="${PWD}/resources/openapi/yaml/$API_NAME" --output="$API_NAME.yaml" --infoTitle="Tractus-X EDC $API_NAME API" --infoDescription="Tractus-X EDC $API_NAME API Documentation" --infoVersion=$VERSION
 
       - name: Generate Swagger UI current version
         uses: Legion2/swagger-ui-action@eff65dc3f193f0a749872be82f74baa35be0797d # v1.3.0

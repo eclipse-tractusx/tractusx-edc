@@ -43,7 +43,7 @@ jobs:
         with:
           persist-credentials: false
       - run: |
-          docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
+          docker run -v "${GITHUB_WORKSPACE}/charts:/helm-docs" jnorwood/helm-docs helm-docs
           
           if $(git diff --quiet --exit-code); then
             echo "Helm chart docs up to date"
@@ -119,13 +119,18 @@ jobs:
 
       # Publish Coverage Job Summary
       - name: Output KPIs from JaCoCo report
+        env:
+          COVERAGE_PERCENTAGE: ${{ steps.jacoco_reporter.outputs.coverage_percentage }}
+          COVERED_LINES: ${{ steps.jacoco_reporter.outputs.covered_lines }}
+          MISSED_LINES: ${{ steps.jacoco_reporter.outputs.missed_lines }}
+          TOTAL_LINES: ${{ steps.jacoco_reporter.outputs.total_lines }}
         run: |
           echo "| Outcome | Value |" >> $GITHUB_STEP_SUMMARY
           echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
-          echo "| Code Coverage % | ${{ steps.jacoco_reporter.outputs.coverage_percentage }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.jacoco_reporter.outputs.covered_lines }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| :x: Number of Lines Missed | ${{ steps.jacoco_reporter.outputs.missed_lines }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Total Number of Lines | ${{ steps.jacoco_reporter.outputs.total_lines }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Coverage % | $COVERAGE_PERCENTAGE |" >> $GITHUB_STEP_SUMMARY
+          echo "| :heavy_check_mark: Number of Lines Covered | $COVERED_LINES |" >> $GITHUB_STEP_SUMMARY
+          echo "| :x: Number of Lines Missed | $MISSED_LINES |" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Number of Lines | $TOTAL_LINES |" >> $GITHUB_STEP_SUMMARY
 
       # uploads the coverage-report.md artifact
       - name: Upload Code Coverage Markdown Report
@@ -204,13 +209,17 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests (${{ matrix.dir }})
+        env:
+          E2E_DIR: ${{ matrix.dir }}
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true --no-build-cache
+          ./gradlew -p "edc-tests/e2e/$E2E_DIR" test -DincludeTags="EndToEndTest" -PverboseTest=true --no-build-cache
 
       - name: Set sanitized artifact name
+        env:
+          E2E_DIR: ${{ matrix.dir }}
         run: |
-          SANITIZED_NAME=$(echo "edc-tests/e2e/${{ matrix.dir }}" | tr '/' '-')
+          SANITIZED_NAME=$(echo "edc-tests/e2e/$E2E_DIR" | tr '/' '-')
           echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
 
       - name: Upload test artifacts

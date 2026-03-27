@@ -47,6 +47,8 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
 
     ###############################################
     # Enable emulation for cross-arch builds
@@ -104,11 +106,14 @@ runs:
     ###############################
     - name: Build and push
       uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+      env:
+        ROOT_DIR: ${{ inputs.rootDir }}
+        IMAGE_NAME: ${{ inputs.imagename }}
       with:
-        context: ${{ inputs.rootDir }}
-        file: ${{ inputs.rootDir }}/build/resources/docker/Dockerfile
+        context: ${{ env.ROOT_DIR }}
+        file: ${{ env.ROOT_DIR }}/build/resources/docker/Dockerfile
         build-args: |
-          JAR=build/libs/${{ inputs.imagename }}.jar
+          JAR=build/libs/${{ env.IMAGE_NAME }}.jar
           OTEL_JAR=build/resources/otel/opentelemetry-javaagent.jar
           ADDITIONAL_FILES=build/legal/*
         push: true
