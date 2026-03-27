@@ -68,13 +68,13 @@ allprojects {
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
-            implementation("org.yaml:snakeyaml:2.5") {
+            implementation("org.yaml:snakeyaml:2.6") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
             implementation("net.minidev:json-smart:2.6.0") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
-            implementation("com.azure:azure-core-http-netty:1.16.2") {
+            implementation("com.azure:azure-core-http-netty:1.16.3") {
                 because("Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
             }
             implementation("io.netty:netty-codec-http2:4.2.9.Final") {

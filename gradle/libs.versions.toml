@@ -7,24 +7,24 @@ edc-next = "0.16.0"
 edc-build = "1.1.6"
 allure = "2.33.0"
 awaitility = "4.3.0"
-aws = "2.41.24"
+aws = "2.42.12"
 azure-storage-blob = "12.33.2"
 bouncyCastle-jdk18on = "1.83"
 dcp-tck = "1.0.0-RC6"
 dsp-tck = "1.0.0-RC6"
-flyway = "12.0.3"
+flyway = "12.1.1"
 jackson = "2.21.1"
 jakarta-json = "2.1.3"
 junit = "6.0.3"
 nimbus = "10.8"
 okhttp = "5.3.2"
-opentelemetry = "2.25.0"
+opentelemetry = "2.26.0"
 opentelemetry-instrumentation = "2.25.0"
 opentelemetry-log4j-appender = "2.25.0-alpha"
 postgres = "42.7.10"
 restAssured = "6.0.0"
 rsApi = "4.0.0"
-testcontainers = "2.0.3"
+testcontainers = "2.0.4"
 testcontainers-keycloak = "4.1.1"
 titanium = "1.7.0"
 log4j2 = "2.25.3"
@@ -38,10 +38,6 @@ edc-bom-controlplane-feature-sql = { module = "org.eclipse.edc:controlplane-feat
 edc-bom-dataplane-base = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
 edc-bom-dataplane-feature-sql = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
 edc-bom-identityhub = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
-
-edc-bom-federatedcatalog-base = { module = "org.eclipse.edc:federatedcatalog-base-bom", version.ref = "edc" }
-edc-bom-federatedcatalog-dcp = { module = "org.eclipse.edc:federatedcatalog-dcp-bom", version.ref = "edc" }
-edc-bom-federatedcatalog-feature-sql = { module = "org.eclipse.edc:federatedcatalog-feature-sql-bom", version.ref = "edc" }
 
 edc-spi-auth = { module = "org.eclipse.edc:auth-spi", version.ref = "edc" }
 edc-spi-boot = { module = "org.eclipse.edc:boot-spi", version.ref = "edc" }
@@ -177,9 +173,6 @@ dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
 dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
 dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
 
-# Federated Catalog modules
-edc-fc-spi-crawler = { module = "org.eclipse.edc:crawler-spi", version.ref = "edc" }
-
 ## IH for testing
 
 edc-ih-api-presentation = { module = "org.eclipse.edc:presentation-api", version.ref = "edc" }
@@ -248,6 +241,6 @@ edc-sts = [
 
 [plugins]
 docker = { id = "com.bmuschko.docker-remote-api", version = "10.0.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.3.1" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.42" }
+shadow = { id = "com.gradleup.shadow", version = "9.3.2" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.45" }
 edc-build = { id = "org.eclipse.edc.edc-build", version.ref = "edc-build" }

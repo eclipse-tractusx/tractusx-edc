@@ -76,15 +76,15 @@ include(":edc-extensions:migrations:data-plane-migration")
 include(":edc-extensions:tokenrefresh-handler")
 include(":edc-extensions:bdrs-client")
 include(":edc-extensions:provision-additional-headers")
-include(":edc-extensions:federated-catalog")
 include(":edc-extensions:event-subscriber")
 include(":edc-extensions:edr:edr-api-v2")
 include(":edc-extensions:edr:edr-callback")
 include(":edc-extensions:edr:edr-index-lock-sql")
 include(":edc-extensions:cx-policy")
 include(":edc-extensions:cx-policy-legacy")
+include(":edc-extensions:dcp:cx-dcp")
 include(":edc-extensions:dcp:tx-dcp")
-include(":edc-extensions:dcp:tx-dcp-sts-dim")
+include(":edc-extensions:dcp:tx-dcp-sts-div")
 include(":edc-extensions:dcp:verifiable-presentation-cache")
 include(":edc-extensions:data-flow-properties-provider")
 include(":edc-extensions:validators:empty-asset-selector")
@@ -95,7 +95,7 @@ include(":edc-extensions:dataspace-protocol")
 include(":edc-extensions:dataspace-protocol:cx-dataspace-protocol")
 include(":edc-extensions:dataspace-protocol:dataspace-protocol-core")
 include(":edc-extensions:did-document:did-document-service-self-registration")
-include(":edc-extensions:did-document:did-document-service-dim")
+include(":edc-extensions:did-document:did-document-service-div")
 
 include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
@@ -142,11 +142,12 @@ include(":edc-tests:compatibility-tests")
 include(":edc-tests:runtime:dataplane-cloud")
 include(":edc-tests:runtime:runtime-dsp")
 include(":edc-tests:runtime:iatp:iatp-extensions")
-include(":edc-tests:runtime:iatp:runtime-memory-iatp-dim-ih")
+include(":edc-tests:runtime:iatp:runtime-memory-iatp-div-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-iatp-ih")
 include(":edc-tests:runtime:iatp:runtime-memory-sts")
 include(":edc-tests:runtime:mock-connector")
 include(":edc-tests:runtime:runtime-postgresql")
+include(":edc-tests:runtime:runtime-dcp-tck")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-base")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-no-protocols")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08")
@@ -169,33 +170,3 @@ include(":edc-dataplane:edc-dataplane-hashicorp-vault")
 
 include(":samples:testing-with-mocked-connector")
 
-plugins {
-    id("com.gradle.develocity") version "4.3.2"
-    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.4.0"
-}
-
-// Develocity
-val isCI = System.getenv("CI") != null // adjust to your CI provider
-
-develocity {
-    server = "https://develocity-staging.eclipse.org"
-    projectId = "automotive.tractusx"
-    buildScan {
-        uploadInBackground = !isCI
-        publishing.onlyIf { it.isAuthenticated }
-        obfuscation {
-            ipAddresses { addresses -> addresses.map { _ -> "0.0.0.0" } }
-        }
-    }
-}
-
-buildCache {
-    local {
-        isEnabled = true
-    }
-
-    remote(develocity.buildCache) {
-        isEnabled = true
-        isPush = isCI
-    }
-}

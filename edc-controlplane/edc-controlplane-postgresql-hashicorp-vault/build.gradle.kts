@@ -17,9 +17,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     `java-library`
     id("application")
@@ -35,7 +32,6 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base"))
 
     runtimeOnly(libs.edc.bom.controlplane.feature.sql)
-    runtimeOnly(libs.edc.bom.federatedcatalog.feature.sql)
 
     implementation(project(":edc-extensions:agreements:retirement-evaluation-store-sql"))
     implementation(project(":edc-extensions:agreements-bpns:bpns-evaluation-store-sql"))

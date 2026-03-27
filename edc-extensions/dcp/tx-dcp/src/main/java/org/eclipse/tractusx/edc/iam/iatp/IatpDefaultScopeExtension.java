@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 SAP SE
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -40,8 +41,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
-import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
-import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.iatp.IatpDefaultScopeExtension.NAME;
 
 @Extension(NAME)
@@ -73,26 +72,23 @@ public class IatpDefaultScopeExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        policyEngine.registerPostValidator(RequestCatalogPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes(context)));
-        policyEngine.registerPostValidator(RequestContractNegotiationPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes(context)));
-        policyEngine.registerPostValidator(RequestTransferProcessPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes(context)));
+        var defaultScopes = defaultScopes(context);
+        if (!defaultScopes.isEmpty()) {
+            policyEngine.registerPostValidator(RequestCatalogPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
+            policyEngine.registerPostValidator(RequestContractNegotiationPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
+            policyEngine.registerPostValidator(RequestTransferProcessPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
+        }
     }
 
     private Map<String, Set<String>> defaultScopes(ServiceExtensionContext context) {
         var config = context.getConfig(TX_IATP_DEFAULT_SCOPE_PREFIX);
         var scopes = config.partition().map(this::createScope).collect(Collectors.toSet());
         var scopesByVersion = new HashMap<String, Set<String>>();
-        if (scopes.isEmpty()) {
-            monitor.info(format("No default scope from configuration. Using the default ones %s for %s and %s for %s",
-                    DSP_SCOPE_V_2025_1, DEFAULT_SCOPES, DSP_SCOPE_V_08, V08_DEFAULT_SCOPES));
-            scopesByVersion.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
-            scopesByVersion.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);
-            return scopesByVersion;
-        } else {
+        if (!scopes.isEmpty()) {
             scopesByVersion.put(DSP_SCOPE_V_08, scopes);
             scopesByVersion.put(DSP_SCOPE_V_2025_1, scopes);
-            return scopesByVersion;
         }
+        return scopesByVersion;
     }
 
     private String createScope(Config config) {
@@ -100,5 +96,6 @@ public class IatpDefaultScopeExtension implements ServiceExtension {
         var type = config.getString(TYPE);
         var operation = config.getString(OPERATION);
         return format("%s:%s:%s", alias, type, operation);
+
     }
 }

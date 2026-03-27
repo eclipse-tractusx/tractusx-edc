@@ -89,8 +89,6 @@ jobs:
         run: |-
           ./gradlew :edc-controlplane:edc-controlplane-postgresql-hashicorp-vault:dockerize
           ./gradlew :edc-dataplane:edc-dataplane-hashicorp-vault:dockerize
-        env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: "Load images into KinD"
         shell: bash
@@ -114,7 +112,14 @@ jobs:
       - name: Print logs
         if: failure()
         shell: bash
-        run: kubectl get deployments | tail -n +2 | awk '{print $1}' | sed 's/^/deployment\//' | xargs -n1 kubectl logs
+        run: |
+          kubectl get pods -o wide
+          kubectl get pods --no-headers | awk '{print $1}' | while read pod; do
+            echo "=== logs: $pod ==="
+            kubectl logs "$pod" --all-containers=true || true
+            echo "=== previous logs: $pod ==="
+            kubectl logs "$pod" --previous --all-containers=true || true
+          done
 
       - name: Destroy the kind cluster
         if: always()

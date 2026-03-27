@@ -28,6 +28,29 @@ configurations.all {
 }
 
 dependencies {
+    constraints {
+        runtimeOnly("tools.jackson.core:jackson-core:3.1.0") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("com.fasterxml.jackson.core:jackson-core:2.21.1") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-server:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-security:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty:jetty-session:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty.ee10:jetty-ee10-servlet:12.1.7") {
+            because("older version has vulnerability")
+        }
+        runtimeOnly("org.eclipse.jetty.websocket:jetty-websocket:12.1.7") {
+            because("older version has vulnerability")
+        }
+    }
     runtimeOnly(libs.edc.bom.dataplane.base)
 
     implementation(project(":core:edr-core"))
@@ -37,7 +60,7 @@ dependencies {
     implementation(project(":edc-extensions:dataplane:dataplane-proxy:edc-dataplane-proxy-consumer-api"))
     implementation(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-api"))
     implementation(project(":edc-extensions:dataplane:dataplane-token-refresh:token-refresh-core"))
-    implementation(project(":edc-extensions:dcp:tx-dcp-sts-dim"))
+    implementation(project(":edc-extensions:dcp:tx-dcp-sts-div"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:event-subscriber"))
     implementation(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"))
