@@ -26,6 +26,9 @@ on:
       - reopened
       - opened
 
+permissions:
+  contents: read
+
 jobs:
   label-issue:
     runs-on: ubuntu-latest

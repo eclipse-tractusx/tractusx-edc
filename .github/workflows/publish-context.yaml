@@ -27,6 +27,9 @@ on:
     paths:
       - 'core/json-ld-core/src/main/resources/document/**'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest

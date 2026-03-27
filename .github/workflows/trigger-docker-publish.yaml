@@ -46,6 +46,9 @@ on:
         description: 'Explicitly specify the Docker tag. Note that SHA and latest are added automatically.'
         required: false
 
+permissions:
+  contents: read
+
 jobs:
   create-docker-image:
     name: "Build and push images"
@@ -58,7 +61,7 @@ jobs:
                    { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault },
                    { dir: edc-tests/runtime, img: mock-connector }]
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@4137322ad5265b5e96bf9d80bc2a7d79c88a1b3a # v2.16.0

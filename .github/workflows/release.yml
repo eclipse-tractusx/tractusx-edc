@@ -39,6 +39,9 @@ on:
         default: ""
 
 
+permissions:
+  contents: read
+
 jobs:
   run-all-tests:
     name: "Run All Tests"

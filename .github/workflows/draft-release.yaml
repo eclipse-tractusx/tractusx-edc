@@ -31,6 +31,9 @@ on:
         description: 'The version you want to release.'
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   validate-and-prepare:
     name: "Validate that tag does not already exist and prepare branch"

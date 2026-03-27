@@ -38,6 +38,9 @@ on:
       - '**'
       - '!charts/**'
 
+permissions:
+  contents: read
+
 jobs:
   helm-lint:
     runs-on: ubuntu-latest

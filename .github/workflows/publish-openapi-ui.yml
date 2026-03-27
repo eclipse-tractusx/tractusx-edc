@@ -46,6 +46,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 jobs:
   generate-openapi-spec:
     runs-on: ubuntu-latest

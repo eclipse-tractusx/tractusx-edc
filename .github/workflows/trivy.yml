@@ -37,6 +37,9 @@ on:
     types:
       - completed
 
+permissions:
+  contents: read
+
 jobs:
   git-sha7:
     name: Determine short git sha

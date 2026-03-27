@@ -35,6 +35,9 @@ on:
         required: false
         description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
 
+permissions:
+  contents: read
+
 jobs:
   maven-release:
     name: 'Publish all artefacts to MavenCentral'
