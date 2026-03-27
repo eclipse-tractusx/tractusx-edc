@@ -19,7 +19,7 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:25-jre-alpine@sha256:f10d6259d0798c1e12179b6bf3b63cea0d6843f7b09c9f9c9c422c50e44379ec
 RUN apk update && apk upgrade --no-cache
 
 ARG JAR
