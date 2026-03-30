@@ -159,10 +159,10 @@ class BdrsClientImpl implements BdrsClient {
                     var bytes = gz.readAllBytes();
                     Map<String, String> bpnToDidMapping = mapper.readValue(bytes, MAP_REF);
 
-                    // Store BPN→DID direction
+                    // Store BPN -> DID cache
                     cache.setCache(participantContextId, BDRS_CACHE_TYPE.BPN_TO_DID, bpnToDidMapping);
 
-                    // Store inverted DID→BPN direction
+                    // Store inverted DID -> BPN cache
                     var didToBpnMapping = bpnToDidMapping.entrySet()
                             .stream()
                             .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
