@@ -34,9 +34,6 @@ import org.eclipse.tractusx.edc.TxIatpConstants;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,17 +46,19 @@ import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.ISSUER;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.JWT_ID;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.SUBJECT;
+import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsCacheInterface.BDRS_CACHE_TYPE;
 
 /**
- * Holds a local cache of BPN-to-DID mapping entries.
+ * Holds a local, participant-aware cache of BPN-to-DID mapping entries.
  * <p>
- * The local cache expires after a configurable time, at which point {@link BdrsClientImpl#resolveDid(String)}} requests will hit the server again.
+ * Each participant (tenant) gets its own cache partition managed by a {@link BdrsCache}.
+ * The cache expires after a configurable time per participant, at which point
+ * the next resolution request will hit the BDRS server again.
  */
 class BdrsClientImpl implements BdrsClient {
     private static final TypeReference<Map<String, String>> MAP_REF = new TypeReference<>() {
     };
     private final String serverUrl;
-    private final int cacheValidity;
     private final EdcHttpClient httpClient;
     private final Monitor monitor;
     private final ObjectMapper mapper;
@@ -69,9 +68,11 @@ class BdrsClientImpl implements BdrsClient {
     private final Supplier<String> ownCredentialServiceUrl;
     private final CredentialServiceClient credentialServiceClient;
     private final ParticipantContextSupplier participantContextSupplier;
-    private Map<String, String> cacheBpnDid = new HashMap<>();
-    private Map<String, String> cacheDidBpn = new HashMap<>();
-    private Instant lastCacheUpdate;
+
+    /**
+     * Participant-aware cache holding both BPN→DID and DID→BPN directions.
+     */
+    private final BdrsCache cache;
 
     BdrsClientImpl(String baseUrl,
                    int cacheValidity,
@@ -81,9 +82,9 @@ class BdrsClientImpl implements BdrsClient {
                    Monitor monitor,
                    ObjectMapper mapper,
                    SecureTokenService secureTokenService,
-                   CredentialServiceClient credentialServiceClient, ParticipantContextSupplier participantContextSupplier) {
+                   CredentialServiceClient credentialServiceClient,
+                   ParticipantContextSupplier participantContextSupplier) {
         this.serverUrl = baseUrl;
-        this.cacheValidity = cacheValidity;
         this.httpClient = httpClient;
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.mapper = mapper;
@@ -92,14 +93,15 @@ class BdrsClientImpl implements BdrsClient {
         this.ownCredentialServiceUrl = ownCredentialServiceUrl;
         this.credentialServiceClient = credentialServiceClient;
         this.participantContextSupplier = participantContextSupplier;
+        this.cache = new BdrsCache(cacheValidity);
     }
 
     @Override
-    public String resolveDid(String bpn) {
+    public String resolveDid(UUID participantContextId, String bpn) {
         lock.readLock().lock();
         try {
-            if (!isCacheExpired()) {
-                return cacheBpnDid.get(bpn);
+            if (!cache.isCacheExpired(participantContextId)) {
+                return cache.get(participantContextId, BDRS_CACHE_TYPE.BPN_TO_DID, bpn);
             }
         } finally {
             lock.readLock().unlock();
@@ -107,21 +109,21 @@ class BdrsClientImpl implements BdrsClient {
 
         lock.writeLock().lock();
         try {
-            if (isCacheExpired()) {
-                updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
+            if (cache.isCacheExpired(participantContextId)) {
+                updateCache(participantContextId).orElseThrow(f -> new EdcException(f.getFailureDetail()));
             }
-            return cacheBpnDid.get(bpn);
+            return cache.get(participantContextId, BDRS_CACHE_TYPE.BPN_TO_DID, bpn);
         } finally {
             lock.writeLock().unlock();
         }
     }
 
     @Override
-    public String resolveBpn(String did) {
+    public String resolveBpn(UUID participantContextId, String did) {
         lock.readLock().lock();
         try {
-            if (!isCacheExpired()) {
-                return cacheDidBpn.get(did);
+            if (!cache.isCacheExpired(participantContextId)) {
+                return cache.get(participantContextId, BDRS_CACHE_TYPE.DID_TO_BPN, did);
             }
         } finally {
             lock.readLock().unlock();
@@ -129,20 +131,16 @@ class BdrsClientImpl implements BdrsClient {
 
         lock.writeLock().lock();
         try {
-            if (isCacheExpired()) {
-                updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
+            if (cache.isCacheExpired(participantContextId)) {
+                updateCache(participantContextId).orElseThrow(f -> new EdcException(f.getFailureDetail()));
             }
-            return cacheDidBpn.get(did);
+            return cache.get(participantContextId, BDRS_CACHE_TYPE.DID_TO_BPN, did);
         } finally {
             lock.writeLock().unlock();
         }
     }
 
-    private boolean isCacheExpired() {
-        return lastCacheUpdate == null || lastCacheUpdate.plus(cacheValidity, ChronoUnit.SECONDS).isBefore(Instant.now());
-    }
-
-    private Result<Void> updateCache() {
+    private Result<Void> updateCache(UUID participantContextId) {
         var membershipCredToken = createMembershipPresentation();
         if (membershipCredToken.failed()) {
             return membershipCredToken.mapFailure();
@@ -159,15 +157,23 @@ class BdrsClientImpl implements BdrsClient {
                 var body = response.body().byteStream();
                 try (var gz = new GZIPInputStream(body)) {
                     var bytes = gz.readAllBytes();
-                    cacheBpnDid = mapper.readValue(bytes, MAP_REF);
-                    cacheDidBpn = cacheBpnDid.entrySet()
+                    Map<String, String> bpnToDidMapping = mapper.readValue(bytes, MAP_REF);
+
+                    // Store BPN→DID direction
+                    cache.setCache(participantContextId, BDRS_CACHE_TYPE.BPN_TO_DID, bpnToDidMapping);
+
+                    // Store inverted DID→BPN direction
+                    var didToBpnMapping = bpnToDidMapping.entrySet()
                             .stream()
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getValue,
-                                    Map.Entry::getKey
-                            ));
-                    lastCacheUpdate = Instant.now();
+                            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+                    cache.setCache(participantContextId, BDRS_CACHE_TYPE.DID_TO_BPN, didToBpnMapping);
+
+                    cache.markCacheUpdated(participantContextId);
                     return Result.success();
+                } catch (Exception e) {
+                    var msg = "Failed parsing the BDRS response into the local cache: code: %d, message: %s".formatted(response.code(), response.message());
+                    monitor.severe(msg);
+                    return Result.failure(msg);
                 }
             } else {
                 var msg = "Could not obtain data from BDRS server: code: %d, message: %s".formatted(response.code(), response.message());
@@ -175,7 +181,7 @@ class BdrsClientImpl implements BdrsClient {
                 return Result.failure(msg);
             }
         } catch (IOException e) {
-            var msg = "Error fetching BDRS data";
+            var msg = "Error fetching BDRS data: exception: %s".formatted(e.toString());
             monitor.severe(msg, e);
             return Result.failure(msg);
         }
