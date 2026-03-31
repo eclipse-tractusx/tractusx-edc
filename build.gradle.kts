@@ -65,6 +65,9 @@ allprojects {
     dependencies {
 
         implementation("org.slf4j:slf4j-api:2.0.17")
+        implementation(enforcedPlatform("io.netty:netty-bom:4.2.12.Final")) {
+            because("Version 4.1.123.Final vulnerability: https://www.cve.org/CVERecord?id=CVE-2025-8916")
+        }
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
@@ -76,9 +79,6 @@ allprojects {
             }
             implementation("com.azure:azure-core-http-netty:1.16.3") {
                 because("Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
-            }
-            implementation("io.netty:netty-codec-http2:4.2.12.Final") {
-                because("Version 4.1.123.Final vulnerability: https://www.cve.org/CVERecord?id=CVE-2025-8916")
             }
         }
     }
