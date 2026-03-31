@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,15 +25,19 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.junit.utils.LazySupplier;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.iam.IamAsyncClient;
+import software.amazon.awssdk.services.iam.model.CreateUserRequest;
+import software.amazon.awssdk.services.iam.model.EntityAlreadyExistsException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
@@ -42,62 +47,65 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LocalstackExtension implements BeforeAllCallback, AfterAllCallback {
+public class FlociExtension implements BeforeAllCallback, AfterAllCallback {
 
+    private static final DockerImageName FLOCI_IMAGE = DockerImageName.parse("hectorvent/floci:latest");
     private static final String S3_REGION = Region.US_WEST_2.id();
+    private static final int EDGE_PORT = 4566;
     private static final String SYSTEM_PROPERTY_AWS_ACCESS_KEY_ID = "aws.accessKeyId";
     private static final String SYSTEM_PROPERTY_AWS_SECRET_ACCESS_KEY = "aws.secretAccessKey";
+    private static final String SYSTEM_PROPERTY_AWS_REGION = "aws.region";
+    private static final String STORAGE_PATH = "/app/data";
+    private static final String ROOT_USER_NAME = "root";
 
-    private final String accessKeyId = "test-access-key";
-    private final String secretAccessKey = UUID.randomUUID().toString();
+    private final AwsCredentials credentials = AwsBasicCredentials.create("test-access-key", UUID.randomUUID().toString());
+    @SuppressWarnings("resource")
+    private final GenericContainer<?> flociContainer = new GenericContainer<>(FLOCI_IMAGE)
+            .withExposedPorts(EDGE_PORT)
+            .withEnv("FLOCI_STORAGE_MODE", "hybrid")
+            .withEnv("FLOCI_STORAGE_PERSISTENT_PATH", STORAGE_PATH)
+            .withTmpFs(Map.of(STORAGE_PATH, "rw"))
+            .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
     private final LazySupplier<AwsClientProvider> clientProvider = new LazySupplier<>(() ->
             new AwsClientProviderImpl(getConfiguration()));
 
-    private final LocalStackContainer localStackContainer = new LocalStackContainer(
-            DockerImageName.parse("localstack/localstack")
-    ).withServices(LocalStackContainer.Service.S3, LocalStackContainer.Service.IAM, LocalStackContainer.Service.STS)
-            .withEnv("DEFAULT_REGION", S3_REGION)
-            .withEnv("AWS_ACCESS_KEY_ID", accessKeyId)
-            .withEnv("AWS_SECRET_ACCESS_KEY", secretAccessKey)
-            .withExposedPorts(4566, 9000)
-            .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
-
     @Override
-    public void beforeAll(ExtensionContext context) {
-        System.setProperty(SYSTEM_PROPERTY_AWS_ACCESS_KEY_ID, accessKeyId);
-        System.setProperty(SYSTEM_PROPERTY_AWS_SECRET_ACCESS_KEY, secretAccessKey);
-        localStackContainer.start();
+    public void beforeAll(@NotNull ExtensionContext context) {
+        System.setProperty(SYSTEM_PROPERTY_AWS_ACCESS_KEY_ID, credentials.accessKeyId());
+        System.setProperty(SYSTEM_PROPERTY_AWS_SECRET_ACCESS_KEY, credentials.secretAccessKey());
+        System.setProperty(SYSTEM_PROPERTY_AWS_REGION, S3_REGION);
+        flociContainer.start();
+        initializeRootUser();
     }
 
     @Override
-    public void afterAll(ExtensionContext context) {
-        localStackContainer.stop();
+    public void afterAll(@NotNull ExtensionContext context) {
+        flociContainer.stop();
     }
 
     public AwsCredentials getCredentials() {
-        return AwsBasicCredentials.create(accessKeyId, secretAccessKey);
+        return credentials;
     }
 
     public String getEndpointOverride() {
-        return "http://localhost:%s/".formatted(localStackContainer.getFirstMappedPort());
+        return endpointUri().toString();
     }
 
     public S3Client s3Client() {
         return clientProvider.get().s3Client(S3ClientRequest.from(S3_REGION, getEndpointOverride()));
     }
 
-    public S3AsyncClient s3AsyncClient() {
-        return clientProvider.get().s3AsyncClient(S3ClientRequest.from(S3_REGION, getEndpointOverride()));
-    }
-
     public String getS3region() {
         return S3_REGION;
     }
 
+    @SuppressWarnings("resource")
     public String createBucket() {
         var bucketName = UUID.randomUUID().toString();
         var response = s3Client().createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
@@ -105,11 +113,13 @@ public class LocalstackExtension implements BeforeAllCallback, AfterAllCallback 
         return bucketName;
     }
 
+    @SuppressWarnings("resource")
     public void uploadObjectOnBucket(String bucketName, String key, Path filePath) {
         var response = s3Client().putObject(PutObjectRequest.builder().bucket(bucketName).key(key).build(), filePath);
         assertThat(response.sdkHttpResponse().isSuccessful()).isTrue();
     }
 
+    @SuppressWarnings("resource")
     public List<String> listObjects(String bucketName) {
         return s3Client().listObjects(ListObjectsRequest.builder().bucket(bucketName).build())
                 .contents().stream().map(S3Object::key).toList();
@@ -117,9 +127,28 @@ public class LocalstackExtension implements BeforeAllCallback, AfterAllCallback 
 
     private AwsClientProviderConfiguration getConfiguration() {
         return AwsClientProviderConfiguration.Builder.newInstance()
-                .endpointOverride(URI.create(getEndpointOverride()))
+                .endpointOverride(endpointUri())
                 .credentialsProvider(this::getCredentials)
                 .build();
     }
 
+    private void initializeRootUser() {
+        try (var iamClient = IamAsyncClient.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .region(Region.AWS_GLOBAL)
+                .endpointOverride(endpointUri())
+                .build()) {
+            try {
+                iamClient.createUser(CreateUserRequest.builder().userName(ROOT_USER_NAME).build()).join();
+            } catch (CompletionException exception) {
+                if (!(exception.getCause() instanceof EntityAlreadyExistsException)) {
+                    throw new RuntimeException("Failed to initialize Floci IAM root user", exception);
+                }
+            }
+        }
+    }
+
+    private URI endpointUri() {
+        return URI.create("http://localhost:%s/".formatted(flociContainer.getMappedPort(EDGE_PORT)));
+    }
 }

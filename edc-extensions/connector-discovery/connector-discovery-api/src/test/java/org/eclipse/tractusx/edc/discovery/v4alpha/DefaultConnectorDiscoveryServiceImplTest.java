@@ -49,6 +49,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -131,7 +132,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverVersionParams_shouldReturnUseCacheDuringSucccess() throws InterruptedException {
+    void discoverVersionParams_shouldReturnUseCacheDuringSuccess() throws InterruptedException {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         var expectedJson = Json.createObjectBuilder()
@@ -180,7 +181,7 @@ public class DefaultConnectorDiscoveryServiceImplTest {
     }
 
     @Test
-    void discoverVersionParams_shouldReturnException_whenMetadataEndpointHasError() {
+    void discoverVersionParams_shouldReturnException_whenMetadataEndpointNotFound() {
         var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
 
         when(httpClient.executeAsync(any(), any()))
@@ -192,6 +193,34 @@ public class DefaultConnectorDiscoveryServiceImplTest {
                 .hasCauseInstanceOf(BadGatewayException.class)
                 .hasMessageContaining("Counterparty well-known endpoint has failed with status")
                 .hasMessageContaining("404");
+    }
+
+    @Test
+    void discoverVersionParams_shouldReturnException_whenMetadataEndpointNotAuthenticated() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
+
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(401, "Unauthorized", "Unauthorized").build()));
+
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(BadGatewayException.class)
+                .hasMessageContaining("Counterparty well-known endpoint has failed with status")
+                .hasMessageContaining("401");
+    }
+
+    @Test
+    void discoverVersionParams_shouldReturnException_whenHttpClientThrowsException() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
+
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.failedFuture(new IOException("Failed Call")));
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(BadGatewayException.class)
+                .hasMessageContaining("Failed Call");
+
     }
 
     @Test
