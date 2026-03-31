@@ -58,9 +58,9 @@ jobs:
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
         with:
-          version: "1.23.1"          # pin the zizmor CLI version
-          advanced-security: "true"  # uploads SARIF to GitHub Advanced Security tab
-          token: ${{ secrets.GITHUB_TOKEN }} # enables online checks (e.g. public repo trust levels)
+          version: "1.23.1"
+          advanced-security: "true"
+          token: ${{ secrets.GITHUB_TOKEN }}
           config: .github/zizmor.yml
 
   poutine:
@@ -68,6 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write
       security-events: write # required to upload SARIF to GitHub Advanced Security
     steps:
       - name: Harden Runner
