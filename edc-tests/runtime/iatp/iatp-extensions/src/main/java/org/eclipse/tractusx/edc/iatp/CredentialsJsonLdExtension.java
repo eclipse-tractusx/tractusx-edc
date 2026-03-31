@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.iatp;
 
-import com.networknt.schema.format.PatternFormat;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -38,17 +37,9 @@ public class CredentialsJsonLdExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-
         try {
             jsonLd.registerCachedDocument(BUSINESS_PARTNER_DATA, Thread.currentThread().getContextClassLoader().getResource("cx-credentials-context.json").toURI());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        // TODO: test
-        try {
-            getClass().getClassLoader().loadClass(PatternFormat.class.getName());
-        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

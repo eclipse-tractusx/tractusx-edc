@@ -28,12 +28,6 @@ configurations.all {
 }
 
 dependencies {
-    constraints {
-        testImplementation("com.networknt:json-schema-validator:3.0.0") {
-            because("older versions cause runtime issues")
-        }
-    }
-
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
     testImplementation(libs.edc.spi.keypair)
     testImplementation(libs.edc.ih.spi)
