@@ -22,25 +22,32 @@ package org.eclipse.tractusx.edc.spi.identity.mapper;
 
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 
+import java.util.UUID;
+
 /**
- * Interface for resolving BPNs to DIDs
+ * Interface for resolving BPNs to DIDs.
+ * Every resolution is scoped to a specific tenant via a participantContextId,
+ * so that different participants can have independent cache partitions.
  */
 @ExtensionPoint
 public interface BdrsClient {
 
     /**
-     * Resolve the input BPN to a DID
+     * Resolve the input BPN to a DID context aware
      *
+     * @param participantContextId @type UUID the parameter needed for multi-tenant context mapping
      * @param bpn The participantID (BPN)
      * @return The resolved DID if found, null otherwise
      */
-    String resolveDid(String bpn);
+    String resolveDid(UUID participantContextId, String bpn);
 
     /**
-     * Resolve the input DID to a BPN
+     * Resolve the input DID to a BPN context aware
      *
+     * @param participantContextId @type UUID the parameter needed for multi-tenant context mapping
      * @param did The participantID (DID)
      * @return The resolved BPN if found, null otherwise
      */
-    String resolveBpn(String did);
+    String resolveBpn(UUID participantContextId, String did);
+
 }
