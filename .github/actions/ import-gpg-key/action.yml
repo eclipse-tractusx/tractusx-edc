@@ -1,5 +1,5 @@
 #################################################################################
-#  Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2026 Cofinity-X GmbH
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -17,26 +17,31 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
----
-name: "publish-latest-versioned-snapshot"
-description: "publish the latest versioned snapshot file to GitHub Pages"
+
+name: "Import GPG Key"
+description: "Imports a GPG key given in the input"
 inputs:
-  version:
+  gpg-private-key:
     required: true
-    description: "Version of latest DATED Snapshot"
+    description: "The GPG Private Key in plain text. Can be a sub-key."
 runs:
-  using: composite
+  using: "composite"
   steps:
-    - name: Write version to latest-versioned-snapshot file
+    # this is necessary because it creates gpg.conf, etc.
+    - name: List Keys
       shell: bash
       run: |
-        mkdir -p lvs
-        echo "${{ inputs.version }}" > lvs/latest-versioned-snapshot.txt
+        gpg -K --keyid-format=long
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
-      with:
-        github_token: ${{ env.GITHUB_TOKEN }}
-        publish_dir: ./lvs
-        destination_dir: ./misc
-        keep_files: true
+    - name: Import GPG Private Key
+      shell: bash
+      env:
+        GPG_PRIVATE_KEY: ${{ inputs.gpg-private-key }}
+      run: |
+        echo "use-agent" >> ~/.gnupg/gpg.conf
+        echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+        echo -e "$GPG_PRIVATE_KEY" | gpg --import --batch
+        for fpr in $(gpg --list-keys --with-colons | awk -F: '/fpr:/ {print $10}' | sort -u);
+        do
+          echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key $fpr trust;
+        done
