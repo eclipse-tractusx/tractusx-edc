@@ -37,10 +37,6 @@ import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.SqlBusiness
 @Extension("Registers an SQL implementation for the BusinessPartnerGroupStore")
 public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
 
-    private static final String DEFAULT_DATASOURCE_NAME = "bpn";
-    @Deprecated(since = "0.8.0")
-    @Setting(value = "Datasource name for the SQL BusinessPartnerGroup store", defaultValue = DEFAULT_DATASOURCE_NAME)
-    private static final String DATASOURCE_SETTING_NAME = "edc.datasource.bpn.name";
     @Setting(value = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
     public static final String DATASOURCE_NAME = "edc.sql.store.bpn.datasource";
 

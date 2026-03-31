@@ -222,13 +222,13 @@ public class ConnectorParameterDiscoveryTest {
     }
 
     @Test
-    void discoveryShouldReturn500_whenProviderEndpointNotReachable() {
+    void discoveryShouldReturn502_whenProviderEndpointNotReachable() {
 
         var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), "http://non-existing-provider.com");
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
-        response.statusCode(500)
+        response.statusCode(502)
                 .extract().body().asString();
     }
 

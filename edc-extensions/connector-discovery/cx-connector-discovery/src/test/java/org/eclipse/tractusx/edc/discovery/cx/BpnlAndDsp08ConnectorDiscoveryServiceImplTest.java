@@ -33,6 +33,7 @@ import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.web.spi.exception.BadGatewayException;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
 import org.eclipse.tractusx.edc.discovery.cx.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
 import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
@@ -158,6 +159,42 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
         var response = testee.discoverVersionParams(paramsDiscoveryRequest).join();
 
         assertThat(response).isEqualTo(expectedJson);
+    }
+
+    @Test
+    void discoverVersionParams_shouldReturnDsp08_whenMetadataEndpointIsAccessControlled() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
+
+        when(bdrsClient.resolveBpn(TEST_DID))
+                .thenReturn(TEST_BPNL);
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(401, "Unauthorized", "Unauthorized").build()));
+
+        var expectedJson = Json.createObjectBuilder()
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ID, TEST_BPNL)
+                .add(CATALOG_REQUEST_PROTOCOL, VERSION_PROTOCOL_OLD)
+                .add(CATALOG_REQUEST_COUNTER_PARTY_ADDRESS, TEST_ADDRESS)
+                .build();
+
+        var response = testee.discoverVersionParams(paramsDiscoveryRequest).join();
+
+        assertThat(response).isEqualTo(expectedJson);
+    }
+
+    @Test
+    void discoverVersionParams_shouldReturnFailure_whenMetadataEndpointReturnsNotFound() {
+        var paramsDiscoveryRequest = new ConnectorParamsDiscoveryRequest(TEST_DID, TEST_ADDRESS);
+
+        when(httpClient.executeAsync(any(), any()))
+                .thenReturn(CompletableFuture.completedFuture(
+                        dummyResponseBuilder(404, "Not found", "Not found").build()));
+
+        assertThatThrownBy(() -> testee.discoverVersionParams(paramsDiscoveryRequest).join())
+                .isInstanceOf(CompletionException.class)
+                .hasCauseInstanceOf(BadGatewayException.class)
+                .hasMessageContaining("Counterparty well-known endpoint has failed with status")
+                .hasMessageContaining("404");
     }
 
     @Test
@@ -338,9 +375,13 @@ class BpnlAndDsp08ConnectorDiscoveryServiceImplTest {
     }
 
     static okhttp3.Response.Builder dummyResponseBuilder(String body) {
+        return dummyResponseBuilder(200, body, "any");
+    }
+
+    static okhttp3.Response.Builder dummyResponseBuilder(int code, String body, String message) {
         return new okhttp3.Response.Builder()
-                .code(200)
-                .message("any")
+                .code(code)
+                .message(message)
                 .body(ResponseBody.create(body, MediaType.get("application/json")))
                 .protocol(Protocol.HTTP_1_1)
                 .request(new Request.Builder().url(TEST_ADDRESS).build());
