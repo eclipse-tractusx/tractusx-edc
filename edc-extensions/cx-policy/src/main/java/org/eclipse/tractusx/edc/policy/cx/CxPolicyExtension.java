@@ -31,6 +31,7 @@ import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Prohibition;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
@@ -139,6 +140,9 @@ public class CxPolicyExtension implements ServiceExtension {
     @Inject
     JsonObjectValidatorRegistry validatorRegistry;
 
+    @Inject
+    private Monitor monitor;
+
     public void registerFunctions(PolicyEngine engine) {
 
         // Usage Prohibition Validators
@@ -157,31 +161,31 @@ public class CxPolicyExtension implements ServiceExtension {
 
         // Usage Duty Validators
         engine.registerFunction(PolicyMonitorContext.class, Duty.class,
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS), new DataProvisioningEndDurationDaysConstraintFunction<>());
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS), new DataProvisioningEndDurationDaysConstraintFunction<>(monitor));
         engine.registerFunction(TransferProcessPolicyContext.class, Duty.class,
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS), new DataProvisioningEndDurationDaysConstraintFunction<>());
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DURATION_DAYS), new DataProvisioningEndDurationDaysConstraintFunction<>(monitor));
         engine.registerFunction(PolicyMonitorContext.class, Duty.class,
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE), new DataProvisioningEndDateConstraintFunction<>());
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE), new DataProvisioningEndDateConstraintFunction<>(monitor));
         engine.registerFunction(TransferProcessPolicyContext.class, Duty.class,
-                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE), new DataProvisioningEndDateConstraintFunction<>());
+                withCxPolicyNsPrefix(DATA_PROVISIONING_END_DATE), new DataProvisioningEndDateConstraintFunction<>(monitor));
 
         // Access and Usage Permission Validators
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>(monitor));
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>(monitor));
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>(monitor));
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>(monitor));
 
-        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
+        engine.registerFunction(CatalogPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>(monitor));
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>(monitor));
 
         engine.registerFunction(CatalogPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_GROUP), new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient));
+                withCxPolicyNsPrefix(BUSINESS_PARTNER_GROUP), new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient, monitor));
         engine.registerFunction(CatalogPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER), new BusinessPartnerNumberConstraintFunction<>(bdrsClient));
+                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER), new BusinessPartnerNumberConstraintFunction<>(bdrsClient, monitor));
 
         // Usage Permission Validators
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
@@ -207,14 +211,14 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_FREQUENCY), new DataFrequencyConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_FREQUENCY), new DataFrequencyConstraintFunction<>());
 
-        engine.registerFunction(PolicyMonitorContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DATE), new DataUsageEndDateConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DATE), new DataUsageEndDateConstraintFunction<>());
+        engine.registerFunction(PolicyMonitorContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DATE), new DataUsageEndDateConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DATE), new DataUsageEndDateConstraintFunction<>(monitor));
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DEFINITION), new DataUsageEndDefinitionConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DEFINITION), new DataUsageEndDefinitionConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DEFINITION), new DataUsageEndDefinitionConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DEFINITION), new DataUsageEndDefinitionConstraintFunction<>(monitor));
 
-        engine.registerFunction(PolicyMonitorContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS), new DataUsageEndDurationDaysConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS), new DataUsageEndDurationDaysConstraintFunction<>());
+        engine.registerFunction(PolicyMonitorContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS), new DataUsageEndDurationDaysConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, withCxPolicyNsPrefix(DATA_USAGE_END_DURATION_DAYS), new DataUsageEndDurationDaysConstraintFunction<>(monitor));
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(JURISDICTION_LOCATION), new JurisdictionLocationConstraintFunction<>());

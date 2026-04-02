@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 class DataUsageEndDefinitionConstraintFunctionTest {
 
     private final ParticipantAgent participantAgent = mock();
-    private final DataUsageEndDefinitionConstraintFunction<ParticipantAgentPolicyContext> function = new DataUsageEndDefinitionConstraintFunction<>();
+    private final DataUsageEndDefinitionConstraintFunction<ParticipantAgentPolicyContext> function = new DataUsageEndDefinitionConstraintFunction<>(mock());
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test

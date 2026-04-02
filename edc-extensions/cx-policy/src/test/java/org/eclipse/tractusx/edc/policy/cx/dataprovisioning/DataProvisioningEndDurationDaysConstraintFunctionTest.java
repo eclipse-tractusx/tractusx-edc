@@ -26,10 +26,11 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.ParameterizedType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 class DataProvisioningEndDurationDaysConstraintFunctionTest {
 
-    private final DataProvisioningEndDurationDaysConstraintFunction<AgreementPolicyContext> function = new DataProvisioningEndDurationDaysConstraintFunction<>();
+    private final DataProvisioningEndDurationDaysConstraintFunction<AgreementPolicyContext> function = new DataProvisioningEndDurationDaysConstraintFunction<>(mock());
 
     @Test
     void shouldOnlyApplyToDuty() {

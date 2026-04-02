@@ -31,10 +31,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class AbstractDataEndDateConstraintFunctionTest {
 
-    private final AbstractDataEndDateConstraintFunction<Permission, AgreementPolicyContext> function = new AbstractDataEndDateConstraintFunction<>() {};
+    private final AbstractDataEndDateConstraintFunction<Permission, AgreementPolicyContext> function = new AbstractDataEndDateConstraintFunction<>(mock()) {};
     private final AgreementPolicyContext context = new TestAgreementPolicyContext();
 
     private Instant contextNowWithDelta(Integer delta, ChronoUnit unit) {

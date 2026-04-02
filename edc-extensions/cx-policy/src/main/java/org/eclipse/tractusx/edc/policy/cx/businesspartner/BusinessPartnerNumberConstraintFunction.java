@@ -23,6 +23,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
@@ -52,8 +53,9 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
     );
 
     private BdrsClient bdrsClient;
+    private final Monitor monitor;
 
-    public BusinessPartnerNumberConstraintFunction(BdrsClient bdrsClient) {
+    public BusinessPartnerNumberConstraintFunction(BdrsClient bdrsClient, Monitor monitor) {
         super(
                 Set.of(Operator.IS_ANY_OF, Operator.IS_NONE_OF),
                 "^BPNL[0-9A-Z]{12}$",
@@ -61,6 +63,7 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
         );
 
         this.bdrsClient = bdrsClient;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
@@ -68,14 +71,17 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
         var participantAgent = context.participantAgent();
 
         if (!SUPPORTED_OPERATORS.contains(operator)) {
-            var message = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
-            context.reportProblem(message);
+            var msg = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
 
         var identity = participantAgent.getIdentity();
         if (identity == null) {
-            context.reportProblem("Identity of the participant agent cannot be null");
+            var msg = "Identity of the participant agent cannot be null";
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
 
@@ -94,6 +100,7 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
 
     private @NotNull Function<Failure, Boolean> reportFailure(PolicyContext context) {
         return f -> {
+            monitor.debug(f.getFailureDetail());
             context.reportProblem(f.getFailureDetail());
             return false;
         };
@@ -113,7 +120,9 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
             boolean containsBpn = identity.equals(singleNumber);
             return success(containsBpn);
         }
-        return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
-                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));
+        var msg = "Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
+                .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null));
+        monitor.debug(msg);
+        return failure(msg);
     }
 }

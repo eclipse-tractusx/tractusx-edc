@@ -25,6 +25,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction;
@@ -41,15 +42,25 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_N
  */
 public class MembershipCredentialConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String MEMBERSHIP_LITERAL = "Membership";
+    private final Monitor monitor;
+
+    public MembershipCredentialConstraintFunction(Monitor monitor) {
+        super(monitor);
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+    }
 
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, C context) {
         if (!ACTIVE.equals(rightOperand)) {
-            context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
+            var msg = "Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand);
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
         if (!(CX_POLICY_2025_09_NS + MEMBERSHIP_LITERAL).equalsIgnoreCase(leftOperand.toString())) {
-            context.reportProblem("Invalid left-operand: must be 'Membership', but was '%s'".formatted(leftOperand));
+            var msg = "Invalid left-operand: must be 'Membership', but was '%s'".formatted(leftOperand);
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
         // make sure the ParticipantAgent is there
@@ -57,6 +68,7 @@ public class MembershipCredentialConstraintFunction<C extends ParticipantAgentPo
 
         var credentialResult = getCredentialList(participantAgent);
         if (credentialResult.failed()) {
+            monitor.debug(credentialResult.getFailureDetail());
             context.reportProblem(credentialResult.getFailureDetail());
             return false;
         }

@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.policy.cx.datausage;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 
 import java.util.Set;
@@ -33,7 +34,7 @@ import java.util.Set;
 public class DataUsageEndDefinitionConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
     public static final String DATA_USAGE_END_DEFINITION = "DataUsageEndDefinition";
 
-    public DataUsageEndDefinitionConstraintFunction() {
+    public DataUsageEndDefinitionConstraintFunction(Monitor monitor) {
         super(
                 Set.of(Operator.EQ),
                 Set.of(

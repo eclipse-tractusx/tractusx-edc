@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolic
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Rule;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 
 import java.time.Instant;
@@ -41,6 +42,11 @@ public abstract class AbstractDataEndDurationDaysConstraintFunction<R extends Ru
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
     );
+    private final Monitor monitor;
+
+    protected AbstractDataEndDurationDaysConstraintFunction(Monitor monitor) {
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+    }
 
     private Result<Integer> extractRightValue(Object rightOperand) {
         if (rightOperand instanceof Integer) {
@@ -65,7 +71,9 @@ public abstract class AbstractDataEndDurationDaysConstraintFunction<R extends Ru
                         .plus(rightValue, ChronoUnit.DAYS))
                 .map(expiryDate -> context.now().truncatedTo(ChronoUnit.DAYS).isBefore(expiryDate))
                 .orElse(failure -> {
-                    context.reportProblem("Failed to evaluate constraint due to invalid right operand: '%s'. Problems: %s".formatted(rightOperand, failure));
+                    var msg = "Failed to evaluate constraint due to invalid right operand: '%s'. Problems: %s".formatted(rightOperand, failure);
+                    monitor.debug(msg);
+                    context.reportProblem(msg);
                     return false;
                 });
     }
