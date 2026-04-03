@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
-import static org.eclipse.tractusx.edc.TxIatpConstants.CREDENTIAL_TYPE_NAMESPACE;
+import static org.eclipse.tractusx.edc.TxDcpConstants.CREDENTIAL_TYPE_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 

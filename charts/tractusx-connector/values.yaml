@@ -45,7 +45,7 @@ participant:
   # -- Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy)
   contextId: "UUID CHANGEME"
 
-iatp:
+dcp:
   # -- Decentralized IDentifier (DID) of the connector
   id: "did:web:changeme"
   # -- Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer
