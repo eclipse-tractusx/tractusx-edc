@@ -33,36 +33,46 @@ runs:
     - name: Resolve version
       id: resolver
       shell: bash
+      env:
+        BUMP_VERSION: ${{ inputs.bump_version }}
+        INPUT_VERSION: ${{ inputs.version }}
       run: |
-        if [[ "${{ inputs.bump_version }}" == "true" ]] then
-          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
+        if [[ "$BUMP_VERSION" == "true" ]] then
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$INPUT_VERSION"
           VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
         else
-          VERSION=${{ inputs.version }}
+          VERSION="$INPUT_VERSION"
         fi
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
     - name: Bump version in /charts
-      uses: mikefarah/yq@v4.52.4
+      uses: mikefarah/yq@5a7e72a743649b1b3a47d1a1d8214f3453173c51 # v4.52.4
+      env:
+        RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
       with:
         cmd: |
-          find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ steps.resolver.outputs.version }}" 
-            | .version = "${{ steps.resolver.outputs.version }}"'
+          find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = env(RESOLVED_VERSION) | .version = env(RESOLVED_VERSION)'
     - name: Update Chart READMEs
       shell: bash
       run: |
-          docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
+          docker run -v "${GITHUB_WORKSPACE}/charts:/helm-docs" jnorwood/helm-docs helm-docs
     - name: Update version in gradle.properties
       shell: bash
+      env:
+        RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
       run: |-
-        sed -i  's/version=.*/version=${{ steps.resolver.outputs.version }}/g' gradle.properties
+        sed -i 's/version=.*/version='"$RESOLVED_VERSION"'/g' gradle.properties
     - name: Commit changes
       id: make-commit
       shell: bash
+      env:
+        BUMP_VERSION: ${{ inputs.bump_version }}
+        INPUT_VERSION: ${{ inputs.version }}
+        RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
       run: |
-        if [[ "${{ inputs.bump_version }}" == "true" ]] then
-          MESSAGE="Bump to version ${{ steps.resolver.outputs.version }}"
+        if [[ "$BUMP_VERSION" == "true" ]] then
+          MESSAGE="Bump to version $RESOLVED_VERSION"
         else
-          MESSAGE="Prepare release ${{ inputs.version }}"
+          MESSAGE="Prepare release $INPUT_VERSION"
         fi
         
         git add .
