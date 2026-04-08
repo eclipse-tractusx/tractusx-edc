@@ -25,6 +25,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.legacy.common.AbstractDynamicCredentialConstraintFunction;
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +58,12 @@ public class DismantlerCredentialConstraintFunction<C extends ParticipantAgentPo
     // allows to encode multiple values in a single string in the right-operand. Policies don't handle list-type right-operands well.
     public static final String RIGHT_OPERAND_LIST_SEPARATOR = ",";
     private static final String ALLOWED_ACTIVITIES_LITERAL = "activityType";
+    private final Monitor monitor;
+
+    public DismantlerCredentialConstraintFunction(Monitor monitor) {
+        super(monitor);
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+    }
 
     @Override
     public boolean evaluate(Object leftOperand, Operator operator, Object rightOperand, Permission permission, C context) {
@@ -67,6 +74,7 @@ public class DismantlerCredentialConstraintFunction<C extends ParticipantAgentPo
         // check if the participant agent contains the correct data
         var vcListResult = getCredentialList(participantAgent);
         if (vcListResult.failed()) { // couldn't extract credential list from agent
+            monitor.debug(vcListResult.getFailureDetail());
             context.reportProblem(vcListResult.getFailureDetail());
             return false;
         }
@@ -84,7 +92,9 @@ public class DismantlerCredentialConstraintFunction<C extends ParticipantAgentPo
                 return false;
             }
             if (!ACTIVE.equals(rightOperand)) {
-                context.reportProblem("Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand));
+                var msg = "Right-operand must be equal to '%s', but was '%s'".formatted(ACTIVE, rightOperand);
+                monitor.debug(msg);
+                context.reportProblem(msg);
                 return false;
             }
             if (operator == NEQ) {
@@ -98,7 +108,9 @@ public class DismantlerCredentialConstraintFunction<C extends ParticipantAgentPo
             if (hasInvalidOperand(operator, rightOperand, context)) return false;
             predicate = predicate.and(getCredentialPredicate(ALLOWED_VEHICLE_BRANDS_LITERAL, operator, rightOperand));
         } else {
-            context.reportProblem("Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was '%s'".formatted(leftOperand));
+            var msg = "Invalid left-operand: must be 'Dismantler[.activityType | .allowedBrands ], but was '%s'".formatted(leftOperand);
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
 
@@ -148,7 +160,9 @@ public class DismantlerCredentialConstraintFunction<C extends ParticipantAgentPo
         } else if (rightOperand instanceof Iterable<?>) {
             return !checkOperator(operator, context, List.of(EQ, NEQ, IN, IS_ANY_OF, IS_NONE_OF));
         } else {
-            context.reportProblem("Invalid right-operand type: expected String or List, but received: %s".formatted(rightOperand.getClass().getName()));
+            var msg = "Invalid right-operand type: expected String or List, but received: %s".formatted(rightOperand.getClass().getName());
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return true;
         }
     }

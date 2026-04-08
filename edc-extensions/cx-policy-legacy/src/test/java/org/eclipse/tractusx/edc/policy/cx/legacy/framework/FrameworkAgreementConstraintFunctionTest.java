@@ -24,8 +24,10 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.policy.cx.legacy.CredentialFunctions;
 import org.eclipse.tractusx.edc.policy.cx.legacy.TestParticipantAgentPolicyContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -35,13 +37,21 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FrameworkAgreementConstraintFunctionTest {
     private final ParticipantAgent participantAgent = mock();
-    private final FrameworkAgreementConstraintFunction<ParticipantAgentPolicyContext> function = new FrameworkAgreementConstraintFunction<>();
+    private final Monitor monitor = mock();
+    private FrameworkAgreementConstraintFunction<ParticipantAgentPolicyContext> function;
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
+
+    @BeforeEach
+    void setUp() {
+        when(monitor.withPrefix(anyString())).thenReturn(monitor);
+        function = new FrameworkAgreementConstraintFunction<>(monitor);
+    }
 
     @Test
     void evaluate_leftOperandInvalid() {

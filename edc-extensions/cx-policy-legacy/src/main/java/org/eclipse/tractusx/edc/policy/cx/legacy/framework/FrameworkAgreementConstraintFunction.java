@@ -23,6 +23,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.legacy.common.AbstractDynamicCredentialConstraintFunction;
@@ -55,6 +56,12 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 public class FrameworkAgreementConstraintFunction<C extends ParticipantAgentPolicyContext> extends AbstractDynamicCredentialConstraintFunction<C> {
     public static final String CONTRACT_VERSION_LITERAL = "contractVersion";
     public static final String FRAMEWORK_AGREEMENT_LITERAL = "FrameworkAgreement";
+    private final Monitor monitor;
+
+    public FrameworkAgreementConstraintFunction(Monitor monitor) {
+        super(monitor);
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+    }
 
     /**
      * Evaluates the constraint's left-operand and right-operand against a list of {@link VerifiableCredential} objects.
@@ -77,7 +84,9 @@ public class FrameworkAgreementConstraintFunction<C extends ParticipantAgentPoli
 
         // we do not support list-type right-operands
         if (!(leftValue instanceof String) || !(rightValue instanceof String)) {
-            context.reportProblem("Both the right- and left-operand must be of type String but were '%s' and '%s', respectively.".formatted(leftValue.getClass(), rightValue.getClass()));
+            var msg = "Both the right- and left-operand must be of type String but were '%s' and '%s', respectively.".formatted(leftValue.getClass(), rightValue.getClass());
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
 
@@ -91,17 +100,21 @@ public class FrameworkAgreementConstraintFunction<C extends ParticipantAgentPoli
         } else if (leftOperand.startsWith(CX_POLICY_NS + FRAMEWORK_AGREEMENT_LITERAL)) { // new notation
             predicateResult = getFilterPredicate(rightOperand);
         } else { //invalid notation
-            context.reportProblem("Constraint left-operand must start with '%s' but was '%s'.".formatted(FRAMEWORK_AGREEMENT_LITERAL, leftValue));
+            var msg = "Constraint left-operand must start with '%s' but was '%s'.".formatted(FRAMEWORK_AGREEMENT_LITERAL, leftValue);
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
 
         if (predicateResult.failed()) { // couldn't extract subtype/version predicate from constraint
+            monitor.debug(predicateResult.getFailureDetail());
             context.reportProblem(predicateResult.getFailureDetail());
             return false;
         }
 
         var vcListResult = getCredentialList(participantAgent);
         if (vcListResult.failed()) { // couldn't extract credential list from agent
+            monitor.debug(vcListResult.getFailureDetail());
             context.reportProblem(vcListResult.getFailureDetail());
             return false;
         }
@@ -109,7 +122,9 @@ public class FrameworkAgreementConstraintFunction<C extends ParticipantAgentPoli
         var credentials = vcListResult.getContent().stream().filter(rootPredicate).toList();
 
         if (credentials.isEmpty()) {
-            context.reportProblem("No credentials found that match the give Policy constraint: [%s %s %s]".formatted(leftValue.toString(), operator.toString(), rightValue.toString()));
+            var msg = "No credentials found that match the give Policy constraint: [%s %s %s]".formatted(leftValue.toString(), operator.toString(), rightValue.toString());
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
         return true;

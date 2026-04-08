@@ -27,6 +27,7 @@ import org.eclipse.edc.policy.engine.spi.DynamicAtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 
 import java.util.Collection;
@@ -42,10 +43,17 @@ public abstract class AbstractDynamicCredentialConstraintFunction<C extends Part
     public static final String ACTIVE = "active";
     public static final String CREDENTIAL_LITERAL = "Credential";
     protected static final Collection<Operator> EQUALITY_OPERATORS = List.of(Operator.EQ, Operator.NEQ);
+    private final Monitor monitor;
+
+    protected AbstractDynamicCredentialConstraintFunction(Monitor monitor) {
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+    }
 
     protected boolean checkOperator(Operator actual, PolicyContext context, Collection<Operator> expectedOperators) {
         if (!expectedOperators.contains(actual)) {
-            context.reportProblem("Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(EQUALITY_OPERATORS, actual));
+            var msg = "Invalid operator: this constraint only allows the following operators: %s, but received '%s'.".formatted(EQUALITY_OPERATORS, actual);
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
         return true;
