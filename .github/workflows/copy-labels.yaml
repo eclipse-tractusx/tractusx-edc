@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Copy labels from linked issue to PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const CLOSING_KEYWORDS = /\b(?:closes?|fixes?|resolves?)\s+#(\d+)\b/gi;
