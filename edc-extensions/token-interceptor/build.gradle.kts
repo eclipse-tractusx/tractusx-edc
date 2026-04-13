@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.edc.lib.dsp.catalog.http.api)
     implementation(libs.edc.lib.dsp.negotiation.http.api)
     implementation(libs.edc.lib.dsp.transfer.http.api)
+    implementation(project(":spi:dsp-spi-08"))
 
     testImplementation(libs.edc.junit)
 }

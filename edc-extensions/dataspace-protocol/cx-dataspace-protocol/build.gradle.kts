@@ -33,7 +33,7 @@ dependencies {
     implementation(libs.edc.ih.spi.credentials)
 
     implementation(libs.dsp.spi.http)
-    implementation(libs.dsp.spi.v08)
+    implementation(project(":spi:dsp-spi-08"))
 
     implementation(libs.edc.spi.participant)
     implementation(libs.edc.spi.protocol)

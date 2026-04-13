@@ -5,29 +5,29 @@ format.version = "1.1"
 edc = "0.15.1"
 edc-next = "0.16.0"
 edc-build = "1.1.6"
-allure = "2.33.0"
+allure = "2.34.0"
 awaitility = "4.3.0"
-aws = "2.42.12"
-azure-storage-blob = "12.33.2"
+aws = "2.42.33"
+azure-storage-blob = "12.33.3"
 bouncyCastle-jdk18on = "1.83"
 dcp-tck = "1.0.0-RC6"
 dsp-tck = "1.0.0-RC6"
-flyway = "12.1.1"
-jackson = "2.21.1"
+flyway = "12.3.0"
+jackson = "2.21.2"
 jakarta-json = "2.1.3"
 junit = "6.0.3"
-nimbus = "10.8"
+nimbus = "10.9"
 okhttp = "5.3.2"
-opentelemetry = "2.26.0"
-opentelemetry-instrumentation = "2.25.0"
-opentelemetry-log4j-appender = "2.25.0-alpha"
+opentelemetry = "2.26.1"
+opentelemetry-instrumentation = "2.26.1"
+opentelemetry-log4j-appender = "2.26.1-alpha"
 postgres = "42.7.10"
 restAssured = "6.0.0"
 rsApi = "4.0.0"
 testcontainers = "2.0.4"
-testcontainers-keycloak = "4.1.1"
+testcontainers-keycloak = "4.2.0"
 titanium = "1.7.0"
-log4j2 = "2.25.3"
+log4j2 = "2.25.4"
 wiremock = "3.13.2"
 
 
@@ -73,6 +73,7 @@ edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
+edc-transform-controlplane = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-participant-context-config = { module = "org.eclipse.edc:participant-context-config-core", version.ref = "edc" }
@@ -115,8 +116,15 @@ edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-lib-validator = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-lib-dsp-catalog-http-api= { module = "org.eclipse.edc:dsp-catalog-http-api-lib", version.ref = "edc" }
+edc-lib-dsp-catalog-validation= { module = "org.eclipse.edc:dsp-catalog-validation-lib", version.ref = "edc" }
+edc-lib-dsp-catalog-transform= { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
+edc-lib-dsp-negotiation-validation= { module = "org.eclipse.edc:dsp-negotiation-validation-lib", version.ref = "edc" }
 edc-lib-dsp-negotiation-http-api= { module = "org.eclipse.edc:dsp-negotiation-http-api-lib", version.ref = "edc" }
+edc-lib-dsp-negotiation-transform= { module = "org.eclipse.edc:dsp-negotiation-transform-lib", version.ref = "edc" }
 edc-lib-dsp-transfer-http-api= { module = "org.eclipse.edc:dsp-transfer-process-http-api-lib", version.ref = "edc" }
+edc-lib-dsp-transfer-process-validation= { module = "org.eclipse.edc:dsp-transfer-process-validation-lib", version.ref = "edc" }
+edc-lib-dsp-transfer-process-http-api= { module = "org.eclipse.edc:dsp-transfer-process-http-api-lib", version.ref = "edc" }
+edc-lib-dsp-transfer-process-transform= { module = "org.eclipse.edc:dsp-transfer-process-transform-lib", version.ref = "edc" }
 edc-lib-dcp = { module = "org.eclipse.edc:decentralized-claims-lib", version.ref = "edc" }
 
 # implementations
@@ -170,8 +178,8 @@ tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc-n
 
 # DSP libraries
 dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
-dsp-spi-v08 = { module = "org.eclipse.edc:dsp-spi-08", version.ref = "edc" }
 dsp-spi-v2025 = { module = "org.eclipse.edc:dsp-spi-2025", version.ref = "edc" }
+dsp-spi= { module = "org.eclipse.edc:dsp-spi", version.ref = "edc" }
 
 ## IH for testing
 
@@ -241,6 +249,6 @@ edc-sts = [
 
 [plugins]
 docker = { id = "com.bmuschko.docker-remote-api", version = "10.0.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.3.2" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.45" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.47" }
 edc-build = { id = "org.eclipse.edc.edc-build", version.ref = "edc-build" }

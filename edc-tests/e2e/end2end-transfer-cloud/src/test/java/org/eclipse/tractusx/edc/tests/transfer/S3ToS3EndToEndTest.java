@@ -24,7 +24,7 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
-import org.eclipse.tractusx.edc.tests.aws.LocalstackExtension;
+import org.eclipse.tractusx.edc.tests.aws.FlociExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,9 +85,10 @@ public class S3ToS3EndToEndTest {
     private static final RuntimeExtension CONSUMER_RUNTIME = pgRuntime(CONSUMER, POSTGRES, CONSUMER::getConfig);
 
     @RegisterExtension
-    private static final LocalstackExtension PROVIDER_CONTAINER = new LocalstackExtension();
+    private static final FlociExtension PROVIDER_CONTAINER = new FlociExtension();
+
     @RegisterExtension
-    private static final LocalstackExtension CONSUMER_CONTAINER = new LocalstackExtension();
+    private static final FlociExtension CONSUMER_CONTAINER = new FlociExtension();
     
     @BeforeEach
     void setup() {
