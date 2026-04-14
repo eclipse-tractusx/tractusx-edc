@@ -260,7 +260,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | dcp.cache.enabled | bool | `true` | Whether the Verifiable Presentation cache is enabled |
 | dcp.cache.validity | int | `86400` | Validity of the Verifiable Presentation cache in seconds |
 | dcp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
-| dcp.id | string | `"did:web:changeme"` | Decentralized IDentifier (DID) of the connector |
 | dcp.sts.div.url | string | `nil` | URL where connectors can request SI tokens |
 | dcp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIV access |
 | dcp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
@@ -278,8 +277,9 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | networkPolicy.dataplane | object | `{"from":[{"namespaceSelector":{}}]}` | Configuration of the dataplane component |
 | networkPolicy.dataplane.from | list | `[{"namespaceSelector":{}}]` | Specify from rule network policy for dp (defaults to all namespaces) |
 | networkPolicy.enabled | bool | `false` | If `true` network policy will be created to restrict access to control- and dataplane |
+| participant.bpnl | string | `"BPNLCHANGEME"` | BPNL Number |
 | participant.contextId | string | `"UUID CHANGEME"` | Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy) |
-| participant.id | string | `"BPNLCHANGEME"` | BPN Number |
+| participant.id | string | `"did:web:changeme"` | Participant Id, resp. the Decentralized IDentifier (DID) of the connector |
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |

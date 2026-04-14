@@ -23,11 +23,10 @@ fullnameOverride: tx-prod
 # EDC ControlPlane + DataPlane #
 ################################
 participant:
-  id: "test-participant"
+  id: "did:web:changeme"
+  bpnl: "test-participant"
   contextId: "test-participant-context"
 dcp:
-  # Decentralized IDentifier
-  id: "did:web:changeme"
   sts:
     div:
       url: "https://somewhere.div.org"
