@@ -260,7 +260,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | dcp.cache.enabled | bool | `true` | Whether the Verifiable Presentation cache is enabled |
 | dcp.cache.validity | int | `86400` | Validity of the Verifiable Presentation cache in seconds |
 | dcp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
-| dcp.didService.selfRegistration.id | string | `"did:web:changeme"` | Unique id of connector to be used for register / unregister service inside did document (must be valid URI) |
 | dcp.id | string | `"did:web:changeme"` | Decentralized IDentifier (DID) of the connector |
 | dcp.sts.div.url | string | `nil` | URL where connectors can request SI tokens |
 | dcp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIV access |

@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.did.document.service.self.registration;
 
 import org.eclipse.edc.iam.did.spi.document.Service;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -51,13 +52,15 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     @Inject(required = false)
     private DidDocumentServiceClient didDocumentServiceClient;
 
+    @Inject
+    private SingleParticipantContextSupplier participantContextSupplier;
+
     @Setting(key = TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED, defaultValue = "false", description = "Enable self-registration of the DID Document Service")
     private boolean selfRegistrationEnabled;
 
     @Setting(key = TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED, defaultValue = "false", description = "Enable self-deregistration of the DID Document Service")
     private boolean selfDeregistrationEnabled;
 
-    @Setting(key = TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID, required = false, description = "The Id to use for service self-registration (should be valid URI)")
     private String serviceId;
 
     @Override
@@ -78,7 +81,7 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     private void selfRegisterDidDocumentService(@NotNull DidDocumentServiceClient client) {
 
         var wellKnownUrl = String.join("", dspBaseAddress.get(), VERSION_METADATA_ENDPOINT_PATH);
-        validatedServiceId(serviceId)
+        validatedServiceId(getServiceId())
                 .onFailure(failure -> monitor.severe(failure.getFailureDetail()))
                 .map(validatedServiceId -> new Service(validatedServiceId, DATA_SERVICE_TYPE, wellKnownUrl))
                 .onSuccess(service ->
@@ -90,12 +93,22 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
 
     private void selfUnregisterDidDocumentService(@NotNull DidDocumentServiceClient client) {
 
-        validatedServiceId(serviceId)
+        validatedServiceId(getServiceId())
                 .onSuccess(validatedServiceId ->
                         client.deleteById(validatedServiceId)
                                 .onFailure(failure -> monitor.severe("Failed to unregister DID Document service: %s, reason: %s".formatted(failure.getFailureDetail(), failure.getReason())))
                                 .onSuccess(result -> monitor.info("Successfully unregistered DID Document service"))
                 );
+    }
+
+    private String getServiceId() {
+        if (serviceId == null) {
+            var participantContext = participantContextSupplier.get();
+            if (participantContext != null && participantContext.succeeded()) {
+                serviceId = "urn:" + participantContext.getContent().getParticipantContextId();
+            }
+        }
+        return serviceId;
     }
 
     private Result<String> validatedServiceId(String serviceId) {
