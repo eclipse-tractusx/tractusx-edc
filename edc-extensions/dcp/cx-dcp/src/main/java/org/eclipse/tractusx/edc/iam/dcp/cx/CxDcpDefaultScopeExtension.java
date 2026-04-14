@@ -29,7 +29,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.tractusx.edc.iam.iatp.scope.DefaultScopeExtractor;
+import org.eclipse.tractusx.edc.iam.dcp.scope.DefaultScopeExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,8 +38,8 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_SCOPE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_SCOPE_V_2025_1;
-import static org.eclipse.tractusx.edc.TxIatpConstants.DEFAULT_SCOPES;
-import static org.eclipse.tractusx.edc.TxIatpConstants.V08_DEFAULT_SCOPES;
+import static org.eclipse.tractusx.edc.TxDcpConstants.DEFAULT_SCOPES;
+import static org.eclipse.tractusx.edc.TxDcpConstants.V08_DEFAULT_SCOPES;
 import static org.eclipse.tractusx.edc.iam.dcp.cx.CxDcpDefaultScopeExtension.NAME;
 
 @Extension(NAME)
