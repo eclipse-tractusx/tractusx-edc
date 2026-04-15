@@ -30,9 +30,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class AbstractDataEndDurationDaysConstraintFunctionTest {
-    private final AbstractDataEndDurationDaysConstraintFunction<Permission, AgreementPolicyContext> function = new AbstractDataEndDurationDaysConstraintFunction<>() {};
+    private final AbstractDataEndDurationDaysConstraintFunction<Permission, AgreementPolicyContext> function = new AbstractDataEndDurationDaysConstraintFunction<>(mock()) {};
 
     @Test
     void evaluate_whenPolicyIsValid_thenTrue() {

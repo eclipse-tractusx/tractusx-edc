@@ -26,6 +26,7 @@ import org.eclipse.edc.policy.engine.spi.RuleBindingRegistry;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.policy.cx.legacy.contractreference.ContractReferenceConstraintFunction;
@@ -65,15 +66,18 @@ public class CxLegacyPolicyExtension implements ServiceExtension {
     @Inject
     private RuleBindingRegistry bindingRegistry;
 
-    public static void registerFunctions(PolicyEngine engine) {
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>());
+    @Inject
+    private Monitor monitor;
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>());
+    public static void registerFunctions(PolicyEngine engine, Monitor monitor) {
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new DismantlerCredentialConstraintFunction<>(monitor));
 
-        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
-        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>());
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new FrameworkAgreementConstraintFunction<>(monitor));
+
+        engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>(monitor));
+        engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, new MembershipCredentialConstraintFunction<>(monitor));
 
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
         engine.registerFunction(TransferProcessPolicyContext.class, Permission.class, CX_POLICY_NS + USAGE_PURPOSE, new UsagePurposeConstraintFunction<>());
@@ -108,7 +112,7 @@ public class CxLegacyPolicyExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        registerFunctions(policyEngine);
+        registerFunctions(policyEngine, monitor);
         registerBindings(bindingRegistry);
     }
 }

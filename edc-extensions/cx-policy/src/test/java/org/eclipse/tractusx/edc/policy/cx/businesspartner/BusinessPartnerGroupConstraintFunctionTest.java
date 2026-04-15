@@ -41,7 +41,7 @@ class BusinessPartnerGroupConstraintFunctionTest {
     private final ParticipantAgent participantAgent = mock();
     private final BusinessPartnerStore store = mock();
     private final BdrsClient bdrsClient = mock();
-    private final BusinessPartnerGroupConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient);
+    private final BusinessPartnerGroupConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient, mock());
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test

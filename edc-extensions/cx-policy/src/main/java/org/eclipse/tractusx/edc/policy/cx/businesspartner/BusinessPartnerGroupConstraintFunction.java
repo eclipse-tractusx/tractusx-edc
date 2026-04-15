@@ -23,6 +23,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
@@ -51,8 +52,9 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
     private BdrsClient bdrsClient;
+    private final Monitor monitor;
 
-    public BusinessPartnerGroupConstraintFunction(BusinessPartnerStore store, BdrsClient bdrsClient) {
+    public BusinessPartnerGroupConstraintFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
         super(
                 Set.of(Operator.IS_ANY_OF, Operator.IS_NONE_OF),
                 "[\\s\\S]+",
@@ -60,6 +62,7 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
         );
         this.store = store;
         this.bdrsClient = bdrsClient;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
         OPERATOR_EVALUATOR_MAP.put(IS_ANY_OF, this::evaluateIsAnyOf);
         OPERATOR_EVALUATOR_MAP.put(IS_NONE_OF, this::evaluateIsNoneOf);
     }
@@ -70,13 +73,17 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
         // invalid operator
         if (!ALLOWED_OPERATORS.contains(operator)) {
             var ops = ALLOWED_OPERATORS.stream().map(Enum::name).collect(Collectors.joining(", "));
-            context.reportProblem(format("Operator must be one of [%s] but was [%s]", ops, operator.name()));
+            var msg = format("Operator must be one of [%s] but was [%s]", ops, operator.name());
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
 
         var identity = participantAgent.getIdentity();
         if (identity == null) {
-            context.reportProblem("Identity of the participant agent cannot be null");
+            var msg = "Identity of the participant agent cannot be null";
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
 
@@ -89,6 +96,7 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
 
         // BPN not found in database
         if (groups.failed()) {
+            monitor.debug(groups.getFailureDetail());
             context.reportProblem(groups.getFailureDetail());
             return false;
         }
@@ -112,7 +120,9 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
             return ((Collection<?>) rightValue).stream().map(Object::toString).collect(Collectors.toSet());
         }
 
-        context.reportProblem(format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass()));
+        var msg = format("Right operand expected to be either String or a Collection, but was %s", rightValue.getClass());
+        monitor.debug(msg);
+        context.reportProblem(msg);
         return null;
     }
 

@@ -21,9 +21,14 @@ package org.eclipse.tractusx.edc.policy.cx.datausage;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDataEndDurationDaysConstraintFunction;
 
 
 public class DataUsageEndDurationDaysConstraintFunction<C extends AgreementPolicyContext> extends AbstractDataEndDurationDaysConstraintFunction<Permission, C> {
     public static final String DATA_USAGE_END_DURATION_DAYS = "DataUsageEndDurationDays";
+
+    public DataUsageEndDurationDaysConstraintFunction(Monitor monitor) {
+        super(monitor);
+    }
 }

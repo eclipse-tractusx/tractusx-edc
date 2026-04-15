@@ -21,9 +21,14 @@ package org.eclipse.tractusx.edc.policy.cx.dataprovisioning;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolicyContext;
 import org.eclipse.edc.policy.model.Duty;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.policy.cx.common.AbstractDataEndDurationDaysConstraintFunction;
 
 
 public class DataProvisioningEndDurationDaysConstraintFunction<C extends AgreementPolicyContext> extends AbstractDataEndDurationDaysConstraintFunction<Duty, C> {
     public static final String DATA_PROVISIONING_END_DURATION_DAYS = "DataProvisioningEndDurationDays";
+
+    public DataProvisioningEndDurationDaysConstraintFunction(Monitor monitor) {
+        super(monitor);
+    }
 }

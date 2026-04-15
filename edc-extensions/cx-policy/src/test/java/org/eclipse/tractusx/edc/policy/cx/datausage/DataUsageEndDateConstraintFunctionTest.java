@@ -26,10 +26,11 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.ParameterizedType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 class DataUsageEndDateConstraintFunctionTest {
 
-    private final DataUsageEndDateConstraintFunction<AgreementPolicyContext> function = new DataUsageEndDateConstraintFunction<>();
+    private final DataUsageEndDateConstraintFunction<AgreementPolicyContext> function = new DataUsageEndDateConstraintFunction<>(mock());
 
     @Test
     void shouldOnlyApplyToPermission() {

@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.controlplane.contract.spi.policy.AgreementPolic
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Rule;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 
 import java.time.Instant;
@@ -44,8 +45,13 @@ public abstract class AbstractDataEndDateConstraintFunction<R extends Rule, C ex
     private static final Set<Operator> ALLOWED_OPERATORS = Set.of(
             Operator.EQ
     );
+    private final Monitor monitor;
 
     private static final String DATE_PATTERN = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$";
+
+    protected AbstractDataEndDateConstraintFunction(Monitor monitor) {
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+    }
 
     @Override
     public boolean evaluate(Operator operator, Object rightOperand, R rule, C context) {
@@ -53,7 +59,9 @@ public abstract class AbstractDataEndDateConstraintFunction<R extends Rule, C ex
             var expiryDate = Instant.parse(rightOperand.toString());
             return !context.now().truncatedTo(ChronoUnit.SECONDS).isAfter(expiryDate);
         } catch (DateTimeParseException e) {
-            context.reportProblem("Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN));
+            var msg = "Invalid right-operand: right operand must match pattern '%s'".formatted(DATE_PATTERN);
+            monitor.debug(msg);
+            context.reportProblem(msg);
             return false;
         }
     }
