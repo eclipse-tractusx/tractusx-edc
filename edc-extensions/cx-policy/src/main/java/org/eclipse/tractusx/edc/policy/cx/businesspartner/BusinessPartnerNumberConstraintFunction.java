@@ -19,14 +19,15 @@
 
 package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.core.utils.credentials.CredentialTypePredicate;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -38,29 +39,30 @@ import java.util.function.Function;
 
 import static org.eclipse.edc.spi.result.Result.failure;
 import static org.eclipse.edc.spi.result.Result.success;
-import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
+import static org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction.CREDENTIAL_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.common.AbstractDynamicCredentialConstraintFunction.VC_CLAIM;
 
 /**
  * This is a constraint function that evaluates the BusinessPartnerNumber of a participant agent.
+ * The BPN is extracted from the {@code bpn} claim of the participant's BpnCredential.
  */
 public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentPolicyContext> extends ValueValidatingConstraintFunction<Permission, C> {
     public static final String BUSINESS_PARTNER_NUMBER = "BusinessPartnerNumber";
+    private static final String BPN_CREDENTIAL_TYPE = "Bpn";
+    private static final String BPN_CLAIM = "bpn";
 
     private static final List<Operator> SUPPORTED_OPERATORS = Arrays.asList(
             Operator.IS_ANY_OF,
             Operator.IS_NONE_OF
     );
 
-    private BdrsClient bdrsClient;
-
-    public BusinessPartnerNumberConstraintFunction(BdrsClient bdrsClient) {
+    public BusinessPartnerNumberConstraintFunction() {
         super(
                 Set.of(Operator.IS_ANY_OF, Operator.IS_NONE_OF),
                 "^BPNL[0-9A-Z]{12}$",
                 true
         );
-
-        this.bdrsClient = bdrsClient;
     }
 
     @Override
@@ -68,19 +70,32 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
         var participantAgent = context.participantAgent();
 
         if (!SUPPORTED_OPERATORS.contains(operator)) {
-            var message = "Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS);
-            context.reportProblem(message);
+            context.reportProblem("Operator %s is not supported. Supported operators: %s".formatted(operator, SUPPORTED_OPERATORS));
             return false;
         }
 
-        var identity = participantAgent.getIdentity();
+        var vcListClaim = participantAgent.getClaims().get(VC_CLAIM);
+        if (!(vcListClaim instanceof List<?> vcList) || vcList.isEmpty()) {
+            context.reportProblem("ParticipantAgent did not contain a valid '%s' claim.".formatted(VC_CLAIM));
+            return false;
+        }
+
+        var bpnPredicate = new CredentialTypePredicate(CX_CREDENTIAL_NS, BPN_CREDENTIAL_TYPE + CREDENTIAL_LITERAL);
+        var identity = vcList.stream()
+                .filter(VerifiableCredential.class::isInstance)
+                .map(VerifiableCredential.class::cast)
+                .filter(bpnPredicate)
+                .flatMap(vc -> vc.getCredentialSubject().stream())
+                .flatMap(subject -> subject.getClaims().entrySet().stream())
+                .filter(e -> e.getKey().endsWith(BPN_CLAIM))
+                .map(Map.Entry::getValue)
+                .map(String.class::cast)
+                .findFirst()
+                .orElse(null);
+
         if (identity == null) {
-            context.reportProblem("Identity of the participant agent cannot be null");
+            context.reportProblem("Could not extract '%s' from BpnCredential".formatted(BPN_CLAIM));
             return false;
-        }
-
-        if (identity.startsWith(DID_PREFIX)) {
-            identity = bdrsClient.resolveBpn(identity);
         }
 
         return switch (operator) {
@@ -106,12 +121,11 @@ public class BusinessPartnerNumberConstraintFunction<C extends ParticipantAgentP
                     .map(entry -> ((Map<?, ?>) entry).get("@value"))
                     .filter(value -> value instanceof Map<?, ?>)
                     .map(value -> ((Map<?, ?>) value).get("string"))
-                    .anyMatch(bpn -> identity.equals(bpn));
+                    .anyMatch(identity::equals);
 
             return success(containsBpn);
         } else if (rightValue instanceof String singleNumber) {
-            boolean containsBpn = identity.equals(singleNumber);
-            return success(containsBpn);
+            return success(identity.equals(singleNumber));
         }
         return failure("Invalid right-value: operator '%s' requires a 'List' but got a '%s'"
                 .formatted(operator, Optional.of(rightValue).map(Object::getClass).map(Class::getName).orElse(null)));

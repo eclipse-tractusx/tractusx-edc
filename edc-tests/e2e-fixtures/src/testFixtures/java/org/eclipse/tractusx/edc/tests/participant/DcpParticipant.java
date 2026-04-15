@@ -113,12 +113,7 @@ public class DcpParticipant extends TractusxDcpParticipantBase {
     }
 
     private List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer) {
-        return List.of(
-                issuer.issueMembershipCredential(getDid(), getBpn()),
-                issuer.issueDismantlerCredential(getDid(), getBpn()),
-                issuer.issueFrameworkCredential(getDid(), getBpn(), "BpnCredential"),
-                issuer.issueFrameworkCredential(getDid(), getBpn(), "DataExchangeGovernanceCredential")
-        );
+        return issuer.issueCredentials(getDid(), getBpn());
     }
 
     public KeyDescriptor createKeyDescriptor() {
