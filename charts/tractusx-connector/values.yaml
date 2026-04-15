@@ -40,14 +40,14 @@ imagePullSecrets: []
 customLabels: {}
 
 participant:
-  # -- BPN Number
-  id: "BPNLCHANGEME"
+  # -- Participant Id, resp. the Decentralized IDentifier (DID) of the connector
+  id: "did:web:changeme"
+  # -- BPNL Number
+  bpnl: "BPNLCHANGEME"
   # -- Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy)
   contextId: "UUID CHANGEME"
 
 dcp:
-  # -- Decentralized IDentifier (DID) of the connector
-  id: "did:web:changeme"
   # -- Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer
   trustedIssuers: []
   # - id: "did:web:example1.com"

@@ -149,7 +149,7 @@ spec:
             - name: EDC_PARTICIPANT_CONTEXT_ID
               value: {{ .Values.participant.contextId | required ".Values.participant.contextId is required" | quote}}
             - name: "EDC_IAM_ISSUER_ID"
-              value: {{ .Values.dcp.id | required ".Values.dcp.id is required" | quote}}
+              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote}}
 
             ###########################
             ## LOGGING CONFIGURATION ##
