@@ -25,6 +25,7 @@ plugins {
 dependencies {
     implementation(project(":spi:did-document-service-spi"))
     implementation(libs.edc.runtime.metamodel)
+    implementation(libs.edc.spi.participant.context.single)
     implementation(libs.edc.spi.identity.did)
     implementation(libs.dsp.spi.http)
 

@@ -252,8 +252,6 @@ spec:
               value: {{ .Values.dcp.didService.selfRegistration.enabled | quote}}
             - name: "TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED"
               value: {{ and (eq (int .Values.controlplane.replicaCount) 1) (not .Values.controlplane.autoscaling.enabled) | quote }}
-            - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID"
-              value: {{ .Values.dcp.didService.selfRegistration.id | quote }}
             - name: "TX_EDC_DCP_CACHE_ENABLED"
               value: {{ .Values.dcp.cache.enabled | quote }}
             - name: "TX_EDC_DCP_CACHE_VALIDITY_SECONDS"
