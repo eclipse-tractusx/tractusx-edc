@@ -20,44 +20,67 @@
 package org.eclipse.tractusx.edc.policy.cx.businesspartner;
 
 import jakarta.json.Json;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.participant.spi.ParticipantAgent;
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_CREDENTIAL_NS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class BusinessPartnerNumberConstraintFunctionTest {
 
+    private static final String TEST_BPN = "BPNL00000000001A";
+
     private final ParticipantAgent participantAgent = mock();
-    private final BdrsClient bdrsClient = mock();
-    private final BusinessPartnerNumberConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerNumberConstraintFunction<>(bdrsClient);
+    private final BusinessPartnerNumberConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerNumberConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
     @Test
     void evaluate() {
-        var identity = "BPNL00000000001A";
-        var bpn1 = Map.of("string", identity);
+        var bpn1 = Map.of("string", TEST_BPN);
         var rightValue = List.of(Map.of("@value", bpn1));
-        when(participantAgent.getIdentity()).thenReturn(identity);
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", bpnVcList(TEST_BPN)));
         assertThat(function.evaluate(Operator.IS_ANY_OF, rightValue, null, context)).isTrue();
     }
 
     @Test
-    void evaluate_withDid() {
-        var bpn1 = Map.of("string", "BPNL00000000001A");
+    void evaluate_whenIsNoneOf_andBpnNotInList() {
+        var bpn1 = Map.of("string", "BPNL00000000002B");
         var rightValue = List.of(Map.of("@value", bpn1));
-        var identity = "did:example:some-identity";
-        when(participantAgent.getIdentity()).thenReturn(identity);
-        when(bdrsClient.resolveBpn(identity)).thenReturn("BPNL00000000001A");
-        assertThat(function.evaluate(Operator.IS_ANY_OF, rightValue, null, context)).isTrue();
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", bpnVcList(TEST_BPN)));
+        assertThat(function.evaluate(Operator.IS_NONE_OF, rightValue, null, context)).isTrue();
+    }
+
+    @Test
+    void evaluate_whenIsNoneOf_andBpnInList_returnsFalse() {
+        var bpn1 = Map.of("string", TEST_BPN);
+        var rightValue = List.of(Map.of("@value", bpn1));
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", bpnVcList(TEST_BPN)));
+        assertThat(function.evaluate(Operator.IS_NONE_OF, rightValue, null, context)).isFalse();
+    }
+
+    @Test
+    void evaluate_whenNoVcClaim_returnsFalse() {
+        when(participantAgent.getClaims()).thenReturn(Map.of());
+        var rightValue = List.of(Map.of("@value", Map.of("string", TEST_BPN)));
+        assertThat(function.evaluate(Operator.IS_ANY_OF, rightValue, null, context)).isFalse();
+        assertThat(context.getProblems()).isNotEmpty();
+    }
+
+    @Test
+    void evaluate_whenNoBpnCredential_returnsFalse() {
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of()));
+        var rightValue = List.of(Map.of("@value", Map.of("string", TEST_BPN)));
+        assertThat(function.evaluate(Operator.IS_ANY_OF, rightValue, null, context)).isFalse();
+        assertThat(context.getProblems()).isNotEmpty();
     }
 
     @Test
@@ -122,5 +145,18 @@ class BusinessPartnerNumberConstraintFunctionTest {
         var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    }
+
+    private List<VerifiableCredential> bpnVcList(String bpn) {
+        return List.of(VerifiableCredential.Builder.newInstance()
+                .types(List.of(CX_CREDENTIAL_NS + "VerifiableCredential", CX_CREDENTIAL_NS + "BpnCredential"))
+                .id("test-vc-id")
+                .issuer(new org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer("did:web:issuer", Map.of()))
+                .issuanceDate(java.time.Instant.now())
+                .credentialSubject(org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject.Builder.newInstance()
+                        .id("subject-id")
+                        .claim(CX_CREDENTIAL_NS + "bpn", bpn)
+                        .build())
+                .build());
     }
 }

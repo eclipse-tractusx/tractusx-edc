@@ -88,6 +88,7 @@ public class DataspaceIssuer extends IdentityParticipant {
                 () -> CredentialSubject.Builder.newInstance()
                         .id(did)
                         .claim("holderIdentifier", bpn)
+                        .claim("bpn", bpn)
                         .build(),
                 membershipRawVc(did, bpn)
         );
@@ -162,8 +163,27 @@ public class DataspaceIssuer extends IdentityParticipant {
         return List.of(
                 issueMembershipCredential(did, bpn),
                 issueDismantlerCredential(did, bpn),
-                issueFrameworkCredential(did, bpn, "BpnCredential"),
+                issueBpnCredential(did, bpn),
                 issueFrameworkCredential(did, bpn, "DataExchangeGovernanceCredential"));
+    }
+
+    VerifiableCredentialResource issueBpnCredential(String did, String bpn) {
+        var subject = Json.createObjectBuilder()
+                .add("type", "BpnCredential")
+                .add("holderIdentifier", bpn)
+                .add("bpn", bpn)
+                .add("id", did)
+                .build();
+
+        return issueCredential(
+                did, bpn, "BpnCredential",
+                () -> CredentialSubject.Builder.newInstance()
+                        .id(did)
+                        .claim("holderIdentifier", bpn)
+                        .claim("bpn", bpn)
+                        .build(),
+                createVcBuilder("BpnCredential", subject)
+        );
     }
 
     private VerifiableCredentialResource issueCredential(String did, String bpn, String type, Supplier<CredentialSubject> credentialSubjectSupplier, JsonObjectBuilder vcBuilder) {
@@ -192,8 +212,8 @@ public class DataspaceIssuer extends IdentityParticipant {
                         .add("https://w3id.org/catenax/credentials")
                         .add("https://w3id.org/vc/status-list/2021/v1"))
                 .add("type", Json.createArrayBuilder()
-                        .add("VerifiableCredential")
-                        .add(type))
+                        .add(type)
+                        .add("VerifiableCredential"))
                 .add("credentialSubject", subjectSupplier)
                 .add("issuer", didUrl())
                 .add("issuanceDate", Instant.now().toString());

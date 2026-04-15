@@ -85,7 +85,7 @@ public class MockVcIdentityService implements IdentityService {
         var claimToken = claimTokenResult.getContent();
         var bpnlConsumer = claimToken.getStringClaim(BUSINESS_PARTNER_NUMBER_CLAIM);
         var didConsumer = claimToken.getStringClaim(ISSUER);
-        var credentials = List.of(membershipCredential(bpnlConsumer, didConsumer), dataExchangeGovernanceCredential(bpnlConsumer, didConsumer));
+        var credentials = List.of(membershipCredential(bpnlConsumer, didConsumer), bpnCredential(bpnlConsumer, didConsumer), dataExchangeGovernanceCredential(bpnlConsumer, didConsumer));
 
         var claimTokenWithVc = ClaimToken.Builder.newInstance()
                 .claim(VC_CLAIM, credentials)
@@ -143,6 +143,20 @@ public class MockVcIdentityService implements IdentityService {
                 .credentialSubject(CredentialSubject.Builder.newInstance()
                         .id(didConsumer)
                         .claim("holderIdentifier", bpnlConsumer)
+                        .build())
+                .issuer(new Issuer("issuer", Map.of()))
+                .issuanceDate(Instant.now())
+                .build();
+    }
+
+    private VerifiableCredential bpnCredential(String bpnlConsumer, String didConsumer) {
+        return VerifiableCredential.Builder.newInstance()
+                .type("VerifiableCredential")
+                .type("BpnCredential")
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id(didConsumer)
+                        .claim("holderIdentifier", bpnlConsumer)
+                        .claim("bpn", bpnlConsumer)
                         .build())
                 .issuer(new Issuer("issuer", Map.of()))
                 .issuanceDate(Instant.now())
