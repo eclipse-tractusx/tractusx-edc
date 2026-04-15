@@ -56,8 +56,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql(postgresql) | 15.2.1 |
-| https://helm.releases.hashicorp.com | vault(vault) | 0.27.0 |
+| https://helm.releases.hashicorp.com | vault(vault) | 0.28.0 |
+| oci://registry-1.docker.io/cloudpirates | postgresql(postgres) | 0.18.3 |
 
 ## Values
 
@@ -284,11 +284,16 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | postgresql.auth.database | string | `"edc"` |  |
 | postgresql.auth.password | string | `"password"` |  |
 | postgresql.auth.username | string | `"user"` |  |
-| postgresql.image.repository | string | `"bitnamilegacy/postgresql"` |  |
-| postgresql.image.tag | string | `"16.2.0-debian-12-r10"` |  |
+| postgresql.image.registry | string | `"docker.io"` |  |
+| postgresql.image.repository | string | `"postgres"` |  |
 | postgresql.jdbcUrl | string | `"jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"` |  |
-| postgresql.primary.persistence.enabled | bool | `false` |  |
-| postgresql.readReplicas.persistence.enabled | bool | `false` |  |
+| postgresql.persistence.enabled | bool | `false` |  |
+| postgresql.persistence.size | string | `"10Gi"` |  |
+| postgresql.persistence.storageClass | string | `"standard"` |  |
+| postgresql.resources.limits.cpu | int | `1` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"250m"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.imagePullSecrets | list | `[]` | Existing image pull secret bound to the service account to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |

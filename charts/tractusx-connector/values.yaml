@@ -625,15 +625,20 @@ dataplane:
 
 postgresql:
   image:
-    repository: "bitnamilegacy/postgresql"
-    tag: "16.2.0-debian-12-r10"
+    registry: docker.io
+    repository: postgres
   jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
-  primary:
-    persistence:
-      enabled: false
-  readReplicas:
-    persistence:
-      enabled: false
+  persistence:
+    enabled: false
+    size: 10Gi
+    storageClass: standard
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 256Mi
   auth:
     database: "edc"
     username: "user"
