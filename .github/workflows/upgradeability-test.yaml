@@ -59,17 +59,14 @@ jobs:
       - name: "Get latest released version"
         id: get-version
         run: |
-          echo "RELEASE=0.13.0-rc1" >> $GITHUB_ENV # TODO: switch back once 0.13.0 is released
+          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l --devel -o json | jq -r 'first | .version')
+          echo "Last official release is $RELEASED_VERSION"
+          echo "RELEASE=$RELEASED_VERSION" >> $GITHUB_ENV
           exit 0
 
       - name: "Install latest release"
         run: |
-          mkdir base-chart
-          cd base-chart
-          curl https://eclipse-tractusx.github.io/tractusx-edc/helm-charts/tractusx-connector-0.13.0-rc1.tgz -o tractusx-connector-0.13.0-rc1.tgz
-          tar -xzf tractusx-connector-0.13.0-rc1.tgz
-          cd ..          
-          helm upgrade --install tx-prod ./base-chart/tractusx-connector \
+          helm upgrade --install tx-prod tractusx/tractusx-connector \
             -f edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml \
             --set "controlplane.image.tag=$RELEASE" \
             --set "controlplane.image.pullPolicy=Always" \
@@ -78,7 +75,8 @@ jobs:
             --set "dataplane.image.pullPolicy=Always" \
             --set "dataplane.image.repository=tractusx/edc-dataplane-hashicorp-vault" \
             --dependency-update \
-            --wait-for-jobs --timeout=120s
+            --wait-for-jobs --timeout=120s \
+            --version $RELEASE
           
           # wait for the pod to become ready
           kubectl rollout status deployment tx-prod-controlplane
