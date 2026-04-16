@@ -59,7 +59,7 @@ jobs:
       - name: "Get latest released version"
         id: get-version
         run: |
-          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l -o json | jq -r 'first | .version')
+          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l --devel -o json | jq -r 'first | .version')
           echo "Last official release is $RELEASED_VERSION"
           echo "RELEASE=$RELEASED_VERSION" >> $GITHUB_ENV
           exit 0
