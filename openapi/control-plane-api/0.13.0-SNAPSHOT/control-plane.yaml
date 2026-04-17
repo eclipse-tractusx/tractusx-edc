@@ -3788,6 +3788,15 @@ components:
           permission:
           - target: asset-id
             action: display
+    DataAddress_1:
+      type: object
+      properties:
+        '@type':
+          type: string
+          example: https://w3id.org/edc/v0.0.1/ns/DataAddress
+        type:
+          type: string
+      additionalProperties: true
     ContractDefinitionOutputV3:
       type: object
       properties:
