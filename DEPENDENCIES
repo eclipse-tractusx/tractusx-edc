@@ -21,27 +21,27 @@ maven/mavencentral/com.azure/azure-storage-common/12.29.0, MIT, approved, #20440
 maven/mavencentral/com.azure/azure-storage-internal-avro/12.15.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-xml/1.2.0, Apache-2.0, approved, #26447
 maven/mavencentral/com.ethlo.time/itu/1.14.0, Apache-2.0, approved, #19505
-maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.16.2, Apache-2.0, approved, #11606
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.0, Apache-2.0, approved, #16364
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.3, Apache-2.0, approved, #16364
+maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.19.2, Apache-2.0, approved, #21911
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.20, Apache-2.0, approved, #23056
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.21, Apache-2.0, approved, #25587
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.18.3, Apache-2.0 AND MIT, approved, #16371
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.20.1, MIT AND Apache-2.0, approved, #23054
-maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.2, Apache-2.0, approved, #11605
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.0, Apache-2.0, approved, #16372
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.1, Apache-2.0, approved, #16372
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.3, Apache-2.0, approved, #16372
+maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.19.2, Apache-2.0, approved, #21909
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.20.1, Apache-2.0, approved, #23060
-maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.16.2, Apache-2.0, approved, #11855
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.18.3, Apache-2.0, approved, #16370
+maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.19.2, Apache-2.0, approved, #21912
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.20.1, Apache-2.0, approved, #23058
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.20.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.16.2, Apache-2.0, approved, #11853
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.3, Apache-2.0, approved, #16625
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.19.2, Apache-2.0, approved, #23299
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.20.1, Apache-2.0, approved, #24684
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.20.1, Apache-2.0, approved, #25014
-maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.16.2, Apache-2.0, approved, #11858
+maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.19.2, Apache-2.0, approved, #20839
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.20.1, Apache-2.0, approved, #25013
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.18.0, Apache-2.0, approved, #16368
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.20.1, Apache-2.0, approved, #23057
@@ -74,7 +74,7 @@ maven/mavencentral/commons-logging/commons-logging/1.2, Apache-2.0, approved, CQ
 maven/mavencentral/dev.failsafe/failsafe-okhttp/3.3.2, Apache-2.0, approved, #15208
 maven/mavencentral/dev.failsafe/failsafe/3.3.1, Apache-2.0, approved, #9268
 maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
-maven/mavencentral/io.github.classgraph/classgraph/4.8.176, MIT, approved, CQ22530
+maven/mavencentral/io.github.classgraph/classgraph/4.8.184, MIT, approved, CQ22530
 maven/mavencentral/io.micrometer/micrometer-commons/1.16.0, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #24726
 maven/mavencentral/io.micrometer/micrometer-core/1.16.0, Apache-2.0 AND (Apache-2.0 AND MIT), approved, #24722
 maven/mavencentral/io.micrometer/micrometer-observation/1.16.0, Apache-2.0, approved, #24713
@@ -135,12 +135,13 @@ maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.48, Apache-2.0
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.48, Apache-2.0, approved, #11661
 maven/mavencentral/io.projectreactor/reactor-core/3.4.41, Apache-2.0, approved, #7517
 maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.26, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.40, Apache-2.0, approved, #5947
-maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.26, Apache-2.0, approved, #5929
-maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.26, Apache-2.0, approved, #11475
+maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.42, Apache-2.0, approved, #5947
+maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.42, Apache-2.0, approved, #5929
+maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.42, Apache-2.0, approved, #11475
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.26, Apache-2.0, approved, #11477
-maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.26, Apache-2.0, approved, #5919
+maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.42, Apache-2.0, approved, #11477
+maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.42, Apache-2.0, approved, #5919
 maven/mavencentral/jakarta.activation/jakarta.activation-api/2.1.3, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/jakarta.annotation/jakarta.annotation-api/2.1.1, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.ca
 maven/mavencentral/jakarta.annotation/jakarta.annotation-api/3.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.ca
@@ -149,7 +150,6 @@ maven/mavencentral/jakarta.json/jakarta.json-api/2.1.3, EPL-2.0 OR GPL-2.0-only 
 maven/mavencentral/jakarta.servlet/jakarta.servlet-api/6.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.servlet
 maven/mavencentral/jakarta.servlet/jakarta.servlet-api/6.1.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.servlet
 maven/mavencentral/jakarta.validation/jakarta.validation-api/3.0.2, Apache-2.0, approved, ee4j.validation
-maven/mavencentral/jakarta.validation/jakarta.validation-api/3.1.0, Apache-2.0, approved, ee4j.validation
 maven/mavencentral/jakarta.ws.rs/jakarta.ws.rs-api/3.1.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.rest
 maven/mavencentral/jakarta.ws.rs/jakarta.ws.rs-api/4.0.0, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.rest
 maven/mavencentral/jakarta.xml.bind/jakarta.xml.bind-api/3.0.1, BSD-3-Clause, approved, ee4j.jaxb
@@ -158,7 +158,7 @@ maven/mavencentral/net.java.dev.jna/jna-platform/5.13.0, Apache-2.0 OR LGPL-2.1-
 maven/mavencentral/net.java.dev.jna/jna/5.13.0, Apache-2.0 AND LGPL-2.1-or-later, approved, #15196
 maven/mavencentral/net.minidev/accessors-smart/2.5.2, Apache-2.0, approved, #19432
 maven/mavencentral/net.minidev/json-smart/2.5.2, Apache-2.0, approved, #19431
-maven/mavencentral/org.apache.commons/commons-lang3/3.17.0, Apache-2.0, approved, #16044
+maven/mavencentral/org.apache.commons/commons-lang3/3.18.0, Apache-2.0, approved, #22470
 maven/mavencentral/org.apache.commons/commons-pool2/2.12.1, Apache-2.0 AND LicenseRef-Public-Domain, approved, #10843
 maven/mavencentral/org.apache.httpcomponents/httpclient/4.5.13, Apache-2.0, approved, #15248
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.13, Apache-2.0, approved, CQ23528
