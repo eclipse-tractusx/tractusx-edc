@@ -78,6 +78,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /check/liveness:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: getLiveness
+      responses:
+        "200":
+          description: The runtime is working properly.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
   /v4alpha/dataflows/{id}/trigger:
     post:
       tags:
@@ -124,20 +138,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
-  /check/liveness:
-    get:
-      tags:
-      - Application Observability
-      description: Performs a liveness probe to determine whether the runtime is working
-        properly.
-      operationId: getLiveness
-      responses:
-        "200":
-          description: The runtime is working properly.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HealthStatus"
   /aas/request:
     post:
       tags:
