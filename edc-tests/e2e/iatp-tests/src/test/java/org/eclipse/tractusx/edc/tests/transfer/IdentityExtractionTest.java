@@ -84,10 +84,10 @@ public class IdentityExtractionTest {
                 .claim("vc", List.of(createCredential().build()))
                 .build();
 
-        var bpnExtractionFunction = registry.getIdExtractionFunction(DSP_2025);
-        var id = bpnExtractionFunction.apply(claimtoken);
+        var didExtractionFunction = registry.getIdExtractionFunction(DSP_2025);
+        var id = didExtractionFunction.apply(claimtoken);
 
-        assertThat(id).isEqualTo("test-id");
+        assertThat(id).isEqualTo("did:web:test.example:id");
     }
 
     @Test
@@ -109,9 +109,8 @@ public class IdentityExtractionTest {
                 .build();
         
         var didExtractionFunction = registry.getIdExtractionFunction(DSP_2025);
-        
-        assertThatThrownBy(() -> didExtractionFunction.apply(claimtoken)).isInstanceOf(EdcException.class)
-                .hasMessage("Required credential type 'MembershipCredential' not present in ClaimToken, cannot extract property 'id'");
+
+        assertThat(didExtractionFunction.apply(claimtoken)).startsWith("did:web:");
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -122,7 +121,7 @@ public class IdentityExtractionTest {
                 .issuanceDate(Instant.now())
                 .issuer(new Issuer("test-issuer", Map.of()))
                 .credentialSubject(CredentialSubject.Builder.newInstance()
-                        .id("test-id")
+                        .id("did:web:test.example:id")
                         .claim("holderIdentifier", "the-holder")
                         .build());
     }
