@@ -29,6 +29,7 @@ configurations.all {
 
     // decentralized-claims-sts-remote-client excluded because we have the tx-dcp-sts-dim that takes care to define the correct client in case of DIM
     exclude("org.eclipse.edc", "decentralized-claims-sts-remote-client")
+    exclude(group = "org.eclipse.edc", module = "transform-lib")
 }
 
 dependencies {
@@ -94,6 +95,7 @@ dependencies {
     implementation(project(":edc-extensions:event-subscriber"))
     implementation(project(":edc-extensions:did-document:did-document-service-self-registration"))
     implementation(project(":edc-extensions:did-document:did-document-service-dim"))
+    implementation(project(":edc-extensions:transform-lib"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
