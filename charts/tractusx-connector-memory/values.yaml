@@ -63,8 +63,6 @@ iatp:
     selfRegistration:
       # -- Whether Service Self Registration is enabled
       enabled: false
-      # -- Unique id of connector to be used for register / unregister service inside did document (must be valid URI)
-      id: "did:web:changeme"
 
   # - Configures the Verifiable Presentation Ccache
   cache:
