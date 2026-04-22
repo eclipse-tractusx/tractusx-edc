@@ -64,6 +64,7 @@ public class JsonObjectFromDataAddressDspaceTransformer extends AbstractNamespac
     public @Nullable JsonObject transform(@NotNull DataAddress dataAddress, @NotNull TransformerContext context) {
         var endpointProperties = dataAddress.getProperties().entrySet().stream()
                 .filter(e -> !EXCLUDED_PROPERTIES.contains(e.getKey()))
+                .filter(e -> e.getValue() != null)
                 .map(it -> endpointProperty(it.getKey(), it.getValue(), context))
                 .collect(JsonCollectors.toJsonArray());
 
