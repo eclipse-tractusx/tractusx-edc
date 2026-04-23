@@ -97,6 +97,7 @@ include(":edc-extensions:dataspace-protocol:cx-dataspace-protocol")
 include(":edc-extensions:dataspace-protocol:dataspace-protocol-core")
 include(":edc-extensions:did-document:did-document-service-self-registration")
 include(":edc-extensions:did-document:did-document-service-dim")
+include(":edc-extensions:transform-lib")
 
 include(":edc-extensions:agreements")
 include(":edc-extensions:agreements:retirement-evaluation-core")
