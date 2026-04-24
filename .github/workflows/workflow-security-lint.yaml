@@ -83,10 +83,53 @@ jobs:
       - name: Run poutine
         uses: boostsecurityio/poutine-action@84c0a0d32e8d57ae12651222be1eb15351429228 # v0.15.2
 
+      - name: Report poutine findings with line annotations
+        if: ${{ always() && hashFiles('results.sarif') != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! command -v jq >/dev/null 2>&1; then
+            echo "jq is required to parse SARIF."
+            exit 1
+          fi
+
+          echo "### Poutine unverified creator locations" >> "$GITHUB_STEP_SUMMARY"
+          found=0
+          while IFS=$'\t' read -r file source_text; do
+            [[ -f "$file" ]] || continue
+
+            repo="$(sed -nE \
+              -e 's#.*pkg:githubaction/([^@[:space:]]+)@.*#\1#p' \
+              -e 's#.*([[:alnum:]._-]+/[[:alnum:]._-]+)@.*#\1#p' \
+              -e 's#.*([[:alnum:]._-]+/[[:alnum:]._-]+).*#\1#p' <<<"$source_text" | head -n1)"
+            [[ -n "$repo" ]] || continue
+
+            line="$(grep -nE "^[[:space:]]*uses:[[:space:]]*${repo}(@|$)" "$file" | head -n1 | cut -d: -f1 || true)"
+            [[ -n "$line" ]] || continue
+
+            echo "::warning file=${file},line=${line},title=Poutine unverified creator::${repo} used here"
+            echo "- \`${file}:${line}\` -> \`${repo}\`" >> "$GITHUB_STEP_SUMMARY"
+            found=1
+          done < <(
+            jq -r '
+              .runs[]?.results[]?
+              | select(.ruleId == "github_action_from_unverified_creator_used")
+              | [
+                  (.locations[0].physicalLocation.artifactLocation.uri // ""),
+                  ((.properties.purl // .partialFingerprints.purl // .message.text // "") | tostring)
+                ]
+              | @tsv
+            ' results.sarif
+          )
+
+          if [[ "$found" -eq 0 ]]; then
+            echo "- No line-level match found for poutine results." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload poutine SARIF to GitHub Advanced Security
         uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
         if: always()
         with:
           sarif_file: results.sarif
           category: poutine
-
