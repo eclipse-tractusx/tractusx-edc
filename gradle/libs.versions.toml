@@ -3,7 +3,7 @@ format.version = "1.1"
 
 [versions]
 edc = "0.15.1"
-edc-next = "0.16.0"
+edc-next = "0.17.0"
 edc-build = "1.5.2"
 allure = "2.34.0"
 awaitility = "4.3.0"
