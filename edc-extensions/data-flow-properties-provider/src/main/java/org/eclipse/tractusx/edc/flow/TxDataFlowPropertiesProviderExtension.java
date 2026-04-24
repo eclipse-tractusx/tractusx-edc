@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,7 +25,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 
 import static org.eclipse.tractusx.edc.flow.TxDataFlowPropertiesProviderExtension.NAME;
 
@@ -34,10 +35,10 @@ public class TxDataFlowPropertiesProviderExtension implements ServiceExtension {
     protected static final String NAME = "Tractus-X Data flow properties provider extension";
 
     @Inject
-    private BdrsClient bdrsClient;
+    private AgreementsBpnsStore agreementsBpnsStore;
 
     @Provider
     public DataFlowPropertiesProvider dataFlowPropertiesProvider() {
-        return new TxDataFlowPropertiesProvider(bdrsClient);
+        return new TxDataFlowPropertiesProvider(agreementsBpnsStore);
     }
 }

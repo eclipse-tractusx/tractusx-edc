@@ -22,10 +22,14 @@ package org.eclipse.tractusx.edc.agreements.bpns.spi.store;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
+import org.jetbrains.annotations.Nullable;
 
 @ExtensionPoint
 public interface AgreementsBpnsStore {
     String ALREADY_EXISTS_TEMPLATE = "Contract Agreement %s already exists.";
 
     StoreResult<Void> save(AgreementsBpnsEntry agreementsBpnsEntry);
+
+    @Nullable
+    AgreementsBpnsEntry findByAgreementId(String agreementId);
 }

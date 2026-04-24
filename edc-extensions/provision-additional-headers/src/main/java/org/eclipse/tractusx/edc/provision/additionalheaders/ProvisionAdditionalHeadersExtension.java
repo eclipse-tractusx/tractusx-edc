@@ -20,36 +20,28 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
-import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProvisionManager;
-import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ResourceManifestGenerator;
+import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionerManager;
+import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGeneratorManager;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+
+import static org.eclipse.edc.dataaddress.httpdata.spi.HttpDataAddressSchema.HTTP_DATA_TYPE;
+import static org.eclipse.tractusx.edc.proxy.ProxyHttpDataAddressSchema.PROXY_HTTP_DATA_TYPE;
 
 public class ProvisionAdditionalHeadersExtension implements ServiceExtension {
 
     @Inject
-    private ResourceManifestGenerator resourceManifestGenerator;
+    private ResourceDefinitionGeneratorManager resourceDefinitionGeneratorManager;
 
     @Inject
-    private ProvisionManager provisionManager;
-
-    @Inject
-    private TypeManager typeManager;
-
-    @Inject
-    private ContractAgreementService contractAgreementService;
-    
-    @Inject
-    private BdrsClient bdrsClient;
+    private ProvisionerManager provisionerManager;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        typeManager.registerTypes(AdditionalHeadersResourceDefinition.class, AdditionalHeadersProvisionedResource.class);
-        resourceManifestGenerator.registerGenerator(new AdditionalHeadersResourceDefinitionGenerator(contractAgreementService, bdrsClient));
-        provisionManager.register(new AdditionalHeadersProvisioner());
+        resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(HTTP_DATA_TYPE));
+        resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(PROXY_HTTP_DATA_TYPE));
+        provisionerManager.register(new AdditionalHeadersProvisioner());
+        provisionerManager.register(new AdditionalHeadersDeprovisioner());
     }
 }

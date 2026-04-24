@@ -1,6 +1,7 @@
 /********************************************************************************
  * Copyright (c) 2025 Cofinity-X GmbH
  * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,40 +26,37 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 
 import java.util.Map;
 
 import static org.eclipse.edc.spi.response.ResponseStatus.FATAL_ERROR;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
-import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 
 /**
  * Extension of {@link DataFlowPropertiesProvider} which provides additional properties in the {@link DataFlowStartMessage}
- * like the DID of the counter-party BPN. The resolution is made with the {@link BdrsClient}
+ * such as the consumer DID (audience) and the consumer BPN. Both values are resolved locally without a BDRS call:
+ * the DID comes directly from {@code policy.getAssignee()} and the BPN is looked up from {@link AgreementsBpnsStore}.
  */
 public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider {
 
-    private final BdrsClient bdrsClient;
+    private final AgreementsBpnsStore agreementsBpnsStore;
 
-    public TxDataFlowPropertiesProvider(BdrsClient bdrsClient) {
-        this.bdrsClient = bdrsClient;
+    public TxDataFlowPropertiesProvider(AgreementsBpnsStore agreementsBpnsStore) {
+        this.agreementsBpnsStore = agreementsBpnsStore;
     }
 
     @Override
     public StatusResult<Map<String, String>> propertiesFor(TransferProcess transferProcess, Policy policy) {
-        try {
-            if (policy.getAssignee().startsWith(DID_PREFIX)) {
-                return StatusResult.success(Map.of(AUDIENCE_PROPERTY, policy.getAssignee()));
-            }
-            
-            var did = bdrsClient.resolveDid(policy.getAssignee());
-            if (did == null) {
-                return StatusResult.failure(FATAL_ERROR, "Failed to fetch did for BPN %s".formatted(policy.getAssignee()));
-            }
-            return StatusResult.success(Map.of(AUDIENCE_PROPERTY, did));
-        } catch (Exception e) {
-            return StatusResult.failure(FATAL_ERROR, "Failed to fetch did for BPN %s: %s".formatted(policy.getAssignee(), e.getMessage()));
+        var entry = agreementsBpnsStore.findByAgreementId(transferProcess.getContractId());
+        if (entry == null) {
+            return StatusResult.failure(FATAL_ERROR,
+                    "No BPN entry found for agreement %s".formatted(transferProcess.getContractId()));
         }
+        return StatusResult.success(Map.of(
+                AUDIENCE_PROPERTY, policy.getAssignee(),
+                BPN_PROPERTY, entry.getConsumerBpn()
+        ));
     }
 }
