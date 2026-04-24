@@ -34,6 +34,19 @@ on:
         type: string
         required: false
         description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+    secrets:
+      ORG_GPG_PRIVATE_KEY:
+        required: false
+        description: 'GPG private key for signing'
+      ORG_GPG_PASSPHRASE:
+        required: false
+        description: 'GPG passphrase'
+      CENTRAL_SONATYPE_TOKEN_USERNAME:
+        required: false
+        description: 'Sonatype token username'
+      CENTRAL_SONATYPE_TOKEN_PASSWORD:
+        required: false
+        description: 'Sonatype token password'
 
 permissions:
   contents: read

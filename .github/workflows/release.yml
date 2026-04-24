@@ -116,7 +116,11 @@ jobs:
       contents: read
     if: needs.validation.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-maven-publish.yaml
-    secrets: inherit
+    secrets:
+      ORG_GPG_PRIVATE_KEY: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+      ORG_GPG_PASSPHRASE: ${{ secrets.ORG_GPG_PASSPHRASE }}
+      CENTRAL_SONATYPE_TOKEN_USERNAME: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+      CENTRAL_SONATYPE_TOKEN_PASSWORD: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
 
@@ -126,7 +130,9 @@ jobs:
     needs: [ validation ]
     if: needs.validation.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-docker-publish.yaml
-    secrets: inherit
+    secrets:
+      DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
     with:
       docker_tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
 
@@ -230,7 +236,6 @@ jobs:
       contents: write
     needs: [ validation ]
     uses: ./.github/workflows/publish-openapi-ui.yml
-    secrets: inherit
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
       latest: ${{ inputs.latest }}

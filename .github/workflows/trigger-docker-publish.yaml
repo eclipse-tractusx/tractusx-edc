@@ -45,6 +45,13 @@ on:
         type: string
         description: 'Explicitly specify the Docker tag. Note that SHA and latest are added automatically.'
         required: false
+    secrets:
+      DOCKER_HUB_USER:
+        required: false
+        description: 'DockerHub username'
+      DOCKER_HUB_TOKEN:
+        required: false
+        description: 'DockerHub token'
 
 permissions:
   contents: read
