@@ -20,8 +20,8 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProvisionManager;
-import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ResourceManifestGenerator;
+import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionerManager;
+import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGeneratorManager;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,25 +30,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(DependencyInjectionExtension.class)
 class ProvisionAdditionalHeadersExtensionTest {
 
-    private final ResourceManifestGenerator resourceManifestGenerator = mock();
-    private final ProvisionManager provisionManager = mock();
+    private final ResourceDefinitionGeneratorManager resourceDefinitionGeneratorManager = mock();
+    private final ProvisionerManager provisionerManager = mock();
 
     @BeforeEach
     void setUp(ServiceExtensionContext context) {
-        context.registerService(ResourceManifestGenerator.class, resourceManifestGenerator);
-        context.registerService(ProvisionManager.class, provisionManager);
+        context.registerService(ResourceDefinitionGeneratorManager.class, resourceDefinitionGeneratorManager);
+        context.registerService(ProvisionerManager.class, provisionerManager);
     }
 
     @Test
-    void initializeShouldRegisterProvisioner(ProvisionAdditionalHeadersExtension extension, ServiceExtensionContext context) {
+    void initializeShouldRegisterGeneratorAndProvisioners(ProvisionAdditionalHeadersExtension extension, ServiceExtensionContext context) {
         extension.initialize(context);
 
-        verify(resourceManifestGenerator).registerGenerator(isA(AdditionalHeadersResourceDefinitionGenerator.class));
-        verify(provisionManager).register(isA(AdditionalHeadersProvisioner.class));
+        verify(resourceDefinitionGeneratorManager, times(2)).registerProviderGenerator(isA(AdditionalHeadersResourceDefinitionGenerator.class));
+        verify(provisionerManager).register(isA(AdditionalHeadersProvisioner.class));
+        verify(provisionerManager).register(isA(AdditionalHeadersDeprovisioner.class));
     }
 }

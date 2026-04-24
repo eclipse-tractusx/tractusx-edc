@@ -20,79 +20,51 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionResponse;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedDataAddressResource;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedResource;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
-import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
+import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionedResource;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.map;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
-import static org.mockito.Mockito.mock;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AGREEMENT_ID_PROPERTY;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 
 class AdditionalHeadersProvisionerTest {
 
     private final AdditionalHeadersProvisioner provisioner = new AdditionalHeadersProvisioner();
 
     @Test
-    void canProvisionAdditionalHeadersResourceDefinition() {
-        assertThat(provisioner.canProvision(mock(AdditionalHeadersResourceDefinition.class))).isTrue();
-        assertThat(provisioner.canProvision(mock(ResourceDefinition.class))).isFalse();
-    }
-
-    @Test
-    void cannotDeprovisionAdditionalHeadersResourceDefinition() {
-        assertThat(provisioner.canDeprovision(mock(AdditionalHeadersProvisionedResource.class))).isTrue();
-        assertThat(provisioner.canDeprovision(mock(ProvisionedResource.class))).isFalse();
+    void supportedType_shouldReturnHttpData() {
+        assertThat(provisioner.supportedType()).isEqualTo("HttpData");
     }
 
     @Test
     void shouldAddAdditionalHeaders() {
         var address = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
-        var resourceDefinition =
-                AdditionalHeadersResourceDefinition.Builder.newInstance()
-                        .id(UUID.randomUUID().toString())
-                        .transferProcessId(UUID.randomUUID().toString())
-                        .contractId("contractId")
-                        .bpn("bpn")
-                        .dataAddress(address)
-                        .build();
+        var resource = ProvisionResource.Builder.newInstance()
+                .flowId("flowId")
+                .type("HttpData")
+                .dataAddress(address)
+                .property(AGREEMENT_ID_PROPERTY, "contractId")
+                .property(BPN_PROPERTY, "bpn")
+                .build();
 
-        var result = provisioner.provision(resourceDefinition, Policy.Builder.newInstance().build());
+        var result = provisioner.provision(resource);
+
         assertThat(result)
                 .succeedsWithin(5, SECONDS)
                 .matches(StatusResult::succeeded)
                 .extracting(StatusResult::getContent)
-                .extracting(ProvisionResponse::getResource)
-                .asInstanceOf(type(AdditionalHeadersProvisionedResource.class))
-                .extracting(ProvisionedDataAddressResource::getDataAddress)
+                .asInstanceOf(type(ProvisionedResource.class))
+                .extracting(ProvisionedResource::getDataAddress)
                 .extracting(a -> HttpDataAddress.Builder.newInstance().copyFrom(a).build())
                 .extracting(HttpDataAddress::getAdditionalHeaders)
                 .asInstanceOf(map(String.class, String.class))
                 .containsEntry("Edc-Contract-Agreement-Id", "contractId")
                 .containsEntry("Edc-Bpn", "bpn");
-    }
-
-    @Test
-    void shouldDeprovision() {
-        var address = HttpDataAddress.Builder.newInstance().baseUrl("http://any").build();
-        var resource = AdditionalHeadersProvisionedResource.Builder.newInstance()
-                .dataAddress(address).id("id")
-                .transferProcessId("transferProcessId")
-                .resourceDefinitionId("definitionId")
-                .resourceName("name")
-                .build();
-        
-        var result = provisioner.deprovision(resource, Policy.Builder.newInstance().build());
-        assertThat(result)
-                .succeedsWithin(5, SECONDS)
-                .matches(StatusResult::succeeded);
     }
 }

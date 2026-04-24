@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -41,5 +42,10 @@ public class InMemoryAgreementsBpnsStore implements AgreementsBpnsStore {
         }
         cache.put(agreementsBpnsEntry.getAgreementId(), agreementsBpnsEntry);
         return StoreResult.success();
+    }
+
+    @Override
+    public AgreementsBpnsEntry findByAgreementId(String agreementId) {
+        return cache.get(agreementId);
     }
 }

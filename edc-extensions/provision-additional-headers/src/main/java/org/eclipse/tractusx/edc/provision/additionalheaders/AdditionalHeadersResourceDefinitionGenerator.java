@@ -20,52 +20,36 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
-import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
-import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProviderResourceDefinitionGenerator;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
-import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.edc.connector.dataplane.spi.DataFlow;
+import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
+import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGenerator;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-import java.util.UUID;
+import static org.eclipse.edc.dataaddress.httpdata.spi.HttpDataAddressSchema.HTTP_DATA_TYPE;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AGREEMENT_ID_PROPERTY;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 
-import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PREFIX;
+class AdditionalHeadersResourceDefinitionGenerator implements ResourceDefinitionGenerator {
 
-class AdditionalHeadersResourceDefinitionGenerator implements ProviderResourceDefinitionGenerator {
+    AdditionalHeadersResourceDefinitionGenerator(String type) {
+        this.type = type;
+    }
 
-    private final ContractAgreementService contractAgreementService;
-    private final BdrsClient bdrsClient;
+    private final String type;
 
-    AdditionalHeadersResourceDefinitionGenerator(ContractAgreementService contractAgreementService, BdrsClient bdrsClient) {
-        this.contractAgreementService = contractAgreementService;
-        this.bdrsClient = bdrsClient;
+    @Override
+    public String supportedType() {
+        return type;
     }
 
     @Override
-    public @Nullable ResourceDefinition generate(TransferProcess transferProcess, DataAddress dataAddress, Policy policy) {
-        var identity = Optional.of(transferProcess.getContractId())
-                .map(contractAgreementService::findById)
-                .map(ContractAgreement::getConsumerId)
-                .orElse(null);
-        
-        if (identity != null && identity.startsWith(DID_PREFIX)) {
-            identity = bdrsClient.resolveBpn(identity);
-        }
-        
-        return AdditionalHeadersResourceDefinition.Builder.newInstance()
-                .id(UUID.randomUUID().toString())
-                .dataAddress(dataAddress)
-                .contractId(transferProcess.getContractId())
-                .bpn(identity)
+    public @Nullable ProvisionResource generate(DataFlow dataFlow) {
+        return ProvisionResource.Builder.newInstance()
+                .flowId(dataFlow.getId())
+                .type(HTTP_DATA_TYPE)
+                .dataAddress(dataFlow.getSource())
+                .property(AGREEMENT_ID_PROPERTY, dataFlow.getAgreementId())
+                .property(BPN_PROPERTY, dataFlow.getProperties().get(BPN_PROPERTY))
                 .build();
-    }
-
-    @Override
-    public boolean canGenerate(TransferProcess transferProcess, DataAddress dataAddress, Policy policy) {
-        return "HttpData".equals(dataAddress.getType());
     }
 }

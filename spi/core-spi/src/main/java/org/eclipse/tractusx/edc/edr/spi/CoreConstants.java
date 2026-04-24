@@ -42,6 +42,8 @@ public final class CoreConstants {
     public static final String EDR_PROPERTY_REFRESH_ENDPOINT = TX_AUTH_NS + "refreshEndpoint";
     public static final String EDR_PROPERTY_REFRESH_AUDIENCE = TX_AUTH_NS + "refreshAudience";
     public static final String AUDIENCE_PROPERTY = TX_AUTH_NS + "audience";
+    public static final String BPN_PROPERTY = CX_CREDENTIAL_NS + "bpn";
+    public static final String AGREEMENT_ID_PROPERTY = "agreementId";
     public static final String EDR_PROPERTY_EXPIRES_IN = TX_AUTH_NS + "expiresIn";
 
     private CoreConstants() {
