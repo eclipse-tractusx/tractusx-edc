@@ -36,9 +36,36 @@ runs:
         echo "$VERSION" > lvs/latest-versioned-snapshot.txt
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
-      with:
-        github_token: ${{ env.GITHUB_TOKEN }}
-        publish_dir: ./lvs
-        destination_dir: ./misc
-        keep_files: true
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        VERSION: ${{ inputs.version }}
+      run: |
+        git config user.name "eclipse-tractusx-bot"
+        git config user.email "tractusx-bot@eclipse.org"
+        git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+        # Save the file content before switching branches
+        SNAPSHOT_VERSION=$(cat lvs/latest-versioned-snapshot.txt)
+
+        # Fetch gh-pages branch
+        if git fetch origin gh-pages --depth=1 2>/dev/null; then
+          git checkout -b gh-pages origin/gh-pages
+        else
+          # gh-pages branch doesn't exist yet - create orphan branch
+          git checkout --orphan gh-pages
+          git rm -rf . --quiet
+        fi
+
+        # Write the file into the misc directory
+        mkdir -p misc
+        echo "$SNAPSHOT_VERSION" > misc/latest-versioned-snapshot.txt
+
+        git add misc/latest-versioned-snapshot.txt
+        if git diff --staged --quiet; then
+          echo "No changes to publish."
+          exit 0
+        fi
+
+        git commit -m "Update latest-versioned-snapshot to $VERSION"
+        git push origin gh-pages

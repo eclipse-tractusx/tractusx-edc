@@ -45,16 +45,28 @@ runs:
         fi
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
     - name: Bump version in /charts
-      uses: mikefarah/yq@5a7e72a743649b1b3a47d1a1d8214f3453173c51 # v4.52.4
+      shell: bash
       env:
         RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
-      with:
-        cmd: |
-          find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = env(RESOLVED_VERSION) | .version = env(RESOLVED_VERSION)'
+      run: |
+        find charts -name Chart.yaml -maxdepth 3 | xargs -n1 \
+          yq -i '.appVersion = env(RESOLVED_VERSION) | .version = env(RESOLVED_VERSION)'
     - name: Update Chart READMEs
       shell: bash
       run: |
-          docker run -v "${GITHUB_WORKSPACE}/charts:/helm-docs" jnorwood/helm-docs helm-docs
+        # Install helm-docs if not available
+        if ! command -v helm-docs &>/dev/null; then
+        # renovate: datasource=github-releases depName=norwoodj/helm-docs
+          HELM_DOCS_VERSION="1.14.2"
+          HELM_DOCS_SHA256="a8cf72ada34fad93285ba2a452b38bdc5bd52cc9a571236244ec31022928d6cc"
+          curl -sSL "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" \
+            -o helm-docs.tar.gz
+          echo "${HELM_DOCS_SHA256}  helm-docs.tar.gz" | sha256sum -c -
+          tar -xz -f helm-docs.tar.gz helm-docs
+          rm helm-docs.tar.gz
+          sudo mv helm-docs /usr/local/bin/helm-docs
+        fi
+        helm-docs --chart-search-root charts
     - name: Update version in gradle.properties
       shell: bash
       env:
