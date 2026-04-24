@@ -29,9 +29,11 @@ runs:
   steps:
     - name: Write version to latest-versioned-snapshot file
       shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
       run: |
         mkdir -p lvs
-        echo "${{ inputs.version }}" > lvs/latest-versioned-snapshot.txt
+        echo "$VERSION" > lvs/latest-versioned-snapshot.txt
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0

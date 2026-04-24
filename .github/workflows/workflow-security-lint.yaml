@@ -68,7 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
       security-events: write # required to upload SARIF to GitHub Advanced Security
     steps:
       - name: Harden Runner

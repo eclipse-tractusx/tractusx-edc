@@ -71,8 +71,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Log inputs
+        env:
+          INPUT_DOCKER_TAG: ${{ inputs.docker_tag }}
+          INPUT_NAMESPACE: ${{ inputs.namespace }}
         run: |
-          echo "Input Version: ${{ inputs.docker_tag }}, Input namespace: ${{ inputs.namespace}}"
+          echo "Input Version: $INPUT_DOCKER_TAG, Input namespace: $INPUT_NAMESPACE"
       - uses: ./.github/actions/publish-docker-image
         name: Publish ${{ matrix.variant.img }}
         with:
