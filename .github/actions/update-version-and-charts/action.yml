@@ -54,7 +54,7 @@ runs:
     - name: Update Chart READMEs
       shell: bash
       run: |
-          docker run -v "${GITHUB_WORKSPACE}/charts:/helm-docs" jnorwood/helm-docs helm-docs
+        docker run -v "${GITHUB_WORKSPACE}/charts:/helm-docs" jnorwood/helm-docs helm-docs
     - name: Update version in gradle.properties
       shell: bash
       env:

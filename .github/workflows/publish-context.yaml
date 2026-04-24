@@ -28,7 +28,7 @@ on:
       - 'core/json-ld-core/src/main/resources/document/**'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
