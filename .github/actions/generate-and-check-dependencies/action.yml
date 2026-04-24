@@ -40,6 +40,7 @@ runs:
 
     - name: Run dash
       id: run-dash
+      # poutine: ignore[unpinnable_action]
       uses: eclipse-tractusx/sig-infra/.github/actions/run-dash@main
       with:
         dash_input: dependency-list

@@ -42,19 +42,19 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   verify:
     uses: ./.github/workflows/verify.yaml
-    secrets: inherit
 
   deployment-test:
     uses: ./.github/workflows/deployment-test.yaml
-    secrets: inherit
 
   upgradeability-test:
     uses: ./.github/workflows/upgradeability-test.yaml
-    secrets: inherit
 
   # this job really serves no other purpose than waiting for the other two test workflows
   # in future iterations, this could be used as a choke point to collect test data, etc.
@@ -67,4 +67,21 @@ jobs:
     steps:
       - name: 'Master test job'
         run: echo "all test jobs have run by now"
+
+  publish-snapshot:
+    name: "Publish new snapshot"
+    needs: [ summary ]
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
+    uses: ./.github/workflows/publish-new-snapshot.yaml
+    with:
+      dated_snapshot: ${{ github.event_name == 'schedule' }}
+    secrets:
+      DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+      ORG_GPG_PRIVATE_KEY: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+      ORG_GPG_PASSPHRASE: ${{ secrets.ORG_GPG_PASSPHRASE }}
+      CENTRAL_SONATYPE_TOKEN_USERNAME: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+      CENTRAL_SONATYPE_TOKEN_PASSWORD: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+      SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
+      SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
 

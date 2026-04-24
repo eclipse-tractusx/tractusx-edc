@@ -34,6 +34,22 @@ on:
         type: string
         required: false
         description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+    secrets:
+      ORG_GPG_PRIVATE_KEY:
+        required: false
+        description: 'GPG private key for signing'
+      ORG_GPG_PASSPHRASE:
+        required: false
+        description: 'GPG passphrase'
+      CENTRAL_SONATYPE_TOKEN_USERNAME:
+        required: false
+        description: 'Sonatype token username'
+      CENTRAL_SONATYPE_TOKEN_PASSWORD:
+        required: false
+        description: 'Sonatype token password'
+
+permissions:
+  contents: read
 
 jobs:
   maven-release:
@@ -42,22 +58,30 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-java
 
-      - run: |
-          echo "Input Version: ${{ inputs.version }}"
+      - name: Set version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          echo "Input Version: $INPUT_VERSION"
 
           # set the input version in gradle.properties, if passed
-          if [ ! -z ${{ inputs.version }} ];
+          if [ ! -z "$INPUT_VERSION" ];
           then
-            sed -i 's#^version=.*#version='"${{ inputs.version }}"'#g' $(find . -name "gradle.properties")
-            VERSION=${{ inputs.version }}
+            sed -i 's#^version=.*#version='"$INPUT_VERSION"'#g' $(find . -name "gradle.properties")
           fi
 
           grep version gradle.properties | (echo -n "Publishing using " && cat)
 
-      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+      - uses: ./.github/actions/publish-maven-artifacts
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}

@@ -25,17 +25,10 @@ on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
-  workflow_run:
-    workflows: [ "Publish Artefacts" ]
-    branches:
-      - main
-      - releases
-      - release/*
-      - hotfix/*
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-    types:
-      - completed
+  workflow_call:
+
+permissions:
+  contents: read
 
 jobs:
   git-sha7:
@@ -44,6 +37,10 @@ jobs:
     outputs:
       value: ${{ steps.git-sha7.outputs.SHA7 }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
       - name: Resolve git 7-chars sha
         id: git-sha7
         run: |
@@ -56,9 +53,15 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
         with:
           scan-type: "config"
           # ignore-unfixed: true
@@ -68,7 +71,7 @@ jobs:
           output: "trivy-results-config.sarif"
           severity: "CRITICAL,HIGH"
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
         if: always()
         with:
           sarif_file: "trivy-results-config.sarif"
@@ -88,19 +91,28 @@ jobs:
           - edc-controlplane-postgresql-hashicorp-vault
           - edc-dataplane-hashicorp-vault
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
         ## This step will fail if the docker images is not found
       - name: "Check if image exists"
         id: imageCheck
+        env:
+          IMAGE: ${{ matrix.image }}
+          SHA7: ${{ needs.git-sha7.outputs.value }}
         run: |
-          docker buildx imagetools inspect --format '{{ json . }}' tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}
+          docker buildx imagetools inspect --format '{{ json . }}' "tractusx/$IMAGE:sha-$SHA7"
         continue-on-error: true
 
         ## the next two steps will only execute if the image exists check was successful
       - name: Run Trivy vulnerability scanner
         if: success() && steps.imageCheck.outcome != 'failure'
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
         with:
           image-ref: "tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}"
           format: "sarif"
@@ -110,6 +122,6 @@ jobs:
           timeout: "10m0s"
       - name: Upload Trivy scan results to GitHub Security tab
         if: success() && steps.imageCheck.outcome != 'failure'
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
         with:
           sarif_file: "trivy-results-${{ matrix.image }}.sarif"

@@ -33,36 +33,58 @@ runs:
     - name: Resolve version
       id: resolver
       shell: bash
+      env:
+        BUMP_VERSION: ${{ inputs.bump_version }}
+        INPUT_VERSION: ${{ inputs.version }}
       run: |
-        if [[ "${{ inputs.bump_version }}" == "true" ]] then
-          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
+        if [[ "$BUMP_VERSION" == "true" ]] then
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$INPUT_VERSION"
           VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
         else
-          VERSION=${{ inputs.version }}
+          VERSION="$INPUT_VERSION"
         fi
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
     - name: Bump version in /charts
-      uses: mikefarah/yq@v4.53.2
-      with:
-        cmd: |
-          find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ steps.resolver.outputs.version }}" 
-            | .version = "${{ steps.resolver.outputs.version }}"'
+      shell: bash
+      env:
+        RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
+      run: |
+        find charts -name Chart.yaml -maxdepth 3 | xargs -n1 \
+          yq -i '.appVersion = env(RESOLVED_VERSION) | .version = env(RESOLVED_VERSION)'
     - name: Update Chart READMEs
       shell: bash
       run: |
-          docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
+        # Install helm-docs if not available
+        if ! command -v helm-docs &>/dev/null; then
+        # renovate: datasource=github-releases depName=norwoodj/helm-docs
+          HELM_DOCS_VERSION="1.14.2"
+          HELM_DOCS_SHA256="a8cf72ada34fad93285ba2a452b38bdc5bd52cc9a571236244ec31022928d6cc"
+          curl -sSL "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" \
+            -o helm-docs.tar.gz
+          echo "${HELM_DOCS_SHA256}  helm-docs.tar.gz" | sha256sum -c -
+          tar -xz -f helm-docs.tar.gz helm-docs
+          rm helm-docs.tar.gz
+          sudo mv helm-docs /usr/local/bin/helm-docs
+        fi
+        helm-docs --chart-search-root charts
     - name: Update version in gradle.properties
       shell: bash
+      env:
+        RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
       run: |-
-        sed -i  's/version=.*/version=${{ steps.resolver.outputs.version }}/g' gradle.properties
+        sed -i 's/version=.*/version='"$RESOLVED_VERSION"'/g' gradle.properties
     - name: Commit changes
       id: make-commit
       shell: bash
+      env:
+        BUMP_VERSION: ${{ inputs.bump_version }}
+        INPUT_VERSION: ${{ inputs.version }}
+        RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
       run: |
-        if [[ "${{ inputs.bump_version }}" == "true" ]] then
-          MESSAGE="Bump to version ${{ steps.resolver.outputs.version }}"
+        if [[ "$BUMP_VERSION" == "true" ]] then
+          MESSAGE="Bump to version $RESOLVED_VERSION"
         else
-          MESSAGE="Prepare release ${{ inputs.version }}"
+          MESSAGE="Prepare release $INPUT_VERSION"
         fi
         
         git add .

@@ -35,23 +35,72 @@ runs:
   using: "composite"
   steps:
     - name: Download Allure results
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       with:
         pattern: ${{ inputs.allure_results }}-*
         merge-multiple: true
         path: allure-results
 
     - name: Build Allure test report
-      uses: simple-elf/allure-report-action@v1.13
-      with:
-        gh_pages: gh-pages
-        allure_results: allure-results
-        allure_report: ${{ inputs.version }}
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        # renovate: datasource=github-releases depName=allure-framework/allure2
+        ALLURE_VERSION="2.39.0"
+        ALLURE_SHA256="74383f66069cc0f6ec2d0fdad2f1d761f13184f6cd289334b1dcfc4237735665"
+
+        if ! command -v allure &>/dev/null; then
+          curl -sSL "https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz" \
+            -o allure.tgz
+          echo "${ALLURE_SHA256}  allure.tgz" | sha256sum -c -
+          tar -xz -f allure.tgz
+          rm allure.tgz
+          sudo mv "allure-${ALLURE_VERSION}" /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+        fi
+
+        # Fetch history from gh-pages for trend charts (same as simple-elf/allure-report-action)
+        # History is stored at gh-pages/<version>/history on the gh-pages branch
+        git fetch origin gh-pages --depth=1 2>/dev/null && \
+          git show "origin/gh-pages:${VERSION}/history" 2>/dev/null | \
+          (mkdir -p allure-results/history && tar -x -C allure-results/history) || true
+
+        # Generate the report into ./<version>/ directory
+        allure generate allure-results --clean -o "$VERSION"
 
     - name: Publish Allure test report to gh-pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ inputs.token }}
-        publish_dir: ./${{ inputs.version }}
-        destination_dir: allure-reports/${{ inputs.version }}
-        keep_files: false
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        VERSION: ${{ inputs.version }}
+      run: |
+        # Save the generated report before switching branches
+        REPORT_DIR=$(mktemp -d)
+        cp -r "${VERSION}/." "$REPORT_DIR/"
+
+        git config user.name "eclipse-tractusx-bot"
+        git config user.email "tractusx-bot@eclipse.org"
+        git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+        # Fetch or create gh-pages branch
+        if git fetch origin gh-pages --depth=1 2>/dev/null; then
+          git checkout -b gh-pages origin/gh-pages
+        else
+          git checkout --orphan gh-pages
+          git rm -rf . --quiet
+        fi
+
+        # Publish to allure-reports/<version>/ (same destination_dir as before)
+        mkdir -p "allure-reports/${VERSION}"
+        cp -r "$REPORT_DIR/." "allure-reports/${VERSION}/"
+        rm -rf "$REPORT_DIR"
+
+        git add "allure-reports/${VERSION}"
+        if git diff --staged --quiet; then
+          echo "No changes to publish."
+          exit 0
+        fi
+
+        git commit -m "Publish Allure report for version $VERSION"
+        git push origin gh-pages
