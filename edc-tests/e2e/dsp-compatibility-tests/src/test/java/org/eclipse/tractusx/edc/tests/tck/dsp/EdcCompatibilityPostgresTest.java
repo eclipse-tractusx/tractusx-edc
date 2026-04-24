@@ -30,6 +30,9 @@ import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
+import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
@@ -69,6 +72,22 @@ public class EdcCompatibilityPostgresTest {
     
     private static final DataspaceProfileContextRegistry DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY = spy(DataspaceProfileContextRegistryImpl.class);
 
+    private static final AgreementsBpnsStore AGREEMENTS_BPNS_STORE = new AgreementsBpnsStore() {
+        @Override
+        public StoreResult<Void> save(AgreementsBpnsEntry entry) {
+            return StoreResult.success();
+        }
+
+        @Override
+        public AgreementsBpnsEntry findByAgreementId(String agreementId) {
+            return AgreementsBpnsEntry.Builder.newInstance()
+                    .withAgreementId(agreementId)
+                    .withProviderBpn(CONNECTOR_UNDER_TEST)
+                    .withConsumerBpn(CONNECTOR_UNDER_TEST)
+                    .build();
+        }
+    };
+
     @RegisterExtension
     @Order(0)
     private static final PostgresExtension POSTGRES = new PostgresExtension(CONNECTOR_UNDER_TEST);
@@ -77,6 +96,7 @@ public class EdcCompatibilityPostgresTest {
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(CONNECTOR_UNDER_TEST,
             ":edc-tests:runtime:runtime-dsp", ":edc-extensions:single-participant-vault")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient(s -> s, s -> s))
+            .registerServiceMock(AgreementsBpnsStore.class, AGREEMENTS_BPNS_STORE)
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 

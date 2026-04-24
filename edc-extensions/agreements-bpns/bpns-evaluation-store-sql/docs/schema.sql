@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS edc_contract_agreement
 
 INSERT INTO edc_contract_agreement (id, provider_agent_id, consumer_agent_id, signing_date, start_date, end_date, asset_id, policy_id, serialized_policy)
 VALUES
-    ('test-agreement-id', 'default-provider-agent', 'default-consumer-agent', 0, 0, 0, 'default-asset', 'default-policy-id', '{}');
+    ('test-agreement-id', 'default-provider-agent', 'default-consumer-agent', 0, 0, 0, 'default-asset', 'default-policy-id', '{}')
+ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS edc_contract_agreement_bpns
 (
