@@ -20,23 +20,16 @@
 
 rootProject.name = "tractusx-edc"
 
-// this is needed to have access to snapshot builds of plugins
 pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        maven {
-            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
-        }
     }
 }
 
 dependencyResolutionManagement {
     repositories {
         mavenLocal()
-        maven {
-            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
-        }
         mavenCentral()
     }
     versionCatalogs {
