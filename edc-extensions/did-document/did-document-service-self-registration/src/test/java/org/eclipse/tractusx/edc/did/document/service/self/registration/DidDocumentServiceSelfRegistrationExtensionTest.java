@@ -22,6 +22,8 @@ package org.eclipse.tractusx.edc.did.document.service.self.registration;
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.protocol.dsp.http.spi.api.DspBaseWebhookAddress;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
@@ -31,9 +33,6 @@ import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClien
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 
@@ -50,7 +49,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 class DidDocumentServiceSelfRegistrationExtensionTest {
 
-    private static final String SERVICE_ID = "did:web:example.com:connector1";
+    private static final String PARTICIPANT_CONTEXT_ID = "019d8c8d-42ed-7739-b413-eed5dfd74b41";
+    private static final String SERVICE_ID = "urn:" + PARTICIPANT_CONTEXT_ID;
     private static final String DSP_URL = "https://protocol.edc.com/api/v1/dsp";
 
     private final Monitor monitor = mock(Monitor.class);
@@ -61,6 +61,9 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
     void setup(ServiceExtensionContext context) {
         context.registerService(Monitor.class, monitor);
         context.registerService(DspBaseWebhookAddress.class, dspBaseAddress);
+        var participantContext = ParticipantContext.Builder.newInstance().participantContextId(PARTICIPANT_CONTEXT_ID)
+                .identity("did:web:example.com").build();
+        context.registerService(SingleParticipantContextSupplier.class, () -> ServiceResult.success(participantContext));
         when(dspBaseAddress.get()).thenReturn(DSP_URL);
     }
 
@@ -68,8 +71,7 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
     void start_shouldSelfRegister_whenEnabledAndClientPresent(ServiceExtensionContext context, ObjectFactory objectFactory) {
 
         var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
-                "tx.edc.did.service.self.deregistration.enabled", "true",
-                "tx.edc.did.service.self.registration.id", SERVICE_ID);
+                "tx.edc.did.service.self.deregistration.enabled", "true");
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
         context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
         when(didDocumentServiceClient.update(any(Service.class))).thenReturn(ServiceResult.success());
@@ -94,8 +96,7 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
     void start_selfRegister_whenEnabledAndClientReturnsFailure(ServiceExtensionContext context, ObjectFactory objectFactory) {
 
         var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
-                "tx.edc.did.service.self.deregistration.enabled", "true",
-                "tx.edc.did.service.self.registration.id", SERVICE_ID);
+                "tx.edc.did.service.self.deregistration.enabled", "true");
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
         context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
         when(didDocumentServiceClient.update(any(Service.class))).thenReturn(ServiceResult.unexpected());
@@ -141,63 +142,6 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
 
         verify(didDocumentServiceClient, never()).update(any(Service.class));
         verify(monitor).info("Did Document Service Client not available or not enabled, skipping self-registration");
-
-        extension.shutdown();
-        verify(didDocumentServiceClient, never()).deleteById(anyString());
-    }
-
-    @Test
-    void start_shouldNotSelfRegister_whenEnabledAndServiceIdMissing(ServiceExtensionContext context, ObjectFactory objectFactory) {
-
-        var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true", "tx.edc.did.service.self.deregistration.enabled", "true");
-        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
-        context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
-
-        var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
-        extension.start();
-
-        verify(didDocumentServiceClient, never()).update(any(Service.class));
-        verify(monitor).severe(contains("is missing or blank but self-registration / de-registration is enabled"));
-
-        extension.shutdown();
-        verify(didDocumentServiceClient, never()).deleteById(anyString());
-    }
-
-    @ParameterizedTest
-    @EmptySource
-    @ValueSource(strings = {"   "})
-    void start_shouldNotSelfRegister_whenEnabledAndServiceIdEmptyOrBlank(String serviceId, ServiceExtensionContext context, ObjectFactory objectFactory) {
-
-        var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
-                "tx.edc.did.service.self.dregistration.enabled", "true",
-                "tx.edc.did.service.self.registration.id", serviceId);
-        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
-        context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
-
-        var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
-        extension.start();
-
-        verify(didDocumentServiceClient, never()).update(any(Service.class));
-        verify(monitor).severe(contains("is missing or blank but self-registration / de-registration is enabled"));
-
-        extension.shutdown();
-        verify(didDocumentServiceClient, never()).deleteById(anyString());
-    }
-
-    @Test
-    void start_shouldNotSelfRegister_whenEnabledAndServiceIdInvalid(ServiceExtensionContext context, ObjectFactory objectFactory) {
-
-        var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
-                "tx.edc.did.service.self.deregistration.enabled", "true",
-                "tx.edc.did.service.self.registration.id", "invalid uri");
-        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
-        context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
-
-        var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
-        extension.start();
-
-        verify(didDocumentServiceClient, never()).update(any(Service.class));
-        verify(monitor).severe(contains("does not contain a valid URI"));
 
         extension.shutdown();
         verify(didDocumentServiceClient, never()).deleteById(anyString());

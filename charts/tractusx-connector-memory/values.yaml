@@ -33,14 +33,14 @@ imagePullSecrets: []
 customLabels: {}
 
 participant:
-  # -- BPN Number
-  id: "BPNLCHANGEME"
+  # -- Participant Id, resp. the Decentralized IDentifier (DID) of the connector
+  id: "did:web:changeme"
+  # -- BPNL Number
+  bpnl: "BPNLCHANGEME"
   # -- Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy)
   contextId: "UUID CHANGEME"
 
-iatp:
-  # -- Decentralized IDentifier (DID) of the connector
-  id: "did:web:changeme"
+dcp:
   # -- Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer
   trustedIssuers: []
   # - id: "did:web:example1.com"
@@ -63,8 +63,6 @@ iatp:
     selfRegistration:
       # -- Whether Service Self Registration is enabled
       enabled: false
-      # -- Unique id of connector to be used for register / unregister service inside did document (must be valid URI)
-      id: "did:web:changeme"
 
   # - Configures the Verifiable Presentation Ccache
   cache:

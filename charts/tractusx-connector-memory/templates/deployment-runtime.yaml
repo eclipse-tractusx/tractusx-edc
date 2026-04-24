@@ -146,13 +146,13 @@ spec:
             ## ID CONFIGURATION ##
             ########################
             - name: EDC_PARTICIPANT_ID
-              value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote }}
+              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
             - name: "EDC_IAM_ISSUER_ID"
-              value: {{ .Values.iatp.id | required ".Values.iatp.id is required" | quote }}
+              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
             - name: "EDC_PARTICIPANT_CONTEXT_ID"
               value: {{ .Values.participant.contextId | required ".Values.participant.contextId is required" | quote }}
             - name: "TRACTUSX_EDC_PARTICIPANT_BPN"
-              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
+              value: {{ .Values.participant.bpnl | required ".Values.participant.bpnl is required" | quote }}
 
             ###########################
             ## LOGGING CONFIGURATION ##
@@ -223,21 +223,21 @@ spec:
               value: {{ printf "%s%s" (include "txdc.runtime.url.protocol" . ) .Values.runtime.endpoints.protocol.path | quote }}
 
             #############################
-            ## IATP / STS / DIV CONFIG ##
+            ## DCP / STS / DIV CONFIG ##
             #############################
             - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
-              value: {{ .Values.iatp.sts.oauth.token_url | required ".Values.iatp.sts.oauth.token_url is required" | quote}}
+              value: {{ .Values.dcp.sts.oauth.token_url | required ".Values.dcp.sts.oauth.token_url is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_ID"
-              value: {{ .Values.iatp.sts.oauth.client.id | required ".Values.iatp.sts.oauth.client.id is required" | quote}}
+              value: {{ .Values.dcp.sts.oauth.client.id | required ".Values.dcp.sts.oauth.client.id is required" | quote}}
             - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
-              value: {{ .Values.iatp.sts.oauth.client.secret_alias | required ".Values.iatp.sts.oauth.client.secret_alias is required" | quote}}
+              value: {{ .Values.dcp.sts.oauth.client.secret_alias | required ".Values.dcp.sts.oauth.client.secret_alias is required" | quote}}
 
-            {{- if .Values.iatp.sts.div.url }}
+            {{- if .Values.dcp.sts.div.url }}
             - name: "TX_EDC_IAM_STS_DIV_URL"
-              value: {{ .Values.iatp.sts.div.url | quote }}
+              value: {{ .Values.dcp.sts.div.url | quote }}
             {{- end }}
 
-            {{- range $index, $issuer := .Values.iatp.trustedIssuers }}
+            {{- range $index, $issuer := .Values.dcp.trustedIssuers }}
             {{- if eq (kindOf $issuer) "string" }}
             - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
               value: {{ $issuer | quote }}
@@ -251,24 +251,22 @@ spec:
             {{- end }}
             {{- end }}
             - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED"
-              value: {{ .Values.iatp.didService.selfRegistration.enabled | quote}}
+              value: {{ .Values.dcp.didService.selfRegistration.enabled | quote}}
             - name: "TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED"
               value: "false"
-            - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID"
-              value: {{ .Values.iatp.didService.selfRegistration.id | quote }}
             - name: "TX_EDC_DCP_CACHE_ENABLED"
-              value: {{ .Values.iatp.cache.enabled | quote }}
+              value: {{ .Values.dcp.cache.enabled | quote }}
             - name: "TX_EDC_DCP_CACHE_VALIDITY_SECONDS"
-              value: {{ .Values.iatp.cache.validity | quote }}
+              value: {{ .Values.dcp.cache.validity | quote }}
 
             #################
             ## BDRS CLIENT ##
             #################
 
-            - name: "TX_EDC_IAM_IATP_BDRS_SERVER_URL"
+            - name: "TX_EDC_IAM_DCP_BDRS_SERVER_URL"
               value: {{ .Values.runtime.bdrs.server.url | required ".Values.runtime.bdrs.server.url is required" | quote }}
             {{- if .Values.runtime.bdrs.cache_validity_seconds }}
-            - name: "TX_EDC_IAM_IATP_BDRS_CACHE_VALIDITY"
+            - name: "TX_EDC_IAM_DCP_BDRS_CACHE_VALIDITY"
               value: {{ .Values.runtime.bdrs.cache_validity_seconds | quote}}
             {{- end}}
 

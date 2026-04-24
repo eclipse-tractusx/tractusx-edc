@@ -40,14 +40,14 @@ imagePullSecrets: []
 customLabels: {}
 
 participant:
-  # -- BPN Number
-  id: "BPNLCHANGEME"
+  # -- Participant Id, resp. the Decentralized IDentifier (DID) of the connector
+  id: "did:web:changeme"
+  # -- BPNL Number
+  bpnl: "BPNLCHANGEME"
   # -- Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy)
   contextId: "UUID CHANGEME"
 
-iatp:
-  # -- Decentralized IDentifier (DID) of the connector
-  id: "did:web:changeme"
+dcp:
   # -- Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer
   trustedIssuers: []
   # - id: "did:web:example1.com"
@@ -70,8 +70,6 @@ iatp:
     selfRegistration:
       # -- Whether Service Self Registration is enabled
       enabled: false
-      # -- Unique id of connector to be used for register / unregister service inside did document (must be valid URI)
-      id: "did:web:changeme"
   # - Configures the Verifiable Presentation cache
   cache:
     # -- Whether the Verifiable Presentation cache is enabled
@@ -625,15 +623,20 @@ dataplane:
 
 postgresql:
   image:
-    repository: "bitnamilegacy/postgresql"
-    tag: "16.2.0-debian-12-r10"
+    registry: docker.io
+    repository: postgres
   jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
-  primary:
-    persistence:
-      enabled: false
-  readReplicas:
-    persistence:
-      enabled: false
+  persistence:
+    enabled: false
+    size: 10Gi
+    storageClass: standard
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 256Mi
   auth:
     database: "edc"
     username: "user"

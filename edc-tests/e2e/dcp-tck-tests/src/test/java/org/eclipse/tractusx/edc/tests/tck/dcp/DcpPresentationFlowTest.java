@@ -234,11 +234,11 @@ public class DcpPresentationFlowTest {
                 put("edc.iam.sts.oauth.token.url", "https://example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-client-id");
                 put("edc.iam.sts.oauth.client.secret.alias", "test-secret-alias");
-                put("tx.edc.iam.iatp.bdrs.server.url", "http://sts.example.com");
+                put("tx.edc.iam.dcp.bdrs.server.url", "http://sts.example.com");
                 //register a default scope https://github.com/eclipse-dataspacetck/dcp-tck?tab=readme-ov-file#232-required-configuration
-                put("tx.edc.iam.iatp.default-scopes.holderIdentifier.alias", "org.eclipse.dspace.dcp.vc.type");
-                put("tx.edc.iam.iatp.default-scopes.holderIdentifier.type", "MembershipCredential");
-                put("tx.edc.iam.iatp.default-scopes.holderIdentifier.operation", "read");
+                put("tx.edc.iam.dcp.default-scopes.holderIdentifier.alias", "org.eclipse.dspace.dcp.vc.type");
+                put("tx.edc.iam.dcp.default-scopes.holderIdentifier.type", "MembershipCredential");
+                put("tx.edc.iam.dcp.default-scopes.holderIdentifier.operation", "read");
                 put("tractusx.edc.participant.bpn", "bpn");
             }
         });

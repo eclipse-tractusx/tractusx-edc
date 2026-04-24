@@ -209,7 +209,7 @@ POST /api/instrumentation       -> adds a new RecordedRequest, JSON must be in t
 - A complete sample how to run a test using the Mock-Connector in a Testcontainer can be
   found [here](../../samples/testing-with-mocked-edc)
 - To test compliance with DSP, use the [TCK](https://github.com/eclipse-dataspacetck/cvf)
-- A Mock-IATP runtime is planned for future releases.
+- A Mock-DCP runtime is planned for future releases.
 
 ## 6. Future improvements
 

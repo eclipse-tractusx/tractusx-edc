@@ -181,7 +181,7 @@ public class CxPolicyExtension implements ServiceExtension {
         engine.registerFunction(CatalogPolicyContext.class, Permission.class,
                 withCxPolicyNsPrefix(BUSINESS_PARTNER_GROUP), new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient));
         engine.registerFunction(CatalogPolicyContext.class, Permission.class,
-                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER), new BusinessPartnerNumberConstraintFunction<>(bdrsClient));
+                withCxPolicyNsPrefix(BUSINESS_PARTNER_NUMBER), new BusinessPartnerNumberConstraintFunction<>());
 
         // Usage Permission Validators
         engine.registerFunction(ContractNegotiationPolicyContext.class, Permission.class,

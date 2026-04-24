@@ -23,11 +23,10 @@ fullnameOverride: tx-prod
 # EDC ControlPlane + DataPlane #
 ################################
 participant:
-  id: "test-participant"
-  contextId: "test-participant-context"
-iatp:
-  # Decentralized IDentifier
   id: "did:web:changeme"
+  bpnl: "test-participant"
+  contextId: "test-participant-context"
+dcp:
   sts:
     div:
       url: "https://somewhere.div.org"
@@ -80,14 +79,6 @@ dataplane:
       privatekey_alias: "key-1"
     verifier:
       publickey_alias: "key-1"
-postgresql:
-  image:
-    repository: "bitnamilegacy/postgresql"
-    tag: "16.2.0-debian-12-r10"
-  jdbcUrl: jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc
-  auth:
-    username: user
-    password: password
 vault:
   hashicorp:
     url: http://{{ .Release.Name }}-vault:8200

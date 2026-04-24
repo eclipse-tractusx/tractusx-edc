@@ -22,11 +22,10 @@
 ---
 fullnameOverride: tx-inmem
 participant:
-  id: "test-participant"
-  contextId: "test-participant-context"
-iatp:
-  # Decentralized IDentifier
   id: "did:web:changeme"
+  bpnl: "test-participant"
+  contextId: "test-participant-context"
+dcp:
   sts:
     div:
       url: "https://somewhere.div.org"
