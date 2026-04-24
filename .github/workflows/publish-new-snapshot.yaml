@@ -26,13 +26,30 @@ name: "Publish new snapshot"
 run-name: "Publish new snapshot from ${{github.ref_name}}"
 
 on:
-  workflow_run:
-    workflows: [ "Run-All-Tests" ]
-    branches:
-      - main
-      - release/*
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      dated_snapshot:
+        type: boolean
+        required: false
+        default: false
+        description: 'Dated snapshot version.'
+    secrets:
+      DOCKER_HUB_USER:
+        required: false
+      DOCKER_HUB_TOKEN:
+        required: false
+      ORG_GPG_PRIVATE_KEY:
+        required: false
+      ORG_GPG_PASSPHRASE:
+        required: false
+      CENTRAL_SONATYPE_TOKEN_USERNAME:
+        required: false
+      CENTRAL_SONATYPE_TOKEN_PASSWORD:
+        required: false
+      SWAGGERHUB_API_KEY:
+        required: false
+      SWAGGERHUB_USER:
+        required: false
   workflow_dispatch:
     inputs:
       dated_snapshot:
@@ -92,12 +109,11 @@ jobs:
       - name: "Get version"
         id: get-version
         env:
-          WORKFLOW_RUN_EVENT: ${{ github.event.workflow_run.event }}
           DATED_SNAPSHOT: ${{ inputs.dated_snapshot }}
         run: |
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}')
           
-          if [[ "$WORKFLOW_RUN_EVENT" == "schedule" || "$DATED_SNAPSHOT" == "true" ]]; then
+          if [[ "$DATED_SNAPSHOT" == "true" ]]; then
             echo "VERSION=$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT" >> "$GITHUB_OUTPUT"
             echo "DATED=true" >> "$GITHUB_OUTPUT"
           else

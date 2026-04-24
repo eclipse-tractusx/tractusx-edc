@@ -68,3 +68,20 @@ jobs:
       - name: 'Master test job'
         run: echo "all test jobs have run by now"
 
+  publish-snapshot:
+    name: "Publish new snapshot"
+    needs: [ summary ]
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
+    uses: ./.github/workflows/publish-new-snapshot.yaml
+    with:
+      dated_snapshot: ${{ github.event_name == 'schedule' }}
+    secrets:
+      DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+      DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+      ORG_GPG_PRIVATE_KEY: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+      ORG_GPG_PASSPHRASE: ${{ secrets.ORG_GPG_PASSPHRASE }}
+      CENTRAL_SONATYPE_TOKEN_USERNAME: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+      CENTRAL_SONATYPE_TOKEN_PASSWORD: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+      SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
+      SWAGGERHUB_USER: ${{ secrets.SWAGGERHUB_USER }}
+

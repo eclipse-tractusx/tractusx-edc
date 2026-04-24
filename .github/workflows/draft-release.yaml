@@ -106,6 +106,8 @@ jobs:
           fi
       - id: resolve_branch
         name: "Resolve branch name"
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
           echo "branch_name=release/$INPUT_VERSION" >> "$GITHUB_OUTPUT"
 
@@ -118,9 +120,14 @@ jobs:
       packages: write
       pages: write
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2 # zizmor: ignore[artipacked]
+        with:
+          persist-credentials: true
       - name: Create Release branch
-        run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
+        env:
+          BRANCH_NAME: ${{ needs.validate-and-prepare.outputs.branch_name }}
+        run: |
+          git checkout -b "$BRANCH_NAME"
       - uses: ./.github/actions/setup-java
       - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
@@ -128,7 +135,9 @@ jobs:
           version: ${{ inputs.version }}
           bump_version: "false"
       - name: Push new branch
-        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+        env:
+          BRANCH_NAME: ${{ needs.validate-and-prepare.outputs.branch_name }}
+        run: git push origin "$BRANCH_NAME"
       - name: Check dependencies before release
         uses: ./.github/actions/generate-and-check-dependencies
         with:
@@ -137,6 +146,8 @@ jobs:
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Commit DEPENDENCIES changes
         shell: bash
+        env:
+          BRANCH_NAME: ${{ needs.validate-and-prepare.outputs.branch_name }}
         run: |
           if git diff --quiet -- DEPENDENCIES; then
             echo "No changes in DEPENDENCIES, skipping commit."
@@ -147,5 +158,5 @@ jobs:
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
           git commit --message "Update DEPENDENCIES file"
-          git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+          git push origin "$BRANCH_NAME"
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT

@@ -34,6 +34,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 50
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "org.eclipse.dataspacetck.dsp:*"
       - dependency-name: "org.eclipse.dataspacetck.dcp:*"
@@ -67,3 +69,5 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 50
+    cooldown:
+      default-days: 7
