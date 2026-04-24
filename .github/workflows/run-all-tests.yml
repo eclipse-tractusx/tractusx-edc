@@ -42,18 +42,23 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
+permissions: {}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   verify:
+    permissions:
+      contents: read
     uses: ./.github/workflows/verify.yaml
 
   deployment-test:
+    permissions:
+      contents: read
     uses: ./.github/workflows/deployment-test.yaml
 
   upgradeability-test:
+    permissions:
+      contents: read
     uses: ./.github/workflows/upgradeability-test.yaml
 
   # this job really serves no other purpose than waiting for the other two test workflows
@@ -71,6 +76,8 @@ jobs:
   publish-snapshot:
     name: "Publish new snapshot"
     needs: [ summary ]
+    permissions:
+      contents: write
     if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
     uses: ./.github/workflows/publish-new-snapshot.yaml
     with:

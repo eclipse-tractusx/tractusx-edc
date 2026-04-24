@@ -47,7 +47,7 @@ on:
         default: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   generate-openapi-spec:

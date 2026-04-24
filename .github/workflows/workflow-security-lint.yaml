@@ -83,10 +83,92 @@ jobs:
       - name: Run poutine
         uses: boostsecurityio/poutine-action@84c0a0d32e8d57ae12651222be1eb15351429228 # v0.15.2
 
+      - name: Report poutine findings with line annotations
+        if: ${{ always() && hashFiles('results.sarif') != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! command -v jq >/dev/null 2>&1; then
+            echo "jq is required to parse SARIF."
+            exit 1
+          fi
+
+          echo "### Poutine findings" >> "$GITHUB_STEP_SUMMARY"
+          echo "| File | Line | Rule | Detail |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------|------|------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          found=0
+
+          while IFS=$'\t' read -r rule_id file startLine source_text message details; do
+            [[ -f "$file" ]] || continue
+
+            # Step 1: use SARIF startLine only if valid and not the poutine fallback of 1
+            line=""
+            if [[ -n "$startLine" && "$startLine" =~ ^[0-9]+$ && "$startLine" != "1" ]]; then
+              line="$startLine"
+            fi
+
+            # Step 2: grep for the exact uses: value from the 'details' field
+            # poutine sets details = step.uses (e.g. "peter-evans/dockerhub-description@sha...")
+            if [[ -z "$line" && -n "$details" ]]; then
+              # Strip the @sha... suffix to get owner/repo for matching
+              repo="$(echo "$details" | sed -E 's/@[^[:space:]]*//')"
+              if [[ -n "$repo" ]]; then
+                line="$(grep -nE "^[[:space:]]*(- )?uses:[[:space:]]*${repo}(@|$)" "$file" \
+                  | head -n1 | cut -d: -f1 || true)"
+              fi
+            fi
+
+            # Step 3: fallback — extract owner/repo from purl in source_text or message
+            if [[ -z "$line" ]]; then
+              repo="$(echo "$source_text $message" | sed -nE \
+                -e 's#.*pkg:githubaction[s]?/([^@[:space:]?]+)(@[^[:space:]?]*)?.*#\1#p' \
+                | head -n1 | sed 's#?.*##')"
+              if [[ -n "$repo" ]]; then
+                line="$(grep -nE "^[[:space:]]*(- )?uses:[[:space:]]*${repo}(@|$)" "$file" \
+                  | head -n1 | cut -d: -f1 || true)"
+              fi
+            fi
+
+
+            # Step 4: last resort — use SARIF startLine even if it is 1
+            if [[ -z "$line" ]]; then
+              line="${startLine:-1}"
+            fi
+
+            # Resolve what is on that line for a meaningful label
+            action_ref="$(sed -n "${line}p" "$file" \
+              | grep -oE 'uses:[[:space:]]*[^[:space:]#]+' \
+              | sed 's/uses:[[:space:]]*//' || true)"
+            label="${action_ref:-${message:-$source_text}}"
+            # Truncate label to keep annotation readable
+            label="${label:0:120}"
+
+            echo "::warning file=${file},line=${line},title=Poutine [${rule_id}]::${label}"
+            echo "| \`${file}\` | ${line} | \`${rule_id}\` | \`${label}\` |" >> "$GITHUB_STEP_SUMMARY"
+            found=1
+          done < <(
+            jq -r '
+              .runs[]?.results[]?
+              | [
+                  (.ruleId // "unknown"),
+                  (.locations[0].physicalLocation.artifactLocation.uri // ""),
+                  ((.locations[0].physicalLocation.region.startLine // "") | tostring),
+                  ((.properties.purl // .partialFingerprints.purl // "") | tostring),
+                  (.message.text // ""),
+                  ((.properties.details // "") | tostring)
+                ]
+              | @tsv
+            ' results.sarif
+          )
+
+          if [[ "$found" -eq 0 ]]; then
+            echo "| — | — | — | No findings |" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload poutine SARIF to GitHub Advanced Security
         uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
         if: always()
         with:
           sarif_file: results.sarif
           category: poutine
-
