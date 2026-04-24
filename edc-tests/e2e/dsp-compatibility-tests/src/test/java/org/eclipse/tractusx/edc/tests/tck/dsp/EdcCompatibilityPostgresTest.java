@@ -28,8 +28,11 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
+import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
+import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
@@ -51,6 +54,7 @@ import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PREFIX;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -66,8 +70,25 @@ public class EdcCompatibilityPostgresTest {
     private static final URI DATA_PLANE_PROXY = URI.create("http://localhost:" + getFreePort());
     private static final URI DATA_PLANE_PUBLIC = URI.create("http://localhost:" + getFreePort() + "/public");
     private static final String CONNECTOR_UNDER_TEST = "participantContextId";
-    
+    private static final String BPN = BPN_PREFIX + CONNECTOR_UNDER_TEST;
+
     private static final DataspaceProfileContextRegistry DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY = spy(DataspaceProfileContextRegistryImpl.class);
+
+    private static final AgreementsBpnsStore AGREEMENTS_BPNS_STORE = new AgreementsBpnsStore() {
+        @Override
+        public StoreResult<Void> save(AgreementsBpnsEntry entry) {
+            return StoreResult.success();
+        }
+
+        @Override
+        public AgreementsBpnsEntry findByAgreementId(String agreementId) {
+            return AgreementsBpnsEntry.Builder.newInstance()
+                    .withAgreementId(agreementId)
+                    .withProviderBpn(BPN)
+                    .withConsumerBpn(BPN)
+                    .build();
+        }
+    };
 
     @RegisterExtension
     @Order(0)
@@ -77,11 +98,12 @@ public class EdcCompatibilityPostgresTest {
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(CONNECTOR_UNDER_TEST,
             ":edc-tests:runtime:runtime-dsp", ":edc-extensions:single-participant-vault")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient(s -> s, s -> s))
+            .registerServiceMock(AgreementsBpnsStore.class, AGREEMENTS_BPNS_STORE)
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 
     private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC4");
-    
+
     @BeforeEach
     void setUp() {
         ParticipantIdExtractionFunction function = ct -> ct.getStringClaim("client_id");
@@ -91,7 +113,7 @@ public class EdcCompatibilityPostgresTest {
     private static Config runtimeConfiguration() {
         return ConfigFactory.fromMap(new HashMap<>() {
             {
-                put("edc.participant.id", CONNECTOR_UNDER_TEST);
+                put("edc.participant.id", BPN);
                 put("edc.participant.context.id", CONNECTOR_UNDER_TEST + "_context");
                 put("web.http.port", "8080");
                 put("web.http.path", "/api");
@@ -113,7 +135,7 @@ public class EdcCompatibilityPostgresTest {
                 put("edc.policy.validation.enabled", "true");
                 put("edc.iam.issuer.id", "did:web:" + CONNECTOR_UNDER_TEST);
                 put("edc.iam.sts.oauth.token.url", "http://sts.example.com/token");
-                put("edc.iam.sts.oauth.client.id", "test-client-id");
+                put("edc.iam.sts.oauth.client.id", BPN);
                 put("edc.iam.sts.oauth.client.secret.alias", "test-clientid-alias");
                 put("tx.edc.iam.dcp.bdrs.server.url", "http://sts.example.com");
                 put("web.http.management.auth.key", API_KEY);
@@ -126,7 +148,7 @@ public class EdcCompatibilityPostgresTest {
                 put("web.http.public.path", DATA_PLANE_PUBLIC.getPath());
                 put("web.http.public.port", String.valueOf(DATA_PLANE_PUBLIC.getPort()));
                 put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(DATA_PLANE_PUBLIC));
-                put("tractusx.edc.participant.bpn", CONNECTOR_UNDER_TEST);
+                put("tractusx.edc.participant.bpn", BPN);
             }
         });
     }

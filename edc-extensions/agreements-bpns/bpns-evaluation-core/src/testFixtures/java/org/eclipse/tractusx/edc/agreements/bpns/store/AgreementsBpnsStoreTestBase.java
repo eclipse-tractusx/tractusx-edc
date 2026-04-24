@@ -23,6 +23,7 @@ import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore.ALREADY_EXISTS_TEMPLATE;
 
@@ -37,6 +38,27 @@ public abstract class AgreementsBpnsStoreTestBase {
         var result = getStore().save(entry);
         assertThat(result).isFailed()
                 .detail().isEqualTo(ALREADY_EXISTS_TEMPLATE.formatted(agreementId));
+    }
+
+    @Test
+    void findByAgreementId_whenExists() {
+        var agreementId = "test-agreement-id";
+        var entry = createAgreementsBpnsEntry(agreementId, "providerBpn", "consumerBpn");
+        getStore().save(entry);
+
+        var found = getStore().findByAgreementId(agreementId);
+
+        assertThat(found).isNotNull();
+        assertThat(found.getAgreementId()).isEqualTo(agreementId);
+        assertThat(found.getProviderBpn()).isEqualTo("providerBpn");
+        assertThat(found.getConsumerBpn()).isEqualTo("consumerBpn");
+    }
+
+    @Test
+    void findByAgreementId_whenNotExists() {
+        var found = getStore().findByAgreementId("unknown-agreement-id");
+
+        assertThat(found).isNull();
     }
 
     private AgreementsBpnsEntry createAgreementsBpnsEntry(String agreementId, String providerBpn, String consumerBpn) {
