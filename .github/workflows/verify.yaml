@@ -27,14 +27,23 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
 
   verify-helm-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - run: |
-          docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
+          docker run -v "${GITHUB_WORKSPACE}/charts:/helm-docs" jnorwood/helm-docs helm-docs
           
           if $(git diff --quiet --exit-code); then
             echo "Helm chart docs up to date"
@@ -47,7 +56,13 @@ jobs:
   verify-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
@@ -57,7 +72,13 @@ jobs:
   verify-javadoc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-java
 
       - name: Run Javadoc
@@ -66,7 +87,13 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/setup-java
 
@@ -75,7 +102,7 @@ jobs:
 
       # uploads the jacoco report as artifact
       - name: Upload JaCoCo Coverage Report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: JaCoCo coverage-report
           path: build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
@@ -84,7 +111,7 @@ jobs:
       # generates coverage-report.md
       - name: JaCoCo Code Coverage Report
         id: jacoco_reporter
-        uses: PavanMudigonda/jacoco-reporter@v5.1
+        uses: PavanMudigonda/jacoco-reporter@e8b54bfea6a667d1a68624dae8a06ba31670667d # v5.1
         with:
           coverage_results_path: build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
           skip_check_run: true
@@ -92,17 +119,22 @@ jobs:
 
       # Publish Coverage Job Summary
       - name: Output KPIs from JaCoCo report
+        env:
+          COVERAGE_PERCENTAGE: ${{ steps.jacoco_reporter.outputs.coverage_percentage }}
+          COVERED_LINES: ${{ steps.jacoco_reporter.outputs.covered_lines }}
+          MISSED_LINES: ${{ steps.jacoco_reporter.outputs.missed_lines }}
+          TOTAL_LINES: ${{ steps.jacoco_reporter.outputs.total_lines }}
         run: |
           echo "| Outcome | Value |" >> $GITHUB_STEP_SUMMARY
           echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
-          echo "| Code Coverage % | ${{ steps.jacoco_reporter.outputs.coverage_percentage }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.jacoco_reporter.outputs.covered_lines }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| :x: Number of Lines Missed | ${{ steps.jacoco_reporter.outputs.missed_lines }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Total Number of Lines | ${{ steps.jacoco_reporter.outputs.total_lines }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Coverage % | $COVERAGE_PERCENTAGE |" >> $GITHUB_STEP_SUMMARY
+          echo "| :heavy_check_mark: Number of Lines Covered | $COVERED_LINES |" >> $GITHUB_STEP_SUMMARY
+          echo "| :x: Number of Lines Missed | $MISSED_LINES |" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Number of Lines | $TOTAL_LINES |" >> $GITHUB_STEP_SUMMARY
 
       # uploads the coverage-report.md artifact
       - name: Upload Code Coverage Markdown Report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: code-coverage-report-markdown
           path: "*/coverage-results.md"
@@ -111,7 +143,13 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/setup-java
 
@@ -123,7 +161,13 @@ jobs:
   api-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/setup-java
 
@@ -135,7 +179,13 @@ jobs:
     outputs:
       matrix: ${{ steps.outputStep.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: get api groups and create matrix for next job
         id: outputStep
         run: |
@@ -149,21 +199,31 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare-end-to-end-tests.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests (${{ matrix.dir }})
+        env:
+          E2E_DIR: ${{ matrix.dir }}
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true --no-build-cache
+          ./gradlew -p "edc-tests/e2e/$E2E_DIR" test -DincludeTags="EndToEndTest" -PverboseTest=true --no-build-cache
 
       - name: Set sanitized artifact name
+        env:
+          E2E_DIR: ${{ matrix.dir }}
         run: |
-          SANITIZED_NAME=$(echo "edc-tests/e2e/${{ matrix.dir }}" | tr '/' '-')
+          SANITIZED_NAME=$(echo "edc-tests/e2e/$E2E_DIR" | tr '/' '-')
           echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
 
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: allure-results-${{ env.ARTIFACT_NAME }}
           path: edc-tests/e2e/${{ matrix.dir }}/build/allure-results
@@ -171,7 +231,13 @@ jobs:
   postgres-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
@@ -180,7 +246,13 @@ jobs:
   compatibility-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-java
 
       - name: Build docker images
@@ -194,8 +266,14 @@ jobs:
     needs: end-to-end-tests
     if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Output report version
         id: release-version

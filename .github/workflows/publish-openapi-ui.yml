@@ -46,16 +46,21 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 jobs:
   generate-openapi-spec:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-java
 
       - name: Generate openapi spec
         run: ./gradlew resolve
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: openapi-spec
           path: resources/openapi/yaml
@@ -70,48 +75,58 @@ jobs:
           { name: "data-plane", folder: "edc-dataplane/edc-dataplane-base" }
         ]
     steps:
-      - uses: actions/checkout@v6
-      - uses: eclipse-edc/.github/.github/actions/setup-build@main
-      - uses: actions/download-artifact@v8
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-java
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: openapi-spec
           path: resources/openapi/yaml
 
       - name: Set version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [ -z ${{ inputs.version }} ]; then
-            export VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
+          if [ -z "$INPUT_VERSION" ]; then
+            VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           else
-            export VERSION=${{ inputs.version }}
+            VERSION="$INPUT_VERSION"
           fi
 
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Download upstream API specs for ${{ matrix.apiGroup.name }}
+        env:
+          API_FOLDER: ${{ matrix.apiGroup.folder }}
+          API_NAME: ${{ matrix.apiGroup.name }}
         run: |
-          ./gradlew -p ${{ matrix.apiGroup.folder }} downloadOpenapi
-          cp ${{ matrix.apiGroup.folder }}/build/docs/openapi/* resources/openapi/yaml/${{ matrix.apiGroup.name }}
+          ./gradlew -p "$API_FOLDER" downloadOpenapi
+          cp "$API_FOLDER/build/docs/openapi/"* "resources/openapi/yaml/$API_NAME"
 
       - name: Merge API specs
+        env:
+          API_NAME: ${{ matrix.apiGroup.name }}
+          VERSION: ${{ env.VERSION }}
         run: |
-          ./gradlew mergeOpenApiSpec --inputDir=${PWD}/resources/openapi/yaml/${{ matrix.apiGroup.name }} --output=${{ matrix.apiGroup.name }}.yaml --infoTitle="Tractus-X EDC ${{ matrix.apiGroup.name }} API" --infoDescription="Tractus-X EDC ${{ matrix.apiGroup.name }} API Documentation" --infoVersion=${{ env.VERSION }}
+          ./gradlew mergeOpenApiSpec --inputDir="${PWD}/resources/openapi/yaml/$API_NAME" --output="$API_NAME.yaml" --infoTitle="Tractus-X EDC $API_NAME API" --infoDescription="Tractus-X EDC $API_NAME API Documentation" --infoVersion=$VERSION
 
       - name: Generate Swagger UI current version
-        uses: Legion2/swagger-ui-action@v1
+        uses: Legion2/swagger-ui-action@eff65dc3f193f0a749872be82f74baa35be0797d # v1.3.0
         with:
           output: dist/${{ env.VERSION }}
           spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Swagger UI stable version
-        uses: Legion2/swagger-ui-action@v1
+        uses: Legion2/swagger-ui-action@eff65dc3f193f0a749872be82f74baa35be0797d # v1.3.0
         if: ${{ inputs.latest }}
         with:
           output: dist
           spec-file: ${{ matrix.apiGroup.name }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: ${{ matrix.apiGroup.name }}-api
           path: dist
@@ -122,12 +137,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: openapi
           pattern: "*-api"
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
