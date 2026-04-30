@@ -155,6 +155,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
+      - uses: ./.github/actions/setup-helm
       - name: Package helm, update index.yaml and push to gh-pages
         env:
           RELEASE_VERSION: ${{ needs.validation.outputs.RELEASE_VERSION }}

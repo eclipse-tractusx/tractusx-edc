@@ -121,7 +121,7 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-        ###############################
+    ###############################
     # Update the description
     # https://github.com/peter-evans/dockerhub-description
     ###############################
