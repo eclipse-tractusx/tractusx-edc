@@ -37,31 +37,20 @@ jobs:
     outputs:
       value: ${{ steps.git-sha7.outputs.SHA7 }}
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40 # v2.19.0
-        with:
-          egress-policy: audit
       - name: Resolve git 7-chars sha
         id: git-sha7
         run: |
           echo "SHA7=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
   trivy-analyze-config:
-    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40 # v2.19.0
-        with:
-          egress-policy: audit
-      - name: Run Trivy vulnerability scanner in config mode
-        uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
-        with:
-          scan-type: "config"
-          output: "trivy-results-config.sarif"
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "config"
+      output: "trivy-results-config.sarif"
 
   trivy:
     needs: [ git-sha7 ]
@@ -78,11 +67,6 @@ jobs:
           - edc-controlplane-postgresql-hashicorp-vault
           - edc-dataplane-hashicorp-vault
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40 # v2.19.0
-        with:
-          egress-policy: audit
-
         ## This step will fail if the docker images is not found
       - name: "Check if image exists"
         id: imageCheck
