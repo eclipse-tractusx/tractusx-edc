@@ -45,7 +45,7 @@ runs:
         fi
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
     - name: Bump version in /charts
-      uses: mikefarah/yq@5a7e72a743649b1b3a47d1a1d8214f3453173c51 # v4.52.4
+      uses: mikefarah/yq@751d8ad57b84f1794661bc70c0afb92a22ad7b3c # v4.53.2
       env:
         RESOLVED_VERSION: ${{ steps.resolver.outputs.version }}
       with:
