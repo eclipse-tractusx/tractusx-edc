@@ -60,11 +60,6 @@ on:
   # periodic build triggers are defined in run-all-tests.yml, which triggers this workflow
 
 
-concurrency:
-  # cancel older running jobs on the same branch
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
 
