@@ -20,19 +20,28 @@
 package org.eclipse.tractusx.edc.policy.cx.usage;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.policy.cx.common.BaseConstraintFunction;
+
+import java.util.Set;
 
 /**
  * This is a placeholder constraint function for UsagePurpose. It always returns true but allows
  * the validation of policies to be strictly enforced.
  */
-public class UsagePurposeConstraintFunction<C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<Permission, C> {
+public class UsagePurposeConstraintFunction<C extends ParticipantAgentPolicyContext> extends BaseConstraintFunction<Permission, C> {
     public static final String USAGE_PURPOSE = "UsagePurpose";
 
+    public UsagePurposeConstraintFunction() {
+        super(
+                Set.of(Operator.IS_ANY_OF)
+        );
+    }
+
     @Override
-    public boolean evaluate(Operator operator, Object rightValue, Permission rule, C context) {
-        return true;
+    protected Result<Void> validateRightOperand(Object rightValue) {
+        return Result.success();
     }
 }

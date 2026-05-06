@@ -36,14 +36,21 @@ class UsagePurposeConstraintFunctionTest {
     private final UsagePurposeConstraintFunction<ParticipantAgentPolicyContext> function = new UsagePurposeConstraintFunction<>();
     private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
 
+    @ParameterizedTest
+    @EnumSource(value = Operator.class, names = "IS_ANY_OF", mode = EnumSource.Mode.EXCLUDE)
+    void validate_shouldReturnFalse_forAllOperatorsExceptIsAnyOf(Operator operator) {
+        var result = function.validate(operator, "someValue", null);
+        assertThat(result.succeeded()).isFalse();
+    }
+
+    @Test
+    void validate_shouldReturnTrue_forIsAnyOfOperator() {
+        var result = function.validate(Operator.IS_ANY_OF, "someValue", null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
     @Test
     void evaluate_shouldReturnTrue_withAnyRightValue() {
         assertThat(function.evaluate(Operator.IS_ANY_OF, "anyValue", null, context)).isTrue();
-    }
-
-    @ParameterizedTest
-    @EnumSource(Operator.class)
-    void evaluate_shouldReturnTrue_forAllOperators(Operator operator) {
-        assertThat(function.evaluate(operator, "someValue", null, context)).isTrue();
     }
 }
