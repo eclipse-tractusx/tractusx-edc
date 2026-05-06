@@ -23,6 +23,7 @@ package org.eclipse.tractusx.edc.flow;
 
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
+import static org.mockito.Mockito.RETURNS_SELF;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +45,7 @@ public class TxDataFlowPropertiesProviderTest {
 
     private final AgreementsBpnsStore store = mock();
     private final BdrsClient bdrs = mock();
-    private final TxDataFlowPropertiesProvider provider = new TxDataFlowPropertiesProvider(store, bdrs, mock());
+    private final TxDataFlowPropertiesProvider provider = new TxDataFlowPropertiesProvider(store, bdrs, mock(Monitor.class, RETURNS_SELF));
 
     @Test
     void shouldReturnProperties_whenAssigneeIsDidAndEntryFound() {
