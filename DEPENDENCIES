@@ -477,7 +477,7 @@ maven/mavencentral/software.amazon.awssdk/retries-spi/2.38.2, Apache-2.0, approv
 maven/mavencentral/software.amazon.awssdk/retries/2.38.2, Apache-2.0, approved, #24772
 maven/mavencentral/software.amazon.awssdk/s3/2.38.2, Apache-2.0, approved, #24769
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.38.2, Apache-2.0, approved, #24774
-maven/mavencentral/software.amazon.awssdk/sts/2.38.2, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sts/2.38.2, Apache-2.0, approved, #27927
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.38.2, Apache-2.0, approved, #24778
 maven/mavencentral/software.amazon.awssdk/utils-lite/2.38.2, Apache-2.0, approved, #24762
 maven/mavencentral/software.amazon.awssdk/utils/2.38.2, Apache-2.0, approved, #24783
