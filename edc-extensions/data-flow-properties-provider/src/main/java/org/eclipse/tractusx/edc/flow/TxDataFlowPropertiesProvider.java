@@ -54,7 +54,7 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
     public TxDataFlowPropertiesProvider(AgreementsBpnsStore agreementsBpnsStore, BdrsClient bdrsClient, Monitor monitor) {
         this.agreementsBpnsStore = agreementsBpnsStore;
         this.bdrsClient = bdrsClient;
-        this.monitor = monitor;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
     }
 
     @Override
