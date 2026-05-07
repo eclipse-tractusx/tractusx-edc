@@ -43,4 +43,8 @@ public interface SqlAgreementsBpnsStatements extends SqlStatements {
     }
 
     String insertWithOnConflict();
+
+    default String findByAgreementIdTemplate() {
+        return "SELECT * FROM %s WHERE %s = ?".formatted(getTable(), getAgreementIdColumn());
+    }
 }

@@ -77,6 +77,10 @@ public class IdentityHubParticipant {
         return "did:web:" + URLEncoder.encode(didUri.getHost() + ":" + didUri.getPort(), StandardCharsets.UTF_8) + ":" + participantId;
     }
 
+    public String bpnFor(String participant) {
+        return "BPNL0" + participant;
+    }
+
     public static class Builder {
         protected final IdentityHubParticipant participant;
 

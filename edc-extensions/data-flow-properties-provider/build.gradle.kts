@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.edc.spi.transfer)
     implementation(project(":spi:core-spi"))
     implementation(project(":spi:bdrs-client-spi"))
+    implementation(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
 
     testImplementation(libs.edc.junit)
 }
