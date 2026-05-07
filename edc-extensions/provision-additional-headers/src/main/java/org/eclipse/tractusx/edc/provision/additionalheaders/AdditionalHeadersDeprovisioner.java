@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
 
 class AdditionalHeadersDeprovisioner implements Deprovisioner {
 
-    String type;
+    private final String type;
 
     AdditionalHeadersDeprovisioner(String type) {
         this.type = type;

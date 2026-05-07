@@ -60,8 +60,7 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
     @Override
     public StatusResult<Map<String, String>> propertiesFor(TransferProcess transferProcess, Policy policy) {
 
-        // handle the DSP 2025-1 case
-        if (policy.getAssignee().startsWith(DID_PREFIX)) {
+        if (isDsp2025(policy)) {
             var entry = agreementsBpnsStore.findByAgreementId(transferProcess.getContractId());
             if (entry == null) {
                 return StatusResult.failure(FATAL_ERROR,
@@ -71,11 +70,14 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
                     AUDIENCE_PROPERTY, policy.getAssignee(),
                     BPN_PROPERTY, entry.getConsumerBpn()
             ));
-        // handle the DSP 0.8 case
-        } else if (policy.getAssignee().startsWith(BPN_PREFIX)) {
+        } else if (isDsp08(policy)) {
             var bpn = policy.getAssignee();
+            var did = bdrsClient.resolveDid(bpn);
+            if (did == null) {
+                return StatusResult.failure(FATAL_ERROR, "Could not resolve DID for BPN '%s'".formatted(bpn));
+            }
             return StatusResult.success(Map.of(
-                    AUDIENCE_PROPERTY, bdrsClient.resolveDid(bpn),
+                    AUDIENCE_PROPERTY, did,
                     BPN_PROPERTY, bpn
             ));
         } else {
@@ -86,5 +88,13 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
             ));
         }
 
+    }
+
+    private boolean isDsp08(Policy policy) {
+        return policy.getAssignee().startsWith(BPN_PREFIX);
+    }
+
+    private boolean isDsp2025(Policy policy) {
+        return policy.getAssignee().startsWith(DID_PREFIX);
     }
 }

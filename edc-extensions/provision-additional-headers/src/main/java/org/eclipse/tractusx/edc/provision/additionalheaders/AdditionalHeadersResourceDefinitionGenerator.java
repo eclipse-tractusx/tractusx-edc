@@ -31,11 +31,11 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 
 class AdditionalHeadersResourceDefinitionGenerator implements ResourceDefinitionGenerator {
 
+    private final String type;
+
     AdditionalHeadersResourceDefinitionGenerator(String type) {
         this.type = type;
     }
-
-    private final String type;
 
     @Override
     public String supportedType() {

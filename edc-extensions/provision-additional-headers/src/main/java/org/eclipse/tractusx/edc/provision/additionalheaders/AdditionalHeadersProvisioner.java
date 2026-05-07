@@ -26,7 +26,6 @@ import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionedResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.Provisioner;
 import org.eclipse.edc.spi.response.StatusResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -35,7 +34,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 
 public class AdditionalHeadersProvisioner implements Provisioner {
 
-    String type;
+    private final String type;
 
     public AdditionalHeadersProvisioner(String type) {
         this.type = type;
@@ -48,9 +47,7 @@ public class AdditionalHeadersProvisioner implements Provisioner {
 
     @Override
     public CompletableFuture<StatusResult<ProvisionedResource>> provision(ProvisionResource resource) {
-        var original = resource.getDataAddress();
-        var addressBuilder = DataAddress.Builder.newInstance();
-        original.getProperties().forEach(addressBuilder::property);
+        var addressBuilder = resource.getDataAddress().toBuilder();
         addressBuilder.property(HttpDataAddress.ADDITIONAL_HEADER + "Edc-Contract-Agreement-Id", (String) resource.getProperty(AGREEMENT_ID_PROPERTY));
         addressBuilder.property(HttpDataAddress.ADDITIONAL_HEADER + "Edc-Bpn", (String) resource.getProperty(BPN_PROPERTY));
 

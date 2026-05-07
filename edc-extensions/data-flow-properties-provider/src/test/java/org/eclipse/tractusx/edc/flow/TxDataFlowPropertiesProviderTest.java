@@ -87,6 +87,16 @@ public class TxDataFlowPropertiesProviderTest {
     }
 
     @Test
+    void shouldReturnFatalError_whenAssigneeIsBpnAndDidNotResolved() {
+        when(bdrs.resolveDid(CONSUMER_BPN)).thenReturn(null);
+
+        var result = provider.propertiesFor(createTransferProcess(CONTRACT_ID), createPolicy(CONSUMER_BPN));
+
+        assertThat(result).isFailed()
+                .detail().isEqualTo("Could not resolve DID for BPN '%s'".formatted(CONSUMER_BPN));
+    }
+
+    @Test
     void shouldReturnProperties_whenAssigneeIsNeitherDidNorBpn() {
         var assignee = "some-unknown-identifier";
 
