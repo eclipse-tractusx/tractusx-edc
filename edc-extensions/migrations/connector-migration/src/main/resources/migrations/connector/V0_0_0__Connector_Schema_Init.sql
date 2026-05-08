@@ -1,10 +1,10 @@
-CREATE TABLE edc_agreement_retirement (
+CREATE TABLE IF NOT EXISTS edc_agreement_retirement (
     contract_agreement_id character varying NOT NULL,
     reason text NOT NULL,
     agreement_retirement_date bigint NOT NULL
 );
 
-CREATE TABLE edc_asset (
+CREATE TABLE IF NOT EXISTS edc_asset (
     asset_id character varying(255) NOT NULL,
     created_at bigint,
     properties json,
@@ -12,12 +12,12 @@ CREATE TABLE edc_asset (
     data_address json
 );
 
-CREATE TABLE edc_business_partner_group (
+CREATE TABLE IF NOT EXISTS edc_business_partner_group (
     bpn character varying NOT NULL,
     groups json DEFAULT '[]'::json NOT NULL
 );
 
-CREATE TABLE edc_contract_agreement (
+CREATE TABLE IF NOT EXISTS edc_contract_agreement (
     agr_id character varying NOT NULL,
     provider_agent_id character varying(255),
     consumer_agent_id character varying(255),
@@ -30,13 +30,13 @@ CREATE TABLE edc_contract_agreement (
     policy json
 );
 
-CREATE TABLE edc_contract_agreement_bpns (
+CREATE TABLE IF NOT EXISTS edc_contract_agreement_bpns (
     agreement_id character varying NOT NULL,
     provider_bpn character varying(255) NOT NULL,
     consumer_bpn character varying(255) NOT NULL
 );
 
-CREATE TABLE edc_contract_definitions (
+CREATE TABLE IF NOT EXISTS edc_contract_definitions (
     contract_definition_id character varying(255) NOT NULL,
     assets_selector json NOT NULL,
     access_policy_id character varying(255) DEFAULT NULL::character varying NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE edc_contract_definitions (
     private_properties json
 );
 
-CREATE TABLE edc_contract_negotiation (
+CREATE TABLE IF NOT EXISTS edc_contract_negotiation (
     id character varying(255) NOT NULL,
     correlation_id character varying(255),
     counterparty_id character varying(255) NOT NULL,
@@ -67,13 +67,13 @@ CREATE TABLE edc_contract_negotiation (
     protocol_messages json DEFAULT '{}'::json
 );
 
-CREATE TABLE edc_data_plane_instance (
+CREATE TABLE IF NOT EXISTS edc_data_plane_instance (
     id character varying NOT NULL,
     data json,
     lease_id character varying
 );
 
-CREATE TABLE edc_edr_entry (
+CREATE TABLE IF NOT EXISTS edc_edr_entry (
     transfer_process_id character varying NOT NULL,
     agreement_id character varying NOT NULL,
     asset_id character varying NOT NULL,
@@ -82,25 +82,25 @@ CREATE TABLE edc_edr_entry (
     created_at bigint NOT NULL
 );
 
-CREATE TABLE edc_federated_catalog (
+CREATE TABLE IF NOT EXISTS edc_federated_catalog (
     id character varying NOT NULL,
     catalog json,
     marked boolean DEFAULT false
 );
 
-CREATE TABLE edc_jti_validation (
+CREATE TABLE IF NOT EXISTS edc_jti_validation (
     token_id character varying NOT NULL,
     expires_at bigint
 );
 
-CREATE TABLE edc_lease (
+CREATE TABLE IF NOT EXISTS edc_lease (
     leased_by character varying(255) NOT NULL,
     leased_at bigint,
     lease_duration integer DEFAULT 60000 NOT NULL,
     lease_id character varying(255) NOT NULL
 );
 
-CREATE TABLE edc_policy_monitor (
+CREATE TABLE IF NOT EXISTS edc_policy_monitor (
     entry_id character varying NOT NULL,
     state integer NOT NULL,
     created_at bigint NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE edc_policy_monitor (
     contract_id character varying
 );
 
-CREATE TABLE edc_policydefinitions (
+CREATE TABLE IF NOT EXISTS edc_policydefinitions (
     policy_id character varying(255) NOT NULL,
     permissions json,
     prohibitions json,
@@ -130,7 +130,7 @@ CREATE TABLE edc_policydefinitions (
     profiles json
 );
 
-CREATE TABLE edc_transfer_process (
+CREATE TABLE IF NOT EXISTS edc_transfer_process (
     transferprocess_id character varying(255) NOT NULL,
     type character varying(255) NOT NULL,
     state integer NOT NULL,
@@ -251,14 +251,14 @@ ALTER TABLE ONLY edc_transfer_process
     ADD CONSTRAINT transfer_process_lease_lease_id_fk FOREIGN KEY (lease_id) REFERENCES edc_lease(lease_id) ON DELETE SET NULL;
 
 
-CREATE TABLE edc_accesstokendata (
+CREATE TABLE IF NOT EXISTS edc_accesstokendata (
     id character varying NOT NULL,
     claim_token json NOT NULL,
     data_address json NOT NULL,
     additional_properties json DEFAULT '{}'::json
 );
 
-CREATE TABLE edc_data_plane (
+CREATE TABLE IF NOT EXISTS edc_data_plane (
     process_id character varying NOT NULL,
     state integer NOT NULL,
     created_at bigint NOT NULL,

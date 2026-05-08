@@ -74,7 +74,7 @@ public class ConnectorPostgresqlMigration implements ServiceExtension {
         var dataSource = configuration.getDataSource();
 
         var flyway = Flyway.configure()
-                .baselineVersion("1.0.0")
+                .baselineVersion("0.0.0")
                 .baselineOnMigrate(true)
                 .failOnMissingLocations(true)
                 .dataSource(dataSource)
