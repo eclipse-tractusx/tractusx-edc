@@ -131,7 +131,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("tx.edc.iam.dcp.bdrs.server.url", "http://sts.example.com");
                 put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(dataPlanePublic.get()));
                 put("edc.policy.validation.enabled", "true");
-                put("edc.iam.did.web.use.https", "false");
                 put("edc.participant.context.id", "general-test-id");
                 put("tractusx.edc.participant.bpn", getBpn());
                 put("edc.iam.did.web.use.https", "false");
@@ -249,7 +248,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(TYPE, "CatalogRequest")
                 .add("counterPartyId", provider.id)
                 .add("counterPartyAddress", provider.getProtocolUrl())
-                .add("protocol", protocol);
+                .add("protocol", protocol.name());
 
         return baseManagementRequest()
                 .header("x-api-key", MANAGEMENT_API_KEY)
@@ -316,7 +315,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         }
         
         public B protocolVersionPath(String path) {
-            this.participant.protocolVersionPath = path;
+            this.participant.protocol = new Protocol(this.participant.protocol.name(), path);
             return self();
         }
 
