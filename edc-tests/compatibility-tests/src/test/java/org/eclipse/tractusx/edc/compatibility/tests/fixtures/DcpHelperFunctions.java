@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.compatibility.tests.fixtures;
 
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.service.StsAccountService;
 import org.eclipse.edc.iam.did.spi.document.Service;
-import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
+import org.eclipse.edc.identityhub.spi.participantcontext.IdentityHubParticipantContextService;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
@@ -35,7 +35,7 @@ import java.util.Base64;
 
 public class DcpHelperFunctions {
     public static void configureParticipantContext(DataspaceIssuer issuer, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
-        var participantContextService = identityHubRuntime.getService(ParticipantContextService.class);
+        var participantContextService = identityHubRuntime.getService(IdentityHubParticipantContextService.class);
 
         var participantKey = issuer.getKeyPairAsJwk();
         var key = KeyDescriptor.Builder.newInstance()
@@ -80,7 +80,7 @@ public class DcpHelperFunctions {
     }
 
     public static void configureParticipantContext(TractusxDcpParticipantBase participant, IdentityHubParticipant identityHubParticipant, RuntimeExtension identityHubRuntime) {
-        var participantContextService = identityHubRuntime.getService(ParticipantContextService.class);
+        var participantContextService = identityHubRuntime.getService(IdentityHubParticipantContextService.class);
 
         var participantKey = participant.getKeyPairAsJwk();
         var key = KeyDescriptor.Builder.newInstance()

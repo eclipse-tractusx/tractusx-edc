@@ -58,6 +58,14 @@ public abstract class TractusxDcpParticipantBase extends TractusxParticipantBase
         return getConfig().merge(ConfigFactory.fromMap(additionalSettings));
     }
 
+    public void setProtocol(boolean dsp20251) {
+        if (dsp20251) {
+            protocol = new Protocol("dataspace-protocol-http:2025-1", "/2025-1");
+        } else {
+            protocol = new Protocol("dataspace-protocol-http", "");
+        }
+    }
+
     public static class Builder<P extends TractusxDcpParticipantBase, B extends Builder<P, B>> extends TractusxParticipantBase.Builder<P, B> {
 
         protected Builder(P participant) {

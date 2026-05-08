@@ -129,6 +129,6 @@ public class DspApiConfigurationV08Extension implements ServiceExtension {
         dspApiTransformerRegistry.register(new JsonObjectToDataAddressDspaceTransformer(DSP_NAMESPACE_V_08));
 
         dspApiTransformerRegistry.register(new JsonObjectFromPolicyTransformer(jsonBuilderFactory, participantIdMapper));
-        dspApiTransformerRegistry.register(new JsonObjectFromDataAddressDspaceTransformer(jsonBuilderFactory, typeManager, JSON_LD));
+        dspApiTransformerRegistry.register(new JsonObjectFromDataAddressDspaceTransformer(jsonBuilderFactory, typeManager, JSON_LD, DSP_NAMESPACE_V_08));
     }
 }

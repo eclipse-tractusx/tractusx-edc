@@ -26,7 +26,7 @@ import org.eclipse.edc.iam.did.spi.document.DidDocument;
 import org.eclipse.edc.iam.did.spi.document.Service;
 import org.eclipse.edc.iam.did.spi.document.VerificationMethod;
 import org.eclipse.edc.identityhub.spi.keypair.KeyPairService;
-import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
+import org.eclipse.edc.identityhub.spi.participantcontext.IdentityHubParticipantContextService;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
@@ -90,7 +90,7 @@ public class DcpParticipant extends TractusxDcpParticipantBase {
                 .participantContextId(getDid())
                 .did(getDid())
                 .build();
-        var participantContextService = stsRuntimeExtension.getService(ParticipantContextService.class);
+        var participantContextService = stsRuntimeExtension.getService(IdentityHubParticipantContextService.class);
         var createParticipantContextResponse = participantContextService.createParticipantContext(participantManifest)
                 .orElseThrow(f -> new EdcException("cannot create participant context: " + f.getFailureDetail()));
 
