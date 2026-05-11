@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":edc-extensions:tokenrefresh-handler"))
     implementation(project(":edc-extensions:event-subscriber"))
     implementation(project(":edc-extensions:non-finite-provider-push:non-finite-provider-push-core"))
+    implementation(project(":edc-extensions:provision-additional-headers"))
 
     implementation(project(":edc-extensions:dataplane:dataflow:dataflow-api"))
     implementation(project(":edc-extensions:dataplane:dataflow:dataflow-service"))

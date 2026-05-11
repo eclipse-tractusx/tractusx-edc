@@ -29,6 +29,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -65,5 +66,25 @@ public class SqlAgreementsBpnsStore extends AbstractSqlStore implements Agreemen
                 throw new EdcPersistenceException(e);
             }
         });
+    }
+
+    @Override
+    public AgreementsBpnsEntry findByAgreementId(String agreementId) {
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                return queryExecutor.single(connection, false, this::mapRow,
+                        statements.findByAgreementIdTemplate(), agreementId);
+            } catch (SQLException e) {
+                throw new EdcPersistenceException(e);
+            }
+        });
+    }
+
+    private AgreementsBpnsEntry mapRow(ResultSet rs) throws SQLException {
+        return AgreementsBpnsEntry.Builder.newInstance()
+                .withAgreementId(rs.getString(statements.getAgreementIdColumn()))
+                .withProviderBpn(rs.getString(statements.getProviderBpnColumn()))
+                .withConsumerBpn(rs.getString(statements.getConsumerBpnColumn()))
+                .build();
     }
 }

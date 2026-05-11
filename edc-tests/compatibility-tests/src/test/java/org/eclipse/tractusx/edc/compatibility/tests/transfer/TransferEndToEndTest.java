@@ -84,7 +84,7 @@ public class TransferEndToEndTest {
 
     protected static final RemoteParticipant REMOTE_PARTICIPANT = RemoteParticipant.Builder.newInstance()
             .name("remote")
-            .id("remote")
+            .id(IDENTITY_HUB_PARTICIPANT.bpnFor("remote"))
             .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
             .did(IDENTITY_HUB_PARTICIPANT.didFor("remote"))
             .trustedIssuer(ISSUER.didUrl())
@@ -92,10 +92,10 @@ public class TransferEndToEndTest {
 
     static final DcpParticipant LOCAL_PARTICIPANT = DcpParticipant.Builder.newInstance()
             .name("local")
-            .id("local")
+            .id(IDENTITY_HUB_PARTICIPANT.bpnFor("local"))
             .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
             .did(IDENTITY_HUB_PARTICIPANT.didFor("local"))
-            .bpn("local")
+            .bpn(IDENTITY_HUB_PARTICIPANT.bpnFor("local"))
             .trustedIssuer(ISSUER.didUrl())
             .build();
 

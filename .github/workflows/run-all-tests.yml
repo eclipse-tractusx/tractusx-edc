@@ -48,7 +48,7 @@ permissions: {}
 jobs:
   verify:
     permissions:
-      contents: read
+      contents: write
     uses: ./.github/workflows/verify.yaml
 
   deployment-test:
