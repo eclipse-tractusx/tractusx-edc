@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.tests.participant;
 
-import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
