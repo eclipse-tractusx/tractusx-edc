@@ -25,6 +25,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -56,6 +57,10 @@ import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.Agreement
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08_PATH;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 
 
 /**
@@ -134,6 +139,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.participant.context.id", "general-test-id");
                 put("tractusx.edc.participant.bpn", getBpn());
                 put("edc.iam.did.web.use.https", "false");
+                put("edc.encryption.strict", "false");
             }
         };
 
@@ -174,7 +180,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/business-partner-groups")
+                .post("/business-partner-groups")
                 .then()
                 .statusCode(204);
     }
@@ -191,7 +197,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .put("/v3/business-partner-groups")
+                .put("/business-partner-groups")
                 .then()
                 .statusCode(204);
     }
@@ -202,7 +208,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void deleteBusinessPartner(String bpn) {
         baseManagementRequest()
                 .when()
-                .delete("/v3/business-partner-groups/{bpn}", bpn)
+                .delete("/business-partner-groups/{bpn}", bpn)
                 .then()
                 .statusCode(204);
     }
@@ -217,7 +223,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/contractagreements/retirements")
+                .post("/contractagreements/retirements")
                 .then();
     }
 
@@ -255,7 +261,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
-                .post("/v3/catalog/request")
+                .post("/catalog/request")
                 .then();
 
     }
@@ -264,7 +270,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .get("/transferprocesses/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath()
@@ -272,32 +278,62 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     }
 
     public void triggerDataTransfer(String dataFlowId) {
+        var oldBase = this.managementVersionBasePath;
+        this.managementVersionBasePath = "/v4alpha";
         baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .post("/v4alpha/dataflows/{id}/trigger", dataFlowId)
+                .post("/dataflows/{id}/trigger", dataFlowId)
                 .then()
                 .log().ifError()
                 .statusCode(204);
+        this.managementVersionBasePath = oldBase;
     }
 
     public ValidatableResponse discoverDspParameters(JsonObject requestBody) {
-        return baseManagementRequest()
+        var oldBase = this.managementVersionBasePath;
+        this.managementVersionBasePath = "/v4alpha";
+        var response = baseManagementRequest()
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("/v4alpha/connectordiscovery/dspversionparams")
+                .post("/connectordiscovery/dspversionparams")
                 .then();
+        this.managementVersionBasePath = oldBase;
+        return response;
     }
 
     public ValidatableResponse discoverConnectorServices(JsonObject requestBody) {
-        return baseManagementRequest()
+        var oldBase = this.managementVersionBasePath;
+        this.managementVersionBasePath = "/v4alpha";
+        var response = baseManagementRequest()
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("/v4alpha/connectordiscovery/connectors")
+                .post("/connectordiscovery/connectors")
                 .then();
+        this.managementVersionBasePath = oldBase;
+        return response;
     }
+
+    // The following functions have been implemented, because they possibilities upstream have been removed
+    // They are needed for support of DSP version v0.8
+    public void setProtocol(String protocol) {
+        if (DSP_2025.contains(protocol)) {
+            this.protocol = new Protocol(DSP_2025, DSP_2025_PATH);
+        } else {
+            this.protocol = new Protocol(DSP_08, DSP_08_PATH);
+        }
+    }
+
+    public void setJsonLd(JsonLd jsonLd) {
+        this.jsonLd = jsonLd;
+    }
+
+    public String getBaseUrl() {
+        return controlPlaneProtocol.get().toString();
+    }
+    // End of section with helper functions removed from upstream
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
         protected Builder(P participant) {

@@ -23,7 +23,11 @@ package org.eclipse.tractusx.edc.provision.additionalheaders;
 
 import org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddress;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceService;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
+import org.eclipse.edc.spi.result.Result;
+import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -35,7 +39,19 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 
 class AdditionalHeadersResourceDefinitionGeneratorTest {
 
-    private final AdditionalHeadersResourceDefinitionGenerator generator = new AdditionalHeadersResourceDefinitionGenerator("HttpData");
+    private final EndpointDataReferenceService mockedEndpointDataReferenceService = new EndpointDataReferenceService() {
+        @Override
+        public Result<DataAddress> createEndpointDataReference(DataFlow dataFlow) {
+            return Result.success(dataFlow.getSource());
+        }
+
+        @Override
+        public ServiceResult<Void> revokeEndpointDataReference(String flowId, String reason) {
+            return null;
+        }
+    };
+
+    private final AdditionalHeadersResourceDefinitionGenerator generator = new AdditionalHeadersResourceDefinitionGenerator("HttpData", mockedEndpointDataReferenceService);
 
     @Test
     void supportedType_shouldReturnHttpData() {

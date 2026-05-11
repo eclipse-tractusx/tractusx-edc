@@ -36,7 +36,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
-import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
@@ -133,8 +132,8 @@ public class TransferPushEndToEndTest {
         @BeforeAll
         static void beforeAll() {
             CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
-            CONSUMER.setProtocol(DSP_2025, DSP_2025_PATH);
-            PROVIDER.setProtocol(DSP_2025, DSP_2025_PATH);
+            CONSUMER.setProtocol(DSP_2025);
+            PROVIDER.setProtocol(DSP_2025);
         }
     }
 }

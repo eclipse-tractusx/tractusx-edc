@@ -28,8 +28,11 @@ dependencies {
         exclude(module = "cx-dcp")
         exclude(module = "tx-dcp-sts-div")
         exclude(module = "dataspace-protocol")
-        exclude(module = "dsp-08")
-        exclude(module = "dsp-2024")
+        exclude(module = "dsp-catalog-08")
+        exclude(module = "dsp-http-api-configuration-08")
+        exclude(module = "dsp-http-dispatcher-08")
+        exclude(module = "dsp-negotiation-08")
+        exclude(module = "dsp-transfer-process-08")
         exclude(module = "dsp-2025")
         exclude(module = "dsp-http-api-configuration-2025")
     }

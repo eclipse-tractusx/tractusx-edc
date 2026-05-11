@@ -72,15 +72,13 @@ public class AzureToAzureEndToEndTest {
             .name(CONSUMER_NAME)
             .id(CONSUMER_DID)
             .bpn(CONSUMER_BPN)
-            .protocol(DSP_2025)
-            .protocolVersionPath(DSP_2025_PATH)
+            .protocol(DSP_2025, DSP_2025_PATH)
             .build();
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_DID)
             .bpn(PROVIDER_BPN)
-            .protocol(DSP_2025)
-            .protocolVersionPath(DSP_2025_PATH)
+            .protocol(DSP_2025, DSP_2025_PATH)
             .build();
     private static final int AZURITE_HOST_PORT = getFreePort();
 

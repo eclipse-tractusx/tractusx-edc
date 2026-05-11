@@ -61,8 +61,7 @@ public class StsConsumerPullTest extends AbstractDcpConsumerPullTest {
             .credentialServiceUri(STS.credentialServiceUri())
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .bpn(CONSUMER_BPN)
-            .protocol(DSP_2025)
-            .protocolVersionPath(DSP_2025_PATH)
+            .protocol(DSP_2025, DSP_2025_PATH)
             .build();
     private static final DcpParticipant PROVIDER = DcpParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
@@ -72,8 +71,7 @@ public class StsConsumerPullTest extends AbstractDcpConsumerPullTest {
             .credentialServiceUri(STS.credentialServiceUri())
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .bpn(PROVIDER_BPN)
-            .protocol(DSP_2025)
-            .protocolVersionPath(DSP_2025_PATH)
+            .protocol(DSP_2025, DSP_2025_PATH)
             .build();
 
     @RegisterExtension

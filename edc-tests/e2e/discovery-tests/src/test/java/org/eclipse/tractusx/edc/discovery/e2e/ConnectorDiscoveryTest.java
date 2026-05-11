@@ -69,8 +69,7 @@ public class ConnectorDiscoveryTest {
             .name(CONSUMER_NAME)
             .id(CONSUMER_DID)
             .bpn(CONSUMER_BPN)
-            .protocol(DSP_2025)
-            .protocolVersionPath(DSP_2025_PATH)
+            .protocol(DSP_2025, DSP_2025_PATH)
             .build();
 
 
@@ -89,8 +88,8 @@ public class ConnectorDiscoveryTest {
     private static final DidDocument DIDDOCUMENT = DidDocument.Builder.newInstance()
             .id(LOCAL_PROVIDER_DID)
             .service(List.of(
-                    new Service(LOCAL_PROVIDER_DID + "#connector", "DataService", PROVIDER_FULL_DSP.getProtocolUrl()),
-                    new Service(LOCAL_PROVIDER_DID + "#connector2", "DataService", PROVIDER_DSP_V08.getProtocolUrl()),
+                    new Service(LOCAL_PROVIDER_DID + "#connector", "DataService", PROVIDER_FULL_DSP.getBaseUrl()),
+                    new Service(LOCAL_PROVIDER_DID + "#connector2", "DataService", PROVIDER_DSP_V08.getBaseUrl()),
                     new Service(LOCAL_PROVIDER_DID + "#cs", "CredentialService", "http://dontcare")))
             .build();
 
@@ -138,10 +137,10 @@ public class ConnectorDiscoveryTest {
     @Test
     void discoveryShouldReturnDspParams_DidAsIdentifier() {
         var expectedProtocolString = "\"protocol\":\"dataspace-protocol-http:2025-1\"";
-        var expectedAddressString = "\"counterPartyAddress\":\"%s/2025-1\"".formatted(PROVIDER_FULL_DSP.getProtocolUrl());
+        var expectedAddressString = "\"counterPartyAddress\":\"%s/2025-1\"".formatted(PROVIDER_FULL_DSP.getBaseUrl());
         var expectedIdString = "\"counterPartyId\":\"%s\"".formatted(LOCAL_PROVIDER_DID);
         var expectedProtocolString2 = "\"protocol\":\"dataspace-protocol-http\"";
-        var expectedAddressString2 = "\"counterPartyAddress\":\"%s\"".formatted(PROVIDER_DSP_V08.getProtocolUrl());
+        var expectedAddressString2 = "\"counterPartyAddress\":\"%s\"".formatted(PROVIDER_DSP_V08.getBaseUrl());
         var expectedIdString2 = "\"counterPartyId\":\"%s\"".formatted(PROVIDER_DSP_V08.getBpn());
 
 
@@ -165,10 +164,10 @@ public class ConnectorDiscoveryTest {
     @Test
     void discoveryShouldReturnDspParams_BpnAsIdentifier() {
         var expectedProtocolString = "\"protocol\":\"dataspace-protocol-http:2025-1\"";
-        var expectedAddressString = "\"counterPartyAddress\":\"%s/2025-1\"".formatted(PROVIDER_FULL_DSP.getProtocolUrl());
+        var expectedAddressString = "\"counterPartyAddress\":\"%s/2025-1\"".formatted(PROVIDER_FULL_DSP.getBaseUrl());
         var expectedIdString = "\"counterPartyId\":\"%s\"".formatted(LOCAL_PROVIDER_DID);
         var expectedProtocolString2 = "\"protocol\":\"dataspace-protocol-http\"";
-        var expectedAddressString2 = "\"counterPartyAddress\":\"%s\"".formatted(PROVIDER_DSP_V08.getProtocolUrl());
+        var expectedAddressString2 = "\"counterPartyAddress\":\"%s\"".formatted(PROVIDER_DSP_V08.getBaseUrl());
         var expectedIdString2 = "\"counterPartyId\":\"%s\"".formatted(PROVIDER_DSP_V08.getBpn());
 
         var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), emptyList());

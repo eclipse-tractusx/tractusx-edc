@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.compatibility.tests.transfer;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
@@ -69,6 +68,7 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipantContext;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDatePolicyLegacy;
 
 @CompatibilityTest
@@ -160,9 +160,9 @@ public class TransferEndToEndTest {
 
     @ParameterizedTest
     @ArgumentsSource(ParticipantsArgProvider.class)
-    void httpPullTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, boolean dsp20251) {
-        consumer.setProtocol(dsp20251);
-        provider.setProtocol(dsp20251);
+    void httpPullTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String protocol) {
+        consumer.setProtocol(protocol);
+        provider.setProtocol(protocol);
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
         var assetId = UUID.randomUUID().toString();
         var usagePolicy = inForceDatePolicyLegacy("gteq", "contractAgreement+0s", "lteq", "contractAgreement+5s");
@@ -194,9 +194,9 @@ public class TransferEndToEndTest {
 
     @ParameterizedTest
     @ArgumentsSource(ParticipantsArgProvider.class)
-    void suspendAndResume_httpPull_dataTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, boolean dsp20251) {
-        consumer.setProtocol(dsp20251);
-        provider.setProtocol(dsp20251);
+    void suspendAndResume_httpPull_dataTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String protocol) {
+        consumer.setProtocol(protocol);
+        provider.setProtocol(protocol);
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
         var assetId = UUID.randomUUID().toString();
         createResourcesOnProvider(provider, assetId, PolicyFixtures.noConstraintPolicy(), httpSourceDataAddress());
@@ -255,8 +255,8 @@ public class TransferEndToEndTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(REMOTE_PARTICIPANT, LOCAL_PARTICIPANT, false),
-                    Arguments.of(LOCAL_PARTICIPANT, REMOTE_PARTICIPANT, false)
+                    Arguments.of(REMOTE_PARTICIPANT, LOCAL_PARTICIPANT, DSP_08),
+                    Arguments.of(LOCAL_PARTICIPANT, REMOTE_PARTICIPANT, DSP_08)
             );
         }
     }
