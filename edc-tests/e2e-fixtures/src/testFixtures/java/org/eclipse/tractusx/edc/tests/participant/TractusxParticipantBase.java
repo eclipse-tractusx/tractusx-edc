@@ -25,6 +25,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -56,6 +57,10 @@ import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.Agreement
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08_PATH;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 
 
 /**
@@ -298,6 +303,21 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .post("/v4alpha/connectordiscovery/connectors")
                 .then();
     }
+
+    // The following functions have been implemented, because they possibilities upstream have been removed
+    // They are needed for support of DSP version v0.8
+    public void setProtocol(String protocol) {
+        if (DSP_2025.contains(protocol)) {
+            this.protocol = new Protocol(DSP_2025, DSP_2025_PATH);
+        } else {
+            this.protocol = new Protocol(DSP_08, DSP_08_PATH);
+        }
+    }
+
+    public void setJsonLd(JsonLd jsonLd) {
+        this.jsonLd = jsonLd;
+    }
+    // End of section with helper functions removed from upstream
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
         protected Builder(P participant) {

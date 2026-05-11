@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.tests.participant;
 
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -56,14 +57,6 @@ public abstract class TractusxDcpParticipantBase extends TractusxParticipantBase
         );
 
         return getConfig().merge(ConfigFactory.fromMap(additionalSettings));
-    }
-
-    public void setProtocol(boolean dsp20251) {
-        if (dsp20251) {
-            protocol = new Protocol("dataspace-protocol-http:2025-1", "/2025-1");
-        } else {
-            protocol = new Protocol("dataspace-protocol-http", "");
-        }
     }
 
     public static class Builder<P extends TractusxDcpParticipantBase, B extends Builder<P, B>> extends TractusxParticipantBase.Builder<P, B> {

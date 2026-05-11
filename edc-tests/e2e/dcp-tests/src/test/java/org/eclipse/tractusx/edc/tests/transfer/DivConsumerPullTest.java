@@ -25,8 +25,8 @@ import org.eclipse.edc.iam.decentralizedclaims.sts.service.EmbeddedSecureTokenSe
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.model.StsAccount;
 import org.eclipse.edc.iam.decentralizedclaims.sts.spi.service.StsAccountService;
 import org.eclipse.edc.identityhub.spi.keypair.KeyPairService;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantContext;
-import org.eclipse.edc.identityhub.spi.participantcontext.store.ParticipantContextStore;
+import org.eclipse.edc.identityhub.spi.participantcontext.model.IdentityHubParticipantContext;
+import org.eclipse.edc.participantcontext.spi.store.ParticipantContextStore;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -90,8 +90,7 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .divUri(DIV_URI)
             .bpn(CONSUMER_BPN)
-            .protocol(DSP_2025)
-            .protocolVersionPath(DSP_2025_PATH)
+            .protocol(DSP_2025, DSP_2025_PATH)
             .build();
     private static final DcpParticipant PROVIDER = DcpParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
@@ -101,8 +100,7 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
             .trustedIssuer(DATASPACE_ISSUER_PARTICIPANT.didUrl())
             .divUri(DIV_URI)
             .bpn(PROVIDER_BPN)
-            .protocol(DSP_2025)
-            .protocolVersionPath(DSP_2025_PATH)
+            .protocol(DSP_2025, DSP_2025_PATH)
             .build();
 
     @RegisterExtension
@@ -174,7 +172,7 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
         });
 
         var participantContextStore = runtime.getService(ParticipantContextStore.class);
-        participantContextStore.create(ParticipantContext.Builder.newInstance()
+        participantContextStore.create(IdentityHubParticipantContext.Builder.newInstance()
                 .participantContextId(participant.getDid())
                 .did(participant.getDid())
                 .apiTokenAlias(participant.getDid()).build());

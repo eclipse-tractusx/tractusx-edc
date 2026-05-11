@@ -449,8 +449,8 @@ public class TransferPullEndToEndTest {
         @BeforeAll
         static void beforeAll() {
             CONSUMER.setJsonLd(CONSUMER_RUNTIME.getService(JsonLd.class));
-            CONSUMER.setProtocol(DSP_2025, DSP_2025_PATH);
-            PROVIDER.setProtocol(DSP_2025, DSP_2025_PATH);
+            CONSUMER.setProtocol(DSP_2025);
+            PROVIDER.setProtocol(DSP_2025);
         }
     }
 }
