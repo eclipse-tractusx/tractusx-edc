@@ -83,6 +83,12 @@ for run in sarif.get("runs", []):
             print(f"Fixed location -> {filepath}:{lineno} ({ref})")
             fixed_idx += 1
 
+# Drop stale fingerprints after location/region rewrites so GitHub recalculates them.
+for run in sarif.get("runs", []):
+    for result in run.get("results", []):
+        result.pop("fingerprints", None)
+        result.pop("partialFingerprints", None)
+
 # ── Fix 2: Patch artifact lengths (-1 → real size) ───────────────────────────
 # poutine emits length=-1 which causes GitHub Advanced Security to ignore
 # startLine and show every finding at line 1 in the Security tab.
@@ -96,4 +102,3 @@ with open("results-fixed.sarif", "w") as f:
     json.dump(sarif, f)
 
 print(f"Done. Fixed {fixed_idx} location(s). Written to results-fixed.sarif.")
-

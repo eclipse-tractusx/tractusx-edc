@@ -82,6 +82,8 @@ jobs:
 
       - name: Run poutine
         uses: boostsecurityio/poutine-action@e240ebd3eff8b2db5a8e5f6b28f58739d7db2247 # v1.1.4
+        with:
+          config: .github/poutine.yml
 
       - name: Fix and patch poutine SARIF
         if: always()
