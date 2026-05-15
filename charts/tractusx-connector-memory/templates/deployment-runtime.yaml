@@ -381,6 +381,9 @@ spec:
               mountPath: /opt/java/openjdk/lib/security/cacerts
               subPath: cacerts
             {{- end }}
+            - name: "configuration"
+              mountPath: "/app/opentelemetry.properties"
+              subPath: "opentelemetry.properties"
             - name: log4j2-config
               mountPath: /app/log4j2.yaml
               subPath: log4j2.yaml
@@ -396,6 +399,12 @@ spec:
           emptyDir:
             sizeLimit: 1Mi
         {{- end }}
+        - name: "configuration"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-runtime
+            items:
+              - key: "opentelemetry.properties"
+                path: "opentelemetry.properties"
         - name: "log4j2-config"
           configMap:
             name: {{ include "txdc.fullname" . }}-log4j2
