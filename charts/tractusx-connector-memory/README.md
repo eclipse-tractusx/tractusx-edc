@@ -141,6 +141,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.13.0-
 | runtime.livenessProbe.timeoutSeconds | int | `5` | number of seconds after which the probe times out |
 | runtime.logs.level | string | `"DEBUG"` | Defines the log granularity of the default Console Monitor. |
 | runtime.nodeSelector | object | `{}` | [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector) to constrain pods to nodes |
+| runtime.opentelemetry | string | `"otel.javaagent.enabled=false\notel.javaagent.debug=false"` | configuration of the [Open Telemetry Agent](https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/) to collect and expose metrics |
 | runtime.podAnnotations | object | `{}` | additional annotations for the pod |
 | runtime.podLabels | object | `{}` | additional labels for the pod |
 | runtime.podSecurityContext | object | `{"fsGroup":10001,"runAsGroup":10001,"runAsUser":10001,"seccompProfile":{"type":"RuntimeDefault"}}` | The [pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) defines privilege and access control settings for a Pod within the deployment |
