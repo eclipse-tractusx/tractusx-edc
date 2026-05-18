@@ -277,31 +277,42 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     }
 
     public void triggerDataTransfer(String dataFlowId) {
+        var oldBase = this.managementVersionBasePath;
+        this.managementVersionBasePath = "/v4alpha";
         baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .post("/v4alpha/dataflows/{id}/trigger", dataFlowId)
+                .post("/dataflows/{id}/trigger", dataFlowId)
                 .then()
                 .log().ifError()
                 .statusCode(204);
+        this.managementVersionBasePath = oldBase;
     }
 
     public ValidatableResponse discoverDspParameters(JsonObject requestBody) {
-        return baseManagementRequest()
+        var oldBase = this.managementVersionBasePath;
+        this.managementVersionBasePath = "/v4alpha";
+        var response = baseManagementRequest()
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("/v4alpha/connectordiscovery/dspversionparams")
+                .post("/connectordiscovery/dspversionparams")
                 .then();
+        this.managementVersionBasePath = oldBase;
+        return response;
     }
 
     public ValidatableResponse discoverConnectorServices(JsonObject requestBody) {
-        return baseManagementRequest()
+        var oldBase = this.managementVersionBasePath;
+        this.managementVersionBasePath = "/v4alpha";
+        var response = baseManagementRequest()
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("/v4alpha/connectordiscovery/connectors")
+                .post("/connectordiscovery/connectors")
                 .then();
+        this.managementVersionBasePath = oldBase;
+        return response;
     }
 
     // The following functions have been implemented, because they possibilities upstream have been removed
