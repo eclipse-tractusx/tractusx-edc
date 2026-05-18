@@ -24,8 +24,8 @@ import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -44,12 +44,12 @@ public class PostgresExtension implements BeforeAllCallback, AfterAllCallback {
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
     private static final String DB_SCHEMA_NAME = "testschema";
-    private final PostgreSQLContainer<?> postgreSqlContainer;
+    private final PostgreSQLContainer postgreSqlContainer;
     private final String[] databases;
 
     public PostgresExtension(String... databases) {
         this.databases = databases;
-        this.postgreSqlContainer = new PostgreSQLContainer<>(getPostgresTestContainerName())
+        this.postgreSqlContainer = new PostgreSQLContainer(getPostgresTestContainerName())
                 .withUsername(USER)
                 .withPassword(PASSWORD);
     }

@@ -80,7 +80,6 @@ public class CatalogTest {
             .id(PROVIDER_DID)
             .bpn(PROVIDER_BPN)
             .protocol(DSP_2025, DSP_2025_PATH)
-            .protocolVersionPath(DSP_2025_PATH)
             .build();
 
     @RegisterExtension

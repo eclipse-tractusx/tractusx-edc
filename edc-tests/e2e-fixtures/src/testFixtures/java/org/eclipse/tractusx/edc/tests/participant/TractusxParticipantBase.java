@@ -179,7 +179,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/business-partner-groups")
+                .post("/business-partner-groups")
                 .then()
                 .statusCode(204);
     }
@@ -196,7 +196,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .put("/v3/business-partner-groups")
+                .put("/business-partner-groups")
                 .then()
                 .statusCode(204);
     }
@@ -207,7 +207,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void deleteBusinessPartner(String bpn) {
         baseManagementRequest()
                 .when()
-                .delete("/v3/business-partner-groups/{bpn}", bpn)
+                .delete("/business-partner-groups/{bpn}", bpn)
                 .then()
                 .statusCode(204);
     }
@@ -222,7 +222,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/contractagreements/retirements")
+                .post("/contractagreements/retirements")
                 .then();
     }
 
@@ -260,7 +260,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
-                .post("/v3/catalog/request")
+                .post("/catalog/request")
                 .then();
 
     }
@@ -269,7 +269,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .get("/transferprocesses/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath()
