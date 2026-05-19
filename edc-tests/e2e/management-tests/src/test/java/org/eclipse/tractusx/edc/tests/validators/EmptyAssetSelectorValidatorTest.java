@@ -125,7 +125,7 @@ public class EmptyAssetSelectorValidatorTest {
                 .contentType(JSON)
                 .body(requestBody.build())
                 .when()
-                .post("/v3/contractdefinitions")
+                .post("/contractdefinitions")
                 .then();
     }
 

@@ -66,7 +66,7 @@ public class DelegatedAuthEndToEndTest {
         CONNECTOR.baseManagementRequest()
                 .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
-                .post("/v3/assets/request")
+                .post("/assets/request")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200);
