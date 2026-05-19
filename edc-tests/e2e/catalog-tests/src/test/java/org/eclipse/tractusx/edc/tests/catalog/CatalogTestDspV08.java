@@ -67,7 +67,7 @@ public class CatalogTestDspV08 {
             .name(CONSUMER_NAME)
             .id(CONSUMER_DID)
             .bpn(CONSUMER_BPN)
-            .protocol(DSP_08, "")
+            .protocol(DSP_08, DSP_08_PATH)
             .build();
 
 

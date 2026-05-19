@@ -106,7 +106,7 @@ public class ConnectorParameterDiscoveryTest {
     @Test
     void discoveryShouldReturn2025DspParams_BpnAsIdentifier() {
 
-        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl());
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getBaseUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
@@ -115,7 +115,7 @@ public class ConnectorParameterDiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl() + "/2025-1\"")
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getBaseUrl() + "/2025-1\"")
                 .contains("\"counterPartyId\":\"" + PROVIDER_FULL_DSP.getDid() + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http:2025-1" + "\"");
     }
@@ -123,7 +123,7 @@ public class ConnectorParameterDiscoveryTest {
     @Test
     void discoveryShouldReturn2025DspParams_DidAsIdentifier() {
 
-        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), PROVIDER_FULL_DSP.getProtocolUrl());
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getDid(), PROVIDER_FULL_DSP.getBaseUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
@@ -132,7 +132,7 @@ public class ConnectorParameterDiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getProtocolUrl() + "/2025-1\"")
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_FULL_DSP.getBaseUrl() + "/2025-1\"")
                 .contains("\"counterPartyId\":\"" + PROVIDER_FULL_DSP.getDid() + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http:2025-1" + "\"");
     }
@@ -140,7 +140,7 @@ public class ConnectorParameterDiscoveryTest {
     @Test
     void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable_BpnAsIdentifier() {
 
-        var requestBody = createRequestBody(PROVIDER_DSP_V08.getBpn(), PROVIDER_DSP_V08.getProtocolUrl());
+        var requestBody = createRequestBody(PROVIDER_DSP_V08.getBpn(), PROVIDER_DSP_V08.getBaseUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
@@ -149,7 +149,7 @@ public class ConnectorParameterDiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getBaseUrl())
                 .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
     }
@@ -157,7 +157,7 @@ public class ConnectorParameterDiscoveryTest {
     @Test
     void discoveryShouldReturn08DspParams_whenDsp2025NotAvailable_DidAsIdentifier() {
 
-        var requestBody = createRequestBody(PROVIDER_DSP_V08.getDid(), PROVIDER_DSP_V08.getProtocolUrl());
+        var requestBody = createRequestBody(PROVIDER_DSP_V08.getDid(), PROVIDER_DSP_V08.getBaseUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
@@ -166,7 +166,7 @@ public class ConnectorParameterDiscoveryTest {
 
         assertThat(body)
                 .isNotNull()
-                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getProtocolUrl())
+                .contains("\"counterPartyAddress\":\"" + PROVIDER_DSP_V08.getBaseUrl())
                 .contains("\"counterPartyId\":\"" + PROVIDER_DSP_V08.getBpn() + "\"")
                 .contains("\"protocol\":\"" + "dataspace-protocol-http" + "\"");
     }
@@ -174,7 +174,7 @@ public class ConnectorParameterDiscoveryTest {
     @Test
     void discoveryShouldReturn400_whenDidNotResolvable() {
 
-        var requestBody = createRequestBody(UNKNOWN_BPNL, PROVIDER_FULL_DSP.getProtocolUrl());
+        var requestBody = createRequestBody(UNKNOWN_BPNL, PROVIDER_FULL_DSP.getBaseUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
@@ -192,7 +192,7 @@ public class ConnectorParameterDiscoveryTest {
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add("edc", EDC_NAMESPACE).add("tx", TX_NAMESPACE))
                 .add(TYPE, "tx:ConnectorDiscoveryRequest")
-                .add("edc:counterPartyAddress", PROVIDER_FULL_DSP.getProtocolUrl())
+                .add("edc:counterPartyAddress", PROVIDER_FULL_DSP.getBaseUrl())
                 .build();
 
         var response = CONSUMER.discoverDspParameters(requestBody);
@@ -208,7 +208,7 @@ public class ConnectorParameterDiscoveryTest {
     @Test
     void discoveryShouldReturn502_ifMetadaEndpointNotReachable() {
 
-        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getProtocolUrl() + "/not-existing");
+        var requestBody = createRequestBody(PROVIDER_FULL_DSP.getBpn(), PROVIDER_FULL_DSP.getBaseUrl() + "/not-existing");
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 
@@ -234,7 +234,7 @@ public class ConnectorParameterDiscoveryTest {
     @Test
     void discoveryShouldReturn400_whenNoProtocolsAvailable() {
 
-        var requestBody = createRequestBody(PROVIDER_NO_PROTOCOLS.getBpn(), PROVIDER_NO_PROTOCOLS.getProtocolUrl());
+        var requestBody = createRequestBody(PROVIDER_NO_PROTOCOLS.getBpn(), PROVIDER_NO_PROTOCOLS.getBaseUrl());
 
         var response = CONSUMER.discoverDspParameters(requestBody);
 

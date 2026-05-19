@@ -32,9 +32,7 @@ configurations.all {
 }
 
 dependencies {
-    runtimeOnly(libs.edc.bom.controlplane.base) {
-        exclude(module = "dsp-2024")
-    }
+    runtimeOnly(libs.edc.bom.controlplane.base)
     runtimeOnly(libs.edc.bom.controlplane.dcp)
 
     implementation(project(":core:edr-core"))
@@ -52,6 +50,11 @@ dependencies {
     implementation(project(":edc-extensions:dcp:tx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-div"))
     implementation(project(":edc-extensions:dcp:verifiable-presentation-cache"))
+    implementation(project(":edc-extensions:dsp:dsp-catalog-08"))
+    implementation(project(":edc-extensions:dsp:dsp-http-api-configuration-08"))
+    implementation(project(":edc-extensions:dsp:dsp-http-dispatcher-08"))
+    implementation(project(":edc-extensions:dsp:dsp-negotiation-08"))
+    implementation(project(":edc-extensions:dsp:dsp-transfer-process-08"))
     implementation(project(":edc-extensions:edr:edr-api-v2"))
     implementation(project(":edc-extensions:edr:edr-callback"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
