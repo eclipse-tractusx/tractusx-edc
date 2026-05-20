@@ -139,6 +139,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("edc.participant.context.id", "general-test-id");
                 put("tractusx.edc.participant.bpn", getBpn());
                 put("edc.iam.did.web.use.https", "false");
+                put("edc.encryption.strict", "false");
             }
         };
 

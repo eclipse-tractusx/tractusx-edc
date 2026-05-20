@@ -54,7 +54,6 @@ public abstract class TractusxDcpParticipantBase extends TractusxParticipantBase
                 put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
                 put("edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId());
                 put("edc.iam.did.web.use.https", "false");
-                put("edc.encryption.strict", "false");
             }
         };
 
