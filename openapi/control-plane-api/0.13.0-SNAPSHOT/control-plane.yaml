@@ -4550,7 +4550,6 @@ components:
       - '@type'
       - contractId
       - counterPartyAddress
-      - protocol
       - transferType
       type: object
       properties:
@@ -4567,6 +4566,8 @@ components:
           type: string
         protocol:
           type: string
+        profile:
+          type: string
         contractId:
           type: string
         transferType:
@@ -4579,6 +4580,7 @@ components:
             $ref: "#/components/schemas/callback-address-schema"
         dataplaneMetadata:
           $ref: "#/components/schemas/dataplane-metadata-schema"
+      nullable: true
     callback-address-schema:
       title: CallbackAddressSchema
       type: object
@@ -5121,7 +5123,6 @@ components:
       - '@type'
       - counterPartyAddress
       - counterPartyId
-      - protocol
       type: object
       properties:
         '@context':
@@ -5135,6 +5136,8 @@ components:
           type: string
         protocol:
           type: string
+        profile:
+          type: string
         counterPartyAddress:
           type: string
         counterPartyId:
@@ -5145,6 +5148,7 @@ components:
             type: string
         querySpec:
           $ref: "#/components/schemas/QuerySpec_1"
+      nullable: true
     policy-validation-result-schema:
       title: PolicyValidationResultSchema
       type: object
@@ -5186,6 +5190,7 @@ components:
       example:
         stateTimestamp: 0
         '@type': '@type'
+        profile: profile
         counterPartyId: counterPartyId
         type: CONSUMER
         '@context':
@@ -5227,6 +5232,7 @@ components:
       - counterPartyAddress
       - counterPartyId
       - createdAt
+      - profile
       - protocol
       - state
       - type
@@ -5251,6 +5257,8 @@ components:
         stateTimestamp:
           type: integer
         protocol:
+          type: string
+        profile:
           type: string
         createdAt:
           type: integer
@@ -5933,7 +5941,6 @@ components:
       - '@type'
       - counterPartyAddress
       - policy
-      - protocol
       type: object
       properties:
         '@context':
@@ -5949,12 +5956,15 @@ components:
           type: string
         protocol:
           type: string
+        profile:
+          type: string
         policy:
           $ref: "#/components/schemas/contract-offer-schema"
         callbackAddresses:
           type: array
           items:
             $ref: "#/components/schemas/callback-address-schema"
+      nullable: true
     contract-offer-schema:
       title: ContractOfferSchema
       type: object
