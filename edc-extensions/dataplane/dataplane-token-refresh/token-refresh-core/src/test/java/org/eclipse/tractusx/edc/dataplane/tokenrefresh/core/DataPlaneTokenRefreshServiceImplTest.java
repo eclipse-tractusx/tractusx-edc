@@ -40,6 +40,7 @@ import org.eclipse.edc.token.spi.TokenValidationRule;
 import org.eclipse.edc.token.spi.TokenValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.time.Clock;
 import java.util.Map;
@@ -49,7 +50,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createJwt;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AGREEMENT_ID_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_TOKEN;
@@ -95,15 +98,27 @@ class DataPlaneTokenRefreshServiceImplTest {
 
         when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(accessTokenDataStore.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
+        Map<String, Object> additionalTokenData = Map.of(
+                "fizz", "buzz",
+                "refreshToken", "getsOverwritten",
+                AUDIENCE_PROPERTY, "audience",
+                AGREEMENT_ID_PROPERTY, "contract-agreement-id",
+                BPN_PROPERTY, "BPN"
+        );
 
-        var result = accessTokenService.obtainToken(params, address, Map.of("fizz", "buzz", "refreshToken", "getsOverwritten", AUDIENCE_PROPERTY, "audience"));
+        var result = accessTokenService.obtainToken(params, address, additionalTokenData);
+
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
         assertThat(result.getContent().getAdditional())
                 .containsKeys("fizz", EDR_PROPERTY_REFRESH_TOKEN, EDR_PROPERTY_EXPIRES_IN, EDR_PROPERTY_REFRESH_ENDPOINT)
                 .containsEntry(EDR_PROPERTY_REFRESH_TOKEN, "foo-token");
 
         verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
-        verify(accessTokenDataStore).store(any(AccessTokenData.class));
+        var captor = ArgumentCaptor.forClass(AccessTokenData.class);
+        verify(accessTokenDataStore).store(captor.capture());
+        var storedAccessTokenData = captor.getValue();
+        assertThat(storedAccessTokenData.dataAddress().getProperty("header:Edc-Contract-Agreement-Id")).isEqualTo("contract-agreement-id");
+        assertThat(storedAccessTokenData.dataAddress().getProperty("header:Edc-Bpn")).isEqualTo("BPN");
     }
 
     @Test
@@ -127,7 +142,6 @@ class DataPlaneTokenRefreshServiceImplTest {
                 .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> accessTokenService.obtainToken(TokenParameters.Builder.newInstance().build(), null, Map.of()))
                 .isInstanceOf(NullPointerException.class);
-
     }
 
     @Test
@@ -170,7 +184,7 @@ class DataPlaneTokenRefreshServiceImplTest {
         var result = accessTokenService.obtainToken(params, address, Map.of(AUDIENCE_PROPERTY, "audience"));
         assertThat(result).isFailed().detail().isEqualTo("test failure");
 
-        verify(tokenGenService, times(2)).generate(any(), any(), any(TokenDecorator[].class));
+        verify(tokenGenService, times(1)).generate(any(), any(), any(TokenDecorator[].class));
         verify(accessTokenDataStore).store(any(AccessTokenData.class));
     }
 
