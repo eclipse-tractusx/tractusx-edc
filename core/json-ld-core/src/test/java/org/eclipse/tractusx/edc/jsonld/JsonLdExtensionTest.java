@@ -29,9 +29,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.URI;
 
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.CREDENTIALS_V_1;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_ED25519_V1;
-import static org.eclipse.tractusx.edc.jsonld.JsonLdExtension.SECURITY_JWS_V1;
+import static org.eclipse.tractusx.edc.jsonld.TxCachedDocumentRegistry.CREDENTIALS_V_1;
+import static org.eclipse.tractusx.edc.jsonld.TxCachedDocumentRegistry.SECURITY_ED25519_V1;
+import static org.eclipse.tractusx.edc.jsonld.TxCachedDocumentRegistry.SECURITY_JWS_V1;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
