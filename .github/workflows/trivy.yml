@@ -50,38 +50,40 @@ jobs:
     uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
     with:
       scan-type: "config"
-      output: "trivy-results-config.sarif"
+      output-file: "trivy-results-config.sarif"
 
-  trivy:
+  trivy-edc-runtime-memory:
     needs: [ git-sha7 ]
     permissions:
       actions: read
       contents: read
       security-events: write
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false # continue scanning other images although if the other has been vulnerable
-      matrix:
-        image:
-          - edc-runtime-memory
-          - edc-controlplane-postgresql-hashicorp-vault
-          - edc-dataplane-hashicorp-vault
-    steps:
-        ## This step will fail if the docker images is not found
-      - name: "Check if image exists"
-        id: imageCheck
-        env:
-          IMAGE: ${{ matrix.image }}
-          SHA7: ${{ needs.git-sha7.outputs.value }}
-        run: |
-          docker buildx imagetools inspect --format '{{ json . }}' "tractusx/$IMAGE:sha-$SHA7"
-        continue-on-error: true
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "image"
+      image-ref: "tractusx/edc-runtime-memory:sha-${{ needs.git-sha7.outputs.value }}"
+      output-file: "trivy-results-edc-runtime-memory.sarif"
 
-        ## the next two steps will only execute if the image exists check was successful
-      - name: Run Trivy vulnerability scanner
-        if: success() && steps.imageCheck.outcome != 'failure'
-        uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
-        with:
-          scan-type: "image"
-          image-ref: "tractusx/${{ matrix.image }}:sha-${{ needs.git-sha7.outputs.value }}"
-          output: "trivy-results-${{ matrix.image }}.sarif"
+  trivy-edc-controlplane:
+    needs: [ git-sha7 ]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "image"
+      image-ref: "tractusx/edc-controlplane-postgresql-hashicorp-vault:sha-${{ needs.git-sha7.outputs.value }}"
+      output-file: "trivy-results-edc-controlplane-postgresql-hashicorp-vault.sarif"
+
+  trivy-edc-dataplane:
+    needs: [ git-sha7 ]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "image"
+      image-ref: "tractusx/edc-dataplane-hashicorp-vault:sha-${{ needs.git-sha7.outputs.value }}"
+      output-file: "trivy-results-edc-dataplane-hashicorp-vault.sarif"
