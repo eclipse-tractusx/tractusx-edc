@@ -21,6 +21,8 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceService;
+import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionerManager;
 import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGeneratorManager;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
@@ -33,17 +35,20 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(DependencyInjectionExtension.class)
 class ProvisionAdditionalHeadersExtensionTest {
 
     private final ResourceDefinitionGeneratorManager resourceDefinitionGeneratorManager = mock();
     private final ProvisionerManager provisionerManager = mock();
+    private final DataPlaneAuthorizationService dataPlaneAuthorizationService = mock(DataPlaneAuthorizationService.class, withSettings().extraInterfaces(EndpointDataReferenceService.class));
 
     @BeforeEach
     void setUp(ServiceExtensionContext context) {
         context.registerService(ResourceDefinitionGeneratorManager.class, resourceDefinitionGeneratorManager);
         context.registerService(ProvisionerManager.class, provisionerManager);
+        context.registerService(DataPlaneAuthorizationService.class, dataPlaneAuthorizationService);
     }
 
     @Test
