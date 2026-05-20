@@ -34,7 +34,6 @@ dependencies {
     testFixturesApi(project(":core:json-ld-cx"))
 
     testFixturesApi(libs.edc.ext.jsonld)
-    testFixturesApi(libs.edc.core.token)
     testFixturesApi(libs.edc.junit)
     testFixturesApi(libs.edc.lib.cryptocommon)
     testFixturesApi(libs.edc.lib.jws2020)

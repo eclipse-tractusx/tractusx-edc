@@ -27,6 +27,7 @@ import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
 import org.eclipse.tractusx.edc.tests.participant.TractusxDcpParticipantBase;
@@ -57,7 +58,8 @@ public class DcpHelperFunctions {
                 .active(true)
                 .build();
 
-        participantContextService.createParticipantContext(participantManifest);
+        participantContextService.createParticipantContext(participantManifest)
+                .orElseThrow(f -> new EdcException("Cannot create participant context: " + f.getFailureDetail()));
 
         var vault = identityHubRuntime.getService(Vault.class);
         vault.storeSecret(issuer.getPrivateKeyAlias(), issuer.getPrivateKeyAsString());

@@ -101,7 +101,7 @@ public class MultiCloudTest {
         var bucketName = MINIO_CONTAINER.createBucket();
 
         var request = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/2025/1/"))
                 .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
                 .add("@id", UUID.randomUUID().toString())
                 .add("processId", UUID.randomUUID().toString())
@@ -155,7 +155,7 @@ public class MultiCloudTest {
         var bucketName = MINIO_CONTAINER.createBucket();
 
         var request = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/2025/1/"))
                 .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
                 .add("@id", UUID.randomUUID().toString())
                 .add("processId", UUID.randomUUID().toString())
@@ -214,7 +214,7 @@ public class MultiCloudTest {
                 """.formatted(blobStoreClient.generateAccountSas(containerName)));
 
         var request = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/2025/1/"))
                 .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
                 .add("@id", UUID.randomUUID().toString())
                 .add("processId", UUID.randomUUID().toString())
@@ -276,7 +276,7 @@ public class MultiCloudTest {
                 """.formatted(blobStoreClient.generateAccountSas(containerName)));
 
         var request = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/2025/1/"))
                 .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
                 .add("@id", UUID.randomUUID().toString())
                 .add("processId", UUID.randomUUID().toString())
@@ -332,7 +332,7 @@ public class MultiCloudTest {
                 """.formatted(blobStoreClient.generateAccountSas(containerName)));
 
         var request = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/v0.8/"))
+                .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/2025/1/"))
                 .add("@type", EDC_DATA_FLOW_START_MESSAGE_TYPE)
                 .add("@id", UUID.randomUUID().toString())
                 .add("processId", UUID.randomUUID().toString())

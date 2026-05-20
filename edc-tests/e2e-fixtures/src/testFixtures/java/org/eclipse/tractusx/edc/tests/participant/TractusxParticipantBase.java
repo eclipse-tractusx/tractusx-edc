@@ -29,6 +29,8 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.tractusx.edc.cx.CxCachedDocumentRegistry;
+import org.eclipse.tractusx.edc.jsonld.TxCachedDocumentRegistry;
 import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
 import org.eclipse.tractusx.edc.tests.ParticipantEdrApi;
@@ -319,7 +321,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     // The following functions have been implemented, because they possibilities upstream have been removed
     // They are needed for support of DSP version v0.8
     public void setProtocol(String protocol) {
-        if (DSP_2025.contains(protocol)) {
+        if (DSP_2025.equals(protocol)) {
             this.protocol = new Protocol(DSP_2025, DSP_2025_PATH);
         } else {
             this.protocol = new Protocol(DSP_08, DSP_08_PATH);
@@ -372,6 +374,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             this.participant.edrs = new ParticipantEdrApi(participant);
             this.participant.data = new ParticipantDataApi();
             this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(this.participant.dataPlaneProxy, Map.of("x-api-key", CONSUMER_PROXY_API_KEY));
+
+            TxCachedDocumentRegistry.getDocuments().forEach(result -> result
+                    .onSuccess(c -> this.participant.jsonLd.registerCachedDocument(c.url(), c.resource()))
+            );
+
+            CxCachedDocumentRegistry.getDocuments().forEach(result -> result
+                    .onSuccess(c -> this.participant.jsonLd.registerCachedDocument(c.url(), c.resource()))
+            );
+
             return participant;
         }
     }
