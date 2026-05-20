@@ -38,6 +38,7 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
+import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.rules.ExpirationIssuedAtValidationRule;
@@ -66,7 +67,9 @@ import java.util.stream.Stream;
 
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.AUDIENCE;
 import static org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames.EXPIRATION_TIME;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AGREEMENT_ID_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_EXPIRES_IN;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_AUDIENCE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRESH_ENDPOINT;
@@ -220,15 +223,6 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         Objects.requireNonNull(tokenParameters, "TokenParameters must be non-null.");
         Objects.requireNonNull(backendDataAddress, "DataAddress must be non-null.");
 
-
-        //create a refresh token
-        var refreshTokenResult = createToken(TokenParameters.Builder.newInstance().build());
-        if (refreshTokenResult.failed()) {
-            var msg = "Could not generate refresh token: %s".formatted(refreshTokenResult.getFailureDetail());
-            monitor.debug(msg);
-            return Result.failure(msg);
-        }
-
         var accessTokenResult = createToken(tokenParameters);
         if (accessTokenResult.failed()) {
             var msg = "Could not generate access token: %s".formatted(accessTokenResult.getFailureDetail());
@@ -236,15 +230,13 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             return Result.failure(msg);
         }
 
-        // the edrAdditionalData contains the refresh token, which is NOT supposed to be put in the DB
-        // note: can't use DBI (double-bracket initialization) here, because SonarCloud will complain about it
-        var additionalDataForStorage = new HashMap<>(additionalTokenData);
-        additionalDataForStorage.put("authType", "bearer");
+        var accessToken = accessTokenResult.getContent();
+        var storeResult = storeAccessTokenData(tokenParameters, backendDataAddress, additionalTokenData, accessToken);
 
-        // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
-        var claimToken = ClaimToken.Builder.newInstance().claims(tokenParameters.getClaims()).build();
-        var accessTokenData = new AccessTokenData(accessTokenResult.getContent().id(), claimToken, backendDataAddress, additionalDataForStorage);
-        var storeResult = accessTokenDataStore.store(accessTokenData);
+        if (storeResult.failed()) {
+            monitor.severe("Could not store AccessTokenData: %s".formatted(storeResult.getFailureDetail()));
+            return Result.failure(storeResult.getFailureMessages());
+        }
 
         var participantContextServiceResult = participantContextSupplier.get();
         if (participantContextServiceResult.failed()) {
@@ -254,11 +246,18 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         }
         var participantContext = participantContextServiceResult.getContent();
 
-        storeRefreshToken(accessTokenResult.getContent().id(), new RefreshToken(refreshTokenResult.getContent().tokenRepresentation().getToken(),
+        var refreshTokenResult = createToken(TokenParameters.Builder.newInstance().build());
+        if (refreshTokenResult.failed()) {
+            var msg = "Could not generate refresh token: %s".formatted(refreshTokenResult.getFailureDetail());
+            monitor.debug(msg);
+            return Result.failure(msg);
+        }
+
+        storeRefreshToken(accessToken.id(), new RefreshToken(refreshTokenResult.getContent().tokenRepresentation().getToken(),
                 tokenExpirySeconds, refreshEndpoint), participantContext);
 
         // the refresh token information must be returned in the EDR
-        var audience = additionalDataForStorage.get(AUDIENCE_PROPERTY);
+        var audience = additionalTokenData.get(AUDIENCE_PROPERTY);
 
         if (audience == null) {
             var msg = "Missing audience in the additional properties";
@@ -273,15 +272,10 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         edrAdditionalData.put(EDR_PROPERTY_REFRESH_AUDIENCE, audience);
 
         var edrTokenRepresentation = TokenRepresentation.Builder.newInstance()
-                .token(accessTokenResult.getContent().tokenRepresentation().getToken()) // the access token
+                .token(accessToken.tokenRepresentation().getToken()) // the access token
                 .additional(edrAdditionalData) //contains additional properties and the refresh token
                 .expiresIn(tokenExpirySeconds) //todo: needed?
                 .build();
-
-        if (storeResult.failed()) {
-            monitor.severe("Could not store AccessTokenData: %s".formatted(storeResult.getFailureDetail()));
-            return Result.failure(storeResult.getFailureMessages());
-        }
 
         return Result.success(edrTokenRepresentation);
     }
@@ -317,6 +311,23 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                     monitor.debug(msg);
                     return ServiceResult.notFound(msg);
                 });
+    }
+
+    private StoreResult<Void> storeAccessTokenData(TokenParameters tokenParameters, DataAddress backendDataAddress,
+                                                   Map<String, Object> additionalTokenData, TokenRepresentationWithId token) {
+        var additionalDataForStorage = new HashMap<>(additionalTokenData);
+        additionalDataForStorage.put("authType", "bearer");
+
+        var claimToken = ClaimToken.Builder.newInstance().claims(tokenParameters.getClaims()).build();
+
+        var sourceDataAddress = backendDataAddress.toBuilder()
+                .property("header:Edc-Contract-Agreement-Id", additionalTokenData.get(AGREEMENT_ID_PROPERTY))
+                .property("header:Edc-Bpn", additionalTokenData.get(BPN_PROPERTY))
+                .build();
+
+        var accessTokenData = new AccessTokenData(token.id(), claimToken, sourceDataAddress, additionalDataForStorage);
+
+        return accessTokenDataStore.store(accessTokenData);
     }
 
     private Result<Void> deleteTokenData(AccessTokenData tokenData) {
