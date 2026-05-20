@@ -21,6 +21,8 @@
 
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceService;
+import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionerManager;
 import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGeneratorManager;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -38,10 +40,14 @@ public class ProvisionAdditionalHeadersExtension implements ServiceExtension {
     @Inject
     private ProvisionerManager provisionerManager;
 
+    @Inject
+    private DataPlaneAuthorizationService dataPlaneAuthorizationService;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
-        resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(HTTP_DATA_TYPE));
-        resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(PROXY_HTTP_DATA_TYPE));
+        var endpointDataReferenceService = (EndpointDataReferenceService)dataPlaneAuthorizationService;
+        resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(HTTP_DATA_TYPE, endpointDataReferenceService));
+        resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(PROXY_HTTP_DATA_TYPE, endpointDataReferenceService));
         provisionerManager.register(new AdditionalHeadersProvisioner(HTTP_DATA_TYPE));
         provisionerManager.register(new AdditionalHeadersProvisioner(PROXY_HTTP_DATA_TYPE));
         provisionerManager.register(new AdditionalHeadersDeprovisioner(HTTP_DATA_TYPE));

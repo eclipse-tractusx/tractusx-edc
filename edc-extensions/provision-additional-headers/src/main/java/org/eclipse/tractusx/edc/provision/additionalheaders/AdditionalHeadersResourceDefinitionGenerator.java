@@ -22,8 +22,10 @@
 package org.eclipse.tractusx.edc.provision.additionalheaders;
 
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceService;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGenerator;
+import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AGREEMENT_ID_PROPERTY;
@@ -33,8 +35,11 @@ class AdditionalHeadersResourceDefinitionGenerator implements ResourceDefinition
 
     private final String type;
 
-    AdditionalHeadersResourceDefinitionGenerator(String type) {
+    private final EndpointDataReferenceService endpointDataReferenceService;
+
+    AdditionalHeadersResourceDefinitionGenerator(String type, EndpointDataReferenceService endpointDataReferenceService) {
         this.type = type;
+        this.endpointDataReferenceService = endpointDataReferenceService;
     }
 
     @Override
@@ -44,12 +49,17 @@ class AdditionalHeadersResourceDefinitionGenerator implements ResourceDefinition
 
     @Override
     public @Nullable ProvisionResource generate(DataFlow dataFlow) {
-        return ProvisionResource.Builder.newInstance()
-                .flowId(dataFlow.getId())
-                .type(type)
-                .dataAddress(dataFlow.getSource())
-                .property(AGREEMENT_ID_PROPERTY, dataFlow.getAgreementId())
-                .property(BPN_PROPERTY, dataFlow.getProperties().get(BPN_PROPERTY))
-                .build();
+        var edr = endpointDataReferenceService.createEndpointDataReference(dataFlow);
+        if (edr.succeeded()) {
+            return ProvisionResource.Builder.newInstance()
+                    .flowId(dataFlow.getId())
+                    .type(type)
+                    .dataAddress(edr.getContent())
+                    .property(AGREEMENT_ID_PROPERTY, dataFlow.getAgreementId())
+                    .property(BPN_PROPERTY, dataFlow.getProperties().get(BPN_PROPERTY))
+                    .build();
+        } else {
+            throw new EdcException("Failed to create EndpointDataReference: " + edr.getFailureDetail());
+        }
     }
 }
