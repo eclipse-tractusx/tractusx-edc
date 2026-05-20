@@ -55,7 +55,6 @@ dependencies {
 
     testFixturesApi(testFixtures(libs.edc.api.management.test.fixtures))
 
-    testFixturesApi(libs.edc.iam.decentralized.claims.core)
     testFixturesApi(libs.edc.verifiablecredentials.jwt)
 
     testFixturesApi(libs.awaitility)

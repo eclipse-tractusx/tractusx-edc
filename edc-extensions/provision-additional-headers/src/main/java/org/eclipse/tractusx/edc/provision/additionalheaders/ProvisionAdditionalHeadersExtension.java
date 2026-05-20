@@ -45,7 +45,7 @@ public class ProvisionAdditionalHeadersExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var endpointDataReferenceService = (EndpointDataReferenceService)dataPlaneAuthorizationService;
+        var endpointDataReferenceService = (EndpointDataReferenceService) dataPlaneAuthorizationService;
         resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(HTTP_DATA_TYPE, endpointDataReferenceService));
         resourceDefinitionGeneratorManager.registerProviderGenerator(new AdditionalHeadersResourceDefinitionGenerator(PROXY_HTTP_DATA_TYPE, endpointDataReferenceService));
         provisionerManager.register(new AdditionalHeadersProvisioner(HTTP_DATA_TYPE));

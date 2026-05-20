@@ -30,7 +30,6 @@ dependencies {
     implementation(libs.edc.spi.participant.context.single)
     implementation(libs.edc.auth.oauth2.client)
 
-
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.lib.http))
 }
