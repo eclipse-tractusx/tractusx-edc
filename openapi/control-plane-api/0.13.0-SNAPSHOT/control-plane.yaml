@@ -2089,47 +2089,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/api-error-schema"
-  /v4beta/transferprocesses/{id}/deprovision:
-    post:
-      tags:
-      - Transfer Process v4beta
-      description: "Requests the deprovisioning of resources associated with a transfer\
-        \ process. Due to the asynchronous nature of transfers, a successful response\
-        \ only indicates that the request was successfully received. This may take\
-        \ a long time, so clients must poll the /{id}/state endpoint to track the\
-        \ state."
-      operationId: deprovisionTransferProcessV4
-      parameters:
-      - name: id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "204":
-          description: Request to deprovision the transfer process was successfully
-            received
-          links:
-            poll-state:
-              operationId: deprovisionTransferProcessV3
-        "400":
-          description: "Request was malformed, e.g. id was null"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-        "404":
-          description: A transfer process with the given ID does not exist
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
   /v3/contractnegotiations/{id}/terminate:
     post:
       tags:
@@ -3677,7 +3636,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/ContractRequest
         counterPartyAddress: http://provider-address
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         policy:
           '@context': http://www.w3.org/ns/odrl.jsonld
           '@type': odrl:Offer
@@ -3811,7 +3770,7 @@ components:
         '@type': https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
         '@id': negotiation-id
         type: PROVIDER
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         counterPartyId: counter-party-id
         counterPartyAddress: http://counter/party/address
         state: VERIFIED
@@ -4379,7 +4338,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/ContractRequest
         counterPartyAddress: http://provider-address
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         policy:
           '@context': http://www.w3.org/ns/odrl.jsonld
           '@type': odrl:Offer
@@ -5490,7 +5449,7 @@ components:
           edc: https://w3id.org/edc/v0.0.1/ns/
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
-          dspace: https://w3id.org/dspace/v0.8/
+          dspace: https://w3id.org/dspace/2025/1/
     CatalogRequestV3:
       required:
       - '@context'
@@ -5521,7 +5480,7 @@ components:
         '@type': CatalogRequest
         counterPartyAddress: http://provider-address
         counterPartyId: providerId
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         additionalScopes:
         - org.eclipse.edc.vc.type:SomeCredential:read
         - org.eclipse.edc.vc.type:AnotherCredential:write
@@ -6031,7 +5990,7 @@ components:
           edc: https://w3id.org/edc/v0.0.1/ns/
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
-          dspace: https://w3id.org/dspace/v0.8/
+          dspace: https://w3id.org/dspace/2025/1/
     DatasetRequestV3:
       type: object
       properties:
@@ -6053,7 +6012,7 @@ components:
         '@id': dataset-id
         counterPartyAddress: http://counter-party-address
         counterPartyId: counter-party-id
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
     TransferProcessV3:
       type: object
       properties:
@@ -7040,7 +6999,7 @@ components:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         counterPartyAddress: http://provider-address
         contractId: contract-id
         transferType: transferType
