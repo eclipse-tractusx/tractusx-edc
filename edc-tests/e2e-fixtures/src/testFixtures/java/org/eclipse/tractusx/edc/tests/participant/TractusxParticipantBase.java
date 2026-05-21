@@ -25,9 +25,12 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.tractusx.edc.cx.CxCachedDocumentRegistry;
+import org.eclipse.tractusx.edc.jsonld.TxCachedDocumentRegistry;
 import org.eclipse.tractusx.edc.tests.ParticipantConsumerDataPlaneApi;
 import org.eclipse.tractusx.edc.tests.ParticipantDataApi;
 import org.eclipse.tractusx.edc.tests.ParticipantEdrApi;
@@ -56,6 +59,10 @@ import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.Agreement
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_08_PATH;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_PATH;
 
 
 /**
@@ -131,10 +138,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("tx.edc.iam.dcp.bdrs.server.url", "http://sts.example.com");
                 put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(dataPlanePublic.get()));
                 put("edc.policy.validation.enabled", "true");
-                put("edc.iam.did.web.use.https", "false");
                 put("edc.participant.context.id", "general-test-id");
                 put("tractusx.edc.participant.bpn", getBpn());
                 put("edc.iam.did.web.use.https", "false");
+                put("edc.encryption.strict", "false");
             }
         };
 
@@ -175,7 +182,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/business-partner-groups")
+                .post("/business-partner-groups")
                 .then()
                 .statusCode(204);
     }
@@ -192,7 +199,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .put("/v3/business-partner-groups")
+                .put("/business-partner-groups")
                 .then()
                 .statusCode(204);
     }
@@ -203,7 +210,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void deleteBusinessPartner(String bpn) {
         baseManagementRequest()
                 .when()
-                .delete("/v3/business-partner-groups/{bpn}", bpn)
+                .delete("/business-partner-groups/{bpn}", bpn)
                 .then()
                 .statusCode(204);
     }
@@ -218,7 +225,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/contractagreements/retirements")
+                .post("/contractagreements/retirements")
                 .then();
     }
 
@@ -249,14 +256,14 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(TYPE, "CatalogRequest")
                 .add("counterPartyId", provider.id)
                 .add("counterPartyAddress", provider.getProtocolUrl())
-                .add("protocol", protocol);
+                .add("protocol", protocol.name());
 
         return baseManagementRequest()
                 .header("x-api-key", MANAGEMENT_API_KEY)
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
-                .post("/v3/catalog/request")
+                .post("/catalog/request")
                 .then();
 
     }
@@ -265,7 +272,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         return baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .get("/transferprocesses/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath()
@@ -274,9 +281,10 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public void triggerDataTransfer(String dataFlowId) {
         baseManagementRequest()
+                .basePath("v4alpha")
                 .contentType(JSON)
                 .when()
-                .post("/v4alpha/dataflows/{id}/trigger", dataFlowId)
+                .post("/dataflows/{id}/trigger", dataFlowId)
                 .then()
                 .log().ifError()
                 .statusCode(204);
@@ -284,21 +292,42 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public ValidatableResponse discoverDspParameters(JsonObject requestBody) {
         return baseManagementRequest()
+                .basePath("v4alpha")
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("/v4alpha/connectordiscovery/dspversionparams")
+                .post("/connectordiscovery/dspversionparams")
                 .then();
     }
 
     public ValidatableResponse discoverConnectorServices(JsonObject requestBody) {
         return baseManagementRequest()
+                .basePath("v4alpha")
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
-                .post("/v4alpha/connectordiscovery/connectors")
+                .post("/connectordiscovery/connectors")
                 .then();
     }
+
+    // The following functions have been implemented, because these helper methods were removed upstream
+    // They are needed for support of DSP version v0.8
+    public void setProtocol(String protocol) {
+        if (DSP_2025.equals(protocol)) {
+            this.protocol = new Protocol(DSP_2025, DSP_2025_PATH);
+        } else {
+            this.protocol = new Protocol(DSP_08, DSP_08_PATH);
+        }
+    }
+
+    public void setJsonLd(JsonLd jsonLd) {
+        this.jsonLd = jsonLd;
+    }
+
+    public String getBaseUrl() {
+        return controlPlaneProtocol.get().toString();
+    }
+    // End of section with helper functions removed from upstream
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
         protected Builder(P participant) {
@@ -316,7 +345,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         }
         
         public B protocolVersionPath(String path) {
-            this.participant.protocolVersionPath = path;
+            this.participant.protocol = new Protocol(this.participant.protocol.name(), path);
             return self();
         }
 
@@ -337,6 +366,15 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             this.participant.edrs = new ParticipantEdrApi(participant);
             this.participant.data = new ParticipantDataApi();
             this.participant.dataPlane = new ParticipantConsumerDataPlaneApi(this.participant.dataPlaneProxy, Map.of("x-api-key", CONSUMER_PROXY_API_KEY));
+
+            TxCachedDocumentRegistry.getDocuments().forEach(result -> result
+                    .onSuccess(c -> this.participant.jsonLd.registerCachedDocument(c.url(), c.resource()))
+            );
+
+            CxCachedDocumentRegistry.getDocuments().forEach(result -> result
+                    .onSuccess(c -> this.participant.jsonLd.registerCachedDocument(c.url(), c.resource()))
+            );
+
             return participant;
         }
     }

@@ -24,7 +24,7 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 
 import java.net.URI;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -42,18 +42,20 @@ public abstract class TractusxDcpParticipantBase extends TractusxParticipantBase
     protected String trustedIssuer;
 
     public Config dcpConfig() {
-        var additionalSettings = Map.of(
-                "edc.iam.sts.oauth.token.url", stsUri.get() + "/token",
-                "edc.iam.sts.oauth.client.id", getDid(),
-                "edc.iam.sts.oauth.client.secret.alias", "client_secret_alias",
-                "edc.ih.iam.id", getDid(),
-                "edc.ih.iam.publickey.alias", getFullKeyId(),
-                "edc.agent.identity.key", "client_id",
-                "edc.iam.trusted-issuer.issuer.id", trustedIssuer,
-                "edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias(),
-                "edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId(),
-                "edc.iam.did.web.use.https", "false"
-        );
+        var additionalSettings = new HashMap<String, String>() {
+            {
+                put("edc.iam.sts.oauth.token.url", stsUri.get() + "/token");
+                put("edc.iam.sts.oauth.client.id", getDid());
+                put("edc.iam.sts.oauth.client.secret.alias", "client_secret_alias");
+                put("edc.ih.iam.id", getDid());
+                put("edc.ih.iam.publickey.alias", getFullKeyId());
+                put("edc.agent.identity.key", "client_id");
+                put("edc.iam.trusted-issuer.issuer.id", trustedIssuer);
+                put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
+                put("edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId());
+                put("edc.iam.did.web.use.https", "false");
+            }
+        };
 
         return getConfig().merge(ConfigFactory.fromMap(additionalSettings));
     }

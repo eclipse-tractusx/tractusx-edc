@@ -20,11 +20,10 @@
 package org.eclipse.tractusx.edc.mock.services;
 
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.DeprovisionedResource;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionResponse;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.NotifyPreparedCommand;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.NotifyStartedCommand;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.ResumeTransferCommand;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.SuspendTransferCommand;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.command.TerminateTransferCommand;
@@ -87,11 +86,6 @@ public class TransferProcessServiceStub extends AbstractServiceStub implements T
     }
 
     @Override
-    public @NotNull ServiceResult<Void> deprovision(String transferProcessId) {
-        return responseQueue.getNext(Void.class, "Error deprovisioning TransferProcess: %s");
-    }
-
-    @Override
     public @NotNull ServiceResult<TransferProcess> initiateTransfer(ParticipantContext participantContext, TransferRequest request) {
         return responseQueue.getNext(TransferProcess.class, "Error initiating TransferProcess: %s");
     }
@@ -102,12 +96,7 @@ public class TransferProcessServiceStub extends AbstractServiceStub implements T
     }
 
     @Override
-    public ServiceResult<Void> completeDeprovision(String transferProcessId, DeprovisionedResource resource) {
-        return responseQueue.getNext(Void.class, "Error completing/deprovisioning TransferProcess: %s");
-    }
-
-    @Override
-    public ServiceResult<Void> addProvisionedResource(String transferProcessId, ProvisionResponse response) {
-        return responseQueue.getNext(Void.class, "Error adding Provisioned resource to TransferProcess: %s");
+    public ServiceResult<Void> notifyStarted(NotifyStartedCommand command) {
+        return responseQueue.getNext(Void.class, "Error notifying started on TransferProcess: %s");
     }
 }

@@ -60,6 +60,7 @@ public class IdentityHubParticipant {
         settings.put("web.http.did.path", didApi.get().getPath());
         settings.put("edc.iam.did.web.use.https", "false");
         settings.put("edc.api.accounts.key", "password");
+        settings.put("edc.encryption.strict", "false");
 
         return ConfigFactory.fromMap(settings);
     }

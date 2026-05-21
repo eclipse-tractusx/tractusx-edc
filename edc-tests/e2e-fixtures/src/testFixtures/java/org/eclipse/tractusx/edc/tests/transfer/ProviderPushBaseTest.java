@@ -170,8 +170,7 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
 
         consumer().terminateTransfer(consumerTransferProcessId);
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
-        await().atMost(ASYNC_TIMEOUT)
-                .untilAsserted(() -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.DEPROVISIONED));
+        await().untilAsserted(() -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.TERMINATED));
     }
 
     private void waitAndAssert(Duration duration, Runnable... assertions) {
