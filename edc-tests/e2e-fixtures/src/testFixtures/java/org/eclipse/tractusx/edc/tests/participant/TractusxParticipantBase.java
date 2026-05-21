@@ -280,45 +280,37 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     }
 
     public void triggerDataTransfer(String dataFlowId) {
-        var oldBase = this.managementVersionBasePath;
-        this.managementVersionBasePath = "/v4alpha";
         baseManagementRequest()
+                .basePath("v4alpha")
                 .contentType(JSON)
                 .when()
                 .post("/dataflows/{id}/trigger", dataFlowId)
                 .then()
                 .log().ifError()
                 .statusCode(204);
-        this.managementVersionBasePath = oldBase;
     }
 
     public ValidatableResponse discoverDspParameters(JsonObject requestBody) {
-        var oldBase = this.managementVersionBasePath;
-        this.managementVersionBasePath = "/v4alpha";
-        var response = baseManagementRequest()
+        return baseManagementRequest()
+                .basePath("v4alpha")
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
                 .post("/connectordiscovery/dspversionparams")
                 .then();
-        this.managementVersionBasePath = oldBase;
-        return response;
     }
 
     public ValidatableResponse discoverConnectorServices(JsonObject requestBody) {
-        var oldBase = this.managementVersionBasePath;
-        this.managementVersionBasePath = "/v4alpha";
-        var response = baseManagementRequest()
+        return baseManagementRequest()
+                .basePath("v4alpha")
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
                 .post("/connectordiscovery/connectors")
                 .then();
-        this.managementVersionBasePath = oldBase;
-        return response;
     }
 
-    // The following functions have been implemented, because they possibilities upstream have been removed
+    // The following functions have been implemented, because these helper methods were removed upstream
     // They are needed for support of DSP version v0.8
     public void setProtocol(String protocol) {
         if (DSP_2025.equals(protocol)) {

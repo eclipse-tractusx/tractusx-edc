@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -320,12 +321,15 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
         var claimToken = ClaimToken.Builder.newInstance().claims(tokenParameters.getClaims()).build();
 
-        var sourceDataAddress = backendDataAddress.toBuilder()
-                .property("header:Edc-Contract-Agreement-Id", additionalTokenData.get(AGREEMENT_ID_PROPERTY))
-                .property("header:Edc-Bpn", additionalTokenData.get(BPN_PROPERTY))
-                .build();
+        var sourceAddressBuilder = backendDataAddress.toBuilder();
 
-        var accessTokenData = new AccessTokenData(token.id(), claimToken, sourceDataAddress, additionalDataForStorage);
+        Optional.ofNullable(additionalTokenData.get(AGREEMENT_ID_PROPERTY))
+                .ifPresent(agreementId -> sourceAddressBuilder.property("header:Edc-Contract-Agreement-Id", agreementId));
+
+        Optional.ofNullable(additionalTokenData.get(BPN_PROPERTY))
+                .ifPresent(bpn -> sourceAddressBuilder.property("header:Edc-Bpn", bpn));
+
+        var accessTokenData = new AccessTokenData(token.id(), claimToken, sourceAddressBuilder.build(), additionalDataForStorage);
 
         return accessTokenDataStore.store(accessTokenData);
     }
