@@ -47,12 +47,12 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.tests.testcontainer.PostgresContainerManager.getPostgresTestContainerName;
@@ -88,7 +88,7 @@ public class ConnectorPostgresqlMigrationTest {
             callableStatement.execute();
             var resultSet = callableStatement.getResultSet();
             resultSet.next();
-            assertThat(resultSet.getString("version")).isEqualTo("0.0.0");
+            assertThat(resultSet.getString("version")).isEqualTo("1.0.0");
             assertThat(resultSet.getString("type")).isEqualTo(SQL.toString());
             assertThat(testMigrationHasBeenApplied(connection)).isEqualTo(true);
         } catch (SQLException e) {
@@ -129,7 +129,7 @@ public class ConnectorPostgresqlMigrationTest {
             callableStatement.execute();
             var resultSet = callableStatement.getResultSet();
             resultSet.next();
-            assertThat(resultSet.getString("version")).isEqualTo("0.0.0");
+            assertThat(resultSet.getString("version")).isEqualTo("1.0.0");
             assertThat(resultSet.getString("type")).isEqualTo(BASELINE.toString());
             assertThat(testMigrationHasBeenApplied(connection)).isEqualTo(true);
         } catch (SQLException e) {
