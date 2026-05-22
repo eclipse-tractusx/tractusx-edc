@@ -45,6 +45,8 @@ permissions:
 jobs:
   run-all-tests:
     name: "Run All Tests"
+    permissions:
+      contents: write
     uses: ./.github/workflows/run-all-tests.yml
     with:
       publish: false
