@@ -32,7 +32,19 @@ on:
     paths-ignore:
       - docs/**
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish snapshot"
+        required: false
+        type: boolean
+        default: false
   workflow_call:
+    inputs:
+      publish:
+        description: "Publish snapshot"
+        required: false
+        type: boolean
+        default: false
 
   schedule:
     - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
@@ -78,7 +90,7 @@ jobs:
     needs: [ summary ]
     permissions:
       contents: write
-    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
+    if: ${{ (github.ref_name == 'main' || startsWith(github.ref_name, 'release/')) && (github.event_name == 'push' || github.event_name == 'schedule' || inputs.publish == true) }}
     uses: ./.github/workflows/publish-new-snapshot.yaml
     with:
       dated_snapshot: ${{ github.event_name == 'schedule' }}

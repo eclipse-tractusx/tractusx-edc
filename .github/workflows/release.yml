@@ -46,6 +46,8 @@ jobs:
   run-all-tests:
     name: "Run All Tests"
     uses: ./.github/workflows/run-all-tests.yml
+    with:
+      publish: false
   # Gate
   validation:
     name: "Workflow Validation"
