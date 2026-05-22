@@ -3,7 +3,6 @@ format.version = "1.1"
 
 [versions]
 edc = "0.16.0"
-edc-next = "0.16.0"
 edc-build = "1.5.2"
 allure = "2.34.0"
 awaitility = "4.3.0"
@@ -174,7 +173,7 @@ dsp-tck-catalog = { module = "org.eclipse.dataspacetck.dsp:dsp-catalog", version
 dsp-tck-contractnegotiation = { module = "org.eclipse.dataspacetck.dsp:dsp-contract-negotiation", version.ref = "dsp-tck" }
 dsp-tck-transferprocess = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer-process", version.ref = "dsp-tck" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
-tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc-next" }
+tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 
 # DSP libraries
 dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }
