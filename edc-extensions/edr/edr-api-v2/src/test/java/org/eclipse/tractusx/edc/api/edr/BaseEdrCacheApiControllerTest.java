@@ -102,7 +102,7 @@ public abstract class BaseEdrCacheApiControllerTest extends RestControllerTestBa
         var responseBody = Json.createObjectBuilder().add(TYPE, ID_RESPONSE_TYPE).add(ID, contractNegotiation.getId()).build();
 
         when(transformerRegistry.transform(any(JsonObject.class), eq(ContractRequest.class))).thenReturn(Result.success(createContractRequest()));
-        when(contractNegotiationService.initiateNegotiation(any(), any())).thenReturn(contractNegotiation);
+        when(contractNegotiationService.initiateNegotiation(any(), any())).thenReturn(ServiceResult.success(contractNegotiation));
         when(transformerRegistry.transform(any(IdResponse.class), eq(JsonObject.class))).thenReturn(Result.success(responseBody));
         var participantContext = ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build();
         when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext));

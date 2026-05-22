@@ -179,6 +179,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
         baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -196,6 +197,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(TX_NAMESPACE + "groups", Json.createArrayBuilder(Arrays.asList(groups)))
                 .build();
         baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -209,6 +211,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
      */
     public void deleteBusinessPartner(String bpn) {
         baseManagementRequest()
+                .basePath("/v3")
                 .when()
                 .delete("/business-partner-groups/{bpn}", bpn)
                 .then()
@@ -222,6 +225,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(AR_ENTRY_REASON, "long-reason")
                 .build();
         return baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(body)
                 .when()
@@ -260,6 +264,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
         return baseManagementRequest()
                 .header("x-api-key", MANAGEMENT_API_KEY)
+                .basePath("/v3")
                 .contentType(JSON)
                 .when()
                 .body(requestBodyBuilder.build())
@@ -270,6 +275,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     
     public String getTransferProcessField(String transferProcessId, String fieldName) {
         return baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .when()
                 .get("/transferprocesses/{id}", transferProcessId)

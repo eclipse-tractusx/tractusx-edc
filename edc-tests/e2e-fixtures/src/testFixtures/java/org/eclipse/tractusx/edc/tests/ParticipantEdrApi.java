@@ -231,6 +231,6 @@ public class ParticipantEdrApi {
     }
 
     private RequestSpecification baseEdrRequest() {
-        return participant.baseManagementRequest().contentType(JSON);
+        return participant.baseManagementRequest().basePath("/v3").contentType(JSON);
     }
 }
