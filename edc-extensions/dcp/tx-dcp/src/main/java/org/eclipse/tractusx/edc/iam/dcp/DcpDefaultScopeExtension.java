@@ -58,6 +58,7 @@ public class DcpDefaultScopeExtension implements ServiceExtension {
 
     @Setting(context = TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, value = "The alias of the scope e.g. read", required = true)
     public static final String OPERATION = "operation";
+
     static final String NAME = "Tractusx default scope extension";
     @Inject
     private PolicyEngine policyEngine;

@@ -25,10 +25,12 @@ import org.eclipse.edc.iam.decentralizedclaims.spi.CredentialServiceClient;
 import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -44,17 +46,21 @@ public class BdrsClientExtension implements ServiceExtension {
     public static final String NAME = "BPN/DID Resolution Service Client Extension";
 
     public static final int DEFAULT_BDRS_CACHE_VALIDITY = 15 * 60; // 15 minutes
-    @Setting(value = "Base URL of the BDRS service", required = true)
-    public static final String BDRS_SERVER_URL_PROPERTY = "tx.edc.iam.dcp.bdrs.server.url";
 
-    @Setting(value = "Base URL of the CredentialService, that belongs to this connector runtime. If not specified, the URL is resolved from this participant's DID document.")
-    public static final String CREDENTIAL_SERVICE_BASE_URL_PROPERTY = "tx.edc.iam.dcp.credentialservice.url";
+    static final String BDRS_SERVER_URL_PROPERTY = "tx.edc.iam.dcp.bdrs.server.url";
 
-    @Setting(value = "Validity period in seconds for the cached BPN/DID mappings. After this period a new resolution request will hit the server.", defaultValue = DEFAULT_BDRS_CACHE_VALIDITY + "")
-    public static final String BDRS_SERVER_CACHE_VALIDITY_PERIOD = "tx.edc.iam.dcp.bdrs.cache.validity";
+    @Setting(key = BDRS_SERVER_URL_PROPERTY, description = "Base URL of the BDRS service", required = true)
+    private String bdrsServerUrl;
 
-    // this setting is already defined in IdentityAndTrustExtension
-    public static final String CONNECTOR_DID_PROPERTY = "edc.iam.issuer.id";
+    static final String CREDENTIAL_SERVICE_BASE_URL_PROPERTY = "tx.edc.iam.dcp.credentialservice.url";
+
+    @Setting(key = CREDENTIAL_SERVICE_BASE_URL_PROPERTY, description = "Base URL of the CredentialService, that belongs to this connector runtime. If not specified, the URL is resolved from this participant's DID document.", required = false)
+    private String credentialServiceBaseUrl;
+
+    private static final String BDRS_SERVER_CACHE_VALIDITY_PERIOD = "tx.edc.iam.dcp.bdrs.cache.validity";
+
+    @Setting(key = BDRS_SERVER_CACHE_VALIDITY_PERIOD, description = "Validity period in seconds for the cached BPN/DID mappings. After this period a new resolution request will hit the server.", defaultValue = DEFAULT_BDRS_CACHE_VALIDITY + "")
+    private int cacheValidityPeriod;
 
     @Inject
     private EdcHttpClient httpClient;
@@ -76,21 +82,19 @@ public class BdrsClientExtension implements ServiceExtension {
 
     @Provider
     public BdrsClient getBdrsClient(ServiceExtensionContext context) {
-        var baseUrl = context.getConfig().getString(BDRS_SERVER_URL_PROPERTY);
         var monitor = context.getMonitor();
-        var cacheValidity = context.getSetting(BDRS_SERVER_CACHE_VALIDITY_PERIOD, DEFAULT_BDRS_CACHE_VALIDITY);
 
         // get DID
-        var ownDid = context.getConfig().getString(CONNECTOR_DID_PROPERTY, null);
-        if (ownDid == null) {
-            missingMandatoryProperty(monitor, CONNECTOR_DID_PROPERTY);
-        }
+        var ownDid = participantContextSupplier.get().map(ParticipantContext::getIdentity).onFailure(f -> {
+            var message = "This connector is not configured properly, cannot continue. Error is: %s".formatted(f.getFailureDetail());
+            monitor.severe(message);
+            throw new EdcException(message);
+        }).getContent();
 
         // get CS URL
         Supplier<String> urlSupplier;
-        var configuredUrl = context.getSetting(CREDENTIAL_SERVICE_BASE_URL_PROPERTY, null);
-        if (configuredUrl != null) {
-            urlSupplier = () -> configuredUrl;
+        if (credentialServiceBaseUrl != null) {
+            urlSupplier = () -> credentialServiceBaseUrl;
         } else {
             monitor.warning("No config value found for '%s'. As a fallback, the credentialService URL from this connector's DID document will be resolved.".formatted(CREDENTIAL_SERVICE_BASE_URL_PROPERTY));
 
@@ -104,7 +108,7 @@ public class BdrsClientExtension implements ServiceExtension {
 
         }
 
-        return new BdrsClientImpl(baseUrl, cacheValidity, ownDid, urlSupplier, httpClient, monitor, typeManager.getMapper(),
+        return new BdrsClientImpl(bdrsServerUrl, cacheValidityPeriod, ownDid, urlSupplier, httpClient, monitor, typeManager.getMapper(),
                 secureTokenService, credentialServiceClient, participantContextSupplier);
     }
 

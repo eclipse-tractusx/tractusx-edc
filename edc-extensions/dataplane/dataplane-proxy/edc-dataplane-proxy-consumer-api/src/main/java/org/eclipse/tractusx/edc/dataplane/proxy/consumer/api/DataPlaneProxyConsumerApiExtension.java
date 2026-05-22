@@ -56,16 +56,24 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     private static final int DEFAULT_PROXY_PORT = 8186;
     private static final String DEFAULT_PROXY_PATH = "/proxy";
     private static final int DEFAULT_THREAD_POOL = 10;
+    private static final String DEFAULT_API_KEY = UUID.randomUUID().toString();
 
-    @Setting("Vault alias for the Consumer Proxy API key")
-    public static final String AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS = "tx.edc.dpf.consumer.proxy.auth.apikey.alias";
-    @Setting("API key for the Consumer Proxy API")
-    public static final String AUTH_SETTING_CONSUMER_PROXY_APIKEY = "tx.edc.dpf.consumer.proxy.auth.apikey";
-
-    @Setting(value = "Data plane proxy API consumer port", type = "int")
     private static final String CONSUMER_PORT = "tx.edc.dpf.consumer.proxy.port";
-    @Setting(value = "Thread pool size for the consumer data plane proxy gateway", type = "int")
     private static final String THREAD_POOL_SIZE = "tx.edc.dpf.consumer.proxy.thread.pool";
+    private static final String AUTH_SETTING_CONSUMER_PROXY_APIKEY = "tx.edc.dpf.consumer.proxy.auth.apikey";
+    private static final String AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS = "tx.edc.dpf.consumer.proxy.auth.apikey.alias";
+
+    @Setting(key = AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS, description = "Vault alias for the Consumer Proxy API key", required = false)
+    private String apiKeyAlias;
+
+    @Setting(key = AUTH_SETTING_CONSUMER_PROXY_APIKEY, description = "API key for the Consumer Proxy API", required = false)
+    private String configuredApiKey;
+
+    @Setting(key = CONSUMER_PORT, description = "Data plane proxy API consumer port", defaultValue = DEFAULT_PROXY_PORT + "")
+    private int port;
+
+    @Setting(key = THREAD_POOL_SIZE, description = "Thread pool size for the consumer data plane proxy gateway", defaultValue = DEFAULT_THREAD_POOL + "")
+    private int poolSize;
 
     @Configuration
     private DataPlaneProxyConsumerApiConfiguration apiConfiguration;
@@ -95,11 +103,9 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         // when deprecated port will be purged, just assign `apiConfiguration.port()` to `port`
-        var port = context.getSetting(CONSUMER_PORT, DEFAULT_PROXY_PORT);
         var portMapping = new PortMapping(PROXY, port, apiConfiguration.path());
         portMappingRegistry.register(portMapping);
 
-        var poolSize = context.getSetting(THREAD_POOL_SIZE, DEFAULT_THREAD_POOL);
         executorService = newFixedThreadPool(poolSize);
 
         var authenticationService = createAuthenticationService(context);
@@ -120,10 +126,12 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     }
 
     private AuthenticationService createAuthenticationService(ServiceExtensionContext context) {
-
-        var apiKey = ofNullable(context.getSetting(AUTH_SETTING_CONSUMER_PROXY_APIKEY_ALIAS, null))
-                .map(alias -> vault.resolveSecret(alias))
-                .orElseGet(() -> context.getSetting(AUTH_SETTING_CONSUMER_PROXY_APIKEY, UUID.randomUUID().toString()));
+        var apiKey = DEFAULT_API_KEY;
+        if (apiKeyAlias != null) {
+            apiKey = vault.resolveSecret(apiKeyAlias);
+        } else if (configuredApiKey != null) {
+            apiKey = configuredApiKey;
+        }
         return new TokenBasedAuthenticationService(context.getMonitor().withPrefix("ConsumerProxyAPI"), apiKey);
     }
 

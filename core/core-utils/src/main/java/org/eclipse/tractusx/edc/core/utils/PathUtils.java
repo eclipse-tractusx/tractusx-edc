@@ -26,7 +26,7 @@ public class PathUtils {
 
     public static String removeTrailingSlash(String path) {
         var fixedPath = path;
-        if (fixedPath.endsWith("/")) {
+        if (fixedPath != null && fixedPath.endsWith("/")) {
             fixedPath = fixedPath.substring(0, fixedPath.length() - 1);
         }
         return fixedPath;

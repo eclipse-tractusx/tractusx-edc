@@ -39,8 +39,10 @@ public class SqlAgreementsRetirementStoreExtension implements ServiceExtension {
 
     protected static final String NAME = "SQL Agreement Retirement Store.";
 
-    @Setting(value = "Datasource name for the SQL AgreementsRetirement store", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
     private static final String DATASOURCE_SETTING_NAME = "tx.edc.sql.store.agreementretirement.datasource";
+
+    @Setting(key = DATASOURCE_SETTING_NAME, description = "Datasource name for the SQL AgreementsRetirement store", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
+    private String dataSourceName;
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -59,7 +61,6 @@ public class SqlAgreementsRetirementStoreExtension implements ServiceExtension {
 
     @Provider
     public AgreementsRetirementStore sqlStore(ServiceExtensionContext context) {
-        var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
         return new SqlAgreementsRetirementStore(dataSourceRegistry, dataSourceName, transactionContext,
                 typeManager.getMapper(), queryExecutor, getStatements());
     }
