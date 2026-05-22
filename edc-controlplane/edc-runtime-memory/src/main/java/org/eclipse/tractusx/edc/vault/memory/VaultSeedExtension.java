@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.vault.memory;
 
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
-import org.eclipse.edc.runtime.metamodel.annotation.BaseExtension;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -33,7 +32,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import java.util.stream.Stream;
 
 @Extension(value = "Vault seed extension: adds secrets to the vault", categories = { "vault", "security" })
-@BaseExtension
 public class VaultSeedExtension implements ServiceExtension {
 
     static final String VAULT_MEMORY_SECRETS_PROPERTY = "tx.edc.vault.secrets";
