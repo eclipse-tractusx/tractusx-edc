@@ -637,9 +637,17 @@ postgresql:
     requests:
       cpu: 250m
       memory: 256Mi
+  # -- 
   auth:
+    database: "postgres"
+    username: "postgres"
+    password: "password"
+  customUser: #{}
+    # -- Name of the custom user to be created
+    name: "user"
+    # -- Name for the custom database to be created and assigned to the custom user
     database: "edc"
-    username: "user"
+    # -- Password to be used for the custom user
     password: "password"
 
 vault:
