@@ -37,8 +37,10 @@ import java.util.stream.Stream;
 @BaseExtension
 public class VaultSeedExtension implements ServiceExtension {
 
+    static final String VAULT_MEMORY_SECRETS_PROPERTY = "tx.edc.vault.secrets";
+
     @Setting(
-            key = "tx.edc.vault.secrets",
+            key = VAULT_MEMORY_SECRETS_PROPERTY,
             description = "Secrets with which the vault gets initially populated. Specify as comma-separated list of key:secret pairs.",
             required = false)
     private String seedSecrets;

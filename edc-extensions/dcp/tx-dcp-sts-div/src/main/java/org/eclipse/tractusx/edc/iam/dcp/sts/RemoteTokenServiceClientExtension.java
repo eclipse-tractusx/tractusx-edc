@@ -45,7 +45,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     static final String DIV_URL = "tx.edc.iam.sts.div.url";
 
-    @Setting(key = DIV_URL, description = "STS Div endpoint")
+    @Setting(key = DIV_URL, description = "STS Div endpoint", required = false)
     private String divUrlConfig;
 
     protected static final String NAME = "Secure Token Service (STS) client extension";

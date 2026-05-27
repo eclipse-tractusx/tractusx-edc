@@ -25,13 +25,18 @@ import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSup
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
+
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.eclipse.edc.boot.system.injection.ObjectFactory;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.anyString;
@@ -62,8 +67,15 @@ class VaultSeedExtensionTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "key1:", "key1:value1", "key1:value1;", ";key1:value1", ";sdf;key1:value1" })
-    void createInMemVault_validString(String secret, ServiceExtensionContext context, VaultSeedExtension extension) {
-        when(context.getSetting(eq(VaultSeedExtension.VAULT_MEMORY_SECRETS_PROPERTY), eq(null))).thenReturn(secret);
+    void createInMemVault_validString(String secret, ServiceExtensionContext context, ObjectFactory f) {
+        var configMap = Map.of(
+                VaultSeedExtension.VAULT_MEMORY_SECRETS_PROPERTY, secret
+        );
+        var config = ConfigFactory.fromMap(configMap);
+        when(context.getConfig()).thenReturn(config);
+
+        var extension = f.constructInstance(VaultSeedExtension.class);
+
         extension.createInMemVault(context);
         verify(monitor, times(1)).debug(anyString());
     }
