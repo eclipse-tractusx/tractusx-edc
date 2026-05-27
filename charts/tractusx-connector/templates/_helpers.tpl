@@ -180,3 +180,20 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create a default fully qualified app name for PostgreSQL.
+*/}}
+{{- define "txdc.postgresql.fullname" -}}
+{{- if .Values.postgresql.fullnameOverride }}
+{{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else if .Values.postgresql.nameOverride }}
+{{- printf "%s-%s" .Release.Name .Values.postgresql.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-postgresql" .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
+{{- define "txdc.postgresql.custom-user-secret" -}}
+{{- printf "%s-custom-user-credentials" (include "txdc.postgresql.fullname" .) -}}
+{{- end }}
