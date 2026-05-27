@@ -236,7 +236,10 @@ spec:
               value: {{ .Values.dcp.sts.div.url | quote }}
             {{- end }}
 
-            {{- if not .Values.install.postgresql }}
+            ################
+            ## POSTGRESQL ##
+            ################
+            {{ if not .Values.install.postgresql }}
             # default datasource, no postgresql secret available
             - name: "EDC_DATASOURCE_DEFAULT_USER"
               value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
@@ -247,7 +250,6 @@ spec:
             {{- else }}
             {{- $hasCustomUser := or .Values.postgresql.customUser.name .Values.postgresql.customUser.existingSecret -}}
             {{- if $hasCustomUser }}
-
             # custom user section activated (customUser.name or customUser.existingSecret exist)
             {{- $customUserSecretName := .Values.postgresql.customUser.existingSecret | default (include "txdc.postgresql.custom-user-secret" .) -}}
             {{- $pwKey := .Values.postgresql.customUser | dig "secretKeys" "password" "CUSTOM_PASSWORD" -}}
