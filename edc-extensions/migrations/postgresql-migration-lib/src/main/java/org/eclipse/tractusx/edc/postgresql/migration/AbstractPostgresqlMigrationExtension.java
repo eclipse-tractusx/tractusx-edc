@@ -46,13 +46,13 @@ import static org.flywaydb.core.api.MigrationVersion.LATEST;
 public abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension {
 
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
-    private static final String DEFAULT_MIGRATION_SCHEMA = "public";
 
+    // TODO: Make this a context aware setting after 0.17.0 upstream update.
+    @Setting(description = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
     private static final String MIGRATION_ENABLED_TEMPLATE = "tx.edc.postgresql.migration.%s.enabled";
-    private static final String MIGRATION_SCHEMA = "tx.edc.postgresql.migration.schema";
 
-    @Setting(key = MIGRATION_ENABLED_TEMPLATE, description = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE)
-    private boolean migrationEnabled;
+    private static final String DEFAULT_MIGRATION_SCHEMA = "public";
+    private static final String MIGRATION_SCHEMA = "tx.edc.postgresql.migration.schema";
 
     @Setting(key = MIGRATION_SCHEMA, description = "Schema used for the migration", defaultValue = DEFAULT_MIGRATION_SCHEMA)
     private String defaultSchema;
@@ -70,8 +70,9 @@ public abstract class AbstractPostgresqlMigrationExtension implements ServiceExt
         var config = context.getConfig();
 
         var subSystemName = Objects.requireNonNull(getSubsystemName());
+        enabled = config.getBoolean(MIGRATION_ENABLED_TEMPLATE.formatted(subSystemName), Boolean.valueOf(DEFAULT_MIGRATION_ENABLED_TEMPLATE));
 
-        if (!migrationEnabled) {
+        if (!enabled) {
             context.getMonitor().info("Migration for subsystem %s disabled".formatted(subSystemName));
             return;
         }
