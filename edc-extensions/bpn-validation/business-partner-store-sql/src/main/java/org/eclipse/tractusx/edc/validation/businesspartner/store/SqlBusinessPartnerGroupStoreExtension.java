@@ -37,8 +37,10 @@ import org.eclipse.tractusx.edc.validation.businesspartner.store.sql.SqlBusiness
 @Extension("Registers an SQL implementation for the BusinessPartnerGroupStore")
 public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
 
-    @Setting(value = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
-    public static final String DATASOURCE_NAME = "edc.sql.store.bpn.datasource";
+    private static final String DATASOURCE_NAME = "edc.sql.store.bpn.datasource";
+
+    @Setting(key = DATASOURCE_NAME, description = "The datasource for the BusinessPartnerGroupStore", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
+    private String dataSourceName;
 
     private static final String NAME = "SQL Business Partner Store";
     @Inject
@@ -54,7 +56,6 @@ public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
 
     @Provider
     public BusinessPartnerStore sqlStore(ServiceExtensionContext context) {
-        var dataSourceName = context.getConfig().getString(DATASOURCE_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
         return new SqlBusinessPartnerStore(dataSourceRegistry, dataSourceName, transactionContext, typeManager.getMapper(), queryExecutor, getStatements());
     }
 

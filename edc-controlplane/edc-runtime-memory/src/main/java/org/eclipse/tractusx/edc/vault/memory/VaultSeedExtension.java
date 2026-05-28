@@ -37,8 +37,14 @@ import java.util.stream.Stream;
 @BaseExtension
 public class VaultSeedExtension implements ServiceExtension {
 
-    @Setting(value = "Secrets with which the vault gets initially populated. Specify as comma-separated list of key:secret pairs.")
-    public static final String VAULT_MEMORY_SECRETS_PROPERTY = "tx.edc.vault.secrets";
+    static final String VAULT_MEMORY_SECRETS_PROPERTY = "tx.edc.vault.secrets";
+
+    @Setting(
+            key = VAULT_MEMORY_SECRETS_PROPERTY,
+            description = "Secrets with which the vault gets initially populated. Specify as comma-separated list of key:secret pairs.",
+            required = false)
+    private String seedSecrets;
+
     public static final String NAME = "Vault Seed Extension";
 
     @Inject
@@ -54,7 +60,6 @@ public class VaultSeedExtension implements ServiceExtension {
     @Provider
     public Vault createInMemVault(ServiceExtensionContext context) {
 
-        var seedSecrets = context.getSetting(VAULT_MEMORY_SECRETS_PROPERTY, null);
         if (seedSecrets != null) {
             singleParticipantContextSupplier.get().map(ParticipantContext::getParticipantContextId)
                             .onSuccess(participantContextId -> {

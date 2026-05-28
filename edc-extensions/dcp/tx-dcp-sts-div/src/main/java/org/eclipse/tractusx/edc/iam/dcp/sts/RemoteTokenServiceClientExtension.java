@@ -43,8 +43,10 @@ import static java.util.Optional.ofNullable;
 @Extension(RemoteTokenServiceClientExtension.NAME)
 public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
-    @Setting(value = "STS Div endpoint")
-    public static final String DIV_URL = "tx.edc.iam.sts.div.url";
+    static final String DIV_URL = "tx.edc.iam.sts.div.url";
+
+    @Setting(key = DIV_URL, description = "STS Div endpoint", required = false)
+    private String divUrlConfig;
 
     protected static final String NAME = "Secure Token Service (STS) client extension";
 
@@ -70,7 +72,6 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
 
     @Provider
     public SecureTokenService secureTokenService(ServiceExtensionContext context) {
-        var divUrlConfig = context.getSetting(DIV_URL, null);
         return ofNullable(divUrlConfig)
                 .map(PathUtils::removeTrailingSlash)
                 .map(divUrl -> {

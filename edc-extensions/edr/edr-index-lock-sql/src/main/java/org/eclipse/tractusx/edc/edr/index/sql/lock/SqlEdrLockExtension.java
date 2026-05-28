@@ -37,8 +37,10 @@ import org.eclipse.tractusx.edc.edr.spi.index.lock.EndpointDataReferenceLock;
 @Extension(value = "Database-level EDR Lock extension (PostgreSQL)")
 public class SqlEdrLockExtension implements ServiceExtension {
 
-    @Setting(value = "The datasource to be used", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
-    public static final String DATASOURCE_NAME = "edc.sql.store.edr.datasource";
+    private static final String DATASOURCE_NAME = "edc.sql.store.edr.datasource";
+
+    @Setting(key = DATASOURCE_NAME, description = "Datasource of edr lock", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
+    private String dataSourceName;
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -56,8 +58,6 @@ public class SqlEdrLockExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var dataSourceName = context.getConfig().getString(DATASOURCE_NAME, DataSourceRegistry.DEFAULT_DATASOURCE);
-
         var statements = new PostgresEdrLockStatements();
         var sqlStore = new SqlEdrLock(dataSourceRegistry, dataSourceName, transactionContext, typeManager.getMapper(), queryExecutor, statements);
 

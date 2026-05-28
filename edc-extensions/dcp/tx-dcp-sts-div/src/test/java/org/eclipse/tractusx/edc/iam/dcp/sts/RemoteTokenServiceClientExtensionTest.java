@@ -19,40 +19,46 @@
 
 package org.eclipse.tractusx.edc.iam.dcp.sts;
 
+import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.iam.decentralizedclaims.sts.remote.RemoteSecureTokenService;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.iam.dcp.sts.div.DivSecureTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.dcp.sts.RemoteTokenServiceClientExtension.DIV_URL;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class RemoteTokenServiceClientExtensionTest {
 
     @Test
-    void initialize(ServiceExtensionContext context, RemoteTokenServiceClientExtension extension) {
-        var config = mock(Config.class);
+    void initialize(ServiceExtensionContext context, ObjectFactory factory) {
+        var configMap = Map.of(
+                DIV_URL, "url"
+        );
+        var config = ConfigFactory.fromMap(configMap);
         when(context.getConfig()).thenReturn(config);
-        when(config.getString(DIV_URL, null)).thenReturn("url");
+
+        var extension = factory.constructInstance(RemoteTokenServiceClientExtension.class);
         assertThat(extension.secureTokenService(context)).isInstanceOf(DivSecureTokenService.class);
     }
 
     @Test
-    void initialize_whenUrlIsMissing_fallsBackToRemoteSts(ServiceExtensionContext context, RemoteTokenServiceClientExtension extension) {
-        var monitor = context.getMonitor();
-        var prefixeMonitor = mock(Monitor.class);
-        when(monitor.withPrefix(anyString())).thenReturn(prefixeMonitor);
+    void initialize_whenUrlIsMissing_fallsBackToRemoteSts(ServiceExtensionContext context, ObjectFactory f) {
+        var configMap = new HashMap<String, String>();
+        var config = ConfigFactory.fromMap(configMap);
+        when(context.getConfig()).thenReturn(config);
+
+        var extension = f.constructInstance(RemoteTokenServiceClientExtension.class);
 
         assertThat(extension.secureTokenService(context))
                 .isInstanceOf(RemoteSecureTokenService.class);
     }
-
 }

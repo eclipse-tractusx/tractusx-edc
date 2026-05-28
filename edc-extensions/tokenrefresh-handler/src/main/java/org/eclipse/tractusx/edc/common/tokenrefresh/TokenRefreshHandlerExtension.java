@@ -23,23 +23,25 @@ import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.core.utils.ConfigUtil;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
 import static org.eclipse.tractusx.edc.common.tokenrefresh.TokenRefreshHandlerExtension.NAME;
 
-
 @Extension(value = NAME)
 public class TokenRefreshHandlerExtension implements ServiceExtension {
     public static final String NAME = "Token Refresh Handler Extension";
-    // this setting is defined by the IdentityAndTrustExtension
-    private static final String PARTICIPANT_DID_PROPERTY = "edc.iam.issuer.id";
+
+    @Inject
+    private Monitor monitor;
     @Inject
     private EndpointDataReferenceCache edrStore;
     @Inject
@@ -63,10 +65,10 @@ public class TokenRefreshHandlerExtension implements ServiceExtension {
     }
 
     private String getOwnDid(ServiceExtensionContext context) {
-        var did = context.getConfig().getString(PARTICIPANT_DID_PROPERTY, null);
-        if (did == null) {
-            ConfigUtil.missingMandatoryProperty(context.getMonitor().withPrefix("Token Refresh Handler"), PARTICIPANT_DID_PROPERTY);
-        }
-        return did;
+        return participantContextSupplier.get().map(ParticipantContext::getIdentity).onFailure(f -> {
+            var message = "This connector is not configured properly, cannot continue. Error is: %s".formatted(f.getFailureDetail());
+            monitor.withPrefix(getClass().getSimpleName()).severe(message);
+            throw new EdcException(message);
+        }).getContent();
     }
 }

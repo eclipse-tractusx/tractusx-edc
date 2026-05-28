@@ -46,12 +46,16 @@ import static org.flywaydb.core.api.MigrationVersion.LATEST;
 public abstract class AbstractPostgresqlMigrationExtension implements ServiceExtension {
 
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
-    @Setting(value = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
+
+    // TODO: Make this a context aware setting after 0.17.0 upstream update.
+    @Setting(description = "Enable/disables subsystem schema migration", defaultValue = DEFAULT_MIGRATION_ENABLED_TEMPLATE, type = "boolean")
     private static final String MIGRATION_ENABLED_TEMPLATE = "tx.edc.postgresql.migration.%s.enabled";
 
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
-    @Setting(value = "Schema used for the migration", defaultValue = DEFAULT_MIGRATION_SCHEMA)
     private static final String MIGRATION_SCHEMA = "tx.edc.postgresql.migration.schema";
+
+    @Setting(key = MIGRATION_SCHEMA, description = "Schema used for the migration", defaultValue = DEFAULT_MIGRATION_SCHEMA)
+    private String defaultSchema;
 
     private Supplier<MigrateResult> migrationExecutor;
     private boolean enabled;
@@ -83,7 +87,6 @@ public abstract class AbstractPostgresqlMigrationExtension implements ServiceExt
         jdbcProperties.putAll(datasourceConfig.getRelativeEntries());
         var driverManagerConnectionFactory = new DriverManagerConnectionFactory();
         var dataSource = new ConnectionFactoryDataSource(driverManagerConnectionFactory, jdbcUrl, jdbcProperties);
-        var defaultSchema = config.getString(MIGRATION_SCHEMA, DEFAULT_MIGRATION_SCHEMA);
 
         migrationExecutor = () -> FlywayManager.migrate(dataSource, getMigrationSubsystem(), defaultSchema, LATEST);
     }
