@@ -50,13 +50,13 @@ public class DcpDefaultScopeExtension implements ServiceExtension {
 
     public static final String TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS = TX_DCP_DEFAULT_SCOPE_PREFIX + ".<scopeAlias>.";
 
-    @Setting(context = TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, value = "The alias of the scope e.g. org.eclipse.edc.vc.type", required = true)
+    @Setting(context = TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, description = "The alias of the scope e.g. org.eclipse.edc.vc.type", required = true)
     public static final String ALIAS = "alias";
 
-    @Setting(context = TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, value = "The alias of the scope e.g. MembershipCredential", required = true)
+    @Setting(context = TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, description = "The alias of the scope e.g. MembershipCredential", required = true)
     public static final String TYPE = "type";
 
-    @Setting(context = TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, value = "The alias of the scope e.g. read", required = true)
+    @Setting(context = TX_DCP_DEFAULT_SCOPE_PREFIX_CONFIG_ALIAS, description = "The alias of the scope e.g. read", required = true)
     public static final String OPERATION = "operation";
 
     static final String NAME = "Tractusx default scope extension";
