@@ -25,12 +25,10 @@ import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
-import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.Hostname;
@@ -44,7 +42,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceExtension.NAME;
 
 @Extension(value = NAME)

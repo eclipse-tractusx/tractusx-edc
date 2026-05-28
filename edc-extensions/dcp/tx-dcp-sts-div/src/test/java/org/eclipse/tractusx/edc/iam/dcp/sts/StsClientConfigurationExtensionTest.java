@@ -21,7 +21,6 @@ package org.eclipse.tractusx.edc.iam.dcp.sts;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.CLIENT_ID;
 import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.CLIENT_SECRET_ALIAS;
 import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.TOKEN_URL;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
@@ -42,9 +40,9 @@ public class StsClientConfigurationExtensionTest {
     @BeforeEach
     void setup(ServiceExtensionContext context) {
         var configMap = Map.of(
-            TOKEN_URL, "url",
-            CLIENT_ID, "clientId",
-            CLIENT_SECRET_ALIAS, "clientSecretAlias"
+                TOKEN_URL, "url",
+                CLIENT_ID, "clientId",
+                CLIENT_SECRET_ALIAS, "clientSecretAlias"
         );
         var config = ConfigFactory.fromMap(configMap);
         when(context.getConfig()).thenReturn(config);

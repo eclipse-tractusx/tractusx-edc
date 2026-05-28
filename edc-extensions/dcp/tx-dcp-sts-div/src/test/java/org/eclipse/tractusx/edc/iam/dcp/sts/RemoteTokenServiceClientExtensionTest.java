@@ -19,14 +19,12 @@
 
 package org.eclipse.tractusx.edc.iam.dcp.sts;
 
+import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.iam.decentralizedclaims.sts.remote.RemoteSecureTokenService;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.iam.dcp.sts.div.DivSecureTokenService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,12 +33,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.dcp.sts.RemoteTokenServiceClientExtension.DIV_URL;
-import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.CLIENT_ID;
-import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.CLIENT_SECRET_ALIAS;
-import static org.eclipse.tractusx.edc.iam.dcp.sts.StsClientConfigurationExtension.TOKEN_URL;
-import org.eclipse.edc.boot.system.injection.ObjectFactory;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)

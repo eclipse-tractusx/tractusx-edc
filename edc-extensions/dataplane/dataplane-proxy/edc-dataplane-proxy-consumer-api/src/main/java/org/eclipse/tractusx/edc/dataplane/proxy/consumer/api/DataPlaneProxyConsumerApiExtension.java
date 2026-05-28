@@ -42,7 +42,6 @@ import org.eclipse.tractusx.edc.edr.spi.service.EdrService;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-import static java.util.Optional.ofNullable;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
 /**

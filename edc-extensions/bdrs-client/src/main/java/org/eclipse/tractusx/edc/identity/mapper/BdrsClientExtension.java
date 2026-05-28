@@ -38,7 +38,6 @@ import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.function.Supplier;
 
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
 import static org.eclipse.tractusx.edc.identity.mapper.BdrsClientExtension.NAME;
 
 @Extension(value = NAME)

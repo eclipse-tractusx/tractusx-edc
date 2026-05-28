@@ -27,9 +27,6 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.core.utils.PathUtils;
 
-import static java.util.Optional.ofNullable;
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
-
 /**
  * Configuration Extension for the STS OAuth2 client
  */
