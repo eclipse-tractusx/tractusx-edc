@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 
+import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceExtension.NAME;
 
 @Extension(value = NAME)
@@ -49,33 +50,23 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     public static final String NAME = "DataPlane Token Refresh Service extension";
     public static final int DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS = 5;
     public static final long DEFAULT_TOKEN_EXPIRY_SECONDS = 300L;
+    @Setting(description = "Token expiry tolerance period in seconds to allow for clock skew", defaultValue = "" + DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS)
+    public static final String TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY = "tx.edc.dataplane.token.expiry.tolerance";
 
-    private static final String TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY = "tx.edc.dataplane.token.expiry.tolerance";
-    private static final String TOKEN_EXPIRY_SECONDS_PROPERTY = "tx.edc.dataplane.token.expiry";
-    private static final String TOKEN_SIGNER_PRIVATE_KEY_ALIAS = "edc.transfer.proxy.token.signer.privatekey.alias";
-    private static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS = "edc.transfer.proxy.token.verifier.publickey.alias";
-    private static final String REFRESH_ENDPOINT_PROPERTY = "tx.edc.dataplane.token.refresh.endpoint";
+    @Setting(description = "The HTTP endpoint where clients can request a renewal of their access token for the public dataplane API")
+    public static final String REFRESH_ENDPOINT_PROPERTY = "tx.edc.dataplane.token.refresh.endpoint";
 
-    @Setting(key = TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, description = "Token expiry tolerance period in seconds to allow for clock skew", defaultValue = DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS + "")
-    private int expiryTolerance;
+    @Setting(description = "Alias of private key used for signing tokens, retrieved from private key resolver")
+    public static final String TOKEN_SIGNER_PRIVATE_KEY_ALIAS = "edc.transfer.proxy.token.signer.privatekey.alias";
 
-    @Setting(key = REFRESH_ENDPOINT_PROPERTY, description = "The HTTP endpoint where clients can request a renewal of their access token for the public dataplane API", required = false)
-    private String refreshEndpoint;
+    @Setting(description = "Alias of public key used for verifying the tokens, retrieved from the vault")
+    public static final String TOKEN_VERIFIER_PUBLIC_KEY_ALIAS = "edc.transfer.proxy.token.verifier.publickey.alias";
 
-    @Setting(key = TOKEN_SIGNER_PRIVATE_KEY_ALIAS, description = "Alias of private key used for signing tokens, retrieved from private key resolver", required = true)
-    private String tokenSignerPrivateKeyAlias;
+    @Setting(description = "Expiry time of access token in seconds", defaultValue = DEFAULT_TOKEN_EXPIRY_SECONDS + "")
+    public static final String TOKEN_EXPIRY_SECONDS_PROPERTY = "tx.edc.dataplane.token.expiry";
 
-    @Setting(key = TOKEN_VERIFIER_PUBLIC_KEY_ALIAS, description = "Alias of public key used for verifying the tokens, retrieved from the vault", required = true)
-    private String tokenVerifierPublicKeyAlias;
-
-    @Setting(key = TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, description = "Expiry time of access token in seconds", defaultValue = DEFAULT_TOKEN_EXPIRY_SECONDS + "")
-    private long tokenExpiry;
-
-    @Setting(key = "web.http.public.port", defaultValue = "8185")
-    private int webHttpPublicPort;
-
-    @Setting(key = "web.http.public.path", defaultValue = "/api/v2/public")
-    private String webHttpPublicPath;
+    @Setting(description = "DID of this connector", required = true)
+    private static final String PARTICIPANT_DID_PROPERTY = "edc.iam.issuer.id";
 
     @Inject
     private TokenValidationService tokenValidationService;
@@ -117,25 +108,47 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
         return getTokenRefreshService(context);
     }
 
+    private int getExpiryToleranceConfig(ServiceExtensionContext context) {
+        return context.getSetting(TOKEN_EXPIRY_TOLERANCE_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_TOLERANCE_SECONDS);
+    }
+
     @NotNull
     private DataPlaneTokenRefreshServiceImpl getTokenRefreshService(ServiceExtensionContext context) {
         if (tokenRefreshService == null) {
             var monitor = context.getMonitor().withPrefix("DataPlane Token Refresh");
+            var expiryTolerance = getExpiryToleranceConfig(context);
             var refreshEndpoint = getRefreshEndpointConfig(context, monitor);
+            var tokenExpiry = getExpiryConfig(context);
             monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(jwsSignerProvider),
-                    () -> tokenSignerPrivateKeyAlias, context.getMonitor(), refreshEndpoint, expiryTolerance, tokenExpiry,
-                    () -> tokenVerifierPublicKeyAlias, vault, typeManager.getMapper(), singleParticipantContextSupplier);
+                    () -> context.getConfig().getString(TOKEN_SIGNER_PRIVATE_KEY_ALIAS), context.getMonitor(), refreshEndpoint, expiryTolerance, tokenExpiry,
+                    () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper(), singleParticipantContextSupplier);
         }
         return tokenRefreshService;
     }
 
+    private Long getExpiryConfig(ServiceExtensionContext context) {
+        return context.getSetting(TOKEN_EXPIRY_SECONDS_PROPERTY, DEFAULT_TOKEN_EXPIRY_SECONDS);
+    }
+
     private String getRefreshEndpointConfig(ServiceExtensionContext context, Monitor monitor) {
+        var refreshEndpoint = context.getSetting(REFRESH_ENDPOINT_PROPERTY, null);
         if (refreshEndpoint == null) {
-            refreshEndpoint = "http://%s:%d%s".formatted(hostname.get(), webHttpPublicPort, webHttpPublicPath);
+            var port = context.getConfig().getInteger("web.http.public.port", 8185);
+            var path = context.getConfig().getString("web.http.public.path", "/api/v2/public");
+            refreshEndpoint = "http://%s:%d%s".formatted(hostname.get(), port, path);
             monitor.warning("Config property '%s' was not specified, the default '%s' will be used.".formatted(REFRESH_ENDPOINT_PROPERTY, refreshEndpoint));
         }
         return refreshEndpoint;
     }
+
+    private String getOwnDid(ServiceExtensionContext context) {
+        var did = context.getConfig().getString(PARTICIPANT_DID_PROPERTY, null);
+        if (did == null) {
+            missingMandatoryProperty(context.getMonitor().withPrefix("DataPlane Token Refresh"), PARTICIPANT_DID_PROPERTY);
+        }
+        return did;
+    }
+
 }
