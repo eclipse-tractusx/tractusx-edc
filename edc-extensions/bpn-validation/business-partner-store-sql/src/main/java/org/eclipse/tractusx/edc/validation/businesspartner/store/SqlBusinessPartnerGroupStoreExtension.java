@@ -39,7 +39,7 @@ public class SqlBusinessPartnerGroupStoreExtension implements ServiceExtension {
 
     private static final String DATASOURCE_NAME = "edc.sql.store.bpn.datasource";
 
-    @Setting(key = DATASOURCE_NAME, description = "THe datasource for the BusinessPartnerGroupStore", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
+    @Setting(key = DATASOURCE_NAME, description = "The datasource for the BusinessPartnerGroupStore", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
     private String dataSourceName;
 
     private static final String NAME = "SQL Business Partner Store";

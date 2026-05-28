@@ -55,7 +55,6 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     private static final int DEFAULT_PROXY_PORT = 8186;
     private static final String DEFAULT_PROXY_PATH = "/proxy";
     private static final int DEFAULT_THREAD_POOL = 10;
-    private static final String DEFAULT_API_KEY = UUID.randomUUID().toString();
 
     private static final String CONSUMER_PORT = "tx.edc.dpf.consumer.proxy.port";
     private static final String THREAD_POOL_SIZE = "tx.edc.dpf.consumer.proxy.thread.pool";
@@ -125,11 +124,13 @@ public class DataPlaneProxyConsumerApiExtension implements ServiceExtension {
     }
 
     private AuthenticationService createAuthenticationService(ServiceExtensionContext context) {
-        var apiKey = DEFAULT_API_KEY;
+        String apiKey;
         if (apiKeyAlias != null) {
             apiKey = vault.resolveSecret(apiKeyAlias);
         } else if (configuredApiKey != null) {
             apiKey = configuredApiKey;
+        } else {
+            apiKey = UUID.randomUUID().toString();
         }
         return new TokenBasedAuthenticationService(context.getMonitor().withPrefix("ConsumerProxyAPI"), apiKey);
     }

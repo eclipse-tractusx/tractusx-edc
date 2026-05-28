@@ -67,7 +67,7 @@ public class TokenRefreshHandlerExtension implements ServiceExtension {
     private String getOwnDid(ServiceExtensionContext context) {
         return participantContextSupplier.get().map(ParticipantContext::getIdentity).onFailure(f -> {
             var message = "This connector is not configured properly, cannot continue. Error is: %s".formatted(f.getFailureDetail());
-            monitor.severe(message);
+            monitor.withPrefix(getClass().getSimpleName()).severe(message);
             throw new EdcException(message);
         }).getContent();
     }
