@@ -32,11 +32,9 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.tractusx.edc.core.utils.ConfigUtil;
 import org.eclipse.tractusx.edc.spi.tokenrefresh.common.TokenRefreshHandler;
 
 import static org.eclipse.tractusx.edc.common.tokenrefresh.TokenRefreshHandlerExtension.NAME;
-
 
 @Extension(value = NAME)
 public class TokenRefreshHandlerExtension implements ServiceExtension {

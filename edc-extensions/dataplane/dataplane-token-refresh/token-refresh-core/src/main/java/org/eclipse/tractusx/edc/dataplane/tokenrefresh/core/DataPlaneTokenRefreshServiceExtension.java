@@ -25,10 +25,12 @@ import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.Hostname;
@@ -42,7 +44,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 
-import static org.eclipse.tractusx.edc.core.utils.ConfigUtil.missingMandatoryProperty;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.DataPlaneTokenRefreshServiceExtension.NAME;
 
 @Extension(value = NAME)
@@ -65,9 +66,8 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     @Setting(description = "Expiry time of access token in seconds", defaultValue = DEFAULT_TOKEN_EXPIRY_SECONDS + "")
     public static final String TOKEN_EXPIRY_SECONDS_PROPERTY = "tx.edc.dataplane.token.expiry";
 
-    @Setting(description = "DID of this connector", required = true)
-    private static final String PARTICIPANT_DID_PROPERTY = "edc.iam.issuer.id";
-
+    @Inject
+    private Monitor monitor;
     @Inject
     private TokenValidationService tokenValidationService;
     @Inject
@@ -87,7 +87,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     @Inject
     private JwsSignerProvider jwsSignerProvider;
     @Inject
-    private SingleParticipantContextSupplier singleParticipantContextSupplier;
+    private SingleParticipantContextSupplier participantContextSupplier;
 
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
 
@@ -123,7 +123,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
             monitor.debug("Token refresh time tolerance: %d s".formatted(expiryTolerance));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(jwsSignerProvider),
                     () -> context.getConfig().getString(TOKEN_SIGNER_PRIVATE_KEY_ALIAS), context.getMonitor(), refreshEndpoint, expiryTolerance, tokenExpiry,
-                    () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper(), singleParticipantContextSupplier);
+                    () -> context.getConfig().getString(TOKEN_VERIFIER_PUBLIC_KEY_ALIAS), vault, typeManager.getMapper(), participantContextSupplier);
         }
         return tokenRefreshService;
     }
@@ -144,11 +144,10 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     }
 
     private String getOwnDid(ServiceExtensionContext context) {
-        var did = context.getConfig().getString(PARTICIPANT_DID_PROPERTY, null);
-        if (did == null) {
-            missingMandatoryProperty(context.getMonitor().withPrefix("DataPlane Token Refresh"), PARTICIPANT_DID_PROPERTY);
-        }
-        return did;
+        return participantContextSupplier.get().map(ParticipantContext::getIdentity).onFailure(f -> {
+            var message = "This connector is not configured properly, cannot continue. Error is: %s".formatted(f.getFailureDetail());
+            monitor.severe(message);
+            throw new EdcException(message);
+        }).getContent();
     }
-
 }
