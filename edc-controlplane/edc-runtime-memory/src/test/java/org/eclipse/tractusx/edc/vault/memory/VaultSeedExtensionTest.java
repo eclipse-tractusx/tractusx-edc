@@ -65,14 +65,14 @@ class VaultSeedExtensionTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "key1:", "key1:value1", "key1:value1;", ";key1:value1", ";sdf;key1:value1" })
-    void createInMemVault_validString(String secret, ServiceExtensionContext context, ObjectFactory f) {
+    void createInMemVault_validString(String secret, ServiceExtensionContext context, ObjectFactory factory) {
         var configMap = Map.of(
                 VaultSeedExtension.VAULT_MEMORY_SECRETS_PROPERTY, secret
         );
         var config = ConfigFactory.fromMap(configMap);
         when(context.getConfig()).thenReturn(config);
 
-        var extension = f.constructInstance(VaultSeedExtension.class);
+        var extension = factory.constructInstance(VaultSeedExtension.class);
 
         extension.createInMemVault(context);
         verify(monitor, times(1)).debug(anyString());

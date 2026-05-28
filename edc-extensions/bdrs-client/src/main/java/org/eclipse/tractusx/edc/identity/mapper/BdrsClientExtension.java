@@ -48,7 +48,7 @@ public class BdrsClientExtension implements ServiceExtension {
 
     static final String BDRS_SERVER_URL_PROPERTY = "tx.edc.iam.dcp.bdrs.server.url";
 
-    @Setting(key = BDRS_SERVER_URL_PROPERTY, description = "Base URL of the BDRS service", required = true)
+    @Setting(key = BDRS_SERVER_URL_PROPERTY, description = "Base URL of the BDRS service")
     private String bdrsServerUrl;
 
     static final String CREDENTIAL_SERVICE_BASE_URL_PROPERTY = "tx.edc.iam.dcp.credentialservice.url";

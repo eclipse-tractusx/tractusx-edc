@@ -39,14 +39,14 @@ import static org.mockito.Mockito.when;
 public class RemoteTokenServiceClientExtensionTest {
 
     @Test
-    void initialize(ServiceExtensionContext context, ObjectFactory f) {
+    void initialize(ServiceExtensionContext context, ObjectFactory factory) {
         var configMap = Map.of(
                 DIV_URL, "url"
         );
         var config = ConfigFactory.fromMap(configMap);
         when(context.getConfig()).thenReturn(config);
 
-        var extension = f.constructInstance(RemoteTokenServiceClientExtension.class);
+        var extension = factory.constructInstance(RemoteTokenServiceClientExtension.class);
         assertThat(extension.secureTokenService(context)).isInstanceOf(DivSecureTokenService.class);
     }
 

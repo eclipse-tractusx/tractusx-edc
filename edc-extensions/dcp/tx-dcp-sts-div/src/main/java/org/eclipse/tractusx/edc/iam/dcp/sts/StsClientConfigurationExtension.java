@@ -37,13 +37,13 @@ public class StsClientConfigurationExtension implements ServiceExtension {
     static final String CLIENT_ID = "edc.iam.sts.oauth.client.id";
     static final String CLIENT_SECRET_ALIAS = "edc.iam.sts.oauth.client.secret.alias";
 
-    @Setting(key = TOKEN_URL, description = "STS OAuth2 endpoint for requesting a token", required = true)
+    @Setting(key = TOKEN_URL, description = "STS OAuth2 endpoint for requesting a token")
     private String tokenUrl;
 
-    @Setting(key = CLIENT_ID, description = "STS OAuth2 client id", required = true)
+    @Setting(key = CLIENT_ID, description = "STS OAuth2 client id")
     private String clientId;
 
-    @Setting(key = CLIENT_SECRET_ALIAS, description = "Vault alias of STS OAuth2 client secret", required = true)
+    @Setting(key = CLIENT_SECRET_ALIAS, description = "Vault alias of STS OAuth2 client secret")
     private String clientSecretAlias;
 
     protected static final String NAME = "Secure Token Service (STS) client configuration extension";
