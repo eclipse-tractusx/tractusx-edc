@@ -128,7 +128,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | controlplane.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | controlplane.bdrs.cache_validity_seconds | int | `600` | Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min) |
-| controlplane.bdrs.server.url | string | `nil` | URL of the BPN/DID Resolution Service |
+| controlplane.bdrs.server.url | string | `"CHANGEME"` | URL of the BPN/DID Resolution Service |
 | controlplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | controlplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | controlplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
@@ -309,8 +309,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | dataplane.token.refresh.expiry_seconds | int | `300` | TTL in seconds for access tokens (also known as EDR token) |
 | dataplane.token.refresh.expiry_tolerance_seconds | int | `10` | Tolerance for token expiry in seconds |
 | dataplane.token.refresh.refresh_endpoint | string | `nil` | Optional endpoint for an OAuth2 token refresh. Default endpoint is `<PUBLIC_API>/token` |
-| dataplane.token.signer.privatekey_alias | string | `nil` | Alias under which the private key (JWK or PEM format) is stored in the vault |
-| dataplane.token.verifier.publickey_alias | string | `nil` | Alias under which the public key (JWK or PEM format) is stored in the vault, that belongs to the private key which was referred to at `dataplane.token.signer.privatekey_alias` |
+| dataplane.token.signer.privatekey_alias | string | `"CHANGEME"` | Alias under which the private key (JWK or PEM format) is stored in the vault |
+| dataplane.token.verifier.publickey_alias | string | `"CHANGEME"` | Alias under which the public key (JWK or PEM format) is stored in the vault, that belongs to the private key which was referred to at `dataplane.token.signer.privatekey_alias` |
 | dataplane.tolerations | list | `[]` | [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes |
 | dataplane.url.public | string | `""` | Explicitly declared url for reaching the public api (e.g. if ingresses not used) |
 | dataplane.volumeMounts | string | `nil` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
@@ -319,9 +319,9 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | dcp.cache.validity | int | `86400` | Validity of the Verifiable Presentation cache in seconds |
 | dcp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
 | dcp.sts.div.url | string | `nil` | URL where connectors can request SI tokens |
-| dcp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIV access |
-| dcp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
-| dcp.sts.oauth.token_url | string | `nil` | URL where connectors can request OAuth2 access tokens for DIV access |
+| dcp.sts.oauth.client.id | string | `"CHANGEME"` | Client ID for requesting OAuth2 access token for DIV access |
+| dcp.sts.oauth.client.secret_alias | string | `"CHANGEME"` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
+| dcp.sts.oauth.token_url | string | `"CHANGEME"` | URL where connectors can request OAuth2 access tokens for DIV access |
 | dcp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer |
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
