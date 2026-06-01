@@ -25,12 +25,10 @@ import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
-import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.Hostname;
@@ -130,7 +128,7 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
     private DataPlaneTokenRefreshServiceImpl getTokenRefreshService(ServiceExtensionContext context) {
         if (tokenRefreshService == null) {
             var monitor = context.getMonitor().withPrefix("DataPlane Token Refresh");
-            var refreshEndpoint = getRefreshEndpointConfig(context, monitor);
+            var refreshEndpoint = getRefreshEndpointConfig(monitor);
             monitor.debug("Token refresh endpoint: %s".formatted(refreshEndpoint));
             monitor.debug("Token refresh time tolerance: %d s".formatted(tokenExpiryToleranceSeconds));
             tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock, tokenValidationService, didPkResolver, localPublicKeyService, accessTokenDataStore, new JwtGenerationService(jwsSignerProvider),
@@ -140,20 +138,12 @@ public class DataPlaneTokenRefreshServiceExtension implements ServiceExtension {
         return tokenRefreshService;
     }
 
-    private String getRefreshEndpointConfig(ServiceExtensionContext context, Monitor monitor) {
+    private String getRefreshEndpointConfig(Monitor monitor) {
         var refreshEndpoint = refreshEndpointConfig;
         if (refreshEndpoint == null) {
             refreshEndpoint = "http://%s:%d%s".formatted(hostname.get(), webPort, webPath);
             monitor.warning("Config property '%s' was not specified, the default '%s' will be used.".formatted(REFRESH_ENDPOINT_PROPERTY, refreshEndpoint));
         }
         return refreshEndpoint;
-    }
-
-    private String getOwnDid(ServiceExtensionContext context) {
-        return participantContextSupplier.get().map(ParticipantContext::getIdentity).onFailure(f -> {
-            var message = "This connector is not configured properly, cannot continue. Error is: %s".formatted(f.getFailureDetail());
-            monitor.severe(message);
-            throw new EdcException(message);
-        }).getContent();
     }
 }

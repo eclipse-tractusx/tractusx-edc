@@ -47,7 +47,7 @@ public class RemoteTokenServiceClientExtensionTest {
         when(context.getConfig()).thenReturn(config);
 
         var extension = factory.constructInstance(RemoteTokenServiceClientExtension.class);
-        assertThat(extension.secureTokenService(context)).isInstanceOf(DivSecureTokenService.class);
+        assertThat(extension.secureTokenService()).isInstanceOf(DivSecureTokenService.class);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class RemoteTokenServiceClientExtensionTest {
 
         var extension = f.constructInstance(RemoteTokenServiceClientExtension.class);
 
-        assertThat(extension.secureTokenService(context))
+        assertThat(extension.secureTokenService())
                 .isInstanceOf(RemoteSecureTokenService.class);
     }
 }

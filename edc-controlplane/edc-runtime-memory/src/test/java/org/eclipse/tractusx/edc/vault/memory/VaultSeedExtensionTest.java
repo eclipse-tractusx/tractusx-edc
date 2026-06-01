@@ -74,7 +74,7 @@ class VaultSeedExtensionTest {
 
         var extension = factory.constructInstance(VaultSeedExtension.class);
 
-        extension.createInMemVault(context);
+        extension.createInMemVault();
         verify(monitor, times(1)).debug(anyString());
     }
 }

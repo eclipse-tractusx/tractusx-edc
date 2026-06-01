@@ -50,7 +50,7 @@ public class StsClientConfigurationExtensionTest {
 
     @Test
     void initialize(ServiceExtensionContext context, StsClientConfigurationExtension extension) {
-        assertThat(extension.clientConfiguration(context)).satisfies(stsConfig -> {
+        assertThat(extension.clientConfiguration()).satisfies(stsConfig -> {
             assertThat(stsConfig.clientId()).isEqualTo("clientId");
             assertThat(stsConfig.clientSecretAlias()).isEqualTo("clientSecretAlias");
             assertThat(stsConfig.tokenUrl()).isEqualTo("url");
