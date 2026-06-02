@@ -59,13 +59,13 @@ public class CxDcpDefaultScopeExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var defaultScopes = defaultScopes(context);
+        var defaultScopes = defaultScopes();
         policyEngine.registerPostValidator(RequestCatalogPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
         policyEngine.registerPostValidator(RequestContractNegotiationPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
         policyEngine.registerPostValidator(RequestTransferProcessPolicyContext.class, new DefaultScopeExtractor<>(defaultScopes));
     }
 
-    private Map<String, Set<String>> defaultScopes(ServiceExtensionContext context) {
+    private Map<String, Set<String>> defaultScopes() {
         var scopesByVersion = new HashMap<String, Set<String>>();
         scopesByVersion.put(DSP_SCOPE_V_08, V08_DEFAULT_SCOPES);
         scopesByVersion.put(DSP_SCOPE_V_2025_1, DEFAULT_SCOPES);

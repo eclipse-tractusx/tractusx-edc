@@ -29,7 +29,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import java.util.stream.Stream;
 
@@ -58,7 +57,7 @@ public class VaultSeedExtension implements ServiceExtension {
     }
 
     @Provider
-    public Vault createInMemVault(ServiceExtensionContext context) {
+    public Vault createInMemVault() {
 
         if (seedSecrets != null) {
             singleParticipantContextSupplier.get().map(ParticipantContext::getParticipantContextId)

@@ -24,7 +24,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
@@ -60,7 +59,7 @@ public class SqlAgreementsBpnsStoreExtension implements ServiceExtension {
     private SqlAgreementsBpnsStatements statements;
 
     @Provider
-    public AgreementsBpnsStore sqlStore(ServiceExtensionContext context) {
+    public AgreementsBpnsStore sqlStore() {
         return new SqlAgreementsBpnsStore(dataSourceRegistry, dataSourceName, transactionContext,
                 typeManager.getMapper(), queryExecutor, getStatements());
     }

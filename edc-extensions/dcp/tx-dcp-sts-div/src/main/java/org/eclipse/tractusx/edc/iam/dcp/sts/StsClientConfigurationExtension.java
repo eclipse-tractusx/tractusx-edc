@@ -24,7 +24,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.core.utils.PathUtils;
 
 /**
@@ -54,7 +53,7 @@ public class StsClientConfigurationExtension implements ServiceExtension {
     }
 
     @Provider
-    public StsRemoteClientConfiguration clientConfiguration(ServiceExtensionContext context) {
+    public StsRemoteClientConfiguration clientConfiguration() {
         return new StsRemoteClientConfiguration(PathUtils.removeTrailingSlash(tokenUrl), clientId, clientSecretAlias);
     }
 }
