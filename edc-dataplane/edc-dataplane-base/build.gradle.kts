@@ -55,6 +55,7 @@ dependencies {
     runtimeOnly(libs.edc.core.edrstore)
     runtimeOnly(libs.edc.core.participant.context.config)
     runtimeOnly(libs.edc.core.participant.context.classic)
+    runtimeOnly(libs.edc.spi.participant.context)
     runtimeOnly(libs.edc.dpf.awss3)
     runtimeOnly(libs.edc.aws.provision.s3)
     runtimeOnly(libs.edc.dpf.azblob)
