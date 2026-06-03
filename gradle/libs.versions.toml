@@ -73,7 +73,7 @@ edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version
 edc-transform-controlplane = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
-edc-core-participant-context-core = { module = "org.eclipse.edc:participant-context-connector-core", version.ref = "edc" }
+edc-core-participant-context = { module = "org.eclipse.edc:participant-context-core", version.ref = "edc" }
 edc-core-participant-context-classic = { module = "org.eclipse.edc:participant-context-connector-classic-core", version.ref = "edc" }
 edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", version.ref = "edc" }
 edc-core-runtime = { module = "org.eclipse.edc:runtime-core", version.ref = "edc" }
