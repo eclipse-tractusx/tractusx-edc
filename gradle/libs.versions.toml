@@ -54,7 +54,6 @@ edc-spi-keypair = { module = "org.eclipse.edc:keypair-spi", version.ref = "edc" 
 edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
 edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
 edc-spi-participant-context-single = { module = "org.eclipse.edc:participant-context-single-spi", version.ref = "edc" }
-edc-spi-participant-context = { module = "org.eclipse.edc:connector-participant-context-spi", version.ref = "edc" }
 edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-spi-policyengine = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
 edc-spi-protocol = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
@@ -74,7 +73,7 @@ edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version
 edc-transform-controlplane = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
-edc-core-participant-context-config = { module = "org.eclipse.edc:participant-context-config-core", version.ref = "edc" }
+edc-core-participant-context-core = { module = "org.eclipse.edc:participant-context-connector-core", version.ref = "edc" }
 edc-core-participant-context-classic = { module = "org.eclipse.edc:participant-context-connector-classic-core", version.ref = "edc" }
 edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", version.ref = "edc" }
 edc-core-runtime = { module = "org.eclipse.edc:runtime-core", version.ref = "edc" }
