@@ -9,7 +9,7 @@ awaitility = "4.3.0"
 aws = "2.44.11"
 azure-storage-blob = "12.33.4"
 bouncyCastle-jdk18on = "1.84"
-dcp-tck = "1.0.0-RC6"
+dcp-tck = "1.0.0"
 dsp-tck = "1.0.0-RC6"
 flyway = "12.6.2"
 jackson = "2.21.3"
@@ -50,7 +50,6 @@ edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
-edc-spi-jwt-signer = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = "edc" }
 edc-spi-keypair = { module = "org.eclipse.edc:keypair-spi", version.ref = "edc" }
 edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
 edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
@@ -75,7 +74,7 @@ edc-transform-controlplane = { module = "org.eclipse.edc:control-plane-transform
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-participant-context-config = { module = "org.eclipse.edc:participant-context-config-core", version.ref = "edc" }
-edc-core-participant-context-single = { module = "org.eclipse.edc:participant-context-single-core", version.ref = "edc" }
+edc-core-participant-context-classic = { module = "org.eclipse.edc:participant-context-connector-classic-core", version.ref = "edc" }
 edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", version.ref = "edc" }
 edc-core-runtime = { module = "org.eclipse.edc:runtime-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }

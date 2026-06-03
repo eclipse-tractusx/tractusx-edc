@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,7 +31,7 @@ import org.eclipse.edc.spi.system.MonitorExtension;
 public class Log4j2MonitorExtension implements MonitorExtension {
 
     @Override
-    public Monitor getMonitor() {
-        return new Log4j2Monitor();
+    public Monitor getMonitor(Monitor.Level level, String... programArgs) {
+        return new  Log4j2Monitor(level);
     }
 }
