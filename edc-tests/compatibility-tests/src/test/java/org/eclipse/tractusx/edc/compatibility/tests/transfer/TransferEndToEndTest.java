@@ -268,6 +268,7 @@ public class TransferEndToEndTest {
                 .build();
 
         return participant.baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
