@@ -65,8 +65,7 @@ jobs:
       matrix:
         variant: [ { dir: edc-controlplane, img: edc-runtime-memory },
                    { dir: edc-controlplane, img: edc-controlplane-postgresql-hashicorp-vault },
-                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault },
-                   { dir: edc-tests/runtime, img: mock-connector }]
+                   { dir: edc-dataplane,    img: edc-dataplane-hashicorp-vault }]
     permissions:
       contents: read
     steps:
