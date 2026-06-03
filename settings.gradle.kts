@@ -149,7 +149,6 @@ include(":edc-tests:runtime:dcp:dcp-extensions")
 include(":edc-tests:runtime:dcp:runtime-memory-dcp-div-ih")
 include(":edc-tests:runtime:dcp:runtime-memory-dcp-ih")
 include(":edc-tests:runtime:dcp:runtime-memory-sts")
-include(":edc-tests:runtime:mock-connector")
 include(":edc-tests:runtime:runtime-postgresql")
 include(":edc-tests:runtime:runtime-dcp-tck")
 include("edc-tests:runtime:runtime-discovery:runtime-discovery-base")
@@ -158,8 +157,6 @@ include("edc-tests:runtime:runtime-discovery:runtime-discovery-with-dsp-v08")
 include("edc-tests:runtime:runtime-compatibility:stable:extensions")
 include("edc-tests:runtime:runtime-compatibility:stable:connector-stable")
 include("edc-tests:runtime:runtime-compatibility:snapshot:connector-snapshot")
-
-
 
 // modules for controlplane artifacts
 include(":edc-controlplane")
@@ -171,6 +168,4 @@ include(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")
 include(":edc-dataplane")
 include(":edc-dataplane:edc-dataplane-base")
 include(":edc-dataplane:edc-dataplane-hashicorp-vault")
-
-include(":samples:testing-with-mocked-connector")
 
