@@ -42,7 +42,7 @@ runs:
         path: allure-results
 
     - name: Build Allure test report
-      uses: simple-elf/allure-report-action@53ebb757a2097edc77c53ecef4d454fc2f2f774c # v1.13
+      uses: simple-elf/allure-report-action@e463a472d3b1d750f9544369d60589ff1964c820 # v1.14
       with:
         gh_pages: gh-pages
         allure_results: allure-results
