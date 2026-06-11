@@ -158,7 +158,7 @@ or the [json-ld playground](https://json-ld.org/playground/) helps to be consist
 
 If the creation of the `policydefinition` was successful, the Management-API will return HTTP 201.
 
-## Exemplary scenarios
+## Exemplary scenario
 
 For the following Scenarios, we assume there is a **Partner 1 (provider)** who wants to provide Data for **Partner 2
 (consumer)**
@@ -166,7 +166,7 @@ For the following Scenarios, we assume there is a **Partner 1 (provider)** who w
 - Partner 1 (provider) has the Business-Partner-Number BPN12345.
 - Partner 2 (consumer) has the Business-Partner-Number BPN6789.
 
-Partner 2 (consumer) signed the **Traceability Framework Agreement** and followed all the necessary steps that the
+Partner 2 (consumer) signed the **Framework Agreement** and followed all the necessary steps that the
 Credential appears within Partner 2s identity.
 
 When doing a catalog request with
@@ -197,13 +197,11 @@ For example:
 }
 ```
 
-#### Scenario 1
+#### Scenario
 
-Partner 1 wants to create an Access Policy, that Partner 2 can receive the Contract Offer if its BPN matches. But a
-Contract Agreement should only be created if Partner 2 also signed the Traceability Framework Agreement. So in this
-case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Framework Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
+Partner 1 wants to create an Access Policy, that Partner 2 can receive the Contract Offer if its BPN matches. But a Contract Agreement should only be created if Partner 2 also signed the Framework Agreement. So in this case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Framework Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
 
-##### Partner 1 - Access Policy Example (Scenario 1)
+##### Partner 1 - Access Policy Example
 
 ```json
 {
@@ -224,7 +222,7 @@ case, Partner 2 should receive the Contract Offer in the first place, regardless
         "constraint": {
           "leftOperand": "BusinessPartnerNumber",
           "operator": "isAnyOf",
-          "rightOperand": "BPN6789"
+          "rightOperand": ["BPN6789", "..."]
         }
       }
     ]
@@ -232,7 +230,7 @@ case, Partner 2 should receive the Contract Offer in the first place, regardless
 }
 ```
 
-##### Partner 1 - Usage/Contract Policy Example (Scenario 1)
+##### Partner 1 - Usage/Contract Policy Example
 
 ```json
 {
@@ -274,97 +272,12 @@ case, Partner 2 should receive the Contract Offer in the first place, regardless
 > `UsagePurpose` constraints in the Usage Policy are evaluated during contract negotiation. If either
 > constraint is not satisfied, the negotiation will be rejected.
 
-##### Desired Outcome (Scenario 1)
+##### Desired Outcome
 
 Partner 2 receives the Contract Offer and is able to negotiate the contract because he presents a valid
 `DataExchangeGovernanceCredential`.
 
-#### Scenario 2
 
-Partner 1 wants to create an Access Policy so that Partner 2 can receive the Contract Offer if its BPN matches.
-However, a Contract Agreement should only be created if Partner 2 is an active member of the Catena-X dataspace
-and has signed the `DataExchangeGovernance` Framework Agreement for the intended usage purpose. Therefore,
-Partner 2 will receive the Contract Offer regardless of its membership status. The membership, framework agreement and the usage
-purpose are only checked at the time of contract negotiation.
-
-##### Partner 1 - Access Policy Example (Scenario 2)
-
-```json
-{
-  "@context": [
-    "https://w3id.org/dspace/2025/1/odrl-profile.jsonld",
-    "https://w3id.org/catenax/2025/9/policy/context.jsonld",
-    {
-      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-    }
-  ],
-  "@type": "PolicyDefinition",
-  "@id": "{{POLICY_ID}}",
-  "policy": {
-    "@type": "Set",
-    "permission": [
-      {
-        "action": "access",
-        "constraint": {
-          "leftOperand": "BusinessPartnerNumber",
-          "operator": "isAnyOf",
-          "rightOperand": "BPN6789"
-        }
-      }
-    ]
-  }
-}
-```
-
-##### Partner 1 - Usage/Contract Policy Example (Scenario 2)
-
-```json
-{
-  "@context": [
-    "https://w3id.org/dspace/2025/1/odrl-profile.jsonld",
-    "https://w3id.org/catenax/2025/9/policy/context.jsonld",
-    {
-      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-    }
-  ],
-  "@type": "PolicyDefinition",
-  "@id": "{{POLICY_ID}}",
-  "policy": {
-    "@type": "Set",
-    "permission": [
-      {
-        "action": "use",
-        "constraint": {
-          "and": [
-            {
-                "leftOperand": "FrameworkAgreement",
-                "operator": "eq",
-                "rightOperand": "DataExchangeGovernance:1.0"
-            },
-            {
-                "leftOperand": "UsagePurpose",
-                "operator": "isAnyOf",
-                "rightOperand": ["<value>"]
-            },
-            {
-                "leftOperand": "Membership",
-                "operator": "eq",
-                "rightOperand": "active"
-            }
-          ]
-        }
-      }
-    ]
-  }
-}
-```
-
-##### Desired Outcome (Scenario 2)
-
-Partner 2 receives the Contract Offer since its BPN matches the Access Policy.
-The contract negotiation, started by Partner 2, fails if Partner 2 is not an active member of the Catena-X
-dataspace, has not signed the `DataExchangeGovernance` Framework Agreement, or the requested usage purpose
-is not permitted.
 
 #### Writing Policies for the Connector
 
