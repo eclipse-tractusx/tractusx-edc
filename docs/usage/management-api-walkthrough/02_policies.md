@@ -201,7 +201,7 @@ For example:
 
 Partner 1 wants to create an Access Policy, that Partner 2 can receive the Contract Offer if its BPN matches. But a
 Contract Agreement should only be created if Partner 2 also signed the Traceability Framework Agreement. So in this
-case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Traceability Framework Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
+case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Framework Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
 
 ##### Partner 1 - Access Policy Example (Scenario 1)
 
