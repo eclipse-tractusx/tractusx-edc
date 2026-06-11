@@ -236,7 +236,7 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .then()
                 .log().ifValidationFails()
                 .statusCode(401)
-                .body(containsString("Token verification failed"));
+                .body(containsString("JWT signature not valid"));
     }
 
     @DisplayName("The refresh token does not match the stored one")
