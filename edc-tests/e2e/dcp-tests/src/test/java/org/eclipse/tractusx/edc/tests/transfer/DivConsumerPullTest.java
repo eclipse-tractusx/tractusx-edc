@@ -161,7 +161,7 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
             var dummyId = UUID.randomUUID().toString();
             var account = StsAccount.Builder.newInstance()
                     .id(dummyId)
-                    .participantContextId(participant.getDid())
+                    .participantContextId(participant.getParticipantContextId())
                     .clientId(participant.getDid())
                     .name(participant.getName())
                     .did(participant.getDid())
@@ -173,15 +173,15 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
 
         var participantContextStore = runtime.getService(ParticipantContextStore.class);
         participantContextStore.create(IdentityHubParticipantContext.Builder.newInstance()
-                .participantContextId(participant.getDid())
+                .participantContextId(participant.getParticipantContextId())
                 .did(participant.getDid())
-                .apiTokenAlias(participant.getDid()).build());
+                .apiTokenAlias(participant.getParticipantContextId()).build());
 
         var keyPairService = runtime.getService(KeyPairService.class);
         var keyDescriptor = participant.createKeyDescriptor();
         KeyPool.register(participant.getFullKeyId(), participant.getKeyPair());
 
-        keyPairService.addKeyPair(participant.getDid(), keyDescriptor, true)
+        keyPairService.addKeyPair(participant.getParticipantContextId(), keyDescriptor, true)
                 .orElseThrow(f -> new RuntimeException("Cannot add key pair: " + f.getFailureDetail()));
 
         return new EmbeddedSecureTokenService(
