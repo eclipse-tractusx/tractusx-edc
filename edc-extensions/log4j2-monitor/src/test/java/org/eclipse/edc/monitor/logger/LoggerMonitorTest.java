@@ -55,7 +55,7 @@ class LoggerMonitorTest {
         var context = (LoggerContext) LogManager.getContext(false);
         var config = context.getConfiguration();
         listAppender = config.getAppender("LIST");
-        sut = new Log4j2Monitor();
+        sut = new Log4j2Monitor(Monitor.Level.DEBUG);
     }
 
     @AfterEach

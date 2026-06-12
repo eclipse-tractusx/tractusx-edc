@@ -10,9 +10,10 @@
 --  Contributors:
 --       Cofinity-X GmbH - initial API and implementation
 --
-
 --
--- table: edc_transfer_process
+-- table: edc_contract_agreement, edc_transfer_process
 --
 
-ALTER TABLE edc_transfer_process ADD COLUMN IF NOT EXISTS data_address_alias text;
+ALTER TABLE edc_contract_agreement ADD COLUMN IF NOT EXISTS claims JSON;
+
+ALTER TABLE edc_transfer_process ADD COLUMN IF NOT EXISTS claims JSON;

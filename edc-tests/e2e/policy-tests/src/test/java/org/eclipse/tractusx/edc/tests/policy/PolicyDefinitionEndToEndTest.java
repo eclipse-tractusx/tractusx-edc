@@ -248,7 +248,7 @@ public class PolicyDefinitionEndToEndTest {
     private Response createPolicyDefinition(JsonObject policy) {
         JsonObject requestBody = Json.createObjectBuilder().add("@context",
                 Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/")).add("@type", "PolicyDefinition").add("policy", policy).build();
-        return (Response) PROVIDER.baseManagementRequest().contentType(ContentType.JSON).body(requestBody).when().post("/policydefinitions", new Object[0]).then().extract();
+        return (Response) PROVIDER.baseManagementRequest().basePath("/v3").contentType(ContentType.JSON).body(requestBody).when().post("/policydefinitions", new Object[0]).then().extract();
     }
 
     private static JsonObject policyFromRules(String ruleType, String policyDefinition, JsonObject... rules) {
