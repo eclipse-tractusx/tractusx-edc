@@ -87,7 +87,7 @@ public class DcpParticipant extends TractusxDcpParticipantBase {
         stsRuntimeExtension.getService(Vault.class).storeSecret(getPrivateKeyAlias(), getPrivateKeyAsString());
 
         var participantManifest = ParticipantManifest.Builder.newInstance()
-                .participantContextId(getDid())
+                .participantContextId(getParticipantContextId())
                 .did(getDid())
                 .build();
         var participantContextService = stsRuntimeExtension.getService(IdentityHubParticipantContextService.class);
@@ -96,14 +96,14 @@ public class DcpParticipant extends TractusxDcpParticipantBase {
 
         runtimeExtension.getService(Vault.class).storeSecret("client_secret_alias", createParticipantContextResponse.clientSecret());
 
-        stsRuntimeExtension.getService(KeyPairService.class).addKeyPair(getDid(), createKeyDescriptor(), true)
+        stsRuntimeExtension.getService(KeyPairService.class).addKeyPair(getParticipantContextId(), createKeyDescriptor(), true)
                 .orElseThrow(f -> new EdcException("Cannot store key pair: " + f.getFailureDetail()));
 
         KeyPool.register(getFullKeyId(), getKeyPair());
 
         var account = StsAccount.Builder.newInstance()
                 .id(getId())
-                .participantContextId(getDid())
+                .participantContextId(getParticipantContextId())
                 .name(getName())
                 .clientId(getDid())
                 .did(getDid())
@@ -151,7 +151,7 @@ public class DcpParticipant extends TractusxDcpParticipantBase {
             service.setId("#credential-service");
             service.setType("CredentialService");
             var credentialServiceBaseUri = Objects.requireNonNullElse(participant.credentialServiceUri, participant.csService);
-            service.setServiceEndpoint(credentialServiceBaseUri.get() + "/v1/participants/" + toBase64(participant.did));
+            service.setServiceEndpoint(credentialServiceBaseUri.get() + "/v1/participants/" + participant.participantContextId);
 
             var ecKey = participant.getKeyPairAsJwk();
 
@@ -168,10 +168,6 @@ public class DcpParticipant extends TractusxDcpParticipantBase {
                     .authentication(List.of("#key-1"))
                     .verificationMethod(List.of(verificationMethod))
                     .build();
-        }
-
-        private String toBase64(String s) {
-            return Base64.getUrlEncoder().encodeToString(s.getBytes());
         }
     }
 }

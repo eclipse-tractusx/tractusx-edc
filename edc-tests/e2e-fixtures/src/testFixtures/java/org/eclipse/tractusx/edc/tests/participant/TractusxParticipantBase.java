@@ -41,6 +41,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
@@ -82,6 +83,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     protected ParticipantConsumerDataPlaneApi dataPlane;
     protected String bpn;
     protected String did;
+    protected String participantContextId;
 
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
@@ -96,7 +98,12 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public String getDid() {
         return did;
     }
-    
+
+    @NotNull
+    public String getParticipantContextId() {
+        return participantContextId;
+    }
+
     /**
      * Allows overriding the participant id, as for DSP 0.8 tests the provider's BPN has to be used.
      *
@@ -138,7 +145,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 put("tx.edc.iam.dcp.bdrs.server.url", "http://sts.example.com");
                 put("edc.dataplane.api.public.baseurl", "%s/v2/data".formatted(dataPlanePublic.get()));
                 put("edc.policy.validation.enabled", "true");
-                put("edc.participant.context.id", "general-test-id");
+                put("edc.participant.context.id", participantContextId);
                 put("tractusx.edc.participant.bpn", getBpn());
                 put("edc.iam.did.web.use.https", "false");
                 put("edc.encryption.strict", "false");
@@ -365,6 +372,8 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             if (participant.bpn == null) {
                 participant.bpn = participant.name.toLowerCase() + BPN_SUFFIX;
             }
+
+            participant.participantContextId = UUID.randomUUID().toString();
 
             participant.enrichManagementRequest = requestSpecification -> requestSpecification.headers(Map.of(API_KEY_HEADER_NAME, MANAGEMENT_API_KEY));
             super.timeout(ASYNC_TIMEOUT);
