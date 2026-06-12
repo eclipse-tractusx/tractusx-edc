@@ -44,6 +44,7 @@ dependencies {
 
     implementation(project(":edc-extensions:dataplane:dataflow:dataflow-api"))
     implementation(project(":edc-extensions:dataplane:dataflow:dataflow-service"))
+    implementation(project(":edc-extensions:dataplane:kafka:kafka-broker-extension"))
     runtimeOnly(libs.edc.api.management.config)
     runtimeOnly(libs.edc.auth.tokenbased)
     runtimeOnly(libs.edc.auth.configuration)
