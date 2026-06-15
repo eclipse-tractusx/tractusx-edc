@@ -36,6 +36,64 @@ In addition, in order to map BPNs to DIDs, a new service is required, called the
 must be configured:
 - `controlplane.bdrs.server.url`: base URL of the BPN-DID Resolution Service ("BDRS")
 
+#### Database configuration
+
+When bringing your own database, respectively not installing postgres (`install.postgresql: false`), use the following information:
+
+```yaml
+postgresql:
+  jdbcUrl: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"
+  auth:
+    username: "postgres"
+    password: "password"
+```
+
+When installing postgres with the chart, it is **RECOMMENDED** to use a custom user beside the admin user:
+
+> [!note]
+> The value `postgresql.jdbUrl` is composed in the deployments using a dependent variable of the database name and the name of the postgress deployment.
+
+```yaml
+postgresql:
+  auth:
+    database: "postgres"
+    username: "postgres"
+    password: "password" # generated if empty
+  customUser: # name or exisitng secret must be set
+    name: "edc"
+    database: "edc" # must ge different than postgresql.auth.database
+    password: "password" # generated if empty
+```
+
+When installing postgres with the chart, you can alteratively not create and use a custom user (**NOT RECOMMENDED**).
+
+```yaml
+postgresql:
+  auth:
+    database: "postgres"
+    username: "postgres"
+    password: "password" # generated if empty
+  customUser:
+    existingSecret: "" # explicitly set to empty
+    name: "" # explicitly set to empty
+```
+
+Further you can also reuse existing secrets instead:
+
+```yaml
+postgresql:
+  auth:
+    existingSecret: "my-existing-secret-name"
+    secretKeys:
+      adminPasswordKey: "postgres-password"
+  customUser:
+    existingSecret: "my-existing-secret-name"
+    secretKeys:
+      password: "CUSTOM_PASSWORD"
+      name: "CUSTOM_USER"
+      database: "CUSTOM_DB"
+```
+
 ### Launching the application
 
 As an easy starting point, please consider using [this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml)
@@ -70,7 +128,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | controlplane.autoscaling.targetCPUUtilizationPercentage | int | `80` | targetAverageUtilization of cpu provided to a pod |
 | controlplane.autoscaling.targetMemoryUtilizationPercentage | int | `80` | targetAverageUtilization of memory provided to a pod |
 | controlplane.bdrs.cache_validity_seconds | int | `600` | Time that a cached BPN/DID resolution map is valid in seconds, default is 600 seconds (10 min) |
-| controlplane.bdrs.server.url | string | `nil` | URL of the BPN/DID Resolution Service |
+| controlplane.bdrs.server.url | string | `"CHANGEME"` | URL of the BPN/DID Resolution Service |
 | controlplane.debug.enabled | bool | `false` | Enables java debugging mode. |
 | controlplane.debug.port | int | `1044` | Port where the debuggee can connect to. |
 | controlplane.debug.suspendOnStart | bool | `false` | Defines if the JVM should wait with starting the application until someone connected to the debugging port. |
@@ -251,8 +309,8 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | dataplane.token.refresh.expiry_seconds | int | `300` | TTL in seconds for access tokens (also known as EDR token) |
 | dataplane.token.refresh.expiry_tolerance_seconds | int | `10` | Tolerance for token expiry in seconds |
 | dataplane.token.refresh.refresh_endpoint | string | `nil` | Optional endpoint for an OAuth2 token refresh. Default endpoint is `<PUBLIC_API>/token` |
-| dataplane.token.signer.privatekey_alias | string | `nil` | Alias under which the private key (JWK or PEM format) is stored in the vault |
-| dataplane.token.verifier.publickey_alias | string | `nil` | Alias under which the public key (JWK or PEM format) is stored in the vault, that belongs to the private key which was referred to at `dataplane.token.signer.privatekey_alias` |
+| dataplane.token.signer.privatekey_alias | string | `"CHANGEME"` | Alias under which the private key (JWK or PEM format) is stored in the vault |
+| dataplane.token.verifier.publickey_alias | string | `"CHANGEME"` | Alias under which the public key (JWK or PEM format) is stored in the vault, that belongs to the private key which was referred to at `dataplane.token.signer.privatekey_alias` |
 | dataplane.tolerations | list | `[]` | [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) to configure preferred nodes |
 | dataplane.url.public | string | `""` | Explicitly declared url for reaching the public api (e.g. if ingresses not used) |
 | dataplane.volumeMounts | string | `nil` | declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container |
@@ -261,9 +319,9 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | dcp.cache.validity | int | `86400` | Validity of the Verifiable Presentation cache in seconds |
 | dcp.didService.selfRegistration.enabled | bool | `false` | Whether Service Self Registration is enabled |
 | dcp.sts.div.url | string | `nil` | URL where connectors can request SI tokens |
-| dcp.sts.oauth.client.id | string | `nil` | Client ID for requesting OAuth2 access token for DIV access |
-| dcp.sts.oauth.client.secret_alias | string | `nil` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
-| dcp.sts.oauth.token_url | string | `nil` | URL where connectors can request OAuth2 access tokens for DIV access |
+| dcp.sts.oauth.client.id | string | `"CHANGEME"` | Client ID for requesting OAuth2 access token for DIV access |
+| dcp.sts.oauth.client.secret_alias | string | `"CHANGEME"` | Alias under which the client secret is stored in the vault for requesting OAuth2 access token for DIV access |
+| dcp.sts.oauth.token_url | string | `"CHANGEME"` | URL where connectors can request OAuth2 access tokens for DIV access |
 | dcp.trustedIssuers | list | `[]` | Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer |
 | fullnameOverride | string | `""` |  |
 | imagePullSecrets | list | `[]` | Existing image pull secret to use to [obtain the container image from private registries](https://kubernetes.io/docs/concepts/containers/images/#using-a-private-registry) |
@@ -280,9 +338,18 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.13.0-SNAPSHO
 | participant.bpnl | string | `"BPNLCHANGEME"` | BPNL Number |
 | participant.contextId | string | `"UUID CHANGEME"` | Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy) |
 | participant.id | string | `"did:web:changeme"` | Participant Id, resp. the Decentralized IDentifier (DID) of the connector |
-| postgresql.auth.database | string | `"edc"` |  |
-| postgresql.auth.password | string | `"password"` |  |
-| postgresql.auth.username | string | `"user"` |  |
+| postgresql.auth.database | string | postgres | Database of the root user. If an exisisting secret is used, this value is overwritten into the existing secret. |
+| postgresql.auth.existingSecret | string | {{ .Release.Name }}-postgresql | Name of the existing secret containing the superuser credentials. |
+| postgresql.auth.password | string | Autogenerated random alpha=numeric string with 16 characters (if empty). | Password of the root user. If an existing secret is used, this value is overwritten into the existing secret. |
+| postgresql.auth.secretKeys.adminPasswordKey | string | postgres-password | Key of the admin password to use of the existing secret. |
+| postgresql.auth.username | string | postgres | Username of the root user. If an existing secret is used, this value is overwritten into the existing secret. |
+| postgresql.customUser.database | string | edc | Name for the custom database to be created and assigned to the custom user. If an existing secret is used, this value is overwritten into the existing secret. |
+| postgresql.customUser.existingSecret | string | {{ .Release.Name }}-postgresql-custom-user-credentials | Name of the existing secret containing the custom user credentials. |
+| postgresql.customUser.name | string | edc | Name of the custom user to be created. If an existing secret is used, this value is overwritten into the existing secret. |
+| postgresql.customUser.password | string | Autogenerated random alpha=numeric string with 16 characters (if empty). | Password to be used for the custom user. If an existing secret is used, this value is overwritten into the existing secret. |
+| postgresql.customUser.secretKeys.database | string | CUSTOM_DB | Key of the custom user database to use of the existing secret. |
+| postgresql.customUser.secretKeys.name | string | CUSTOM_USER | Key of the custom user name to use of the existing secret. |
+| postgresql.customUser.secretKeys.password | string | CUSTOM_PASSWORD | Key of the custom user password to use of the existing secret. |
 | postgresql.image.registry | string | `"docker.io"` |  |
 | postgresql.image.repository | string | `"postgres"` |  |
 | postgresql.jdbcUrl | string | `"jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"` |  |
