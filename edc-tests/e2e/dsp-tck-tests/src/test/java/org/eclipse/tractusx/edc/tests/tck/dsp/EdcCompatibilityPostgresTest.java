@@ -102,7 +102,7 @@ public class EdcCompatibilityPostgresTest {
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 
-    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC4");
+    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0");
 
     @BeforeEach
     void setUp() {
@@ -129,7 +129,7 @@ public class EdcCompatibilityPostgresTest {
                 put("edc.dsp.callback.address", PROTOCOL_URL.toString()); // host.docker.internal is required by the container to communicate with the host
                 put("edc.management.context.enabled", "true");
                 put("edc.hostname", "host.docker.internal");
-                put("edc.component.id", "DSP-compatibility-test");
+                put("edc.component.id", "DSP-tck-test");
                 put("edc.transfer.proxy.token.signer.privatekey.alias", "private-key");
                 put("edc.transfer.proxy.token.verifier.publickey.alias", "public-key");
                 put("edc.policy.validation.enabled", "true");

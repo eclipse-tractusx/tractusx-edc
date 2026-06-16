@@ -94,7 +94,8 @@ public class DcpPresentationFlowTest {
     
     @RegisterExtension
     static final RuntimePerClassExtension RUNTIME = new RuntimePerClassExtension(
-            new EmbeddedRuntime("Connector-under-test", ":edc-tests:runtime:runtime-dcp-tck")
+            new EmbeddedRuntime("Connector-under-test",
+                    ":edc-tests:runtime:runtime-dcp-tck", ":edc-extensions:single-participant-vault")
                     .registerServiceMock(SecureTokenService.class, STS_MOCK)
                     .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
                     .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
@@ -188,30 +189,20 @@ public class DcpPresentationFlowTest {
     }
 
     private String createDidDocumentJson() {
-        var doc = DidDocument.Builder.newInstance()
+        var ddoc = DidDocument.Builder.newInstance()
                 .id(VERIFIER_DID)
-                .verificationMethod(
-                    List.of(
+                .verificationMethod(List.of(
                         VerificationMethod.Builder.newInstance()
-                            .type("assertionMethod")
-                            .controller(VERIFIER_DID)
-                            .publicKeyJwk(verifierKey.toJSONObject())
-                            .id(verifierKey.getKeyID())
-                            .build()
-                    )
-                )
-                .service(
-                    List.of(
-                        new Service(
-                            UUID.randomUUID().toString(),
-                            "CredentialService",
-                            "https://example.com/credentialservice"
-                        )
-                    )
-                )
+                                .type("assertionMethod")
+                                .controller(VERIFIER_DID)
+                                .publicKeyJwk(verifierKey.toJSONObject())
+                                .id(verifierKey.getKeyID())
+                                .build()
+                ))
+                .service(List.of(new Service(UUID.randomUUID().toString(), "CredentialService", "https://example.com/credentialservice")))
                 .build();
         try {
-            return new ObjectMapper().writeValueAsString(doc);
+            return new ObjectMapper().writeValueAsString(ddoc);
         } catch (JsonProcessingException e) {
             throw new AssertionError(e);
         }
@@ -230,6 +221,7 @@ public class DcpPresentationFlowTest {
                 put("web.http.protocol.path", PROTOCOL_API_PATH);
                 put("web.http.protocol.port", String.valueOf(PROTOCOL_API_PORT));
                 put("edc.participant.id", "id");
+                put("edc.participant.did", VERIFIER_DID);
                 put("edc.iam.issuer.id", VERIFIER_DID);
                 put("edc.iam.sts.oauth.token.url", "https://example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-client-id");

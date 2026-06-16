@@ -27,7 +27,6 @@ dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base")) {
         exclude(module = "cx-dcp")
     }
-    implementation(project(":edc-extensions:single-participant-vault"))
 }
 
 application {
