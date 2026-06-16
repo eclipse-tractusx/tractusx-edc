@@ -72,7 +72,7 @@ public class DcpHelperFunctions {
         var vault = identityHubRuntime.getService(Vault.class);
         var credentialStore = identityHubRuntime.getService(CredentialStore.class);
 
-        var credentials = issuer.issueCredentials(participant.getDid(), participant.getId());
+        var credentials = issuer.issueCredentials(participant.getDid(), participant.getId(), participant.getParticipantContextId());
 
         credentials.forEach(credentialStore::create);
 

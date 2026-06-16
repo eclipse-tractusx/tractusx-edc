@@ -133,6 +133,9 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
         var generatorServices = Map.of(
                 CONSUMER.getDid(), tokenServiceFor(consumerTokenGeneration, CONSUMER, CONSUMER_RUNTIME),
                 PROVIDER.getDid(), tokenServiceFor(providerTokenGeneration, PROVIDER, PROVIDER_RUNTIME));
+        var participantContextIds = Map.of(
+                CONSUMER.getDid(), CONSUMER.getParticipantContextId(),
+                PROVIDER.getDid(), PROVIDER.getParticipantContextId());
 
         var stsUri = STS.stsUri().get();
 
@@ -141,7 +144,7 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
         oauthServer.stubFor(post(urlPathEqualTo(stsUri.getPath() + "/token")).willReturn(aResponse().withStatus(200)
                 .withBody(MAPPER.writeValueAsString(Map.of("access_token", "token")))));
 
-        divServer = new WireMockServer(options().port(DIV_URI.get().getPort()).extensions(new DivDispatcher(generatorServices)));
+        divServer = new WireMockServer(options().port(DIV_URI.get().getPort()).extensions(new DivDispatcher(generatorServices, participantContextIds)));
         divServer.start();
         divServer.stubFor(post(anyUrl()).willReturn(aResponse().withTransformers("div-dispatcher")));
 
@@ -172,10 +175,15 @@ public class DivConsumerPullTest extends AbstractDcpConsumerPullTest {
         });
 
         var participantContextStore = runtime.getService(ParticipantContextStore.class);
-        participantContextStore.create(IdentityHubParticipantContext.Builder.newInstance()
+        var participantContext = IdentityHubParticipantContext.Builder.newInstance()
                 .participantContextId(participant.getParticipantContextId())
                 .did(participant.getDid())
-                .apiTokenAlias(participant.getParticipantContextId()).build());
+                .apiTokenAlias(participant.getParticipantContextId()).build();
+        var createResult = participantContextStore.create(participantContext);
+        if (createResult.failed()) {
+            participantContextStore.update(participantContext)
+                    .orElseThrow(f -> new RuntimeException("Cannot update participant context: " + f.getFailureDetail()));
+        }
 
         var keyPairService = runtime.getService(KeyPairService.class);
         var keyDescriptor = participant.createKeyDescriptor();
