@@ -38,7 +38,6 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.runtimes.KeyPool;
 
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -113,7 +112,7 @@ public class DcpParticipant extends TractusxDcpParticipantBase {
     }
 
     private List<VerifiableCredentialResource> issueCredentials(DataspaceIssuer issuer) {
-        return issuer.issueCredentials(getDid(), getBpn());
+        return issuer.issueCredentials(getDid(), getBpn(), getParticipantContextId());
     }
 
     public KeyDescriptor createKeyDescriptor() {

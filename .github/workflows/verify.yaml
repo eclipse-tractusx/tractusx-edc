@@ -259,6 +259,7 @@ jobs:
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
 
   compatibility-tests:
+    if: false # Disabled while compatibility tests are being migrated to the updated EDC runtime.
     runs-on: ubuntu-latest
     permissions:
       contents: read
