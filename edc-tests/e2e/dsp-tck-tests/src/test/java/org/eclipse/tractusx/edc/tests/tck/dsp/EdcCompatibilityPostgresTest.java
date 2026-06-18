@@ -114,14 +114,15 @@ public class EdcCompatibilityPostgresTest {
 
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(CONNECTOR_UNDER_TEST,
-            ":edc-tests:runtime:runtime-dsp", ":edc-extensions:single-participant-vault")
+            ":edc-tests:runtime:runtime-dsp",
+            ":edc-extensions:single-participant-vault")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient(s -> s, s -> s))
             .registerServiceMock(AgreementsBpnsStore.class, AGREEMENTS_BPNS_STORE)
             .registerServiceMock(PolicyArchive.class, POLICY_ARCHIVE)
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 
-    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC4");
+    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0");
 
     @BeforeEach
     void setUp() {
