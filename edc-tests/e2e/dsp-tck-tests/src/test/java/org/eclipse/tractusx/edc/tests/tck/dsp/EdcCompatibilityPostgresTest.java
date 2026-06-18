@@ -90,6 +90,21 @@ public class EdcCompatibilityPostgresTest {
         }
     };
 
+    private static final PolicyArchive POLICY_ARCHIVE = new PolicyArchive() {
+        @Override
+        public Policy findPolicyForContract(String contractId) {
+            return Policy.Builder.newInstance()
+                    .assigner(TCK_PARTICIPANT)
+                    .assignee(TCK_PARTICIPANT)
+                    .build();
+        }
+
+        @Override
+        public String getAgreementIdForContract(String contractId) {
+            return contractId;
+        }
+    };
+
     @RegisterExtension
     @Order(0)
     private static final PostgresExtension POSTGRES = new PostgresExtension(CONNECTOR_UNDER_TEST);
@@ -99,10 +114,11 @@ public class EdcCompatibilityPostgresTest {
             ":edc-tests:runtime:runtime-dsp", ":edc-extensions:single-participant-vault")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient(s -> s, s -> s))
             .registerServiceMock(AgreementsBpnsStore.class, AGREEMENTS_BPNS_STORE)
+            .registerServiceMock(PolicyArchive.class, POLICY_ARCHIVE)
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 
-    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0");
+    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC4");
 
     @BeforeEach
     void setUp() {
@@ -114,7 +130,7 @@ public class EdcCompatibilityPostgresTest {
         return ConfigFactory.fromMap(new HashMap<>() {
             {
                 put("edc.participant.id", BPN);
-                put("edc.participant.context.id", CONNECTOR_UNDER_TEST + "_context");
+                put("edc.participant.context.id", CONNECTOR_UNDER_TEST);
                 put("web.http.port", "8080");
                 put("web.http.path", "/api");
                 put("web.http.control.port", String.valueOf(CONTROL_URL.getPort()));

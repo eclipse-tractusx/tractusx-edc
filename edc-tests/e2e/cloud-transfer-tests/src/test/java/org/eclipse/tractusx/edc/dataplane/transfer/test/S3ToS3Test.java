@@ -109,7 +109,7 @@ public class S3ToS3Test {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties, UUID.randomUUID().toString()))
-                .post()
+                .post("/start")
                 .then()
                 .statusCode(200);
 
@@ -132,7 +132,7 @@ public class S3ToS3Test {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties, UUID.randomUUID().toString()))
-                .post()
+                .post("/start")
                 .then()
                 .statusCode(200);
 
@@ -154,7 +154,7 @@ public class S3ToS3Test {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(createDataFlowStartMessage(sourceBucketName, "not-existent-bucket", additionalSourceAddressProperties, processId))
-                .post()
+                .post("/start")
                 .then()
                 .statusCode(200);
 
@@ -183,7 +183,7 @@ public class S3ToS3Test {
                     .baseUri(START_DATAFLOW_URI.get().toString())
                     .contentType(ContentType.JSON)
                     .body(createDataFlowStartMessage(sourceBucketName, destinationBucketName, additionalSourceAddressProperties, processId))
-                    .post()
+                    .post("/start")
                     .then()
                     .statusCode(200)
                     .log().ifValidationFails();

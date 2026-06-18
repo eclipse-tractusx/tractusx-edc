@@ -2,8 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.16.0"
-edc-next = "0.16.0"
+edc = "0.17.0"
 edc-build = "1.5.2"
 allure = "2.35.2"
 awaitility = "4.3.0"
@@ -52,7 +51,6 @@ edc-spi-http = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-spi-identity-did = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-jwt = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
-edc-spi-jwt-signer = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = "edc" }
 edc-spi-keypair = { module = "org.eclipse.edc:keypair-spi", version.ref = "edc" }
 edc-spi-keys = { module = "org.eclipse.edc:keys-spi", version.ref = "edc" }
 edc-spi-participant = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
@@ -77,7 +75,8 @@ edc-transform-controlplane = { module = "org.eclipse.edc:control-plane-transform
 edc-core-edrstore = { module = "org.eclipse.edc:edr-store-core", version.ref = "edc" }
 edc-core-jersey = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-core-participant-context-config = { module = "org.eclipse.edc:participant-context-config-core", version.ref = "edc" }
-edc-core-participant-context-single = { module = "org.eclipse.edc:participant-context-single-core", version.ref = "edc" }
+edc-core-participant-context = { module = "org.eclipse.edc:participant-context-core", version.ref = "edc" }
+edc-core-participant-context-classic = { module = "org.eclipse.edc:participant-context-connector-classic-core", version.ref = "edc" }
 edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", version.ref = "edc" }
 edc-core-runtime = { module = "org.eclipse.edc:runtime-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
@@ -171,6 +170,8 @@ tck-core = { module = "org.eclipse.dataspacetck.common:core", version.ref = "com
 
 
 # DSP-TCK libraries
+dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }
+dsp-tck-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dsp-tck" }
 dsp-tck-api = { module = "org.eclipse.dataspacetck.dsp:dsp-api", version.ref = "dsp-tck" }
 dsp-tck-system = { module = "org.eclipse.dataspacetck.dsp:dsp-system", version.ref = "dsp-tck" }
 dsp-tck-metadata = { module = "org.eclipse.dataspacetck.dsp:dsp-metadata", version.ref = "dsp-tck" }
@@ -178,7 +179,7 @@ dsp-tck-catalog = { module = "org.eclipse.dataspacetck.dsp:dsp-catalog", version
 dsp-tck-contractnegotiation = { module = "org.eclipse.dataspacetck.dsp:dsp-contract-negotiation", version.ref = "dsp-tck" }
 dsp-tck-transferprocess = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer-process", version.ref = "dsp-tck" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
-tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc-next" }
+tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 
 # DSP libraries
 dsp-spi-http = { module = "org.eclipse.edc:dsp-http-spi", version.ref = "edc" }

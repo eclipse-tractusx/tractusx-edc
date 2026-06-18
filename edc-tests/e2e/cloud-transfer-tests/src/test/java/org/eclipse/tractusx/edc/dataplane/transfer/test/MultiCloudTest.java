@@ -133,7 +133,7 @@ public class MultiCloudTest {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post()
+                .post("/start")
                 .then()
                 .log().ifError()
                 .statusCode(200);
@@ -186,7 +186,7 @@ public class MultiCloudTest {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post()
+                .post("/start")
                 .then()
                 .log().ifError()
                 .statusCode(200);
@@ -245,7 +245,7 @@ public class MultiCloudTest {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post()
+                .post("/start")
                 .then()
                 .statusCode(200);
 
@@ -309,7 +309,7 @@ public class MultiCloudTest {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post()
+                .post("/start")
                 .then()
                 .statusCode(200);
 
@@ -364,7 +364,7 @@ public class MultiCloudTest {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post()
+                .post("/start")
                 .then()
                 .statusCode(200);
 

@@ -47,14 +47,16 @@ public class DivDispatcher implements ResponseTransformerV2 {
     private static final TypeManager MAPPER = new JacksonTypeManager();
     private final String path;
     private final Map<String, EmbeddedSecureTokenService> secureTokenServices;
+    private final Map<String, String> participantContextIds;
 
-    public DivDispatcher(Map<String, EmbeddedSecureTokenService> secureTokenServices) {
-        this("/", secureTokenServices);
+    public DivDispatcher(Map<String, EmbeddedSecureTokenService> secureTokenServices, Map<String, String> participantContextIds) {
+        this("/", secureTokenServices, participantContextIds);
     }
 
-    public DivDispatcher(String path, Map<String, EmbeddedSecureTokenService> secureTokenServices) {
+    public DivDispatcher(String path, Map<String, EmbeddedSecureTokenService> secureTokenServices, Map<String, String> participantContextIds) {
         this.path = path;
         this.secureTokenServices = secureTokenServices;
+        this.participantContextIds = participantContextIds;
     }
 
     @Override
@@ -97,7 +99,7 @@ public class DivDispatcher implements ResponseTransformerV2 {
         var claims = Map.of(ISSUER, issuer, SUBJECT, issuer, AUDIENCE, audience);
 
         var sts = secureTokenServices.get(issuer);
-        var token = sts.createToken(issuer, claims, scope)
+        var token = sts.createToken(participantContextId(issuer), claims, scope)
                 .map(TokenRepresentation::getToken)
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
@@ -113,7 +115,7 @@ public class DivDispatcher implements ResponseTransformerV2 {
         var claims = Map.of(ISSUER, issuer, SUBJECT, subject, AUDIENCE, audience, PRESENTATION_TOKEN_CLAIM, accessToken);
 
         var sts = secureTokenServices.get(issuer);
-        var token = sts.createToken(issuer, claims, null)
+        var token = sts.createToken(participantContextId(issuer), claims, null)
                 .map(TokenRepresentation::getToken)
                 .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
 
@@ -136,5 +138,9 @@ public class DivDispatcher implements ResponseTransformerV2 {
                 .status(404)
                 .body("")
                 .build();
+    }
+
+    private String participantContextId(String did) {
+        return participantContextIds.getOrDefault(did, did);
     }
 }

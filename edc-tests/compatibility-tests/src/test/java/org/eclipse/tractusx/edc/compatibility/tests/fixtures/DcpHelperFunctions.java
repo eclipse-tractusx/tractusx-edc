@@ -72,7 +72,7 @@ public class DcpHelperFunctions {
         var vault = identityHubRuntime.getService(Vault.class);
         var credentialStore = identityHubRuntime.getService(CredentialStore.class);
 
-        var credentials = issuer.issueCredentials(participant.getDid(), participant.getId());
+        var credentials = issuer.issueCredentials(participant.getDid(), participant.getId(), participant.getParticipantContextId());
 
         credentials.forEach(credentialStore::create);
 
@@ -94,10 +94,10 @@ public class DcpHelperFunctions {
         var service = new Service();
         service.setId("#credential-service");
         service.setType("CredentialService");
-        service.setServiceEndpoint(identityHubParticipant.getResolutionApi() + "/v1/participants/" + toBase64(participant.getDid()));
+        service.setServiceEndpoint(identityHubParticipant.getResolutionApi() + "/v1/participants/" + participant.getParticipantContextId());
 
         var participantManifest = ParticipantManifest.Builder.newInstance()
-                .participantContextId(participant.getDid())
+                .participantContextId(participant.getParticipantContextId())
                 .did(participant.getDid())
                 .key(key)
                 .serviceEndpoint(service)

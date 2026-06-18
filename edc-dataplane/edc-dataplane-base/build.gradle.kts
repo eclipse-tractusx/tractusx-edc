@@ -53,8 +53,9 @@ dependencies {
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.core.did) // for the DID Public Key Resolver
     runtimeOnly(libs.edc.core.edrstore)
+    runtimeOnly(libs.edc.core.participant.context)
     runtimeOnly(libs.edc.core.participant.context.config)
-    runtimeOnly(libs.edc.core.participant.context.single)
+    runtimeOnly(libs.edc.core.participant.context.classic)
     runtimeOnly(libs.edc.dpf.awss3)
     runtimeOnly(libs.edc.aws.provision.s3)
     runtimeOnly(libs.edc.dpf.azblob)

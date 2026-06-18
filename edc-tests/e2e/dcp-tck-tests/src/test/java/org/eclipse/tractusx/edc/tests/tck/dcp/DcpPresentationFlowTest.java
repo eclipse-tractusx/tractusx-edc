@@ -189,20 +189,30 @@ public class DcpPresentationFlowTest {
     }
 
     private String createDidDocumentJson() {
-        var ddoc = DidDocument.Builder.newInstance()
+        var doc = DidDocument.Builder.newInstance()
                 .id(VERIFIER_DID)
-                .verificationMethod(List.of(
+                .verificationMethod(
+                    List.of(
                         VerificationMethod.Builder.newInstance()
-                                .type("assertionMethod")
-                                .controller(VERIFIER_DID)
-                                .publicKeyJwk(verifierKey.toJSONObject())
-                                .id(verifierKey.getKeyID())
-                                .build()
-                ))
-                .service(List.of(new Service(UUID.randomUUID().toString(), "CredentialService", "https://example.com/credentialservice")))
+                            .type("assertionMethod")
+                            .controller(VERIFIER_DID)
+                            .publicKeyJwk(verifierKey.toJSONObject())
+                            .id(verifierKey.getKeyID())
+                            .build()
+                    )
+                )
+                .service(
+                    List.of(
+                        new Service(
+                            UUID.randomUUID().toString(),
+                            "CredentialService",
+                            "https://example.com/credentialservice"
+                        )
+                    )
+                )
                 .build();
         try {
-            return new ObjectMapper().writeValueAsString(ddoc);
+            return new ObjectMapper().writeValueAsString(doc);
         } catch (JsonProcessingException e) {
             throw new AssertionError(e);
         }
@@ -220,13 +230,13 @@ public class DcpPresentationFlowTest {
                 put("web.http.port", String.valueOf(getFreePort()));
                 put("web.http.protocol.path", PROTOCOL_API_PATH);
                 put("web.http.protocol.port", String.valueOf(PROTOCOL_API_PORT));
-                put("edc.participant.id", "id");
-                put("edc.participant.did", VERIFIER_DID);
+                put("edc.participant.id", VERIFIER_DID);
                 put("edc.iam.issuer.id", VERIFIER_DID);
                 put("edc.iam.sts.oauth.token.url", "https://example.com/token");
                 put("edc.iam.sts.oauth.client.id", "test-client-id");
                 put("edc.iam.sts.oauth.client.secret.alias", "test-secret-alias");
                 put("tx.edc.iam.dcp.bdrs.server.url", "http://sts.example.com");
+                put("tx.edc.dcp.cache.enabled", "false");
                 //register a default scope https://github.com/eclipse-dataspacetck/dcp-tck?tab=readme-ov-file#232-required-configuration
                 put("tx.edc.iam.dcp.default-scopes.holderIdentifier.alias", "org.eclipse.dspace.dcp.vc.type");
                 put("tx.edc.iam.dcp.default-scopes.holderIdentifier.type", "MembershipCredential");

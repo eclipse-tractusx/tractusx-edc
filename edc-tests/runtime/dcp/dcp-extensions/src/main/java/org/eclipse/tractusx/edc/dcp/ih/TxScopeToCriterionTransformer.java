@@ -41,13 +41,14 @@ public class TxScopeToCriterionTransformer implements ScopeToCriterionTransforme
     private final List<String> allowedOperations = List.of("read", "*", "all");
 
     @Override
-    public Result<Criterion> transform(String scope) {
+    public Result<List<Criterion>> transformScope(String scope) {
         var tokens = tokenize(scope);
         if (tokens.failed()) {
             return failure("Scope string cannot be converted: %s".formatted(tokens.getFailureDetail()));
         }
         var credentialType = tokens.getContent()[1];
-        return success(new Criterion(TYPE_OPERAND, CONTAINS_OPERATOR, credentialType));
+
+        return success(List.of(new Criterion(TYPE_OPERAND, CONTAINS_OPERATOR, credentialType)));
     }
 
     protected Result<String[]> tokenize(String scope) {

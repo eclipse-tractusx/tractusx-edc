@@ -29,7 +29,6 @@ dependencies {
     implementation(libs.edc.spi.dataplane.dataplane)
     implementation(libs.edc.spi.identity.did)
     implementation(libs.edc.spi.jwt)
-    implementation(libs.edc.spi.jwt.signer)
     implementation(libs.edc.spi.keys)
     implementation(libs.edc.spi.participant.context.single)
     implementation(libs.edc.spi.token)
