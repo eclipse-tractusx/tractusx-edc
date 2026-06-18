@@ -19,12 +19,14 @@
 
 package org.eclipse.tractusx.edc.tests.tck.dsp;
 
+import org.eclipse.edc.connector.controlplane.policy.spi.store.PolicyArchive;
 import org.eclipse.edc.connector.controlplane.profile.DataspaceProfileContextRegistryImpl;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
 import org.eclipse.edc.protocol.spi.ParticipantIdExtractionFunction;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
@@ -71,6 +73,7 @@ public class EdcCompatibilityPostgresTest {
     private static final URI DATA_PLANE_PUBLIC = URI.create("http://localhost:" + getFreePort() + "/public");
     private static final String CONNECTOR_UNDER_TEST = "participantContextId";
     private static final String BPN = BPN_PREFIX + CONNECTOR_UNDER_TEST;
+    private static final String TCK_PARTICIPANT = "TCK_PARTICIPANT";
 
     private static final DataspaceProfileContextRegistry DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY = spy(DataspaceProfileContextRegistryImpl.class);
 
