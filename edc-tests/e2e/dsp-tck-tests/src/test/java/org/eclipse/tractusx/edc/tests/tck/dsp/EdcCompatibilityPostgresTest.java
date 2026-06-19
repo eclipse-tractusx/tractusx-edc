@@ -114,14 +114,15 @@ public class EdcCompatibilityPostgresTest {
 
     @RegisterExtension
     private static final RuntimeExtension RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(CONNECTOR_UNDER_TEST,
-            ":edc-tests:runtime:runtime-dsp", ":edc-extensions:single-participant-vault")
+            ":edc-tests:runtime:runtime-dsp",
+            ":edc-extensions:single-participant-vault")
             .registerServiceMock(BdrsClient.class, new MockBdrsClient(s -> s, s -> s))
             .registerServiceMock(AgreementsBpnsStore.class, AGREEMENTS_BPNS_STORE)
             .registerServiceMock(PolicyArchive.class, POLICY_ARCHIVE)
             .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
             .configurationProvider(() -> EdcCompatibilityPostgresTest.runtimeConfiguration().merge(POSTGRES.getConfig(CONNECTOR_UNDER_TEST))));
 
-    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0-RC6");
+    private static final GenericContainer<?> TCK_CONTAINER = new TckContainer<>("eclipsedataspacetck/dsp-tck-runtime:1.0.0");
 
     @BeforeEach
     void setUp() {
@@ -148,7 +149,7 @@ public class EdcCompatibilityPostgresTest {
                 put("edc.dsp.callback.address", PROTOCOL_URL.toString()); // host.docker.internal is required by the container to communicate with the host
                 put("edc.management.context.enabled", "true");
                 put("edc.hostname", "host.docker.internal");
-                put("edc.component.id", "DSP-compatibility-test");
+                put("edc.component.id", "DSP-tck-test");
                 put("edc.transfer.proxy.token.signer.privatekey.alias", "private-key");
                 put("edc.transfer.proxy.token.verifier.publickey.alias", "public-key");
                 put("edc.policy.validation.enabled", "true");
@@ -202,3 +203,4 @@ public class EdcCompatibilityPostgresTest {
         return Path.of(TestUtils.getResource(resource)).toString();
     }
 }
+

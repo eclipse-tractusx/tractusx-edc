@@ -94,7 +94,9 @@ public class DcpPresentationFlowTest {
     
     @RegisterExtension
     static final RuntimePerClassExtension RUNTIME = new RuntimePerClassExtension(
-            new EmbeddedRuntime("Connector-under-test", ":edc-tests:runtime:runtime-dcp-tck")
+            new EmbeddedRuntime("Connector-under-test",
+                    ":edc-tests:runtime:runtime-dcp-tck",
+                    ":edc-extensions:single-participant-vault")
                     .registerServiceMock(SecureTokenService.class, STS_MOCK)
                     .registerServiceMock(DataspaceProfileContextRegistry.class, DATASPACE_PROFILE_CONTEXT_REGISTRY_SPY)
                     .registerServiceMock(BdrsClient.class, new MockBdrsClient((s) -> s, (s) -> s))
