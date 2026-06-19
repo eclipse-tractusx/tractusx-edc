@@ -39,34 +39,33 @@ please refer to the CX-0152 standard [appendix](https://catenax-ev.github.io/doc
 
 | Name                              | Action          | usable in                   | side-effects                                                                                                                                 |
 |-----------------------------------|-----------------|-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
-| `BusinessPartnerGroup`            | `access`        | `permission`                | validated against the identity extracted from the `MembershipCredential`                                                                     |
-| `BusinessPartnerNumber`           | `access`        | `permission`                | validated against the identity extracted from the `MembershipCredential`                                                                     |
-| `FrameworkAgreement`              | `access`, `use` | `permission`                |                                                                                                                                              |
-| `Membership`                      | `access`, `use` | `permission`                | validated against the `MembershipCredential`                                                                                                 |
-| `inForceDate`                     | `access`, `use` | `permission`                | validated continuously - all Transfer Processes relying on an Agreement with this Constraint will be stopped when `inForceDate` is exceeded. |
-| `AffiliatesRegion`                | `use`           | `permission`, `prohibition` |                                                                                                                                              |
 | `AffiliatesBpnl`                  | `use`           | `permission`, `prohibition` |                                                                                                                                              |
-| `DataFrequency`                   | `use`           | `permission`                |                                                                                                                                              |
-| `VersionChanges`                  | `use`           | `permission`                |                                                                                                                                              |
-| `ContractTermination`             | `use`           | `permission`                |                                                                                                                                              |
+| `AffiliatesRegion`                | `use`           | `permission`, `prohibition` |                                                                                                                                              |
+| `BusinessPartnerGroup`            | `access`        | `permission`                | validated against the identity extracted from the `MembershipCredential`                                                                     |
+| `BusinessPartnerNumber`           | `access`        | `permission`                | validated against the identity extracted from the `MembershipCredential` -> `BpnCredential`                                                  |
 | `ConfidentialInformationMeasures` | `use`           | `permission`                |                                                                                                                                              |
 | `ConfidentialInformationSharing`  | `use`           | `permission`                |                                                                                                                                              |
+| `ContractReference`               | `use`           | `permission`                |                                                                                                                                              |
+| `ContractTermination`             | `use`           | `permission`                |                                                                                                                                              |
+| `DataFrequency`                   | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDate`                | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDefinition`          | `use`           | `permission`                |                                                                                                                                              |
+| `DataUsageEndDurationDays`        | `use`           | `permission`                |                                                                                                                                              |
+| `DataProvisioningEndDurationDays` | `use`           | `obligation`                |                                                                                                                                              |
+| `DataProvisioningEndDate`         | `use`           | `obligation`                |                                                                                                                                              |
 | `ExclusiveUsage`                  | `use`           | `permission`                |                                                                                                                                              |
+| `FrameworkAgreement`              | `access`, `use` | `permission`                |                                                                                                                                              |
+| `JurisdictionLocation`            | `use`           | `permission`                |                                                                                                                                              |
+| `JurisdictionLocationReference`   | `use`           | `permission`                |                                                                                                                                              |
+| `Liability`                       | `use`           | `permission`                |                                                                                                                                              |
+| `Membership`                      | `access`, `use` | `permission`                | validated against the `MembershipCredential`                                                                                                 |
+| `Precedence`                      | `use`           | `permission`                |                                                                                                                                              |
+| `UsagePurpose`                    | `use`           | `permission`                |                                                                                                                                              |
+| `UsageRestriction`                | `use`           | `prohibition`               |                                                                                                                                              |
+| `VersionChanges`                  | `use`           | `permission`                |                                                                                                                                              |
 | `Warranty`                        | `use`           | `permission`                |                                                                                                                                              |
 | `WarrantyDefinition`              | `use`           | `permission`                |                                                                                                                                              |
 | `WarrantyDurationMonths`          | `use`           | `permission`                |                                                                                                                                              |
-| `Liability`                       | `use`           | `permission`                |                                                                                                                                              |
-| `JurisdictionLocationReference`   | `use`           | `permission`                |                                                                                                                                              |
-| `JurisdictionLocation`            | `use`           | `permission`                |                                                                                                                                              |
-| `Precedence`                      | `use`           | `permission`                |                                                                                                                                              |
-| `DataUsageEndDurationDays`        | `use`           | `permission`                |                                                                                                                                              |
-| `DataUsageEndDate`                | `use`           | `permission`                |                                                                                                                                              |
-| `DataUsageEndDefinition`          | `use`           | `permission`                |                                                                                                                                              |
-| `DataUsageEndDate`                | `use`           | `permission`                |                                                                                                                                              |
-| `DataUsageEndDate`                | `use`           | `permission`                |                                                                                                                                              |
-| `DataProvisioningEndDurationDays` | `use`           | `obligation`                |                                                                                                                                              |
-| `DataProvisioningEndDate`         | `use`           | `obligation`                |                                                                                                                                              |
-| `UsageRestriction`                | `use`           | `prohibition`               |                                                                                                                                              |
 
 ### Policies & Verifiable Credentials (VC)
 
@@ -92,6 +91,19 @@ In EDC, a distinction is made between **Access** and **Usage** Policies.
 
 Whether a policy is used as access or usage policy is determined
 during [contract definition](03_contractdefinitions.md).
+
+#### Mandatory Constraints for Usage Policies
+
+In the Catena-X dataspace, a usage policy must always contain at least the following two constraints:
+
+- **`FrameworkAgreement`:** Specifies the data exchange governance framework the consumer must have agreed to (e.g. `DataExchangeGovernance:1.0`).
+- **`UsagePurpose`:** Defines the permitted purposes for which the data may be used (e.g. `cx.core.qualityNotifications:1`).
+
+Both constraints must be combined using an `and` conjunction.
+
+> **Note:** Policies that do not include both `FrameworkAgreement` and `UsagePurpose` constraints will not be
+> accepted in the Catena-X dataspace. Additional constraints may be added depending on the use case.
+
 
 ### Creating a Policy Definition
 
@@ -148,7 +160,7 @@ or the [json-ld playground](https://json-ld.org/playground/) helps to be consist
 
 If the creation of the `policydefinition` was successful, the Management-API will return HTTP 201.
 
-## Exemplary scenarios
+## Exemplary scenario
 
 For the following Scenarios, we assume there is a **Partner 1 (provider)** who wants to provide Data for **Partner 2
 (consumer)**
@@ -156,7 +168,7 @@ For the following Scenarios, we assume there is a **Partner 1 (provider)** who w
 - Partner 1 (provider) has the Business-Partner-Number BPN12345.
 - Partner 2 (consumer) has the Business-Partner-Number BPN6789.
 
-Partner 2 (consumer) signed the **Traceability Framework Agreement** and followed all the necessary steps that the
+Partner 2 (consumer) signed the **Framework Agreement** and followed all the necessary steps that the
 Credential appears within Partner 2s identity.
 
 When doing a catalog request with
@@ -187,18 +199,11 @@ For example:
 }
 ```
 
-For other subsequent requests like Contract negotiation requests and transfer process requests, the presented
-credentials are based on the usage/contract policy. This means VC based policies can be used only
-in the usage/contract policy.
+#### Scenario
 
-#### Scenario 1
+Partner 1 wants to create an Access Policy, that Partner 2 can receive the Contract Offer if its BPN matches. But a Contract Agreement should only be created if Partner 2 also signed the Framework Agreement. So in this case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Framework Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
 
-Partner 1 wants to create an Access Policy, that Partner 2 can receive the Contract Offer if its BPN matches. But a
-Contract Agreement should only be created if Partner 2 also signed the Traceability Framework Agreement. So in this
-case, Partner 2 should receive the Contract Offer in the first place, regardless if it signed the Traceability Framework
-Agreement. The signing of the Agreement should be checked at the time of contract negotiation.
-
-##### Partner 1 - Access Policy Example (Scenario 1)
+##### Partner 1 - Access Policy Example
 
 ```json
 {
@@ -218,8 +223,8 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
         "action": "access",
         "constraint": {
           "leftOperand": "BusinessPartnerNumber",
-          "operator": "eq",
-          "rightOperand": "BPN6789"
+          "operator": "isAnyOf",
+          "rightOperand": ["BPN6789", "..."]
         }
       }
     ]
@@ -227,7 +232,7 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
 }
 ```
 
-##### Partner 1 - Usage/Contract Policy Example (Scenario 1)
+##### Partner 1 - Usage/Contract Policy Example
 
 ```json
 {
@@ -246,9 +251,18 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
       {
         "action": "use",
         "constraint": {
-          "leftOperand": "FrameworkAgreement",
-          "operator": "eq",
-          "rightOperand": "DataExchangeGovernance:1.0"
+          "and": [
+            {
+                "leftOperand": "FrameworkAgreement",
+                "operator": "eq",
+                "rightOperand": "DataExchangeGovernance:1.0"
+            },
+            {
+                "leftOperand": "UsagePurpose",
+                "operator": "isAnyOf",
+                "rightOperand": ["<value>"]
+            }
+          ]
         }
       }
     ]
@@ -256,81 +270,16 @@ Agreement. The signing of the Agreement should be checked at the time of contrac
 }
 ```
 
-##### Desired Outcome (Scenario 1)
+> **Note:** The Access Policy only checks the BPN at catalog request time. The `FrameworkAgreement` and
+> `UsagePurpose` constraints in the Usage Policy are evaluated during contract negotiation. If either
+> constraint is not satisfied, the negotiation will be rejected.
+
+##### Desired Outcome
 
 Partner 2 receives the Contract Offer and is able to negotiate the contract because he presents a valid
 `DataExchangeGovernanceCredential`.
 
-#### Scenario 2
 
-Partner 1 wants to create an Access Policy that Partner 2 can receive the Contract Offer if the BPN is matching
-but a Contract Agreement should only be created if Partner 2 is identified as a Dismantler (owns the "
-DismantlerCredential").
-
-##### Partner 1 - Access Policy Example (Scenario 2)
-
-```json
-{
-  "@context": [
-    "https://w3id.org/dspace/2025/1/odrl-profile.jsonld",
-    "https://w3id.org/catenax/2025/9/policy/context.jsonld",
-    {
-      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-    }
-  ],
-  "@type": "PolicyDefinition",
-  "@id": "{{POLICY_ID}}",
-  "policy": {
-    "@type": "Set",
-    "permission": [
-      {
-        "action": "use",
-        "constraint": {
-          "leftOperand": "BusinessPartnerNumber",
-          "operator": "eq",
-          "rightOperand": "BPN6789"
-        }
-      }
-    ]
-  }
-}
-```
-
-##### Partner 1 - Usage/Contract Policy Example (Scenario 2)
-
-```json
-{
-  "@context": [
-    "https://w3id.org/dspace/2025/1/odrl-profile.jsonld",
-    "https://w3id.org/catenax/2025/9/policy/context.jsonld",
-    {
-      "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-    }
-  ],
-  "@type": "PolicyDefinition",
-  "@id": "{{POLICY_ID}}",
-  "policy": {
-    "@type": "Set",
-    "permission": [
-      {
-        "action": "use",
-        "constraint": {
-          "leftOperand": "Dismantler",
-          "operator": "eq",
-          "rightOperand": "active"
-        }
-      }
-    ]
-  }
-}
-```
-
-##### Desired Outcome (Scenario 2)
-
-Partner 2 receives the Contract Offer in the first place.
-
-The contract negotiation, started by Partner 2 fails because he has not been identified as Dismantler and therefore does
-not own the Dismantler Credential.
 
 #### Writing Policies for the Connector
 
