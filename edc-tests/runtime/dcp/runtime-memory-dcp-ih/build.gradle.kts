@@ -43,7 +43,7 @@ dependencies {
     }
 
     constraints {
-        implementation("com.networknt:json-schema-validator:3.0.3") {
+        implementation("com.networknt:json-schema-validator:3.0.4") {
             because("older versions cause runtime issues")
         }
     }
