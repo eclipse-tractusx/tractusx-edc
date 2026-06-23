@@ -20,6 +20,7 @@
 package org.eclipse.tractusx.edc.common.tokenrefresh;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -198,11 +199,16 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
                 .addQueryParameter("refresh_token", refreshToken)
                 .build();
 
+        var body = new FormBody.Builder()
+                .add("grant_type", "refresh_token")
+                .add("refresh_token", refreshToken)
+                .build();
+
         return success(new Request.Builder()
                 .addHeader("Authorization", bearerToken)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .url(url)
-                .post(RequestBody.create(new byte[0]))
+                .post(body)
                 .build());
     }
 

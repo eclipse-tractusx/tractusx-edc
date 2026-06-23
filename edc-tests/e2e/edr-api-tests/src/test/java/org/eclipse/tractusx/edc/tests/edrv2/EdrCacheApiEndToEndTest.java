@@ -57,6 +57,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.absent;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -117,7 +119,9 @@ public class EdrCacheApiEndToEndTest {
     @DisplayName("Verify HTTP 200 response and body when refreshing succeeds")
     @Test
     void getEdrWithRefresh_success() {
-        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token"))
+                .withFormParam("grant_type", WireMock.equalTo("refresh_token"))
+                .withFormParam("refresh_token", matching(".+"))
                 .willReturn(ok(tokenResponseBody())));
 
         storeEdr("test-id", true);
@@ -126,8 +130,7 @@ public class EdrCacheApiEndToEndTest {
                 .extract().body().as(JsonObject.class);
         assertThat(edr).isNotNull();
 
-        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token")));
     }
 
     @DisplayName("When multiple requests to refresh, to different edrs, verify all return non expired token")
@@ -137,7 +140,9 @@ public class EdrCacheApiEndToEndTest {
         var accessToken = createJwt(providerSigningKey, claims);
         var refreshToken = createJwt(providerSigningKey, new JWTClaimsSet.Builder().build());
         var tokenResponseBodyString = tokenResponseBody(accessToken, refreshToken);
-        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token"))
+                .withFormParam("grant_type", WireMock.equalTo("refresh_token"))
+                .withFormParam("refresh_token", matching(".+"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withFixedDelay(5000)
@@ -184,8 +189,7 @@ public class EdrCacheApiEndToEndTest {
         latch.await();
         assertThat(failed.get()).isFalse();
 
-        mockedRefreshApi.verify(2, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        mockedRefreshApi.verify(2, postRequestedFor(urlPathEqualTo("/refresh/token")));
     }
 
     @DisplayName("Verify the refresh endpoint is not called when token not yet expired")
@@ -197,8 +201,7 @@ public class EdrCacheApiEndToEndTest {
                 .extract().body().as(JsonObject.class);
         assertThat(edr).isNotNull();
 
-        mockedRefreshApi.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        mockedRefreshApi.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token")));
     }
 
     @DisplayName("Verify the refresh endpoint is not called when auto_refresh=false")
@@ -211,14 +214,15 @@ public class EdrCacheApiEndToEndTest {
                 .extract().body().as(JsonObject.class);
         assertThat(edr).isNotNull();
 
-        mockedRefreshApi.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        mockedRefreshApi.verify(0, postRequestedFor(urlPathEqualTo("/refresh/token")));
     }
 
     @DisplayName("Verify HTTP 403 response when refreshing the token is not allowed")
     @Test
     void getEdrWithRefresh_unauthorized() {
-        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token"))
+                .withFormParam("grant_type", WireMock.equalTo("refresh_token"))
+                .withFormParam("refresh_token", matching(".+"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(401)
                         .withBody("unauthorized")
@@ -228,13 +232,14 @@ public class EdrCacheApiEndToEndTest {
         CONSUMER.edrs().getEdrWithRefresh("test-id", true)
                 .statusCode(403);
 
-        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token")));
     }
 
     @Test
     void refreshEdr() {
-        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token"))
+                .withFormParam("grant_type", WireMock.equalTo("refresh_token"))
+                .withFormParam("refresh_token", matching(".+"))
                 .willReturn(ok(tokenResponseBody())));
 
         storeEdr("test-id", true);
@@ -243,8 +248,7 @@ public class EdrCacheApiEndToEndTest {
                 .extract().body().as(JsonObject.class);
         assertThat(edr).isNotNull();
 
-        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                    .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token")));
     }
 
     @Test
@@ -255,7 +259,9 @@ public class EdrCacheApiEndToEndTest {
 
     @Test
     void refreshEdr_whenNotAuthorized() {
-        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token")).withRequestBody(absent())
+        mockedRefreshApi.stubFor(post(urlPathEqualTo("/refresh/token"))
+                .withFormParam("grant_type", WireMock.equalTo("refresh_token"))
+                .withFormParam("refresh_token", matching(".+"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(401)
                         .withBody("unauthorized")
@@ -265,8 +271,7 @@ public class EdrCacheApiEndToEndTest {
         CONSUMER.edrs().refreshEdr("test-id")
                 .statusCode(403);
 
-        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token"))
-                .withQueryParam("grant_type", WireMock.equalTo("refresh_token")));
+        mockedRefreshApi.verify(1, postRequestedFor(urlPathEqualTo("/refresh/token")));
     }
 
     private String tokenResponseBody() {
