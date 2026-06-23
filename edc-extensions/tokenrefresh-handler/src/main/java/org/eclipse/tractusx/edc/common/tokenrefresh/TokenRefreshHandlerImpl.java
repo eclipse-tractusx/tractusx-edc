@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;

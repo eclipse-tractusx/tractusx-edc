@@ -35,8 +35,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
-import okio.BufferedSink;
-import okio.RealBufferedSink;
 import org.assertj.core.api.Assertions;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
@@ -140,10 +138,10 @@ class TokenRefreshHandlerImplTest {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return hdr != null
-                    && hdr.equalsIgnoreCase("application/x-www-form-urlencoded")
-                    && body != null
-                    && sink.readUtf8().contains("grant_type=refresh_token&refresh_token=foo-refresh-token");
+            return hdr != null &&
+                    hdr.equalsIgnoreCase("application/x-www-form-urlencoded") &&
+                    body != null &&
+                    sink.readUtf8().contains("grant_type=refresh_token&refresh_token=foo-refresh-token");
         }));
     }
 

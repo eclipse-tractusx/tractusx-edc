@@ -50,9 +50,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 
 import java.net.URI;
 import java.text.ParseException;
@@ -65,7 +62,6 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 import static org.hamcrest.Matchers.containsString;
-
 
 @EndToEndTest
 public class DataPlaneTokenRefreshEndToEndTest {
