@@ -56,6 +56,11 @@ public class TokenRefreshApiController implements TokenRefreshApi {
                                       @QueryParam(REFRESH_TOKEN) String refreshToken,
                                       @HeaderParam(AUTHORIZATION) String bearerToken,
                                       @RequestBody() String formParams) {
+        // TODO: This version still supports the deprecated usage of query parameter to provide the
+        // grant_type and refresh_token. This is due to backward compatibility to ensure interoperability
+        // with previous versions. This should be removed in the future, if old connectors are not used
+        // anymore.
+
         var paramMap = parseFormParameter(formParams);
         if (!paramMap.containsKey(GRANT_TYPE)) {
             paramMap.put(GRANT_TYPE, grantType);

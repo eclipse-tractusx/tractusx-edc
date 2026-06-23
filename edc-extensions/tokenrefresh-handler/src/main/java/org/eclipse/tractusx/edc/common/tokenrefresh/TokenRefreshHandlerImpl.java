@@ -193,6 +193,11 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         if (!refreshEndpoint.endsWith("/token")) {
             refreshEndpoint += "/token";
         }
+
+        // TODO: This version still supports the deprecated usage of query parameter to provide the
+        // grant_type and refresh_token. This is due to backward compatibility to ensure interoperability
+        // with previous versions. This should be removed in the future, if old connectors are not used
+        // anymore.
         var url = HttpUrl.parse(refreshEndpoint)
                 .newBuilder()
                 .addQueryParameter("grant_type", "refresh_token")
