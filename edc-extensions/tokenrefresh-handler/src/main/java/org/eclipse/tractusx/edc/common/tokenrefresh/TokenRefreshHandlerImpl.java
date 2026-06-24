@@ -20,9 +20,9 @@
 package org.eclipse.tractusx.edc.common.tokenrefresh;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
@@ -192,17 +192,27 @@ public class TokenRefreshHandlerImpl implements TokenRefreshHandler {
         if (!refreshEndpoint.endsWith("/token")) {
             refreshEndpoint += "/token";
         }
+
+        // TODO: This version still supports the deprecated usage of query parameter to provide the
+        // grant_type and refresh_token. This is due to backward compatibility to ensure interoperability
+        // with previous versions. This should be removed in the future, if old connectors are not used
+        // anymore.
         var url = HttpUrl.parse(refreshEndpoint)
                 .newBuilder()
                 .addQueryParameter("grant_type", "refresh_token")
                 .addQueryParameter("refresh_token", refreshToken)
                 .build();
 
+        var body = new FormBody.Builder()
+                .add("grant_type", "refresh_token")
+                .add("refresh_token", refreshToken)
+                .build();
+
         return success(new Request.Builder()
                 .addHeader("Authorization", bearerToken)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .url(url)
-                .post(RequestBody.create(new byte[0]))
+                .post(body)
                 .build());
     }
 
