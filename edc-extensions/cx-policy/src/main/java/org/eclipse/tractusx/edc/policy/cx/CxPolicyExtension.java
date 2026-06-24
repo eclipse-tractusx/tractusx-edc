@@ -61,6 +61,7 @@ import org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.validator.CxPolicyDefinitionValidator;
+import org.eclipse.tractusx.edc.policy.cx.validator.jsonschema.CxJsonSchemaPolicyDefinitionValidator;
 import org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction;
@@ -374,6 +375,7 @@ public class CxPolicyExtension implements ServiceExtension {
     @Override
     public void prepare() {
         validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, CxPolicyDefinitionValidator.instance());
+        validatorRegistry.register("v4:PolicyDefinition", new CxJsonSchemaPolicyDefinitionValidator());
     }
 
     @Override
