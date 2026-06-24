@@ -35,6 +35,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -48,17 +49,16 @@ class TokenRefreshApiControllerTest extends RestControllerTestBase {
     @Test
     void refresh_noAuthHeader_expect401() {
         baseRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", "foo-token")
                 /* missing: .header(AUTHORIZATION, "auth-token") */
                 .contentType(ContentType.URLENC)
+                .body("grant_type=refresh_token&refresh_token=foo-token")
                 .then()
                 .statusCode(401);
     }
 
-    @DisplayName("Expect HTTP 200 when the token was successfully refreshed")
+    @DisplayName("Expect HTTP 200 when the token was successfully refreshed and query params used")
     @Test
-    void refresh_expect200() {
+    void refresh_expect200query() {
         when(refreshService.refreshToken(any(), any())).thenReturn(Result.success(new TokenResponse("new-accesstoken", "new-refreshtoken", 3000L, "bearer")));
         baseRequest()
                 .queryParam("grant_type", "refresh_token")
@@ -70,16 +70,28 @@ class TokenRefreshApiControllerTest extends RestControllerTestBase {
                 .body(Matchers.isA(TokenResponse.class));
     }
 
+    @DisplayName("Expect HTTP 200 when the token was successfully refreshed and correct body used")
+    @Test
+    void refresh_expect200body() {
+        when(refreshService.refreshToken(any(), any())).thenReturn(Result.success(new TokenResponse("new-accesstoken", "new-refreshtoken", 3000L, "bearer")));
+        baseRequest()
+                .header(AUTHORIZATION, "auth-token")
+                .contentType(ContentType.URLENC)
+                .body("grant_type=refresh_token&refresh_token=foo-token")
+                .then()
+                .statusCode(200)
+                .body(Matchers.isA(TokenResponse.class));
+    }
+
     @DisplayName("Expect HTTP 400 when an invalid grant type was provided")
     @ParameterizedTest(name = "Invalid grant_type: {0}")
     @ValueSource(strings = { "REFRESH_TOKEN", "refreshToken", "invalid_grant", "client_credentials", "" })
     @NullSource
     void refresh_invalidGrantType_expect400(String grant) {
         baseRequest()
-                .queryParam("grant_type", grant)
-                .queryParam("refresh_token", "foo-token")
                 .header(AUTHORIZATION, "auth-token")
                 .contentType(ContentType.URLENC)
+                .body(format("grant_type=%s&refresh_token=foo-token", grant))
                 .then()
                 .statusCode(400);
     }
@@ -90,10 +102,9 @@ class TokenRefreshApiControllerTest extends RestControllerTestBase {
     @EmptySource
     void refresh_invalidRefreshToken_expect400(String refreshToken) {
         baseRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "auth-token")
                 .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .then()
                 .statusCode(400);
     }
@@ -102,16 +113,16 @@ class TokenRefreshApiControllerTest extends RestControllerTestBase {
     @Test
     void refresh_queryParamsMissing() {
         baseRequest()
-                .queryParam("grant_type", "refresh_token")
                 .header(AUTHORIZATION, "auth-token")
                 .contentType(ContentType.URLENC)
+                .body("grant_type=refresh_token")
                 .then()
                 .statusCode(400);
 
         baseRequest()
-                .queryParam("refresh_token", "foo-token")
                 .header(AUTHORIZATION, "auth-token")
                 .contentType(ContentType.URLENC)
+                .body("refresh_token=foo-token")
                 .then()
                 .statusCode(400);
     }
@@ -122,10 +133,9 @@ class TokenRefreshApiControllerTest extends RestControllerTestBase {
         when(refreshService.refreshToken(any(), any())).thenReturn(Result.failure("Invalid auth token"));
 
         baseRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", "foo-token")
                 .header(AUTHORIZATION, "auth-token")
                 .contentType(ContentType.URLENC)
+                .body("grant_type=refresh_token&refresh_token=foo-token")
                 .then()
                 .statusCode(401)
                 .body(containsString("Invalid auth token"));

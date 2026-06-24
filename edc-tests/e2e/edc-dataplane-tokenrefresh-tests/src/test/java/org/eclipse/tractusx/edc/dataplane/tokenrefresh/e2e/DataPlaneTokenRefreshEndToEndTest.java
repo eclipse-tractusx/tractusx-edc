@@ -29,6 +29,7 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import io.restassured.http.ContentType;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceServiceRegistry;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
@@ -49,21 +50,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 
 import java.net.URI;
 import java.text.ParseException;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_AUTH_NS;
 import static org.hamcrest.Matchers.containsString;
-
 
 @EndToEndTest
 public class DataPlaneTokenRefreshEndToEndTest {
@@ -125,9 +123,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var authToken = createAuthToken(accessToken, consumerKey);
 
         var tokenResponse = RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifError()
@@ -137,11 +135,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         assertThat(tokenResponse).isNotNull();
     }
 
-    @DisplayName("Refresh token is null or empty (missing)")
-    @ParameterizedTest
-    @NullSource
-    @EmptySource
-    void refresh_invalidRefreshToken(String invalidRefreshToken) {
+    @DisplayName("Refresh token is empty (missing)")
+    @Test
+    void refresh_invalidRefreshToken() {
         // register generator and secrets
         prepareDataplaneRuntime();
 
@@ -155,9 +151,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var authToken = createAuthToken(accessToken, consumerKey);
 
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", invalidRefreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
+                .contentType(ContentType.URLENC)
+                .body("grant_type=refresh_token&refresh_token=")
                 .post("/token")
                 .then()
                 .log().ifError()
@@ -180,9 +176,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
 
         // auth header is empty
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "")
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifError()
@@ -205,8 +201,8 @@ public class DataPlaneTokenRefreshEndToEndTest {
 
         // auth header is empty
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifError()
@@ -229,9 +225,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var authTokenWithSpoofedKey = createAuthToken(accessToken, spoofedKey);
 
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authTokenWithSpoofedKey)
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifValidationFails()
@@ -253,9 +249,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var accessToken = edr.getStringProperty(EDC_NAMESPACE + "authorization");
 
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + createAuthToken(accessToken, consumerKey))
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifValidationFails()
@@ -286,9 +282,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var authToken = createJwt(consumerKey, claims);
 
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifValidationFails()
@@ -319,9 +315,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var authToken = createJwt(consumerKey, claims);
 
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifValidationFails()
@@ -356,9 +352,9 @@ public class DataPlaneTokenRefreshEndToEndTest {
         var authToken = createJwt(consumerKey, claims);
 
         RUNTIME_CONFIG.basePublicApiRequest()
-                .queryParam("grant_type", "refresh_token")
-                .queryParam("refresh_token", refreshToken)
                 .header(AUTHORIZATION, "Bearer " + authToken)
+                .contentType(ContentType.URLENC)
+                .body(format("grant_type=refresh_token&refresh_token=%s", refreshToken))
                 .post("/token")
                 .then()
                 .log().ifValidationFails()
