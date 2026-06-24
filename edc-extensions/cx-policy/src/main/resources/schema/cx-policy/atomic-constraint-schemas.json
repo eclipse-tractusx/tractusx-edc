@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "AtomicCatenaXConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/AtomicCatenaXConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/schema/atomic-constraint-schemas.json",
+  "definitions": {
+    "AtomicCatenaXConstraint": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AtomicObligationConstraint"
+        },
+        {
+          "$ref": "#/definitions/AtomicPermissionConstraint"
+        },
+        {
+          "$ref": "#/definitions/AtomicProhibitionConstraint"
+        }
+      ]
+    },
+    "AtomicPermissionConstraint": {
+      "allOf": [
+        {
+          "$ref": "https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/AtomicConstraint"
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AtomicAccessPermissionConstraint"
+            },
+            {
+              "$ref": "#/definitions/AtomicUsagePermissionConstraint"
+            }
+          ]
+        }
+      ]
+    },
+    "AtomicAccessPermissionConstraint": {
+      "anyOf": [
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/framework-agreement-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/membership-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/business-partner-number-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/business-partner-group-constraint-schema.json"
+        }
+      ]
+    },
+    "AtomicUsagePermissionConstraint": {
+      "anyOf": [
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/framework-agreement-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/membership-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/usage-purpose-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/contract-reference-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/affiliates-region-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/affiliates-bpnl-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/data-frequency-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/version-changes-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/contract-termination-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/confidential-information-measures-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/confidential-information-sharing-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/exclusive-usage-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/warranty-constraint-schema.json"
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/warranty-duration-constraint-schema.json"
+            },
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/warranty-definition-constraint-schema.json"
+            }
+          ]
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/liability-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/jurisdiction-location-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/jurisdiction-location-reference-constraint-schema.json"
+        },
+        {
+          "$ref": "https://w3id.org/catenax/2025/9/policy/precedence-constraint-schema.json"
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/data-usage-end-duration-days-constraint-schema.json"
+            },
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/data-usage-end-date-constraint-schema.json"
+            },
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/data-usage-end-definition-constraint-schema.json"
+            }
+          ]
+        }
+      ]
+    },
+    "AtomicObligationConstraint": {
+      "allOf": [
+        {
+          "$ref": "https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/AtomicConstraint"
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/data-provisioning-end-duration-days-constraint-schema.json"
+            },
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/data-provisioning-end-date-constraint-schema.json"
+            }
+          ]
+        }
+      ]
+    },
+    "AtomicProhibitionConstraint": {
+      "allOf": [
+        {
+          "$ref": "https://w3id.org/dspace/2025/1/negotiation/contract-schema.json#/definitions/AtomicConstraint"
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/affiliates-region-constraint-schema.json"
+            },
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/affiliates-bpnl-constraint-schema.json"
+            },
+            {
+              "$ref": "https://w3id.org/catenax/2025/9/policy/usage-restriction-constraint-schema.json"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

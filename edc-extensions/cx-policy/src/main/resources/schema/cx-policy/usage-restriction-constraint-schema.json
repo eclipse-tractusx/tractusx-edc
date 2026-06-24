@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "UsageRestrictionConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/UsageRestrictionConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/usage-restriction-constraint-schema.json",
+  "definitions": {
+    "UsageRestrictionConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "UsageRestriction"
+        },
+        "operator": {
+          "type": "string",
+          "const": "isAllOf"
+        },
+        "rightOperand": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "anyOf": [
+              {"$ref": "#/definitions/ThirdPartyForbiddenRightOperand"},
+              {"$ref": "#/definitions/ManipulationForbiddenRightOperand"},
+              {"$ref": "#/definitions/DerivationsForbiddenRightOperand"},
+              {"$ref": "#/definitions/ExtraordinaryAnalyticsForbiddenRightOperand"},
+              {"$ref": "#/definitions/DataProviderRemovalForbiddenRightOperand"}
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ThirdPartyForbiddenRightOperand": {
+      "type": "string",
+      "const": "cx.thirdParty.forbidden:1",
+      "$comment": "{\"prohibition\":\"The Data Consumer is prohibited from making the Data available to third parties, either temporarily or permanently, from reproducing, distributing, or publicly displaying the Data; this also applies insofar as the data constitutes essential or non-essential parts of a database (Section 87a German Act on Copyright and Related Rights (UrhG)), unless otherwise individually agreed between the Parties in the usage purposes for a specific use case (cx-policy:UsagePurpose) or in the referenced bilateral contract (cx-policy:ContractReference). The Data Provider’s right to reproduce the Data provided by it for internal purposes remains unaffected.\"}"
+    },
+    "ManipulationForbiddenRightOperand": {
+      "type": "string",
+      "const": "cx.manipulation.forbidden:1",
+      "$comment": "{\"prohibition\":\"The Data Consumer is prohibited from modifying the Data, separating the associated metadata from the Data, or otherwise altering it, or from attempting any of the aforementioned actions or permitting a third party to perform such actions, unless otherwise individually agreed between the parties in the usage purposes for a specific use case (cx-policy:UsagePurpose) or in the referenced bilateral contract (cx-policy:ContractReference). The Data Provider’s right to reproduce the Data provided by it for internal purposes remains unaffected.\"}"
+    },
+    "DerivationsForbiddenRightOperand": {
+      "type": "string",
+      "const": "cx.derivations.forbidden:1",
+      "$comment": "{\"prohibition\":\"The Data Consumer is prohibited from creating derivative works from the Data (including making substantial changes to any databases provided within the meaning of Section 87a para. 1 sentence 2 German Act on Copyright and Related Rights (UrhG), unless otherwise individually agreed between the Parties in the usage purposes for a specific Use Case (cx-policy:UsagePurpose) or in the referenced bilateral contract (cx-policy:ContractReference).\"}"
+    },
+    "ExtraordinaryAnalyticsForbiddenRightOperand": {
+      "type": "string",
+      "const": "cx.extraordinaryAnalytics.forbidden:1",
+      "$comment": "{\"prohibition\":\"The Data Consumer is prohibited, insofar as the Data constitutes insignificant parts of a database within the meaning of Section 87b para. 1 sentence 1 German Act on Copyright and Related Rights (UrhG), from repeatedly and systematically carrying out actions that conflict with the normal evaluation of a database or unreasonably impair the legitimate interests of the Data Provider (Section 87b para. 1 sentence 2 UrhG), unless otherwise individually agreed between the Parties in the usage purposes for a specific Use Case (cx-policy:UsagePurpose) or in the referenced bilateral contract (cx-policy:ContractReference).\"}"
+    },
+    "DataProviderRemovalForbiddenRightOperand": {
+      "type": "string",
+      "const": "cx.dataProviderRemoval.forbidden:1",
+      "$comment": "{\"prohibition\":\"The Data Consumer is prohibited from removing the company identifiers and/or other references to the Data Provider contained in the Data and/or the associated metadata or databases, unless otherwise individually agreed between the Parties in the usage purposes for a specific Use Case (cx-policy:UsagePurpose) or in the referenced bilateral contract (cx-policy:ContractReference).\"}"
+    }
+  }
+}

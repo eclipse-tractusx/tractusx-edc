@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "DataUsageEndDateConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/DataUsageEndDateConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/data-usage-end-date-constraint-schema.json",
+  "definitions": {
+    "DataUsageEndDateConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "DataUsageEndDate"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/DataUsageEndDateRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DataUsageEndDateRightOperand": {
+      "type": "string",
+      "pattern": "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(Z|[+-]\\d{2}:\\d{2}))$",
+      "$comment": "{\"permission\":\"The Data Provider shall make the Data available with a usage period permitted until the end date specified herein, in accordance with the usage conditions specified in cx-policy:UsagePurpose, commencing from the second the Agreement is concluded via the Registered Connector (RC). Upon expiry of the usage period, the Data Consumer shall no longer be entitled to use the Data and shall delete the Data in order to prevent any further Use, unless the Data Consumer has received the same Data under another still valid contract. The Agreement shall terminate upon expiry of the usage period of the Data without the need for a separate notice of termination.\"}"
+    }
+  }
+}
