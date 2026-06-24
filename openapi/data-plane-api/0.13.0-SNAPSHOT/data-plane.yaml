@@ -37,6 +37,9 @@ paths:
         explode: false
         schema:
           type: string
+      requestBody:
+        description: "Form parameters: grant_type=refresh_token&refresh_token=<the\
+          \ refresh token>"
       responses:
         "200":
           description: "The access token and refresh token were updated. Expiry should\
