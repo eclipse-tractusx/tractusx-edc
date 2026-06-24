@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "JurisdictionLocationReferenceConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/JurisdictionLocationReferenceConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/jurisdiction-location-reference-constraint-schema.json",
+  "definitions": {
+    "JurisdictionLocationReferenceConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "JurisdictionLocationReference"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "oneOf": [
+            {"$ref": "#/definitions/LocationDataConsumerRightOperand"},
+            {"$ref": "#/definitions/LocationContractReferenceRightOperand"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "LocationDataConsumerRightOperand": {
+      "type": "string",
+      "const": "cx.location.dataConsumer:1",
+      "$comment": "{\"permission\":\"The exclusive venue for all disputes arising from the contract concluded via the Registered Connector (RC) shall be at the competent court at the registered office of the Data Consumer.\"}"
+    },
+    "LocationContractReferenceRightOperand": {
+      "type": "string",
+      "const": "cx.location.contractReference:1",
+      "$comment": "{\"permission\":\"The exclusive venue for all disputes arising from the Agreement concluded via the Registered Connector (RC) shall correspond to the venue specified in the referenced contract (as referenced in cx-policy:ContractReference).\"}"
+    }
+  }
+}

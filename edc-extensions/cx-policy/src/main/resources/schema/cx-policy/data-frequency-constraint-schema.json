@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "DataFrequencyConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/DataFrequencyConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/data-frequency-constraint-schema.json",
+  "definitions": {
+    "DataFrequencyConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "DataFrequency"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "oneOf": [
+            {"$ref": "#/definitions/DataFrequencyOnceRightOperand"},
+            {"$ref": "#/definitions/DataFrequencyUnlimitedRightOperand"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "DataFrequencyOnceRightOperand": {
+      "type": "string",
+      "const": "cx.dataFrequency.once:1",
+      "$comment": "{\"permission\":\"This Agreement concluded via the Registered Connector (RC). applies both to a one-time, time-limited data exchange as well as to sequential data exchanges under similar conditions, potentially also in varying quantities (Data as a Service).\"}"
+    },
+    "DataFrequencyUnlimitedRightOperand": {
+      "type": "string",
+      "const": "cx.dataFrequency.unlimited:1",
+      "$comment": "{\"permission\":\"This Agreement concluded via the Registered Connector (RC). applies to the multiple or repeated exchange of similar Data at different times and in different quantities within the scope of the selected Use Case.\"}"
+    }
+  }
+}

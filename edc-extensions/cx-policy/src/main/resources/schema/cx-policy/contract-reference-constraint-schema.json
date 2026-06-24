@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "ContractReferenceConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/ContractReferenceConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/contract-reference-constraint-schema.json",
+  "definitions": {
+    "ContractReferenceConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "ContractReference"
+        },
+        "operator": {
+          "type": "string",
+          "const": "isAllOf"
+        },
+        "rightOperand": {
+          "type":"array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/ContractReferenceRightOperand"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ContractReferenceRightOperand": {
+      "type": "string",
+      "$comment": "{\"permission\":\"Data Provider and Data Consumer are free to reference an existing, individual contract as a basis of the Agreement concluded via the Registered Connector (RC). This can be a framework agreement or a very specific contract. The rightOperand value for this constraint can be a free to choose reference under which both parties are able to identify their contract. The reference does not have to have a version number.\"}"
+    }
+  }
+}

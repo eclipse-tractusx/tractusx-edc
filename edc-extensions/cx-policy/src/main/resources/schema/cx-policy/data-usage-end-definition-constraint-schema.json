@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "DataUsageEndDefinitionConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/DataUsageEndDefinitionConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/data-usage-end-definition-constraint-schema.json",
+  "definitions": {
+    "DataUsageEndDefinitionConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "DataUsageEndDefinition"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/DataUsageEndDefinitionRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DataUsageEndDefinitionRightOperand": {
+      "type": "string",
+      "const": "cx.dataUsageEnd.unlimited:1",
+      "$comment": "{\"permission\":\"The Data Provider shall make the Data available for an unlimited period of use in accordance with the usage conditions specified in cx-policy:UsagePurpose, commencing from the second the Agreement is concluded via the Registered Connector (RC).\"}"
+    }
+  }
+}

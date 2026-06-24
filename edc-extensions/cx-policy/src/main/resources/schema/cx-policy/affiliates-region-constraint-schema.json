@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "AffiliatesRegionConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/AffiliatesRegionConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/affiliates-region-constraint-schema.json",
+  "definitions": {
+    "AffiliatesRegionConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "AffiliatesRegion"
+        },
+        "operator": {
+          "type": "string",
+          "const": "isAnyOf"
+        },
+        "rightOperand": {
+          "type":"array",
+          "minItems": 1,
+          "items": {
+            "anyOf": [
+              {"$ref": "#/definitions/RegionAllRightOperand"},
+              {"$ref": "#/definitions/RegionEuropeRightOperand"},
+              {"$ref": "#/definitions/RegionNorthAmericaRightOperand"},
+              {"$ref": "#/definitions/RegionSouthAmericaRightOperand"},
+              {"$ref": "#/definitions/RegionAfricaRightOperand"},
+              {"$ref": "#/definitions/RegionAsiaRightOperand"},
+              {"$ref": "#/definitions/RegionOceaniaRightOperand"},
+              {"$ref": "#/definitions/RegionAntarcticaRightOperand"}
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "RegionAllRightOperand": {
+      "type": "string",
+      "const": "cx.region.all:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC).\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use to its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies'), unless the Parties have otherwise agreed on a right of sublicensing in the referenced contract (cx-policy:ContractReference).\"}"
+    },
+    "RegionEuropeRightOperand": {
+      "type": "string",
+      "const": "cx.region.europe:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC). The registered offices of the relevant Affiliated Companies must be located in Europe.\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') that are domiciled in Europe, unless the Parties have otherwise agreed on a right of sublicensing (either in full or with respect to individual Affiliated Companies) in the referenced bilateral contract ('cx-policy:ContractReference') or have agreed to this separately.\"}"
+    },
+    "RegionNorthAmericaRightOperand": {
+      "type": "string",
+      "const": "cx.region.northAmerica:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC). The registered offices of the relevant Affiliated Companies must be located in North America.\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') that are domiciled in North America, unless the Parties have otherwise agreed on a right of sublicensing (either in full or with respect to individual Affiliated Companies) in the referenced bilateral contract ('cx-policy:ContractReference') or have agreed to this separately.\"}"
+    },
+    "RegionSouthAmericaRightOperand": {
+      "type": "string",
+      "const": "cx.region.southAmerica:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC). The registered offices of the relevant Affiliated Companies must be located in South America.\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') that are domiciled in South America, unless the Parties have otherwise agreed on a right of sublicensing (either in full or with respect to individual Affiliated Companies) in the referenced bilateral contract ('cx-policy:ContractReference') or have agreed to this separately.\"}"
+    },
+    "RegionAfricaRightOperand": {
+      "type": "string",
+      "const": "cx.region.africa:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC). The registered offices of the relevant Affiliated Companies must be located in Africa.\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') that are domiciled in Africa, unless the Parties have otherwise agreed on a right of sublicensing (either in full or with respect to individual Affiliated Companies) in the referenced bilateral contract ('cx-policy:ContractReference') or have agreed to this separately.\"}"
+    },
+    "RegionAsiaRightOperand": {
+      "type": "string",
+      "const": "cx.region.asia:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC). The registered offices of the relevant Affiliated Companies must be located in Asia.\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') that are domiciled in Asia, unless the Parties have otherwise agreed on a right of sublicensing (either in full or with respect to individual Affiliated Companies) in the referenced bilateral contract ('cx-policy:ContractReference') or have agreed to this separately.\"}"
+    },
+    "RegionOceaniaRightOperand": {
+      "type": "string",
+      "const": "cx.region.oceania:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC). The registered offices of the relevant Affiliated Companies must be located in Oceania.\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') that are domiciled in Oceania, unless the Parties have otherwise agreed on a right of sublicensing (either in full or with respect to individual Affiliated Companies) in the referenced bilateral contract ('cx-policy:ContractReference') or have agreed to this separately.\"}"
+    },
+    "RegionAntarcticaRightOperand": {
+      "type": "string",
+      "const": "cx.region.antarctica:1",
+      "$comment": "{\"permission\":\"The Data Provider permits the Data Consumer to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') ('Sublicensing'), provided that the Data Consumer ensures that its Affiliated Companies comply with the terms of this Agreement concluded via the Registered Connector (RC). The registered offices of the relevant Affiliated Companies must be located in Antarctica.\",\"prohibition\":\"The Data Consumer is not entitled to make the Data available for use by its affiliated companies within the meaning of Section 15 German Stock Corporation Act ('Affiliated Companies') that are domiciled in Antarctica, unless the Parties have otherwise agreed on a right of sublicensing (either in full or with respect to individual Affiliated Companies) in the referenced bilateral contract ('cx-policy:ContractReference') or have agreed to this separately.\"}"
+    }
+  }
+}

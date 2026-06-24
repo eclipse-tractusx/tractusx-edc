@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "LiabilityConstraintConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/LiabilityConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/liability-constraint-schema.json",
+  "definitions": {
+    "LiabilityConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "Liability"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "oneOf": [
+            {"$ref": "#/definitions/GrossNegligenceRightOperand"},
+            {"$ref": "#/definitions/SlightNegligenceRightOperand"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "GrossNegligenceRightOperand": {
+      "type": "string",
+      "const": "cx.grossNegligence:1",
+      "$comment": "{\"permission\":\"The Data Provider's liability is limited to intent and gross negligence. The same applies in regard to the Data Provider's liability for its legal representatives, employees and authorised representatives.\"}"
+    },
+    "SlightNegligenceRightOperand": {
+      "type": "string",
+      "const": "cx.slightNegligence:1",
+      "$comment": "{\"permission\":\"The liability of the Data Provider in cases of ordinary negligence shall be limited to x, as individually agreed by the Parties in the referenced bilateral agreement (cx-policy:ContractReference). The foregoing limitation of liability shall not apply in the event of mandatory statutory liability (in particular under the German Product Liability Act), nor in the event of the assumption of a guarantee or for any culpably caused bodily injury.\"}"
+    }
+  }
+}
