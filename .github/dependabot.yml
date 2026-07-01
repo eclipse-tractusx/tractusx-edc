@@ -39,22 +39,6 @@ updates:
     ignore:
       - dependency-name: "org.eclipse.dataspacetck.dsp:*"
       - dependency-name: "org.eclipse.dataspacetck.dcp:*"
-  -
-    package-ecosystem: "gradle"
-    target-branch: release/0.12.2
-    directory: /
-    labels:
-      - "dependabot"
-      - "dependencies"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 50
-    cooldown:
-      default-days: 7
-    ignore:
-      - dependency-name: "org.eclipse.dataspacetck.dsp:*"
-      - dependency-name: "org.eclipse.dataspacetck.dcp:*"
-      - dependency-name: "org.eclipse.edc:*"
 
   # Github Actions
   -
@@ -75,20 +59,6 @@ updates:
   # Docker
   - package-ecosystem: "docker"
     target-branch: main
-    directories:
-      - "resources"
-      - "edc-extensions/bdrs-client/src/test/resources"
-      - "edc-tests/e2e-fixtures/src/testFixtures/resources"
-    labels:
-      - "dependabot"
-      - "docker"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 50
-    cooldown:
-      default-days: 7
-  - package-ecosystem: "docker"
-    target-branch: release/0.12.2
     directories:
       - "resources"
       - "edc-extensions/bdrs-client/src/test/resources"
