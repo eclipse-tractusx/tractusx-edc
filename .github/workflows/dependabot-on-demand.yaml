@@ -19,7 +19,7 @@
 
 ---
 name: "Dependabot (on-demand)"
-run-name: "Dependabot ${{ matrix.ecosystem }} (${{ matrix.directory }})"
+run-name: "Dependabot (gradle/docker ecosystem) on ${{ inputs.branch }}"
 
 on:
   workflow_dispatch:
