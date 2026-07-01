@@ -19,7 +19,7 @@
 
 ---
 name: "Dependabot (on-demand)"
-run-name: "Dependabot (gradle ecosystem) on ${{ inputs.branch }}"
+run-name: "Dependabot ${{ matrix.ecosystem }} (${{ matrix.directory }})"
 
 on:
   workflow_dispatch:
@@ -34,12 +34,20 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    name: "Gradle dependency"
+    name: "Dependabot ${{ matrix.ecosystem }} (${{ matrix.directory }})"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ecosystem: gradle
+            directory: /
+          - ecosystem: docker
+            directory: resources
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       LOCAL_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      ECOSYSTEM: gradle
-      DIRECTORY: /
+      ECOSYSTEM: ${{ matrix.ecosystem }}
+      DIRECTORY: ${{ matrix.directory }}
       BRANCH: ${{ inputs.branch }}
       REPO: ${{ github.repository }}
     steps:
