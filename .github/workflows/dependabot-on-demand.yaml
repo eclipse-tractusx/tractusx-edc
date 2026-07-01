@@ -1,0 +1,58 @@
+#################################################################################
+#  Copyright (c) 2026 Cofinity-X GmbH
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+---
+name: "Dependabot (on-demand)"
+run-name: "Dependabot ${{ matrix.ecosystem }} (${{ matrix.directory }})"
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to check (e.g. release/0.10.0)."
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    name: "Dependabot ${{ matrix.ecosystem }} (${{ matrix.directory }})"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ecosystem: gradle
+            directory: /
+          - ecosystem: docker
+            directory: resources
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      LOCAL_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ECOSYSTEM: ${{ matrix.ecosystem }}
+      DIRECTORY: ${{ matrix.directory }}
+      BRANCH: ${{ inputs.branch }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Run Dependabot
+        run: |
+          VERSION="$(gh release view --repo dependabot/cli --json tagName -q .tagName)"
+          curl -sSfL "https://github.com/dependabot/cli/releases/download/${VERSION}/dependabot-${VERSION}-linux-amd64.tar.gz" | tar -xz dependabot
+          ./dependabot update "$ECOSYSTEM" "$REPO" --branch "$BRANCH" --directory "$DIRECTORY"
