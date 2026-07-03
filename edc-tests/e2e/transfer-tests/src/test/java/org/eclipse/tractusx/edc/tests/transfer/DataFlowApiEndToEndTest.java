@@ -171,7 +171,7 @@ public class DataFlowApiEndToEndTest {
 
     private ValidatableResponse triggerDataTransfer(String dataFlowId) {
         return PARTICIPANT.baseManagementRequest()
-                .basePath("/v4alpha/dataflows")
+                .basePath("/v3/dataflows")
                 .when()
                 .contentType(JSON)
                 .post("/{id}/trigger", dataFlowId)
