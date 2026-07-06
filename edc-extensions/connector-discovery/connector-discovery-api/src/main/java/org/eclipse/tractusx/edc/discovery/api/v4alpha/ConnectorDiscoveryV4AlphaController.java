@@ -28,15 +28,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
-import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
-import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.discovery.exceptions.UnexpectedResultApiException;
-import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryRequest;
-import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryService;
-import org.eclipse.tractusx.edc.discovery.spi.ConnectorParamsDiscoveryRequest;
-
-import java.util.concurrent.CompletionException;
+import org.eclipse.tractusx.edc.discovery.api.ConnectorDiscoveryController;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
@@ -47,18 +39,11 @@ import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
 @Deprecated(since = "0.13.0")
 public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4AlphaApi {
 
-    private final ConnectorDiscoveryService connectorDiscoveryService;
-    private final TypeTransformerRegistry transformerRegistry;
-    private final JsonObjectValidatorRegistry validator;
+    private final ConnectorDiscoveryController delegate;
     private final Monitor monitor;
 
-    public ConnectorDiscoveryV4AlphaController(ConnectorDiscoveryService connectorDiscoveryService,
-                                               TypeTransformerRegistry transformerRegistry,
-                                               JsonObjectValidatorRegistry validator,
-                                               Monitor monitor) {
-        this.connectorDiscoveryService = connectorDiscoveryService;
-        this.transformerRegistry = transformerRegistry;
-        this.validator = validator;
+    public ConnectorDiscoveryV4AlphaController(ConnectorDiscoveryController delegate, Monitor monitor) {
+        this.delegate = delegate;
         this.monitor = monitor;
     }
 
@@ -67,18 +52,7 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
     @Override
     public void discoverDspVersionParamsV4Alpha(JsonObject inputJson, @Suspended AsyncResponse response) {
         monitor.warning(deprecationWarning("/v4alpha", "/v3"));
-        validator.validate(ConnectorParamsDiscoveryRequest.TYPE, inputJson)
-                .orElseThrow(ValidationFailureException::new);
-
-        var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class)
-                .asOptional().orElseThrow(() ->
-                        new UnexpectedResultApiException("Input data could not parsed to proper request object"));
-
-        connectorDiscoveryService.discoverVersionParams(discoveryRequest)
-                .handle((result, throwable) -> {
-                    handleResult(response, result, throwable);
-                    return null;
-                });
+        delegate.discoverDspVersionParams(inputJson, response);
     }
 
     @Path("/connectors")
@@ -86,31 +60,7 @@ public class ConnectorDiscoveryV4AlphaController implements ConnectorDiscoveryV4
     @Override
     public void discoverConnectorServicesV4Alpha(JsonObject inputJson, @Suspended AsyncResponse response) {
         monitor.warning(deprecationWarning("/v4alpha", "/v3"));
-        validator.validate(ConnectorDiscoveryRequest.TYPE, inputJson)
-                .orElseThrow((ValidationFailureException::new));
-
-        var request = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class)
-                .asOptional().orElseThrow(() ->
-                        new UnexpectedResultApiException("Input data could not parsed to proper request object"));
-
-        connectorDiscoveryService.discoverConnectors(request)
-                .handle((result, throwable) -> {
-                    handleResult(response, result, throwable);
-                    return null;
-                });
-    }
-
-    private <T> void handleResult(AsyncResponse response, T result, Throwable throwable) {
-        if (throwable == null) {
-            response.resume(result);
-        } else {
-            var realCause = throwable;
-            if (throwable instanceof CompletionException) {
-                realCause = throwable.getCause();
-            }
-            monitor.warning("Exception thrown during connector discovery", realCause);
-            response.resume(realCause);
-        }
+        delegate.discoverConnectorServices(inputJson, response);
     }
 }
 

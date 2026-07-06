@@ -36,6 +36,7 @@ import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
+import org.eclipse.tractusx.edc.discovery.api.ConnectorDiscoveryController;
 import org.eclipse.tractusx.edc.discovery.api.v3.ConnectorDiscoveryV3Controller;
 import org.eclipse.tractusx.edc.discovery.api.v4alpha.ConnectorDiscoveryV4AlphaController;
 import org.eclipse.tractusx.edc.discovery.service.DefaultConnectorDiscoveryServiceImpl;
@@ -102,14 +103,17 @@ public class ConnectorDiscoveryExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
         validatorRegistry.register(ConnectorDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV4AlphaController(
-                connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry, monitor));
+        var connectorDiscoveryController = new ConnectorDiscoveryController(
+                connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry, monitor);
+
+        webService.registerResource(ApiContext.MANAGEMENT,
+                new ConnectorDiscoveryV4AlphaController(connectorDiscoveryController, monitor));
         webService.registerDynamicResource(
                 ApiContext.MANAGEMENT, ConnectorDiscoveryV4AlphaController.class,
                 new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
 
-        webService.registerResource(ApiContext.MANAGEMENT, new ConnectorDiscoveryV3Controller(
-                connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT,
+                new ConnectorDiscoveryV3Controller(connectorDiscoveryController));
         webService.registerDynamicResource(
                 ApiContext.MANAGEMENT, ConnectorDiscoveryV3Controller.class,
                 new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));

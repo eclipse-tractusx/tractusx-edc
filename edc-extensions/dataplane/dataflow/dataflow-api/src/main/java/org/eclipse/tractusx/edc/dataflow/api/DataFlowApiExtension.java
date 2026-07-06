@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -49,8 +50,9 @@ public class DataFlowApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerResource(ApiContext.MANAGEMENT, new DataFlowV4AlphaApiController(monitor, dataFlowService));
-        webService.registerResource(ApiContext.MANAGEMENT, new DataFlowV3ApiController(monitor, dataFlowService));
+        var dataFlowApiController = new DataFlowApiController(monitor, dataFlowService);
+        webService.registerResource(ApiContext.MANAGEMENT, new DataFlowV4AlphaApiController(dataFlowApiController, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new DataFlowV3ApiController(dataFlowApiController));
     }
 
 }

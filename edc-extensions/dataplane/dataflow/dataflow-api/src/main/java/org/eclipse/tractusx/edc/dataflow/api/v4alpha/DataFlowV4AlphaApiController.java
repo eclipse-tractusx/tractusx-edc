@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,14 +25,11 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.spi.dataflow.DataFlowService;
+import org.eclipse.tractusx.edc.dataflow.api.DataFlowApiController;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static java.lang.String.format;
 import static org.eclipse.edc.api.ApiWarnings.deprecationWarning;
-import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
 
 @Deprecated(since = "0.13.0")
 @Consumes(APPLICATION_JSON)
@@ -39,12 +37,12 @@ import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMa
 @Path("/v4alpha/dataflows")
 public class DataFlowV4AlphaApiController implements DataFlowV4AlphaApi {
 
+    private final DataFlowApiController delegate;
     private final Monitor monitor;
-    private final DataFlowService service;
 
-    public DataFlowV4AlphaApiController(Monitor monitor, DataFlowService service) {
-        this.monitor = monitor.withPrefix(getClass().getSimpleName());
-        this.service = service;
+    public DataFlowV4AlphaApiController(DataFlowApiController delegate, Monitor monitor) {
+        this.delegate = delegate;
+        this.monitor = monitor;
     }
 
     @POST
@@ -52,9 +50,7 @@ public class DataFlowV4AlphaApiController implements DataFlowV4AlphaApi {
     @Override
     public void triggerDataTransferV4Alpha(@PathParam("id") String id) {
         monitor.warning(deprecationWarning("/v4alpha", "/v3"));
-        service.trigger(id)
-                .onSuccess(v -> monitor.debug(format("Trigger requested for dataflow with ID %s", id)))
-                .orElseThrow(exceptionMapper(DataFlow.class, id));
+        delegate.trigger(id);
     }
 
 }

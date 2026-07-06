@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,34 +25,26 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import org.eclipse.edc.connector.dataplane.spi.DataFlow;
-import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.tractusx.edc.spi.dataflow.DataFlowService;
+import org.eclipse.tractusx.edc.dataflow.api.DataFlowApiController;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static java.lang.String.format;
-import static org.eclipse.edc.web.spi.exception.ServiceResultHandler.exceptionMapper;
 
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 @Path("/v3/dataflows")
 public class DataFlowV3ApiController implements DataFlowV3Api {
 
-    private final Monitor monitor;
-    private final DataFlowService service;
+    private final DataFlowApiController delegate;
 
-    public DataFlowV3ApiController(Monitor monitor, DataFlowService service) {
-        this.monitor = monitor.withPrefix(getClass().getSimpleName());
-        this.service = service;
+    public DataFlowV3ApiController(DataFlowApiController delegate) {
+        this.delegate = delegate;
     }
 
     @POST
     @Path("/{id}/trigger")
     @Override
     public void triggerDataTransferV3(@PathParam("id") String id) {
-        service.trigger(id)
-                .onSuccess(v -> monitor.debug(format("Trigger requested for dataflow with ID %s", id)))
-                .orElseThrow(exceptionMapper(DataFlow.class, id));
+        delegate.trigger(id);
     }
 
 }

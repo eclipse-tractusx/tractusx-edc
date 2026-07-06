@@ -27,16 +27,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.AsyncResponse;
 import jakarta.ws.rs.container.Suspended;
-import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
-import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
-import org.eclipse.edc.web.spi.exception.ValidationFailureException;
-import org.eclipse.tractusx.edc.discovery.exceptions.UnexpectedResultApiException;
-import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryRequest;
-import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryService;
-import org.eclipse.tractusx.edc.discovery.spi.ConnectorParamsDiscoveryRequest;
-
-import java.util.concurrent.CompletionException;
+import org.eclipse.tractusx.edc.discovery.api.ConnectorDiscoveryController;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -45,68 +36,24 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/v3/connectordiscovery")
 public class ConnectorDiscoveryV3Controller implements ConnectorDiscoveryV3Api {
 
-    private final ConnectorDiscoveryService connectorDiscoveryService;
-    private final TypeTransformerRegistry transformerRegistry;
-    private final JsonObjectValidatorRegistry validator;
-    private final Monitor monitor;
+    private final ConnectorDiscoveryController delegate;
 
-    public ConnectorDiscoveryV3Controller(ConnectorDiscoveryService connectorDiscoveryService,
-                                          TypeTransformerRegistry transformerRegistry,
-                                          JsonObjectValidatorRegistry validator,
-                                          Monitor monitor) {
-        this.connectorDiscoveryService = connectorDiscoveryService;
-        this.transformerRegistry = transformerRegistry;
-        this.validator = validator;
-        this.monitor = monitor;
+    public ConnectorDiscoveryV3Controller(ConnectorDiscoveryController delegate) {
+        this.delegate = delegate;
     }
 
     @Path("/dspversionparams")
     @POST
     @Override
     public void discoverDspVersionParamsV3(JsonObject inputJson, @Suspended AsyncResponse response) {
-        validator.validate(ConnectorParamsDiscoveryRequest.TYPE, inputJson)
-                .orElseThrow(ValidationFailureException::new);
-
-        var discoveryRequest = transformerRegistry.transform(inputJson, ConnectorParamsDiscoveryRequest.class)
-                .asOptional().orElseThrow(() ->
-                        new UnexpectedResultApiException("Input data could not parsed to proper request object"));
-
-        connectorDiscoveryService.discoverVersionParams(discoveryRequest)
-                .handle((result, throwable) -> {
-                    handleResult(response, result, throwable);
-                    return null;
-                });
+        delegate.discoverDspVersionParams(inputJson, response);
     }
 
     @Path("/connectors")
     @POST
     @Override
     public void discoverConnectorServicesV3(JsonObject inputJson, @Suspended AsyncResponse response) {
-        validator.validate(ConnectorDiscoveryRequest.TYPE, inputJson)
-                .orElseThrow((ValidationFailureException::new));
-
-        var request = transformerRegistry.transform(inputJson, ConnectorDiscoveryRequest.class)
-                .asOptional().orElseThrow(() ->
-                        new UnexpectedResultApiException("Input data could not parsed to proper request object"));
-
-        connectorDiscoveryService.discoverConnectors(request)
-                .handle((result, throwable) -> {
-                    handleResult(response, result, throwable);
-                    return null;
-                });
-    }
-
-    private <T> void handleResult(AsyncResponse response, T result, Throwable throwable) {
-        if (throwable == null) {
-            response.resume(result);
-        } else {
-            var realCause = throwable;
-            if (throwable instanceof CompletionException) {
-                realCause = throwable.getCause();
-            }
-            monitor.warning("Exception thrown during connector discovery", realCause);
-            response.resume(realCause);
-        }
+        delegate.discoverConnectorServices(inputJson, response);
     }
 }
 
