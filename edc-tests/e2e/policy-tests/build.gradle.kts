@@ -36,3 +36,9 @@ dependencies {
 edcBuild {
     publish.set(false)
 }
+
+configurations.all {
+    resolutionStrategy {
+        force("com.networknt:json-schema-validator:2.0.0")
+    }
+}

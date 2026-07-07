@@ -374,7 +374,7 @@ public class CxPolicyExtension implements ServiceExtension {
 
     @Override
     public void prepare() {
-        validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, CxPolicyDefinitionValidator.instance());
+//        validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, CxPolicyDefinitionValidator.instance()); TODO comment back in after testing
         validatorRegistry.register("v4:PolicyDefinition", new CxJsonSchemaPolicyDefinitionValidator());
     }
 

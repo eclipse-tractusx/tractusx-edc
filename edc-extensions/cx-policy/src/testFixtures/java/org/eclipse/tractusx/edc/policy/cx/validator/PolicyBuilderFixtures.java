@@ -23,6 +23,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -120,6 +121,7 @@ public final class PolicyBuilderFixtures {
             rulesArrayBuilder.add(rule);
         }
         return Json.createObjectBuilder()
+                .add(ID, UUID.randomUUID().toString()) //TODO should id be required on policy?
                 .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
                 .add(ruleType, rulesArrayBuilder)
                 .build();

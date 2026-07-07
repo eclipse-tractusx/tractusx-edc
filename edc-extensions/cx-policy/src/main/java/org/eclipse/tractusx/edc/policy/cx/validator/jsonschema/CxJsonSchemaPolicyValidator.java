@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.dialect.Dialects;
+import com.networknt.schema.resource.IriResourceLoader;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.validator.spi.ValidationResult;
@@ -34,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CxJsonSchemaPolicyValidator implements Validator<JsonObject> {
-    private static final String CX_POLICY_SCHEMA_PREFIX = "https://w3id.org/catenax/2025/9/policy/schema";
+    private static final String CX_POLICY_SCHEMA_PREFIX = "https://w3id.org/catenax/2025/9/policy";
     private static final String CX_POLICY_SCHEMA_LOCATION = "classpath:schema/cx-policy";
 
     private static final String DSPACE_2025_SCHEMA_PREFIX = "https://w3id.org/dspace/2025/1/negotiation";
@@ -47,6 +48,7 @@ public class CxJsonSchemaPolicyValidator implements Validator<JsonObject> {
 
     private final Map<String, String> prefixMappings = new HashMap<>() {
         {
+            put(CX_POLICY_SCHEMA_PREFIX + "/schema", CX_POLICY_SCHEMA_LOCATION);
             put(CX_POLICY_SCHEMA_PREFIX, CX_POLICY_SCHEMA_LOCATION);
             put(DSPACE_2025_SCHEMA_PREFIX, DSPACE_2025_SCHEMA_LOCATION);
         }
@@ -54,8 +56,9 @@ public class CxJsonSchemaPolicyValidator implements Validator<JsonObject> {
 
     public CxJsonSchemaPolicyValidator() {
         this.objectMapper = JacksonJsonLd.createObjectMapper();
-        this.schemaRegistry = SchemaRegistry.withDialect(Dialects.getDraft201909(), builder ->
-                builder.schemaIdResolvers(resolvers -> prefixMappings.forEach(resolvers::mapPrefix)));
+        this.schemaRegistry = SchemaRegistry.withDialect(Dialects.getDraft201909(), builder -> builder
+                .schemaIdResolvers(schemaIdResolvers -> prefixMappings.forEach(schemaIdResolvers::mapPrefix))
+                .resourceLoaders(resourceLoaders -> resourceLoaders.add(IriResourceLoader.getInstance())));
     }
 
     @Override
