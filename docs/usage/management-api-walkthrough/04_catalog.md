@@ -26,7 +26,7 @@ DSP discovery is supported with the following requests
 For the full flow including the DID document download:
 
 ```http request
-POST /v4alpha/connectordiscovery/connectors HTTP/1.1
+POST /v3/connectordiscovery/connectors HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -45,7 +45,7 @@ Content-Type: application/json
 or, if a connector base address is already known:
 
 ```http request
-POST /v4alpha/connectordiscovery/dspversionparams HTTP/1.1
+POST /v3/connectordiscovery/dspversionparams HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
 Content-Type: application/json
@@ -257,7 +257,7 @@ policies included.
 
 
 ## Reference
-- [Connector Discovery API](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/#/Connector%20Discovery/discoverDspVersionParamsV4Alpha)
+- [Connector Discovery API](https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/#/Connector%20Discovery/discoverDspVersionParamsV3)
 
 ## Notice
 

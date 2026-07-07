@@ -295,7 +295,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public void triggerDataTransfer(String dataFlowId) {
         baseManagementRequest()
-                .basePath("v4alpha")
+                .basePath("v3")
                 .contentType(JSON)
                 .when()
                 .post("/dataflows/{id}/trigger", dataFlowId)
@@ -306,7 +306,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public ValidatableResponse discoverDspParameters(JsonObject requestBody) {
         return baseManagementRequest()
-                .basePath("v4alpha")
+                .basePath("v3")
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
@@ -316,7 +316,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
 
     public ValidatableResponse discoverConnectorServices(JsonObject requestBody) {
         return baseManagementRequest()
-                .basePath("v4alpha")
+                .basePath("v3")
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
