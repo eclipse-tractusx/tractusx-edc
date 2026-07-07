@@ -127,6 +127,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
+      deprecated: true
   /check/liveness:
     get:
       tags:
@@ -141,6 +142,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /v3/dataflows/{id}/trigger:
+    post:
+      tags:
+      - DataFlow API V3
+      description: "Requests the trigger of a data transfer. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received."
+      operationId: triggerDataTransferV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Request was sucessfully received
+          links:
+            poll-state:
+              operationId: triggerDataTransferV3
+        "400":
+          description: Request was malformed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "404":
+          description: Data flow with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "409":
+          description: Data flow is not in a required state
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
   /aas/request:
     post:
       tags:
