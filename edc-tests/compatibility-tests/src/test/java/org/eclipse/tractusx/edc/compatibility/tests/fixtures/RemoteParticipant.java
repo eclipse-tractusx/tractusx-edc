@@ -67,10 +67,12 @@ public class RemoteParticipant extends DcpParticipant {
                 put("testing.edc.vaults.3.value", getPublicKeyAsString());
                 put("edc.iam.issuer.id", getDid());
                 put("edc.iam.did.web.use.https", "false");
+                put("tractusx.edc.participant.bpn", getBpn());
                 put("testing.edc.bdrs.1.key", participant.getId());
                 put("testing.edc.bdrs.1.value", participant.getDid());
                 put("edc.iam.trusted-issuer.issuer.id", trustedIssuer);
                 put("edc.sql.schema.autocreate", "false");
+                put("edc.participant.context.id", "participant-context-id");
                 put("web.http.public.path", dataPlanePublic.get().getPath());
                 put("web.http.public.port", String.valueOf(dataPlanePublic.get().getPort()));
                 put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
@@ -90,6 +92,7 @@ public class RemoteParticipant extends DcpParticipant {
             config.putAll(datasourceEnvironmentVariables(ds, postgresqlConfig));
         });
         config.put("org.eclipse.tractusx.edc.postgresql.migration.schema", postgresqlConfig.getString("tx.edc.postgresql.migration.schema"));
+        config.put("tx.edc.postgresql.migration.schema", postgresqlConfig.getString("tx.edc.postgresql.migration.schema"));
         return config;
     }
 
@@ -107,8 +110,17 @@ public class RemoteParticipant extends DcpParticipant {
             super(new RemoteParticipant());
         }
 
+        protected Builder(RemoteParticipant participant) {
+            super(participant);
+        }
+
         public static Builder newInstance() {
             return new Builder();
+        }
+
+        public Builder protocol(String protocolName, String path) {
+            participant.protocol = new Protocol(protocolName, path);
+            return protocolVersionPath(path);
         }
 
         @Override
