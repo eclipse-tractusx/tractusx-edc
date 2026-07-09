@@ -110,7 +110,7 @@ public class PolicyDefinitionV4EndToEndTest {
                     Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
                             frameworkConstraint(Map.of("AffiliatesRegion", List.of("cx.region.europe:1")), "use", Operator.IS_ANY_OF, true)), "Affiliates Region (IS_ANY_OF, one element)"),
                     Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
-                            frameworkConstraint(Map.of("AffiliatesBpnl", "BPNL00000000001A"), "use", Operator.IS_ANY_OF, true)), "Affiliates BPNL"),
+                            frameworkConstraint(Map.of("AffiliatesBpnl", List.of("BPNL00000000001A")), "use", Operator.IS_ANY_OF, true)), "Affiliates BPNL"),
                     Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
                             frameworkConstraint(Map.of("DataFrequency", "cx.dataFrequency.once:1"), "use", Operator.EQ, false)), "Data Frequency"),
                     Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
@@ -204,7 +204,7 @@ public class PolicyDefinitionV4EndToEndTest {
         }
         var contextArrayBuilder = Json.createArrayBuilder();
         contextArrayBuilder.add(ODRL_CONTEXT);
-//        contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
+        contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
         if (!policyDefinition.isBlank()) {
             contextArrayBuilder.add(policyDefinition);
         }
@@ -225,7 +225,7 @@ public class PolicyDefinitionV4EndToEndTest {
         rulesArrayBuilder.add(rule);
         var contextArrayBuilder = Json.createArrayBuilder();
         contextArrayBuilder.add(ODRL_CONTEXT);
-//        contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
+        contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
 
         return Json.createObjectBuilder()
                 .add(ID, "id")
