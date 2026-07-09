@@ -243,6 +243,9 @@ components:
         expires:
           type: integer
           format: int64
+        expires_in:
+          type: integer
+          format: int64
         refresh_token:
           type: string
         token_type:
@@ -252,6 +255,7 @@ components:
         refresh_token: refresh_token
         expires: 0
         token_type: token_type
+        expires_in: 6
     ApiErrorDetail:
       type: object
       properties:
