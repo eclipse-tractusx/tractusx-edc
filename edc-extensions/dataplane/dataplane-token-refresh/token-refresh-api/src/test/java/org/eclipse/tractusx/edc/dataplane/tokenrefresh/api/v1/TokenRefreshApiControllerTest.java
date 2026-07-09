@@ -59,7 +59,7 @@ class TokenRefreshApiControllerTest extends RestControllerTestBase {
     @DisplayName("Expect HTTP 200 when the token was successfully refreshed and query params used")
     @Test
     void refresh_expect200query() {
-        when(refreshService.refreshToken(any(), any())).thenReturn(Result.success(new TokenResponse("new-accesstoken", "new-refreshtoken", 3000L, "bearer")));
+        when(refreshService.refreshToken(any(), any())).thenReturn(Result.success(new TokenResponse("new-accesstoken", "new-refreshtoken", null, 3000L, "bearer")));
         baseRequest()
                 .queryParam("grant_type", "refresh_token")
                 .queryParam("refresh_token", "foo-token")
@@ -73,7 +73,7 @@ class TokenRefreshApiControllerTest extends RestControllerTestBase {
     @DisplayName("Expect HTTP 200 when the token was successfully refreshed and correct body used")
     @Test
     void refresh_expect200body() {
-        when(refreshService.refreshToken(any(), any())).thenReturn(Result.success(new TokenResponse("new-accesstoken", "new-refreshtoken", 3000L, "bearer")));
+        when(refreshService.refreshToken(any(), any())).thenReturn(Result.success(new TokenResponse("new-accesstoken", "new-refreshtoken", 3000L, null, "bearer")));
         baseRequest()
                 .header(AUTHORIZATION, "auth-token")
                 .contentType(ContentType.URLENC)

@@ -216,7 +216,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             monitor.severe("Failed to store refreshed access token data: %s".formatted(storeResult.getFailureDetail()));
             return Result.failure(storeResult.getFailureMessages());
         }
-        return Result.success(new TokenResponse(newAccessToken.getContent(), newRefreshToken.getContent(), tokenExpirySeconds, "bearer"));
+        return Result.success(new TokenResponse(newAccessToken.getContent(), newRefreshToken.getContent(), tokenExpirySeconds, tokenExpirySeconds, "bearer"));
     }
 
     @Override
