@@ -43,6 +43,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LOGICAL_CONSTRAINT_TYPE;
+import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 
@@ -359,8 +360,12 @@ public class PolicyHelperFunctions {
                         .build())
                 .build();
 
+        var contextArrayBuilder = Json.createArrayBuilder();
+        contextArrayBuilder.add(ODRL_CONTEXT);
+        contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
+
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_CONTEXT)
+                .add(CONTEXT, contextArrayBuilder)
                 .add(TYPE, "Set")
                 .add(ID, "id")
                 .add("permission", Json.createArrayBuilder()
@@ -385,8 +390,12 @@ public class PolicyHelperFunctions {
                         .build())
                 .build();
 
+        var contextArrayBuilder = Json.createArrayBuilder();
+        contextArrayBuilder.add(ODRL_CONTEXT);
+        contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
+
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_CONTEXT)
+                .add(CONTEXT, contextArrayBuilder)
                 .add(TYPE, "Set")
                 .add(ID, "id")
                 .add("permission", Json.createArrayBuilder()
