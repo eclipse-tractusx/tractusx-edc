@@ -280,7 +280,7 @@ public class EdrCacheApiEndToEndTest {
     }
 
     private String tokenResponseBody(String accessToken, String refreshToken) {
-        var response = new TokenResponse(accessToken, refreshToken, 300L, "bearer");
+        var response = new TokenResponse(accessToken, refreshToken, null, 300L, "bearer");
         try {
             return mapper.writeValueAsString(response);
         } catch (JsonProcessingException e) {
