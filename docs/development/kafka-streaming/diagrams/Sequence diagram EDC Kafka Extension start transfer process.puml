@@ -1,0 +1,31 @@
+@startuml
+/'
+SPDX-License-Identifier: CC-BY-4.0
+SPDX-FileCopyrightText: (c) 2026 Contributors to the Eclipse Foundation
+'/
+box "Consumer cluster" #LightYellow
+    participant "Control Plane" as ConsumerCP
+end box
+
+box "Provider cluster" #LightBlue
+    participant "Control Plane"  as ProviderCP
+    participant "Data Plane\n(Kafka Extension)" as ProviderDP
+    participant "OAuth Service" as OAuth2
+    participant "Kafka Service" as Kafka
+end box
+
+== Start Transfer Process (assumes contract has already been negotiated) ==
+ConsumerCP -> ProviderCP : Start transfer process\n(TransferRequestMessage)
+ProviderCP -> ProviderCP : Check policy, contract etc.
+ProviderCP -> ProviderDP : Send DataFlowStartMessage\n(Data Plane Signaling)
+ProviderDP -> OAuth2 : Request access token\n(Client Credentials flow, no refresh token)
+ProviderDP <-- OAuth2 : Access token
+ProviderDP -> ProviderDP : Build Kafka DataAddress\n(bootstrap servers, topic, security protocol,\nSASL mechanism, group prefix, poll duration, token)
+opt ACL management enabled
+    ProviderDP -> Kafka : Create ACLs for token subject
+    ProviderDP <-- Kafka : ACLs created
+end
+ProviderCP <-- ProviderDP : DataFlowResponseMessage\nwith Kafka DataAddress
+ProviderCP -> ConsumerCP : Send TransferStartMessage\nattaching DataAddress
+ConsumerCP -> ConsumerCP : Create EDR with DataAddress
+@enduml

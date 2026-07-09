@@ -1,0 +1,38 @@
+@startuml
+/'
+SPDX-License-Identifier: CC-BY-4.0
+SPDX-FileCopyrightText: (c) 2026 Contributors to the Eclipse Foundation
+'/
+box "Consumer cluster" #LightYellow
+    participant "Control Plane" as ConsumerCP
+end box
+
+box "Provider cluster" #LightBlue
+    participant "Control Plane"  as ProviderCP
+    participant "Data Plane\n(Kafka Extension)" as ProviderDP
+    participant "OAuth Service" as OAuth2
+    participant "Kafka Service" as Kafka
+end box
+
+== Suspend ==
+ProviderCP -> ProviderDP : Suspend data flow\n(Data Plane Signaling)
+opt ACL management enabled
+    ProviderDP -> Kafka : Revoke consumer ACLs
+    ProviderDP <-- Kafka : ACLs revoked
+end
+note over ProviderDP : The token is not revoked on suspend —\nit expires on its own; a resume\nre-creates the ACLs
+ProviderCP <-- ProviderDP : Flow suspended
+ConsumerCP <-- ProviderCP : Transfer suspended
+
+== Terminate ==
+ProviderCP -> ProviderDP : Terminate data flow\n(Data Plane Signaling)
+opt ACL management enabled
+    ProviderDP -> Kafka : Revoke consumer ACLs
+    ProviderDP <-- Kafka : ACLs revoked
+end
+ProviderDP -> OAuth2 : Revoke token (revokeUrl)
+ProviderDP <-- OAuth2 : Token revoked
+ProviderDP -> ProviderDP : Delete token from vault
+ProviderCP <-- ProviderDP : Flow terminated
+ConsumerCP <-- ProviderCP : Transfer terminated
+@enduml
