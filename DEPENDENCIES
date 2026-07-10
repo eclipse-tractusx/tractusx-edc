@@ -160,9 +160,9 @@ maven/mavencentral/org.apache.commons/commons-pool2/2.13.1, Apache-2.0 AND CC-PD
 maven/mavencentral/org.apache.httpcomponents/httpclient/4.5.13, Apache-2.0, approved, #15248
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.13, Apache-2.0, approved, CQ23528
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.16, Apache-2.0, approved, CQ23528
-maven/mavencentral/org.apache.logging.log4j/log4j-api/2.26.0, Apache-2.0, approved, #27998
-maven/mavencentral/org.apache.logging.log4j/log4j-core/2.26.0, Apache-2.0 AND (Apache-2.0 AND LGPL-2.0-or-later), approved, #28001
-maven/mavencentral/org.apache.logging.log4j/log4j-layout-template-json/2.26.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.apache.logging.log4j/log4j-api/2.26.1, Apache-2.0, approved, #27998
+maven/mavencentral/org.apache.logging.log4j/log4j-core/2.26.1, Apache-2.0 AND (Apache-2.0 AND LGPL-2.0-or-later), approved, #28001
+maven/mavencentral/org.apache.logging.log4j/log4j-layout-template-json/2.26.1, , restricted, clearlydefined
 maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.84, MIT, approved, #27142
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.84, MIT AND CC0-1.0, approved, #27143
 maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.84, MIT, approved, #27144
