@@ -28,7 +28,6 @@ import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.compatibility.tests.CompatibilityTest;
-import org.eclipse.tractusx.edc.compatibility.tests.fixtures.DockerHost;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.IdentityHubParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.LegacyRemoteParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipant;
@@ -188,14 +187,12 @@ public class TransferEndToEndTest {
     }
 
     private static void addAudienceMapping(TractusxDcpParticipantBase target) {
-        // BPN to DID mapping
         var bpnKey = "testing.edc.bdrs." + UUID.randomUUID().toString().substring(0, 8);
-        System.setProperty(bpnKey + ".key", target.getId());  // BPN
+        System.setProperty(bpnKey + ".key", target.getId());
         System.setProperty(bpnKey + ".value", target.getDid());
 
-        // DID to DID mapping (identity mapping for when counter-party is already a DID)
         var didKey = "testing.edc.bdrs." + UUID.randomUUID().toString().substring(0, 8);
-        System.setProperty(didKey + ".key", target.getDid());  // DID
+        System.setProperty(didKey + ".key", target.getDid());
         System.setProperty(didKey + ".value", target.getDid());
     }
 

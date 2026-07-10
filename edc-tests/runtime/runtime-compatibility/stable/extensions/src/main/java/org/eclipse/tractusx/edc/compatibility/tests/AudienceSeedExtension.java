@@ -66,10 +66,8 @@ public class AudienceSeedExtension implements ServiceExtension {
     @Provider
     public AudienceResolver audienceResolver(ServiceExtensionContext context) {
         var dids = readDidsMapping(context);
-        context.getMonitor().info("Loaded BDRS mappings: " + dids);
         return message -> {
             var counterPartyId = message.getCounterPartyId();
-            context.getMonitor().info("Resolving audience for counter-party: " + counterPartyId);
 
             if (counterPartyId.startsWith("did:")) {
                 return Result.success(counterPartyId);
@@ -79,7 +77,7 @@ public class AudienceSeedExtension implements ServiceExtension {
             if (audience != null) {
                 return Result.success(audience);
             }
-            context.getMonitor().warning("No DID found for counter-party: " + counterPartyId);
+
             return Result.failure("No DID found for counter-party: " + counterPartyId);
         };
     }
