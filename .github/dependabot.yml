@@ -39,6 +39,30 @@ updates:
     ignore:
       - dependency-name: "org.eclipse.dataspacetck.dsp:*"
       - dependency-name: "org.eclipse.dataspacetck.dcp:*"
+    groups:
+      edc-core-and-spi:
+        patterns:
+          - "org.eclipse.edc*"
+          - "org.eclipse.tractusx*"
+          - "org.eclipse.dataspace*"
+      test-dependencies:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.testcontainers*"
+          - "org.awaitility*"
+          - "org.assertj*"
+      build-tooling:
+        patterns:
+          - "com.diffplug.spotless*"
+          - "org.sonarqube*"
+          - "com.github.ben-manes*"
+          - "org.jreleaser*"
+      logging:
+        patterns:
+          - "org.apache.logging.log4j*"
+          - "ch.qos.logback*"
+          - "org.slf4j*"
 
   # Github Actions
   -
@@ -55,6 +79,10 @@ updates:
     open-pull-requests-limit: 50
     cooldown:
       default-days: 7
+    groups:
+      github-actions-all:
+        patterns:
+          - "*"
 
   # Docker
   - package-ecosystem: "docker"
@@ -71,3 +99,7 @@ updates:
     open-pull-requests-limit: 50
     cooldown:
       default-days: 7
+    groups:
+      docker-base-images:
+        patterns:
+          - "*"
