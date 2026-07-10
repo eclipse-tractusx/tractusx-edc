@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.compatibility.tests.CompatibilityTest;
+import org.eclipse.tractusx.edc.compatibility.tests.fixtures.DockerHost;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.IdentityHubParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.LegacyRemoteParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipant;
@@ -290,22 +291,18 @@ public class TransferEndToEndTest {
         var dataset = await().atMost(ASYNC_TIMEOUT)
                 .pollInterval(ASYNC_POLL_INTERVAL)
                 .ignoreExceptions()
-                .until(() -> legacyConsumer.getDatasetForAssetWithDid(assetId, provider), Objects::nonNull);
+                .until(() -> legacyConsumer.getDatasetForAsset(provider, assetId), Objects::nonNull);
 
-        var catalogPolicy = dataset.getJsonArray("hasPolicy").get(0).asJsonObject();
+        var catalogPolicy = dataset.getJsonArray("http://www.w3.org/ns/odrl/2/hasPolicy").get(0).asJsonObject();
 
         var counterPartyAddress = provider.getProtocolUrl();
         if (!counterPartyAddress.endsWith(DSP_2025_PATH_SUFFIX)) {
             counterPartyAddress = counterPartyAddress + DSP_2025_PATH_SUFFIX;
         }
 
-        var providerId = legacyConsumer.getLastProviderParticipantId() != null
-                ? legacyConsumer.getLastProviderParticipantId()
-                : provider.getDid();
-
         var policy = createObjectBuilder(catalogPolicy)
                 .add("target", assetId)
-                .add("assigner", providerId)
+                .add("assigner", provider.getDid())
                 .build();
 
         var requestContext = createArrayBuilder()
