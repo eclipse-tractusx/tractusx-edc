@@ -78,12 +78,15 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipantContext;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.ODRL_CONTEXT;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDatePolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 @CompatibilityTest
 public class TransferEndToEndTest {
+
+    private static final String DSP_2025_PATH_SUFFIX = "/2025-1";
 
     protected static final IdentityHubParticipant IDENTITY_HUB_PARTICIPANT = IdentityHubParticipant.Builder.newInstance()
             .name("identity-hub")
@@ -195,107 +198,6 @@ public class TransferEndToEndTest {
         System.setProperty(didKey + ".value", target.getDid());
     }
 
-    private String executeLegacyTransfer(LegacyRemoteParticipant legacyConsumer, TractusxDcpParticipantBase provider, String assetId) {
-        var dataset = await().atMost(ASYNC_TIMEOUT)
-                .pollInterval(ASYNC_POLL_INTERVAL)
-                .ignoreExceptions()
-                .until(() -> legacyConsumer.getDatasetForAssetWithDid(assetId, provider), Objects::nonNull);
-
-        var catalogPolicy = dataset.getJsonArray("hasPolicy").get(0).asJsonObject();
-
-        var counterPartyAddress = provider.getProtocolUrl();
-        if (!counterPartyAddress.endsWith("/2025-1")) {
-            counterPartyAddress = counterPartyAddress + "/2025-1";
-        }
-
-        var providerId = legacyConsumer.getLastProviderParticipantId() != null
-                ? legacyConsumer.getLastProviderParticipantId()
-                : provider.getDid();
-
-        var policy = createObjectBuilder(catalogPolicy)
-                .add("target", assetId)
-                .add("assigner", providerId)
-                .build();
-
-        var requestContext = createArrayBuilder()
-                .add("https://w3id.org/dspace/2025/1/odrl-profile.jsonld")
-                .add("https://w3id.org/catenax/2025/9/policy/context.jsonld")
-                .add(createObjectBuilder().add("@vocab", EDC_NAMESPACE))
-                .build();
-
-        var contractRequest = createObjectBuilder()
-                .add("@context", requestContext)
-                .add("@type", "ContractRequest")
-                .add("counterPartyAddress", counterPartyAddress)
-                .add("protocol", DSP_2025)
-                .add("policy", policy)
-                .build();
-
-        var negotiationId = legacyConsumer.baseManagementRequest()
-                .contentType(JSON)
-                .body(contractRequest)
-                .when()
-                .post("/contractnegotiations")
-                .then()
-                .log().ifError()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getString("'@id'");
-
-        await()
-                .atMost(ASYNC_TIMEOUT)
-                .pollInterval(ASYNC_POLL_INTERVAL)
-                .until(() -> {
-                    var state = legacyConsumer.getContractNegotiationState(negotiationId);
-                    if ("TERMINATED".equals(state)) {
-                        var errorDetail = legacyConsumer.baseManagementRequest()
-                                .when()
-                                .get("/contractnegotiations/{id}", negotiationId)
-                                .then()
-                                .statusCode(200)
-                                .extract()
-                                .jsonPath()
-                                .getString("errorDetail");
-                        throw new AssertionError("Contract negotiation " + negotiationId + " TERMINATED: " + errorDetail);
-                    }
-                    return "FINALIZED".equals(state);
-                });
-
-        var agreementId = legacyConsumer.baseManagementRequest()
-                .when()
-                .get("/contractnegotiations/{id}", negotiationId)
-                .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .get("contractAgreementId")
-                .toString();
-
-        var transferRequest = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder()
-                        .add("@vocab", EDC_NAMESPACE)
-                        .build())
-                .add(TYPE, "TransferRequest")
-                .add("counterPartyAddress", provider.getProtocolUrl())
-                .add("contractId", agreementId)
-                .add("assetId", assetId)
-                .add("protocol", DSP_2025)
-                .add("transferType", "HttpData-PULL")
-                .build();
-
-        return legacyConsumer.baseManagementRequest()
-                .contentType(JSON)
-                .body(transferRequest)
-                .when()
-                .post("/transferprocesses")
-                .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getString("'@id'");
-    }
-
     @ParameterizedTest
     @ArgumentsSource(ParticipantsArgProvider.class)
     void httpPullTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String protocol) {
@@ -385,14 +287,115 @@ public class TransferEndToEndTest {
     }
 
     protected void createResourcesOnProvider(TractusxDcpParticipantBase provider, String assetId, JsonObject contractPolicy, Map<String, Object> dataAddressProperties) {
-        createAssetLegacyManagementContext(provider, assetId, Map.of("description", "description"), dataAddressProperties);
-        var contractPolicyId = createPolicyDefinitionLegacyManagementContext(provider, contractPolicy);
-        var noConstraintPolicyId = createPolicyDefinitionLegacyManagementContext(provider, noConstraintPolicy());
+        createAssetManagementContext(provider, assetId, Map.of("description", "description"), dataAddressProperties);
+        var contractPolicyId = createPolicyDefinitionManagementContext(provider, contractPolicy);
+        var noConstraintPolicyId = createPolicyDefinitionManagementContext(provider, noConstraintPolicy());
 
-        createContractDefinitionLegacyManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
+        createContractDefinitionManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
     }
 
-    public void createAssetLegacyManagementContext(TractusxDcpParticipantBase participant, String assetId, Map<String, Object> properties, Map<String, Object> dataAddressProperties) {
+    private String executeLegacyTransfer(LegacyRemoteParticipant legacyConsumer, TractusxDcpParticipantBase provider, String assetId) {
+        var dataset = await().atMost(ASYNC_TIMEOUT)
+                .pollInterval(ASYNC_POLL_INTERVAL)
+                .ignoreExceptions()
+                .until(() -> legacyConsumer.getDatasetForAssetWithDid(assetId, provider), Objects::nonNull);
+
+        var catalogPolicy = dataset.getJsonArray("hasPolicy").get(0).asJsonObject();
+
+        var counterPartyAddress = provider.getProtocolUrl();
+        if (!counterPartyAddress.endsWith(DSP_2025_PATH_SUFFIX)) {
+            counterPartyAddress = counterPartyAddress + DSP_2025_PATH_SUFFIX;
+        }
+
+        var providerId = legacyConsumer.getLastProviderParticipantId() != null
+                ? legacyConsumer.getLastProviderParticipantId()
+                : provider.getDid();
+
+        var policy = createObjectBuilder(catalogPolicy)
+                .add("target", assetId)
+                .add("assigner", providerId)
+                .build();
+
+        var requestContext = createArrayBuilder()
+                .add(ODRL_CONTEXT)
+                .add("https://w3id.org/catenax/2025/9/policy/context.jsonld")
+                .add(createObjectBuilder().add("@vocab", EDC_NAMESPACE))
+                .build();
+
+        var contractRequest = createObjectBuilder()
+                .add("@context", requestContext)
+                .add("@type", "ContractRequest")
+                .add("counterPartyAddress", counterPartyAddress)
+                .add("protocol", DSP_2025)
+                .add("policy", policy)
+                .build();
+
+        var negotiationId = legacyConsumer.baseManagementRequest()
+                .contentType(JSON)
+                .body(contractRequest)
+                .when()
+                .post("/contractnegotiations")
+                .then()
+                .log().ifError()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("'@id'");
+
+        await()
+                .atMost(ASYNC_TIMEOUT)
+                .pollInterval(ASYNC_POLL_INTERVAL)
+                .until(() -> {
+                    var state = legacyConsumer.getContractNegotiationState(negotiationId);
+                    if ("TERMINATED".equals(state)) {
+                        var errorDetail = legacyConsumer.baseManagementRequest()
+                                .when()
+                                .get("/contractnegotiations/{id}", negotiationId)
+                                .then()
+                                .statusCode(200)
+                                .extract()
+                                .jsonPath()
+                                .getString("errorDetail");
+                        throw new AssertionError("Contract negotiation " + negotiationId + " TERMINATED: " + errorDetail);
+                    }
+                    return "FINALIZED".equals(state);
+                });
+
+        var agreementId = legacyConsumer.baseManagementRequest()
+                .when()
+                .get("/contractnegotiations/{id}", negotiationId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .get("contractAgreementId")
+                .toString();
+
+        var transferRequest = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder()
+                        .add("@vocab", EDC_NAMESPACE)
+                        .build())
+                .add(TYPE, "TransferRequest")
+                .add("counterPartyAddress", provider.getProtocolUrl())
+                .add("contractId", agreementId)
+                .add("assetId", assetId)
+                .add("protocol", DSP_2025)
+                .add("transferType", "HttpData-PULL")
+                .build();
+
+        return legacyConsumer.baseManagementRequest()
+                .contentType(JSON)
+                .body(transferRequest)
+                .when()
+                .post("/transferprocesses")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("'@id'");
+    }
+
+    private void createAssetManagementContext(TractusxDcpParticipantBase participant, String assetId, Map<String, Object> properties, Map<String, Object> dataAddressProperties) {
         var propertiesBuilder = createObjectBuilder();
         properties.forEach((key, value) -> propertiesBuilder.add(key, String.valueOf(value)));
 
@@ -418,7 +421,7 @@ public class TransferEndToEndTest {
                 .statusCode(200);
     }
 
-    public String createPolicyDefinitionLegacyManagementContext(TractusxDcpParticipantBase participant, JsonObject policy) {
+    private String createPolicyDefinitionManagementContext(TractusxDcpParticipantBase participant, JsonObject policy) {
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createArrayBuilder().add(EDC_CONNECTOR_MANAGEMENT_CONTEXT))
                 .add(ID, UUID.randomUUID().toString())
@@ -438,7 +441,7 @@ public class TransferEndToEndTest {
                 .extract().jsonPath().getString(ID);
     }
 
-    public String createContractDefinitionLegacyManagementContext(TractusxDcpParticipantBase participant, String assetId, String definitionId, String accessPolicyId, String contractPolicyId) {
+    private void createContractDefinitionManagementContext(TractusxDcpParticipantBase participant, String assetId, String definitionId, String accessPolicyId, String contractPolicyId) {
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder()
                         .add("@vocab", EDC_NAMESPACE)
@@ -457,7 +460,7 @@ public class TransferEndToEndTest {
                         .build())
                 .build();
 
-        return participant.baseManagementRequest()
+        participant.baseManagementRequest()
                 .basePath("/v3")
                 .contentType(JSON)
                 .body(requestBody)

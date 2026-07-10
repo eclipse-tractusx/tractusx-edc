@@ -29,6 +29,7 @@ import org.eclipse.tractusx.edc.tests.participant.TractusxDcpParticipantBase;
 import java.io.StringReader;
 
 import static jakarta.json.Json.createObjectBuilder;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
 
 public class LegacyRemoteParticipant extends RemoteParticipant {
 
@@ -49,7 +50,7 @@ public class LegacyRemoteParticipant extends RemoteParticipant {
                         .add("@vocab", "https://w3id.org/edc/v0.0.1/ns/")
                         .build())
                 .add("@type", "CatalogRequest")
-                .add("protocol", "dataspace-protocol-http:2025-1")
+                .add("protocol", DSP_2025)
                 .add("counterPartyAddress", counterPartyAddress)
                 .add("counterPartyId", provider.getDid())
                 .add("querySpec", createObjectBuilder()
