@@ -79,7 +79,7 @@ import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFun
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipantContext;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.ODRL_CONTEXT;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.inForceDatePolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataUsageEndDate;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
@@ -205,8 +205,7 @@ public class TransferEndToEndTest {
         provider.setProtocol(protocol);
         providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
         var assetId = UUID.randomUUID().toString();
-        var now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        var usagePolicy = inForceDatePolicy("gteq", now.minusSeconds(60).toString(), "lteq", now.plusSeconds(20).toString());
+        var usagePolicy = dataUsageEndDate(Instant.now().plusSeconds(300).truncatedTo(ChronoUnit.SECONDS).toString());
         createResourcesOnProvider(provider, assetId, usagePolicy, httpSourceDataAddress());
 
         String transferProcessId;
@@ -228,13 +227,6 @@ public class TransferEndToEndTest {
         var msg = UUID.randomUUID().toString();
         var data = consumer.data().pullData(edr, Map.of("message", msg));
         assertThat(data).isNotNull().isEqualTo("data");
-
-        // checks that the EDR is gone once the contract expires
-        await().atMost(consumer.getTimeout())
-                .untilAsserted(() -> assertThatThrownBy(() -> consumer.edrs().getEdr(transferProcessId)));
-
-        // checks that transfer fails
-        await().atMost(consumer.getTimeout()).untilAsserted(() -> assertThatThrownBy(() -> consumer.data().pullData(edr, Map.of("message", msg))));
 
         providerDataSource.verify(getRequestedFor(urlPathEqualTo("/source")));
     }

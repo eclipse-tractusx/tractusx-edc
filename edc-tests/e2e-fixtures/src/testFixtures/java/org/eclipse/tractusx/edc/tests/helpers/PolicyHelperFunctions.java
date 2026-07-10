@@ -305,21 +305,6 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
-    public static JsonObject inForceDatePolicy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
-        var constraint = Json.createObjectBuilder()
-                .add("@type", "LogicalConstraint")
-                .add("and", Json.createArrayBuilder()
-                        .add(atomicConstraint(EDC_NAMESPACE + "inForceDate", operatorStart, startDate, false))
-                        .add(atomicConstraint(EDC_NAMESPACE + "inForceDate", operatorEnd, endDate, false))
-                        .build())
-                .build();
-
-        return policy(List.of(Json.createObjectBuilder()
-                .add("action", "use")
-                .add("constraint", constraint)
-                .build()));
-    }
-
     private static JsonObject atomicConstraint(String leftOperand, String operator, Object rightOperand, boolean createRightOperandsAsArray) {
         var builder = Json.createObjectBuilder()
                 .add(TYPE, ODRL_CONSTRAINT_TYPE)
