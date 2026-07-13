@@ -20,204 +20,196 @@
 package org.eclipse.tractusx.edc.policy.cx.validator.jsonschema;
 
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_AND_CONSTRAINT_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OBLIGATION_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OR_CONSTRAINT_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_PERMISSION_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_TYPE_SET;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.atomicConstraint;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.logicalConstraint;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.policy;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.rule;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixtures.ruleWithoutActionType;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_USAGE;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DATE_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.DATA_PROVISIONING_END_DURATION_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.FRAMEWORK_AGREEMENT_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.MEMBERSHIP_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.USAGE_PURPOSE_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.WARRANTY_DEFINITION_LITERAL;
-import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.WARRANTY_DURATION_MONTHS_LITERAL;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixturesV4.atomicConstraint;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixturesV4.logicalConstraint;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixturesV4.policy;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixturesV4.rule;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyBuilderFixturesV4.ruleWithoutActionType;
 
 class CxJsonSchemaPolicyValidatorTest {
+
+    private static final String ACTION = "action";
+    private static final String PERMISSION = "permission";
+    private static final String OBLIGATION = "obligation";
+    private static final String CONSTRAINT = "constraint";
+    private static final String AND = "and";
+    private static final String OR = "or";
+    private static final String SET = "Set";
+
+    private static final String ACCESS = "access";
+    private static final String USE = "use";
+
+    private static final String MEMBERSHIP = "Membership";
+    private static final String USAGE_PURPOSE = "UsagePurpose";
+    private static final String FRAMEWORK_AGREEMENT = "FrameworkAgreement";
+    private static final String WARRANTY_DEFINITION = "WarrantyDefinition";
+    private static final String WARRANTY_DURATION_MONTHS = "WarrantyDurationMonths";
+    private static final String DATA_PROVISIONING_END_DURATION_DAYS = "DataProvisioningEndDurationDays";
+    private static final String DATA_PROVISIONING_END_DURATION_DATE = "DataProvisioningEndDate";
 
     private final CxJsonSchemaPolicyValidator validator = new CxJsonSchemaPolicyValidator();
 
     @Test
     void shouldReturnSuccess_whenValidAccessPolicy() {
-        JsonObject constraint = atomicConstraint(MEMBERSHIP_LITERAL);
-        JsonObject permission = rule(ACTION_ACCESS, constraint);
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var constraint = atomicConstraint(MEMBERSHIP, "eq", "active");
+        var permission = rule(ACCESS, constraint);
+        var policy = policy(PERMISSION, permission);
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isSucceeded();
     }
 
     @Test
     void shouldReturnSuccess_whenValidAccessPolicyWithLogicalConstraint() {
-        JsonObject constraint = atomicConstraint(MEMBERSHIP_LITERAL);
-        JsonObject logicalConstraint = logicalConstraint(ODRL_AND_CONSTRAINT_ATTRIBUTE, constraint);
-        JsonObject permission = rule(ACTION_ACCESS, logicalConstraint);
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var constraint = atomicConstraint(MEMBERSHIP, "eq", "active");
+        var logicalConstraint = logicalConstraint(AND, constraint);
+        var permission = rule(ACCESS, logicalConstraint);
+        var policy = policy(PERMISSION, permission);
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isSucceeded();
     }
 
     @Test
     void shouldReturnSuccess_whenValidUsagePolicy() {
-        JsonObject usagePurposeConstraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject frameworkAgreementConstraint = atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL);
-        JsonObject permission = rule(ACTION_USAGE, usagePurposeConstraint, frameworkAgreementConstraint);
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var usagePurposeConstraint = atomicConstraint(USAGE_PURPOSE, "isAnyOf", List.of("cx.pcf.base:1"));
+        var frameworkAgreementConstraint = atomicConstraint(FRAMEWORK_AGREEMENT, "eq", "DataExchangeGovernance:1.0");
+        var logicalConstraint = logicalConstraint(AND, usagePurposeConstraint, frameworkAgreementConstraint);
+        var permission = rule(USE, logicalConstraint);
+        var policy = policy(PERMISSION, permission);
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isSucceeded();
     }
 
     @Test
     void shouldReturnFailure_whenInvalidAction() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject permission = rule("Unknown-type", constraint);
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var constraint = atomicConstraint(USAGE_PURPOSE, "isAnyOf", List.of("cx.pcf.base:1"));
+        var permission = rule("unknown", constraint);
+        var policy = policy(PERMISSION, permission);
 
-        ValidationResult result = validator.validate(policy);
-
-        assertThat(result).isFailed();
-    }
-
-    @Test
-    void shouldReturnFailure_whenEmptyPolicy() {
-        JsonObject policy = Json.createObjectBuilder()
-                .add(ID, "some-id")
-                .build();
-
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isFailed();
     }
 
     @Test
     void shouldReturnFailure_whenActionMissing() {
-        JsonObject constraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject permission = ruleWithoutActionType(constraint);
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var constraint = atomicConstraint(USAGE_PURPOSE, "isAnyOf", List.of("cx.pcf.base:1"));
+        var permission = ruleWithoutActionType(constraint);
+        var policy = policy(PERMISSION, permission);
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isFailed();
     }
 
     @Test
-    void shouldReturnSuccess_whenPolicyContainsEmptyRules() {
-        JsonObject policy = Json.createObjectBuilder()
-                .add(ID, UUID.randomUUID().toString()) //TODO should id be required on policy?
-                .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
-                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder())
+    void shouldReturnFailure_whenPolicyContainsEmptyRules() {
+        var policy = Json.createObjectBuilder()
+                .add(ID, UUID.randomUUID().toString())
+                .add(TYPE, Json.createArrayBuilder().add(SET))
+                .add(PERMISSION, Json.createArrayBuilder())
                 .build();
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
-        assertThat(result).isSucceeded();
+        assertThat(result).isFailed();
     }
 
     @Test
     void shouldReturnFailure_whenRulesContainDifferentActions() {
-        JsonObject usageConstraint = atomicConstraint(USAGE_PURPOSE_LITERAL);
-        JsonObject usagePermission = rule(ACTION_USAGE, usageConstraint);
-        JsonObject accessConstraint = atomicConstraint(MEMBERSHIP_LITERAL);
-        JsonObject accessPermission = rule(ACTION_ACCESS, accessConstraint);
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, usagePermission, accessPermission);
+        var usageConstraint = atomicConstraint(USAGE_PURPOSE, "isAnyOf", List.of("cx.pcf.base:1"));
+        var usagePermission = rule(USE, usageConstraint);
+        var accessConstraint = atomicConstraint(MEMBERSHIP, "eq", "active");
+        var accessPermission = rule(ACCESS, accessConstraint);
+        var policy = policy(PERMISSION, usagePermission, accessPermission);
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isFailed();
     }
 
     @Test
     void shouldReturnFailure_whenPermissionContainsMutuallyExclusiveConstraints() {
-        JsonObject usagePermission = rule(ACTION_USAGE,
-                atomicConstraint(WARRANTY_DURATION_MONTHS_LITERAL),
-                atomicConstraint(WARRANTY_DEFINITION_LITERAL)
+        var usagePermission = rule(USE,
+                atomicConstraint(WARRANTY_DURATION_MONTHS, "eq", "12"),
+                atomicConstraint(WARRANTY_DEFINITION, "eq", "cx.warranty.contractEndDate:1")
         );
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, usagePermission);
+        var policy = policy(PERMISSION, usagePermission);
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isFailed();
     }
 
     @Test
     void shouldReturnFailure_whenObligationContainsMutuallyExclusiveConstraints() {
-        JsonObject usagePermission = rule(ACTION_USAGE,
-                atomicConstraint(WARRANTY_DURATION_MONTHS_LITERAL)
+        var usagePermission = rule(USE,
+                atomicConstraint(WARRANTY_DURATION_MONTHS, "eq", "12")
         );
 
-        JsonObject usageObligation = rule(ACTION_USAGE,
-                atomicConstraint(DATA_PROVISIONING_END_DURATION_LITERAL),
-                atomicConstraint(DATA_PROVISIONING_END_DATE_LITERAL)
+        var usageObligation = rule(USE,
+                atomicConstraint(DATA_PROVISIONING_END_DURATION_DAYS, "eq", "14"),
+                atomicConstraint(DATA_PROVISIONING_END_DURATION_DATE, "eq", "2026-07-31T15:35:12Z")
         );
-        JsonObject policy = Json.createObjectBuilder()
-                .add(ID, UUID.randomUUID().toString()) //TODO should id be required on policy?
-                .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
-                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(usagePermission))
-                .add(ODRL_OBLIGATION_ATTRIBUTE, Json.createArrayBuilder().add(usageObligation))
+        var policy = Json.createObjectBuilder()
+                .add(ID, UUID.randomUUID().toString())
+                .add(TYPE, Json.createArrayBuilder().add(SET))
+                .add(PERMISSION, Json.createArrayBuilder().add(usagePermission))
+                .add(OBLIGATION, Json.createArrayBuilder().add(usageObligation))
                 .build();
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isFailed();
     }
 
     @Test
     void shouldReturnFailure_whenInvalidLogicalConstraint() {
-        JsonObject logicalConstraint = logicalConstraint(ODRL_OR_CONSTRAINT_ATTRIBUTE,
-                atomicConstraint(MEMBERSHIP_LITERAL),
-                atomicConstraint(FRAMEWORK_AGREEMENT_LITERAL)
+        var logicalConstraint = logicalConstraint(OR,
+                atomicConstraint(USAGE_PURPOSE, "isAnyOf", List.of("cx.pcf.base:1")),
+                atomicConstraint(FRAMEWORK_AGREEMENT, "eq", "DataExchangeGovernance:1.0")
         );
-        JsonObject permission = rule(ACTION_ACCESS, logicalConstraint);
-        JsonObject policy = policy(ODRL_PERMISSION_ATTRIBUTE, permission);
+        var permission = rule(USE, logicalConstraint);
+        var policy = policy(PERMISSION, permission);
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isFailed();
     }
 
     @Test
     void shouldReturnFailure_whenRuleHasMultipleActions() {
-        JsonArray action = Json.createArrayBuilder()
-                .add(Json.createObjectBuilder().add(ID, ACTION_ACCESS))
-                .add(Json.createObjectBuilder().add(ID, ACTION_USAGE))
+        var action = Json.createArrayBuilder()
+                .add(ACCESS)
+                .add(USE)
                 .build();
 
-        JsonObject permission = Json.createObjectBuilder()
-                .add(ODRL_ACTION_ATTRIBUTE, action)
-                .add(ODRL_CONSTRAINT_ATTRIBUTE, Json.createArrayBuilder().add(atomicConstraint(MEMBERSHIP_LITERAL)))
+        var permission = Json.createObjectBuilder()
+                .add(ACTION, action)
+                .add(CONSTRAINT, Json.createArrayBuilder()
+                        .add(atomicConstraint(MEMBERSHIP, "eq", "active")))
                 .build();
 
-        JsonObject policy = Json.createObjectBuilder()
-                .add(ID, UUID.randomUUID().toString()) //TODO should id be required on policy?
-                .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
-                .add(ODRL_PERMISSION_ATTRIBUTE, Json.createArrayBuilder().add(permission))
+        var policy = Json.createObjectBuilder()
+                .add(ID, UUID.randomUUID().toString())
+                .add(TYPE, Json.createArrayBuilder().add(SET))
+                .add(PERMISSION, Json.createArrayBuilder().add(permission))
                 .build();
 
-        ValidationResult result = validator.validate(policy);
+        var result = validator.validate(policy);
 
         assertThat(result).isFailed();
     }
