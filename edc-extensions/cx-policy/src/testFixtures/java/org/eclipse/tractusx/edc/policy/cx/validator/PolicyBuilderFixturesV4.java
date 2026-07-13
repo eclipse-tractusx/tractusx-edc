@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2026 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -27,39 +27,31 @@ import java.util.UUID;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VALUE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ACTION_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_CONSTRAINT_TYPE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_LEFT_OPERAND_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_OPERATOR_ATTRIBUTE;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_TYPE_SET;
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_RIGHT_OPERAND_ATTRIBUTE;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
-public final class PolicyBuilderFixtures {
+public final class PolicyBuilderFixturesV4 {
 
-    private PolicyBuilderFixtures() {
+    private static final String LEFT_OPERAND = "leftOperand";
+    private static final String OPERATOR = "operator";
+    private static final String RIGHT_OPERAND = "rightOperand";
+    private static final String ACTION = "action";
+    private static final String CONSTRAINT = "constraint";
+
+    private PolicyBuilderFixturesV4() {
     }
 
     public static JsonObject atomicConstraint(String leftOperand, String operator, Object rightOperand) {
         var builder = Json.createObjectBuilder()
-                .add(TYPE, ODRL_CONSTRAINT_TYPE)
-                .add(ODRL_LEFT_OPERAND_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder().add(ID, leftOperand)))
-                .add(ODRL_OPERATOR_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder().add(ID, operator)));
+                .add(LEFT_OPERAND, leftOperand)
+                .add(OPERATOR, operator);
 
-        if (rightOperand instanceof Collection<?> coll) {
-            var rightArray = Json.createArrayBuilder();
-            coll.forEach(item -> rightArray.add(Json.createObjectBuilder().add(VALUE, item.toString())));
-            builder.add(ODRL_RIGHT_OPERAND_ATTRIBUTE, rightArray);
+        if (rightOperand instanceof Collection<?> collection) {
+            var array = Json.createArrayBuilder();
+            collection.forEach(item -> array.add(item.toString()));
+            builder.add(RIGHT_OPERAND, array);
         } else {
-            builder.add(ODRL_RIGHT_OPERAND_ATTRIBUTE, Json.createArrayBuilder().add(Json.createObjectBuilder().add(VALUE, rightOperand.toString())));
+            builder.add(RIGHT_OPERAND, rightOperand.toString());
         }
         return builder.build();
-    }
-
-    public static JsonObject atomicConstraint(String leftOperand) {
-        return atomicConstraint(leftOperand, "odrl:eq", "test-value");
     }
 
     public static JsonObject logicalConstraint(String constraintType, JsonObject... constraints) {
@@ -78,8 +70,8 @@ public final class PolicyBuilderFixtures {
             arrayBuilder.add(constraint);
         }
         return Json.createObjectBuilder()
-                .add(ODRL_ACTION_ATTRIBUTE, actionType)
-                .add(ODRL_CONSTRAINT_ATTRIBUTE, arrayBuilder)
+                .add(ACTION, actionType)
+                .add(CONSTRAINT, arrayBuilder)
                 .build();
     }
 
@@ -89,15 +81,9 @@ public final class PolicyBuilderFixtures {
             arrayBuilder.add(constraint);
         }
         return Json.createObjectBuilder()
-                .add(ODRL_CONSTRAINT_ATTRIBUTE, arrayBuilder)
+                .add(CONSTRAINT, arrayBuilder)
                 .build();
     }
-
-    public static JsonObject emptyRule() {
-        return Json.createObjectBuilder()
-                .build();
-    }
-
 
     public static JsonObject policy(String policyType, String ruleType, JsonObject... constraints) {
         JsonObject rule = rule(policyType, constraints);
@@ -122,27 +108,8 @@ public final class PolicyBuilderFixtures {
         }
         return Json.createObjectBuilder()
                 .add(ID, UUID.randomUUID().toString())
-                .add(TYPE, Json.createArrayBuilder().add(ODRL_POLICY_TYPE_SET))
+                .add(TYPE, Json.createArrayBuilder().add("Set"))
                 .add(ruleType, rulesArrayBuilder)
                 .build();
     }
-
-    public static JsonObject appendRulesToPolicy(JsonObject policy, String ruleType, JsonObject... rules) {
-        var rulesArrayBuilder = Json.createArrayBuilder();
-        for (JsonObject rule : rules) {
-            rulesArrayBuilder.add(rule);
-        }
-
-        return Json.createObjectBuilder(policy)
-                .add(ruleType, rulesArrayBuilder)
-                .build();
-    }
-
-    public static JsonObject policyDefinition(JsonObject policy, String id) {
-        return Json.createObjectBuilder()
-                .add(ID, id)
-                .add(EDC_NAMESPACE + "policy", Json.createArrayBuilder().add(policy))
-                .build();
-    }
-
 }
