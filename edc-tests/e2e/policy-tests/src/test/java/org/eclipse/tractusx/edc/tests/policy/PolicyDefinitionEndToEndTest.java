@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
@@ -91,27 +90,21 @@ public class PolicyDefinitionEndToEndTest {
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(ValidContractPolicyProvider.class)
     void shouldAcceptValidPolicyDefinitions(JsonObject policy, String description) {
-        PROVIDER.createPolicyDefinition(policy);
+        PROVIDER.createPolicyDefinitionV3(policy);
     }
 
     @DisplayName("Policy is not accepted due to missing context")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InValidNamespaceContractPolicyProvider.class)
     void shouldNotAcceptInvalidNamespacePolicyDefinitions(JsonObject policy, String description) {
-        checkForValidationFailure(policy);
+        PROVIDER.createPolicyDefinitionV3AndExpectValidationFailure(policy);
     }
 
     @DisplayName("Policy is not accepted because definition is not correct")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InValidContractPolicyProvider.class)
     void shouldNotAcceptInvalidPolicyDefinitions(JsonObject policy, String description) {
-        checkForValidationFailure(policy);
-    }
-
-    private void checkForValidationFailure(JsonObject policy) {
-        var response = createPolicyDefinition(policy);
-        assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.body().jsonPath().getString("[0].type")).isEqualTo("ValidationFailure");
+        PROVIDER.createPolicyDefinitionV3AndExpectValidationFailure(policy);
     }
 
     private abstract static class BasePolicyProvider implements ArgumentsProvider {

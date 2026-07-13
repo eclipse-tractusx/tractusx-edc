@@ -74,7 +74,51 @@ public class TransferParticipant extends TractusxParticipantBase {
         )));
     }
 
-    public String createPolicyDefinitionV4(JsonObject policy) {
+    public void createPolicyDefinitionV3(JsonObject policy) {
+        var requestBody = createObjectBuilder()
+                .add(CONTEXT, createArrayBuilder()
+                        .add("https://w3id.org/edc/connector/management/v0.0.1")
+                        .build())
+                .add(TYPE, "PolicyDefinition")
+                .add("policy", policy)
+                .build();
+
+        baseManagementRequest()
+                .basePath("/v3")
+                .contentType(JSON)
+                .body(requestBody)
+                .when()
+                .post("/policydefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(JSON);
+    }
+
+    public void createPolicyDefinitionV3AndExpectValidationFailure(JsonObject policy) {
+        var requestBody = createObjectBuilder()
+                .add(CONTEXT, createArrayBuilder()
+                        .add("https://w3id.org/edc/connector/management/v0.0.1")
+                        .build())
+                .add(TYPE, "PolicyDefinition")
+                .add("policy", policy)
+                .build();
+
+        var response = baseManagementRequest()
+                .basePath("/v3")
+                .contentType(JSON)
+                .body(requestBody)
+                .when()
+                .post("/policydefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(400)
+                .contentType(JSON)
+                .extract().jsonPath();
+        assertThat(response.getString("[0].type")).isEqualTo("ValidationFailure");
+    }
+
+    public void createPolicyDefinitionV4(JsonObject policy) {
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createArrayBuilder()
                         .add("https://w3id.org/edc/connector/management/v2")
@@ -83,7 +127,7 @@ public class TransferParticipant extends TractusxParticipantBase {
                 .add("policy", policy)
                 .build();
 
-        return baseManagementRequest()
+        baseManagementRequest()
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
@@ -91,8 +135,7 @@ public class TransferParticipant extends TractusxParticipantBase {
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)
-                .contentType(JSON)
-                .extract().jsonPath().getString(ID);
+                .contentType(JSON);
     }
 
     public void createPolicyDefinitionV4AndExpectValidationFailure(JsonObject policy) {

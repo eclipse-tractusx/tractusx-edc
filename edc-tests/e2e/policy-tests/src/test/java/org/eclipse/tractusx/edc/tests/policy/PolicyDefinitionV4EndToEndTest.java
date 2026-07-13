@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.tests.policy;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
@@ -50,14 +51,14 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_N
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.ODRL_CONTEXT;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataUsageEndDate;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataUsageEndDurationDays;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkConstraint;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.ODRL_CONTEXT;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.dataUsageEndDate;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.dataUsageEndDurationDays;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.emptyPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.frameworkConstraint;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
-//@EndToEndTest
+@EndToEndTest
 public class PolicyDefinitionV4EndToEndTest {
 
     private static final TransferParticipant CONSUMER = TransferParticipant.Builder.newInstance()
@@ -101,57 +102,57 @@ public class PolicyDefinitionV4EndToEndTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Membership", "active"), "access", Operator.EQ, false)), "MembershipCredential"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("FrameworkAgreement", "DataExchangeGovernance:1.0"), "use", Operator.EQ, true)), "DataExchangeGovernance use case"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("AffiliatesRegion", List.of("cx.region.all:1", "cx.region.europe:1", "cx.region.northAmerica:1")), "use", Operator.IS_ANY_OF, true)), "Affiliates Region"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("AffiliatesRegion", List.of("cx.region.europe:1")), "use", Operator.IS_ANY_OF, true)), "Affiliates Region (IS_ANY_OF, one element)"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("AffiliatesBpnl", List.of("BPNL00000000001A")), "use", Operator.IS_ANY_OF, true)), "Affiliates BPNL"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("DataFrequency", "cx.dataFrequency.once:1"), "use", Operator.EQ, false)), "Data Frequency"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("DataUsageEndDate", "2025-06-30T14:30:00Z"), "use", Operator.EQ, false)), "Data Usage End Date"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("DataUsageEndDefinition", "cx.dataUsageEnd.unlimited:1"), "use", Operator.EQ, false)), "Data Usage End Date Definition"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("DataUsageEndDurationDays", 3), "use", Operator.EQ, false)), "Data Usage End Duration Days"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("JurisdictionLocation", "test location"), "use", Operator.EQ, false)), "Jurisdiction Location"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("JurisdictionLocationReference", "cx.location.dataConsumer:1"), "use", Operator.EQ, false)), "Jurisdiction Location Reference"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Liability", "cx.grossNegligence:1"), "use", Operator.EQ, false)), "Liability"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Liability", "cx.slightNegligence:1"), "use", Operator.EQ, false)), "Liability"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Precedence", "cx.precedence.contractReference:1"), "use", Operator.EQ, false)), "Precedence"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("UsagePurpose", List.of("cx.core.legalRequirementForThirdparty:1", "cx.core.industrycore:1")), "use", Operator.IS_ANY_OF, true)), "Usage Purpose"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("VersionChanges", "cx.versionChanges.minor:1"), "use", Operator.EQ, false)), "Version Changes"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Warranty", "cx.warranty.none:1"), "use", Operator.EQ, false)), "Warranty"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("WarrantyDefinition", "cx.warranty.contractEndDate:1"), "use", Operator.EQ, false)), "Warranty Definition"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("WarrantyDurationMonths", 3), "use", Operator.EQ, false)), "Warranty Duration Months"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("ExclusiveUsage", "cx.exclusiveUsage.dataConsumer:1"), "use", Operator.EQ, false)), "Exclusive Usage"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("ContractReference", List.of("contractReference")), "use", Operator.IS_ALL_OF, true)), "Contract reference"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("ContractTermination", "cx.data.deletion:1"), "use", Operator.EQ, false)), "ContractTermination"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("ConfidentialInformationMeasures", "cx.confidentiality.measures:1"), "use", Operator.EQ, false)), "Confidential Information Measures"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("ConfidentialInformationSharing", List.of("cx.sharing.affiliates:1")), "use", Operator.IS_ANY_OF, true)), "Confidential Information Sharing"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("BusinessPartnerGroup", List.of("Some-group")), "access", Operator.IS_ANY_OF, true)), "Business Partner Group"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("BusinessPartnerNumber", List.of("BPNL00000000001A")), "access", Operator.IS_ANY_OF, true)), "Business Partner Number"),
                     Arguments.of(
                             emptyPolicy(),
@@ -175,29 +176,29 @@ public class PolicyDefinitionV4EndToEndTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of(policyWithEmptyRule("use"), "Usage policy with empty permission"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Membership", "active"), "access", Operator.EQ, false),
                             frameworkConstraint(Map.of("UsagePurpose", List.of("cx.core.industrycore:1")), "use", Operator.IS_ANY_OF, true)), "Policy with different actions types"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Membership", "active"), "unknown-action", Operator.EQ, false)), "Policy with unknown actions types"),
-                    Arguments.of(policyFromRules("prohibition", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("prohibition",
                             frameworkConstraint(Map.of("Membership", "active"), "access", Operator.EQ, false)), "Access Policy with prohibition rule"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("UsagePurpose", "cx.core.industrycore:1"), "access", Operator.EQ, false)), "Access policy permission with not allowed constraints"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("BusinessPartnerNumber", "BPN0022232"), "use", Operator.EQ, false)), "Usage policy permission with not allowed constraints"),
-                    Arguments.of(policyFromRules("prohibition", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("prohibition",
                             frameworkConstraint(Map.of("AffiliatesRegion", "cx.region.europe:1"), "use", Operator.EQ, false)), "Usage policy prohibition with not allowed constraints"),
-                    Arguments.of(policyFromRules("obligation", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("obligation",
                             frameworkConstraint(Map.of("UsagePurpose", "cx.core.industrycore:1"), "use", Operator.EQ, false)), "Usage policy obligation with not allowed constraints"),
-                    Arguments.of(policyFromRules("permission", CX_POLICY_2025_09_CONTEXT,
+                    Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("WarrantyDurationMonths", 3), "use", Operator.EQ, false),
                             frameworkConstraint(Map.of("WarrantyDefinition", "cx.warranty.contractEndDate:1"), "use", Operator.EQ, false)), "Policy with mutually exclusive constraints")
             );
         }
     }
 
-    private static JsonObject policyFromRules(String ruleType, String policyDefinition, JsonObject... rules) {
+    private static JsonObject policyFromRules(String ruleType, JsonObject... rules) {
         var rulesArrayBuilder = Json.createArrayBuilder();
         for (JsonObject rule : rules) {
             rulesArrayBuilder.add(rule);
@@ -205,9 +206,6 @@ public class PolicyDefinitionV4EndToEndTest {
         var contextArrayBuilder = Json.createArrayBuilder();
         contextArrayBuilder.add(ODRL_CONTEXT);
         contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
-        if (!policyDefinition.isBlank()) {
-            contextArrayBuilder.add(policyDefinition);
-        }
 
         return Json.createObjectBuilder()
                 .add(ID, "id")
