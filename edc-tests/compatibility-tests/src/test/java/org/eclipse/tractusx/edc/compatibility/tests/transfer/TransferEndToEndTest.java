@@ -86,6 +86,10 @@ import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase
 public class TransferEndToEndTest {
 
     private static final String DSP_2025_PATH_SUFFIX = "/2025-1";
+    private static final String OLDEST_STABLE_VERSION = "/v3";
+    private static final String HTTP_PULL_TRANSFER_TYPE = "HttpData-PULL";
+    private static final String DUMMY_DATA_RESPONSE = "data";
+    private static final String SOURCE_PATH_SUFFIX = "/source";
 
     protected static final IdentityHubParticipant IDENTITY_HUB_PARTICIPANT = IdentityHubParticipant.Builder.newInstance()
             .name("identity-hub")
@@ -199,32 +203,19 @@ public class TransferEndToEndTest {
     void httpPullTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
-        providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
+        providerDataSource.stubFor(any(anyUrl()).willReturn(ok(DUMMY_DATA_RESPONSE)));
         var assetId = UUID.randomUUID().toString();
         var usagePolicy = dataUsageEndDate(Instant.now().plusSeconds(300).truncatedTo(ChronoUnit.SECONDS).toString());
         createResourcesOnProvider(provider, assetId, usagePolicy, httpSourceDataAddress());
 
-        String transferProcessId;
-
-        if (consumer instanceof RemoteParticipant legacyConsumer) {
-            transferProcessId = executeLegacyTransfer(legacyConsumer, provider, assetId);
-        } else {
-            transferProcessId = consumer.requestAssetFrom(assetId, provider)
-                    .withTransferType("HttpData-PULL")
-                    .execute();
-        }
+        var transferProcessId = startTransferProcess(consumer, provider, assetId);
 
         consumer.awaitTransferToBeInState(transferProcessId, STARTED);
 
-        var edr = await().atMost(consumer.getTimeout())
-                .until(() -> consumer.edrs().getEdr(transferProcessId), Objects::nonNull);
+        var edr = obtainEdr(consumer, transferProcessId);
 
-        // Do the transfer
-        var msg = UUID.randomUUID().toString();
-        var data = consumer.data().pullData(edr, Map.of("message", msg));
-        assertThat(data).isNotNull().isEqualTo("data");
-
-        providerDataSource.verify(getRequestedFor(urlPathEqualTo("/source")));
+        pullAndAssertData(consumer, edr);
+        providerDataSource.verify(getRequestedFor(urlPathEqualTo(SOURCE_PATH_SUFFIX)));
     }
 
     @ParameterizedTest
@@ -232,26 +223,16 @@ public class TransferEndToEndTest {
     void suspendAndResume_httpPull_dataTransfer(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String protocol) {
         consumer.setProtocol(protocol);
         provider.setProtocol(protocol);
-        providerDataSource.stubFor(any(anyUrl()).willReturn(ok("data")));
+        providerDataSource.stubFor(any(anyUrl()).willReturn(ok(DUMMY_DATA_RESPONSE)));
         var assetId = UUID.randomUUID().toString();
         createResourcesOnProvider(provider, assetId, noConstraintPolicy(), httpSourceDataAddress());
 
-        String transferProcessId;
-        if (consumer instanceof RemoteParticipant legacyConsumer) {
-            transferProcessId = executeLegacyTransfer(legacyConsumer, provider, assetId);
-        } else {
-            transferProcessId = consumer.requestAssetFrom(assetId, provider)
-                    .withTransferType("HttpData-PULL")
-                    .execute();
-        }
+        var transferProcessId = startTransferProcess(consumer, provider, assetId);
 
         consumer.awaitTransferToBeInState(transferProcessId, STARTED);
-
-        var edr = await().atMost(consumer.getTimeout()).until(() -> consumer.edrs().getEdr(transferProcessId), Objects::nonNull);
-
+        var edr = obtainEdr(consumer, transferProcessId);
         var msg = UUID.randomUUID().toString();
-        var data = consumer.data().pullData(edr, Map.of("message", msg));
-        assertThat(data).isNotNull().isEqualTo("data");
+        pullAndAssertData(consumer, edr);
 
         consumer.suspendTransfer(transferProcessId, "suspension");
 
@@ -266,15 +247,13 @@ public class TransferEndToEndTest {
 
         // check that transfer is available again
         consumer.awaitTransferToBeInState(transferProcessId, STARTED);
-        var secondEdr = await().atMost(consumer.getTimeout()).until(() -> consumer.edrs().getEdr(transferProcessId), Objects::nonNull);
-        var secondMessage = UUID.randomUUID().toString();
-        data = consumer.data().pullData(secondEdr, Map.of("message", secondMessage));
-        assertThat(data).isNotNull().isEqualTo("data");
+        var secondEdr = obtainEdr(consumer, transferProcessId);
+        pullAndAssertData(consumer, secondEdr);
 
-        providerDataSource.verify(getRequestedFor(urlPathEqualTo("/source")));
+        providerDataSource.verify(getRequestedFor(urlPathEqualTo(SOURCE_PATH_SUFFIX)));
     }
 
-    protected void createResourcesOnProvider(TractusxDcpParticipantBase provider, String assetId, JsonObject contractPolicy, Map<String, Object> dataAddressProperties) {
+    private void createResourcesOnProvider(TractusxDcpParticipantBase provider, String assetId, JsonObject contractPolicy, Map<String, Object> dataAddressProperties) {
         createAssetManagementContext(provider, assetId, Map.of("description", "description"), dataAddressProperties);
         var contractPolicyId = createPolicyDefinitionManagementContext(provider, contractPolicy);
         var noConstraintPolicyId = createPolicyDefinitionManagementContext(provider, noConstraintPolicy());
@@ -282,19 +261,20 @@ public class TransferEndToEndTest {
         createContractDefinitionLegacyManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
     }
 
-    private String executeLegacyTransfer(RemoteParticipant legacyConsumer, TractusxDcpParticipantBase provider, String assetId) {
+    private String prepareAndExecuteTransferProcess(RemoteParticipant consumer, TractusxDcpParticipantBase provider, String assetId) {
+        var contractRequest = buildContractRequest(consumer, provider, assetId);
+        var agreementId = negotiate(consumer, contractRequest);
+
+        return createTransferProcess(consumer, provider, agreementId, assetId);
+    }
+
+    private JsonObject buildContractRequest(RemoteParticipant consumer, TractusxDcpParticipantBase provider, String assetId) {
         var dataset = await().atMost(ASYNC_TIMEOUT)
                 .pollInterval(ASYNC_POLL_INTERVAL)
                 .ignoreExceptions()
-                .until(() -> legacyConsumer.getDatasetForAsset(provider, assetId), Objects::nonNull);
+                .until(() -> consumer.getDatasetForAsset(provider, assetId), Objects::nonNull);
 
         var catalogPolicy = dataset.getJsonArray("http://www.w3.org/ns/odrl/2/hasPolicy").getFirst().asJsonObject();
-
-        var counterPartyAddress = provider.getProtocolUrl();
-        if (!counterPartyAddress.endsWith(DSP_2025_PATH_SUFFIX)) {
-            counterPartyAddress = counterPartyAddress + DSP_2025_PATH_SUFFIX;
-        }
-
         var policy = createObjectBuilder(catalogPolicy)
                 .add("target", assetId)
                 .add("assigner", provider.getDid())
@@ -306,15 +286,22 @@ public class TransferEndToEndTest {
                 .add(createObjectBuilder().add("@vocab", EDC_NAMESPACE))
                 .build();
 
-        var contractRequest = createObjectBuilder()
+        var protocolUrl = provider.getProtocolUrl();
+        var counterPartyAddress = protocolUrl.endsWith(DSP_2025_PATH_SUFFIX)
+                ? protocolUrl
+                : protocolUrl + DSP_2025_PATH_SUFFIX;
+
+        return createObjectBuilder()
                 .add("@context", requestContext)
                 .add("@type", "ContractRequest")
                 .add("counterPartyAddress", counterPartyAddress)
                 .add("protocol", DSP_2025)
                 .add("policy", policy)
                 .build();
+    }
 
-        var negotiationId = legacyConsumer.baseManagementRequest()
+    private String negotiate(RemoteParticipant consumer, JsonObject contractRequest) {
+        var negotiationId = consumer.baseManagementRequest()
                 .contentType(JSON)
                 .body(contractRequest)
                 .when()
@@ -330,9 +317,9 @@ public class TransferEndToEndTest {
                 .atMost(ASYNC_TIMEOUT)
                 .pollInterval(ASYNC_POLL_INTERVAL)
                 .until(() -> {
-                    var state = legacyConsumer.getContractNegotiationState(negotiationId);
+                    var state = consumer.getContractNegotiationState(negotiationId);
                     if ("TERMINATED".equals(state)) {
-                        var errorDetail = legacyConsumer.baseManagementRequest()
+                        var errorDetail = consumer.baseManagementRequest()
                                 .when()
                                 .get("/contractnegotiations/{id}", negotiationId)
                                 .then()
@@ -345,7 +332,7 @@ public class TransferEndToEndTest {
                     return "FINALIZED".equals(state);
                 });
 
-        var agreementId = legacyConsumer.baseManagementRequest()
+        return consumer.baseManagementRequest()
                 .when()
                 .get("/contractnegotiations/{id}", negotiationId)
                 .then()
@@ -354,7 +341,9 @@ public class TransferEndToEndTest {
                 .jsonPath()
                 .get("contractAgreementId")
                 .toString();
+    }
 
+    private String createTransferProcess(RemoteParticipant consumer, TractusxDcpParticipantBase provider, String agreementId, String assetId) {
         var transferRequest = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder()
                         .add("@vocab", EDC_NAMESPACE)
@@ -364,10 +353,10 @@ public class TransferEndToEndTest {
                 .add("contractId", agreementId)
                 .add("assetId", assetId)
                 .add("protocol", DSP_2025)
-                .add("transferType", "HttpData-PULL")
+                .add("transferType", HTTP_PULL_TRANSFER_TYPE)
                 .build();
 
-        return legacyConsumer.baseManagementRequest()
+        return consumer.baseManagementRequest()
                 .contentType(JSON)
                 .body(transferRequest)
                 .when()
@@ -377,6 +366,27 @@ public class TransferEndToEndTest {
                 .extract()
                 .jsonPath()
                 .getString("'@id'");
+    }
+
+    private String startTransferProcess(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String assetId) {
+        if (consumer instanceof RemoteParticipant legacyConsumer) {
+            return prepareAndExecuteTransferProcess(legacyConsumer, provider, assetId);
+        }
+
+        return consumer.requestAssetFrom(assetId, provider)
+                .withTransferType(HTTP_PULL_TRANSFER_TYPE)
+                .execute();
+    }
+
+    private void pullAndAssertData(TractusxDcpParticipantBase consumer, JsonObject edr) {
+        var randomMessage = Map.of("message", UUID.randomUUID().toString());
+        var data = consumer.data().pullData(edr, randomMessage);
+        assertThat(data).isNotNull().isEqualTo(DUMMY_DATA_RESPONSE);
+    }
+
+    private JsonObject obtainEdr(TractusxDcpParticipantBase consumer, String transferProcessId) {
+        return await().atMost(consumer.getTimeout())
+                .until(() -> consumer.edrs().getEdr(transferProcessId), Objects::nonNull);
     }
 
     private void createAssetManagementContext(TractusxDcpParticipantBase participant, String assetId, Map<String, Object> properties, Map<String, Object> dataAddressProperties) {
@@ -395,7 +405,7 @@ public class TransferEndToEndTest {
                 .build();
 
         participant.baseManagementRequest()
-                .basePath("/v3")
+                .basePath(OLDEST_STABLE_VERSION)
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
@@ -414,7 +424,7 @@ public class TransferEndToEndTest {
                 .build();
 
         return participant.baseManagementRequest()
-                .basePath("/v3")
+                .basePath(OLDEST_STABLE_VERSION)
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
@@ -445,7 +455,7 @@ public class TransferEndToEndTest {
                 .build();
 
         participant.baseManagementRequest()
-                .basePath("/v3")
+                .basePath(OLDEST_STABLE_VERSION)
                 .contentType(JSON)
                 .body(requestBody)
                 .when()
