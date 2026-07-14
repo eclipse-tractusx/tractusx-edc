@@ -43,7 +43,6 @@ import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 
 /**
@@ -74,71 +73,7 @@ public class TransferParticipant extends TractusxParticipantBase {
         )));
     }
 
-    public void createPolicyDefinitionV3(JsonObject policy) {
-        var requestBody = createObjectBuilder()
-                .add(CONTEXT, createArrayBuilder()
-                        .add("https://w3id.org/edc/connector/management/v0.0.1")
-                        .build())
-                .add(TYPE, "PolicyDefinition")
-                .add("policy", policy)
-                .build();
-
-        baseManagementRequest()
-                .basePath("/v3")
-                .contentType(JSON)
-                .body(requestBody)
-                .when()
-                .post("/policydefinitions")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(200)
-                .contentType(JSON);
-    }
-
-    public void createPolicyDefinitionV3AndExpectValidationFailure(JsonObject policy) {
-        var requestBody = createObjectBuilder()
-                .add(CONTEXT, createArrayBuilder()
-                        .add("https://w3id.org/edc/connector/management/v0.0.1")
-                        .build())
-                .add(TYPE, "PolicyDefinition")
-                .add("policy", policy)
-                .build();
-
-        var response = baseManagementRequest()
-                .basePath("/v3")
-                .contentType(JSON)
-                .body(requestBody)
-                .when()
-                .post("/policydefinitions")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(400)
-                .contentType(JSON)
-                .extract().jsonPath();
-        assertThat(response.getString("[0].type")).isEqualTo("ValidationFailure");
-    }
-
-    public void createPolicyDefinitionV4(JsonObject policy) {
-        var requestBody = createObjectBuilder()
-                .add(CONTEXT, createArrayBuilder()
-                        .add("https://w3id.org/edc/connector/management/v2")
-                        .build())
-                .add(TYPE, "PolicyDefinition")
-                .add("policy", policy)
-                .build();
-
-        baseManagementRequest()
-                .contentType(JSON)
-                .body(requestBody)
-                .when()
-                .post("/policydefinitions")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(200)
-                .contentType(JSON);
-    }
-
-    public void createPolicyDefinitionV4AndExpectValidationFailure(JsonObject policy) {
+    public void createPolicyDefinitionAndExpectValidationFailure(JsonObject policy) {
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createArrayBuilder()
                         .add("https://w3id.org/edc/connector/management/v2")

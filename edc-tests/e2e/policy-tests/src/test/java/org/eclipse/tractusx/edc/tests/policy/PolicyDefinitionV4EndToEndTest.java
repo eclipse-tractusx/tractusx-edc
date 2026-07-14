@@ -87,14 +87,14 @@ public class PolicyDefinitionV4EndToEndTest {
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(ValidContractPolicyProvider.class)
     void shouldAcceptValidPolicyDefinitions(JsonObject policy, String description) {
-        PROVIDER.createPolicyDefinitionV4(policy);
+        PROVIDER.createPolicyDefinition(policy);
     }
 
     @DisplayName("Policy is not accepted because definition is not correct")
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InvalidContractPolicyProvider.class)
     void shouldNotAcceptInvalidPolicyDefinitions(JsonObject policy, String description) {
-        PROVIDER.createPolicyDefinitionV4AndExpectValidationFailure(policy);
+        PROVIDER.createPolicyDefinitionAndExpectValidationFailure(policy);
     }
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {
