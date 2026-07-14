@@ -341,7 +341,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public String getBaseUrl() {
         return controlPlaneProtocol.get().toString();
     }
-
     // End of section with helper functions removed from upstream
 
     public static class Builder<P extends TractusxParticipantBase, B extends Builder<P, B>> extends Participant.Builder<P, B> {
