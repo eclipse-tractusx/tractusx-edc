@@ -20,6 +20,7 @@
 
 package org.eclipse.tractusx.edc.compatibility.tests.fixtures;
 
+import io.restassured.specification.RequestSpecification;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.DcpParticipant;
@@ -82,6 +83,11 @@ public class RemoteParticipant extends DcpParticipant {
         };
 
         return ConfigFactory.fromMap(settings);
+    }
+
+    @Override
+    public RequestSpecification baseManagementRequest() {
+        return super.baseManagementRequest().basePath("/v3");
     }
 
     private Map<String, String> datasourceConfig(Config postgresqlConfig) {

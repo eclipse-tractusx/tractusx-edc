@@ -29,7 +29,6 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.compatibility.tests.CompatibilityTest;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.IdentityHubParticipant;
-import org.eclipse.tractusx.edc.compatibility.tests.fixtures.LegacyRemoteParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipantExtension;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.Runtimes;
@@ -97,7 +96,7 @@ public class TransferEndToEndTest {
             .did(IDENTITY_HUB_PARTICIPANT.didFor("issuer"))
             .build();
 
-    protected static final RemoteParticipant REMOTE_PARTICIPANT = LegacyRemoteParticipant.Builder.newInstance()
+    protected static final RemoteParticipant REMOTE_PARTICIPANT = RemoteParticipant.Builder.newInstance()
             .name("remote")
             .id(IDENTITY_HUB_PARTICIPANT.didFor("remote"))
             .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
@@ -165,13 +164,12 @@ public class TransferEndToEndTest {
             .options(wireMockConfig().dynamicPort())
             .build();
 
-    static {
-        addAudienceMapping(REMOTE_PARTICIPANT);
-        addAudienceMapping(LOCAL_PARTICIPANT);
-    }
-
     @BeforeAll
     static void beforeAll() {
+
+        addAudienceMapping(REMOTE_PARTICIPANT);
+        addAudienceMapping(LOCAL_PARTICIPANT);
+
         configureParticipant(LOCAL_PARTICIPANT, ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
         configureParticipant(REMOTE_PARTICIPANT, ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
         configureParticipantContext(ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
@@ -208,7 +206,7 @@ public class TransferEndToEndTest {
 
         String transferProcessId;
 
-        if (consumer instanceof LegacyRemoteParticipant legacyConsumer) {
+        if (consumer instanceof RemoteParticipant legacyConsumer) {
             transferProcessId = executeLegacyTransfer(legacyConsumer, provider, assetId);
         } else {
             transferProcessId = consumer.requestAssetFrom(assetId, provider)
@@ -239,7 +237,7 @@ public class TransferEndToEndTest {
         createResourcesOnProvider(provider, assetId, noConstraintPolicy(), httpSourceDataAddress());
 
         String transferProcessId;
-        if (consumer instanceof LegacyRemoteParticipant legacyConsumer) {
+        if (consumer instanceof RemoteParticipant legacyConsumer) {
             transferProcessId = executeLegacyTransfer(legacyConsumer, provider, assetId);
         } else {
             transferProcessId = consumer.requestAssetFrom(assetId, provider)
@@ -281,16 +279,16 @@ public class TransferEndToEndTest {
         var contractPolicyId = createPolicyDefinitionManagementContext(provider, contractPolicy);
         var noConstraintPolicyId = createPolicyDefinitionManagementContext(provider, noConstraintPolicy());
 
-        createContractDefinitionManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
+        createContractDefinitionLegacyManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
     }
 
-    private String executeLegacyTransfer(LegacyRemoteParticipant legacyConsumer, TractusxDcpParticipantBase provider, String assetId) {
+    private String executeLegacyTransfer(RemoteParticipant legacyConsumer, TractusxDcpParticipantBase provider, String assetId) {
         var dataset = await().atMost(ASYNC_TIMEOUT)
                 .pollInterval(ASYNC_POLL_INTERVAL)
                 .ignoreExceptions()
                 .until(() -> legacyConsumer.getDatasetForAsset(provider, assetId), Objects::nonNull);
 
-        var catalogPolicy = dataset.getJsonArray("http://www.w3.org/ns/odrl/2/hasPolicy").get(0).asJsonObject();
+        var catalogPolicy = dataset.getJsonArray("http://www.w3.org/ns/odrl/2/hasPolicy").getFirst().asJsonObject();
 
         var counterPartyAddress = provider.getProtocolUrl();
         if (!counterPartyAddress.endsWith(DSP_2025_PATH_SUFFIX)) {
@@ -427,7 +425,7 @@ public class TransferEndToEndTest {
                 .extract().jsonPath().getString(ID);
     }
 
-    private void createContractDefinitionManagementContext(TractusxDcpParticipantBase participant, String assetId, String definitionId, String accessPolicyId, String contractPolicyId) {
+    private void createContractDefinitionLegacyManagementContext(TractusxDcpParticipantBase participant, String assetId, String definitionId, String accessPolicyId, String contractPolicyId) {
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder()
                         .add("@vocab", EDC_NAMESPACE)

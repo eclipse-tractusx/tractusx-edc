@@ -259,7 +259,6 @@ jobs:
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
 
   compatibility-tests:
-    if: true
     runs-on: ubuntu-latest
     permissions:
       contents: read
