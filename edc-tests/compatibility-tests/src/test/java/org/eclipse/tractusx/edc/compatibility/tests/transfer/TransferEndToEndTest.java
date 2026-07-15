@@ -106,6 +106,7 @@ public class TransferEndToEndTest {
             .stsUri(IDENTITY_HUB_PARTICIPANT.getSts())
             .did(IDENTITY_HUB_PARTICIPANT.didFor("remote"))
             .bpn(IDENTITY_HUB_PARTICIPANT.bpnFor("remote"))
+            .managementVersionBasePath(OLDEST_STABLE_VERSION)
             .trustedIssuer(ISSUER.didUrl())
             .build();
 

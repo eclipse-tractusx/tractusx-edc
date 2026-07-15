@@ -85,11 +85,6 @@ public class RemoteParticipant extends DcpParticipant {
         return ConfigFactory.fromMap(settings);
     }
 
-    @Override
-    public RequestSpecification baseManagementRequest() {
-        return super.baseManagementRequest().basePath("/v3");
-    }
-
     private Map<String, String> datasourceConfig(Config postgresqlConfig) {
 
         var config = new HashMap<String, String>();
