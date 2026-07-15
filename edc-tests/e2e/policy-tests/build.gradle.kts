@@ -39,6 +39,7 @@ edcBuild {
 
 configurations.all {
     resolutionStrategy {
-        force("com.networknt:json-schema-validator:2.0.0")
+        val version = libs.versions.jsonschema.get()
+        force("com.networknt:json-schema-validator:${version}")
     }
 }
