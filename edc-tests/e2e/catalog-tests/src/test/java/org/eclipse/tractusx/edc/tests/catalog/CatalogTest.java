@@ -40,13 +40,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Map;
-
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -57,10 +52,9 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicyWithRightOperandAsArray;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.bpnGroupPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.emptyPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.QueryHelperFunctions.createQuery;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -102,8 +96,8 @@ public class CatalogTest {
     void requestCatalog_fulfillsPolicy_shouldReturnOffer() {
         // arrange
         PROVIDER.createAsset("test-asset");
-        var ap = PROVIDER.createPolicyDefinition(noConstraintPolicy());
-        var cp = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var ap = PROVIDER.createPolicyDefinition(emptyPolicy());
+        var cp = PROVIDER.createPolicyDefinition(emptyPolicy());
         PROVIDER.createContractDefinition("test-asset", "test-def", ap, cp);
 
         // act
@@ -122,11 +116,11 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
     void requestCatalog_filteredByBpnLegacy_shouldReject() {
         var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = bpnPolicy("BPNLAAAAAAAAAABC");
+        var onlyDiogenesPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAABC");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
-        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(emptyPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
@@ -148,14 +142,11 @@ public class CatalogTest {
     void requestCatalog_filteredByBpnLegacy_WithNamespace_shouldReject() {
 
         var onlyConsumerPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAAAA", "BPNL123456ABCDEF", CONSUMER.getBpn());
-        var onlyDiogenesPolicy = frameworkPolicy(
-                Map.of(CX_POLICY_2025_09_NS + "BusinessPartnerNumber", "BPNLAAAAAAAAAAAB"),
-                CX_POLICY_2025_09_NS + "access",
-                Operator.IS_ANY_OF);
+        var onlyDiogenesPolicy = bpnPolicy(Operator.IS_ANY_OF, "BPNLAAAAAAAAAAAB");
 
         var onlyConsumerId = PROVIDER.createPolicyDefinition(onlyConsumerPolicy);
         var onlyDiogenesId = PROVIDER.createPolicyDefinition(onlyDiogenesPolicy);
-        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(emptyPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
@@ -175,13 +166,13 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using BPN group validation)")
     void requestCatalog_filteredByBpnGroup_shouldReturnOffer() {
         var allowedGroup = "allowed-group";
-        var accessPolicy = bpnGroupPolicyWithRightOperandAsArray(Operator.IS_ANY_OF, allowedGroup, "test-group");
+        var accessPolicy = bpnGroupPolicy("isAnyOf", true, allowedGroup, "test-group");
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), allowedGroup);
 
         PROVIDER.createAsset("test-asset");
         var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy);
-        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(emptyPolicy());
         PROVIDER.createContractDefinition("test-asset", "def", accessPolicyId, contractPolicyId);
 
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
@@ -191,15 +182,14 @@ public class CatalogTest {
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the new BPN validation)")
     void requestCatalog_filteredByBpn_shouldReject() {
-
-        var mustBeGreekPhilosopher = bpnGroupPolicy(Operator.IS_ANY_OF, "greek_customer", "philosopher");
-        var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_NONE_OF, "greek_customer", "mathematician");
+        var mustBeGreekPhilosopher = bpnGroupPolicy("isAnyOf", true, "greek_customer", "philosopher");
+        var mustBeGreekMathematician = bpnGroupPolicy("isNoneOf", true, "greek_customer", "mathematician");
 
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
         var philosopherId = PROVIDER.createPolicyDefinition(mustBeGreekPhilosopher);
         var mathId = PROVIDER.createPolicyDefinition(mustBeGreekMathematician);
-        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(emptyPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
@@ -242,8 +232,8 @@ public class CatalogTest {
     void requestCatalog_multipleOffersForAsset() {
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group");
         PROVIDER.createAsset("asset-1");
-        var noConstraintId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
-        var groupConstraintId = PROVIDER.createPolicyDefinition(bpnGroupPolicy(Operator.IS_ANY_OF, "test-group"));
+        var noConstraintId = PROVIDER.createPolicyDefinition(emptyPolicy());
+        var groupConstraintId = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isAnyOf", true, "test-group"));
 
         PROVIDER.createContractDefinition("asset-1", "def1", noConstraintId, noConstraintId);
         PROVIDER.createContractDefinition("asset-1", "def2", groupConstraintId, noConstraintId);
@@ -259,9 +249,9 @@ public class CatalogTest {
     @Test
     @DisplayName("Catalog with 1000 offers")
     void requestCatalog_of1000Assets_shouldContainAll() {
-        var policy = bpnGroupPolicy(Operator.IS_NONE_OF, "test-group1", "test-group2");
+        var policy = bpnGroupPolicy("isNoneOf", true, "test-group1", "test-group2");
         var policyId = PROVIDER.createPolicyDefinition(policy);
-        var noConstraintId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var noConstraintId = PROVIDER.createPolicyDefinition(emptyPolicy());
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group-3");
 
         range(0, 1000)
@@ -284,7 +274,7 @@ public class CatalogTest {
 
     private PolicyDefinition buildLegacyPolicyDefinition(String id, String leftExpression, Operator operator, Object rightExpression) {
         var action = Action.Builder.newInstance()
-                .type(CX_POLICY_NS + "access")
+                .type("access")
                 .build();
 
         var constraint = AtomicConstraint.Builder.newInstance()
