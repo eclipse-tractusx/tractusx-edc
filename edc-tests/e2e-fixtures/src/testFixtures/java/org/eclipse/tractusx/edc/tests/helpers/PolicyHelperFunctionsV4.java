@@ -24,9 +24,11 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.policy.model.Operator;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
@@ -45,9 +47,60 @@ public class PolicyHelperFunctionsV4 {
 
     public static JsonObject emptyPolicy() {
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_CONTEXT)
+                .add(CONTEXT, Json.createArrayBuilder()
+                        .add(ODRL_CONTEXT)
+                        .add(CX_POLICY_2025_09_CONTEXT))
                 .add(TYPE, "Set")
                 .add(ID, "id")
+                .build();
+    }
+
+    public static JsonObject bpnPolicy(Operator operator, String... bpns) {
+        JsonArrayBuilder bpnArray = Json.createArrayBuilder();
+        Stream.of(bpns).forEach(bpnArray::add);
+
+        var bpnConstraint = Json.createObjectBuilder()
+                .add("leftOperand", "BusinessPartnerNumber")
+                .add("operator", operatorValueWithoutNamespace(operator))
+                .add("rightOperand", bpnArray)
+                .build();
+
+        var permission = Json.createObjectBuilder()
+                .add("action", "access")
+                .add("constraint", Json.createArrayBuilder()
+                        .add(bpnConstraint)
+                        .build())
+                .build();
+        return Json.createObjectBuilder()
+                .add(CONTEXT, Json.createArrayBuilder()
+                        .add(ODRL_CONTEXT)
+                        .add(CX_POLICY_2025_09_CONTEXT))
+                .add(TYPE, "Set")
+                .add(ID, "id")
+                .add("permission", Json.createArrayBuilder()
+                        .add(permission))
+                .build();
+    }
+
+    public static JsonObject bpnGroupPolicy(String operator, boolean rightOperandAsArray, String... allowedGroups) {
+
+        var groupConstraint = atomicConstraint("BusinessPartnerGroup", operator, Arrays.asList(allowedGroups), rightOperandAsArray);
+
+        var permission = Json.createObjectBuilder()
+                .add("action", "access")
+                .add("constraint", Json.createArrayBuilder()
+                        .add(groupConstraint)
+                        .build())
+                .build();
+
+        return Json.createObjectBuilder()
+                .add(CONTEXT, Json.createArrayBuilder()
+                        .add(ODRL_CONTEXT)
+                        .add(CX_POLICY_2025_09_CONTEXT))
+                .add(TYPE, "Set")
+                .add(ID, "id")
+                .add("permission", Json.createArrayBuilder()
+                        .add(permission))
                 .build();
     }
 
@@ -75,8 +128,11 @@ public class PolicyHelperFunctionsV4 {
                 .build();
 
         return Json.createObjectBuilder()
-                .add(CONTEXT, ODRL_CONTEXT)
+                .add(CONTEXT, Json.createArrayBuilder()
+                        .add(ODRL_CONTEXT)
+                        .add(CX_POLICY_2025_09_CONTEXT))
                 .add(TYPE, "Set")
+                .add(ID, "id")
                 .add("permission", Json.createArrayBuilder().add(permission))
                 .build();
     }
