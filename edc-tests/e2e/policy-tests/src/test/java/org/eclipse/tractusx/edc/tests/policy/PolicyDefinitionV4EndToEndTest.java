@@ -105,7 +105,7 @@ public class PolicyDefinitionV4EndToEndTest {
                     Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("Membership", "active"), "access", Operator.EQ, false)), "MembershipCredential"),
                     Arguments.of(policyFromRules("permission",
-                            frameworkConstraint(Map.of("FrameworkAgreement", "DataExchangeGovernance:1.0"), "use", Operator.EQ, true)), "DataExchangeGovernance use case"),
+                            frameworkConstraint(Map.of("FrameworkAgreement", "DataExchangeGovernance:1.0"), "use", Operator.EQ, false)), "DataExchangeGovernance use case"),
                     Arguments.of(policyFromRules("permission",
                             frameworkConstraint(Map.of("AffiliatesRegion", List.of("cx.region.all:1", "cx.region.europe:1", "cx.region.northAmerica:1")), "use", Operator.IS_ANY_OF, true)), "Affiliates Region"),
                     Arguments.of(policyFromRules("permission",
