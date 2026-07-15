@@ -177,7 +177,7 @@
                     "minItems": 1,
                     "maxItems": 1,
                     "items": {
-                      "$ref": "https://w3id.org/catenax/2025/9/policy/schema/atomic-constraint-schemas.json#/definitions/AtomicProhibitionConstraint"
+                      "$ref": "https://w3id.org/catenax/2025/9/policy/schema/atomic-constraint-schemas.json#/definitions/AtomicObligationConstraint"
                     }
                   }
                 },
