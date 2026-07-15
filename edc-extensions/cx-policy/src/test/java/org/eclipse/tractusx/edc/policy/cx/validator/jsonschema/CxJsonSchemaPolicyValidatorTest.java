@@ -116,6 +116,39 @@ class CxJsonSchemaPolicyValidatorTest {
     }
 
     @Test
+    void shouldReturnFailure_whenInvalidLeftOperand() {
+        var constraint = atomicConstraint("unknown", "eq", "active");
+        var permission = rule(ACCESS, constraint);
+        var policy = policy(PERMISSION, permission);
+
+        var result = validator.validate(policy);
+
+        assertThat(result).isFailed();
+    }
+
+    @Test
+    void shouldReturnFailure_whenInvalidOperator() {
+        var constraint = atomicConstraint(MEMBERSHIP, "isAnyOf", "active");
+        var permission = rule(ACCESS, constraint);
+        var policy = policy(PERMISSION, permission);
+
+        var result = validator.validate(policy);
+
+        assertThat(result).isFailed();
+    }
+
+    @Test
+    void shouldReturnFailure_whenInvalidRightOperand() {
+        var constraint = atomicConstraint(MEMBERSHIP, "eq", "something-else");
+        var permission = rule(ACCESS, constraint);
+        var policy = policy(PERMISSION, permission);
+
+        var result = validator.validate(policy);
+
+        assertThat(result).isFailed();
+    }
+
+    @Test
     void shouldReturnFailure_whenPolicyContainsEmptyRules() {
         var policy = Json.createObjectBuilder()
                 .add(ID, UUID.randomUUID().toString())
