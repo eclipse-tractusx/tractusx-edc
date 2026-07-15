@@ -55,7 +55,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataProvisioningEndDate;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.dataProvisioningEndDate;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 @EndToEndTest

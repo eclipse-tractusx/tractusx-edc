@@ -190,6 +190,8 @@ public class PolicyHelperFunctionsV4 {
                     .build());
         } else if (rightOperand instanceof Collection<?> coll) {
             builder.add("rightOperand", coll.stream().map(Object::toString).collect(Collectors.joining(",")));
+        } else if (createRightOperandsAsArray) {
+            builder.add("rightOperand", Json.createArrayBuilder().add(rightOperand.toString()).build());
         } else {
             builder.add("rightOperand", rightOperand.toString());
         }
