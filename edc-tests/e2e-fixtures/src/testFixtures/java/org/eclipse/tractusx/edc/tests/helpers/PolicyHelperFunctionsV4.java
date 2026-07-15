@@ -26,6 +26,7 @@ import org.eclipse.edc.policy.model.Operator;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -251,6 +252,38 @@ public class PolicyHelperFunctionsV4 {
                 .add("permission", Json.createArrayBuilder()
                         .add(permission))
                 .build();
+    }
+
+    public static JsonObject dataProvisioningEndDate(String endDate) {
+        var requiredUsagePermissionConstraints = Json.createObjectBuilder()
+                .add("and", Json.createArrayBuilder()
+                        .add(frameworkAgreementConstraint())
+                        .add(usagePurposeConstraint())
+                        .build())
+                .build();
+
+        var dataProvisioningConstraint = atomicConstraint("DataProvisioningEndDate", "eq", endDate, false);
+
+        return Json.createObjectBuilder()
+                .add(CONTEXT, Json.createArrayBuilder()
+                        .add(ODRL_CONTEXT)
+                        .add(CX_POLICY_2025_09_CONTEXT))
+                .add(TYPE, "Set")
+                .add(ID, "id")
+                .add("permission", Json.createArrayBuilder(
+                        List.of(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", Json.createArrayBuilder()
+                                        .add(requiredUsagePermissionConstraints))
+                                .build())
+                ))
+                .add("obligation", Json.createArrayBuilder(
+                        List.of(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", Json.createArrayBuilder()
+                                        .add(dataProvisioningConstraint))
+                                .build())
+                )).build();
     }
 
     private static String operatorValueWithoutNamespace(Operator operator) {
