@@ -51,6 +51,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_P
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.bpnGroupPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
@@ -108,8 +110,8 @@ public class RetireAgreementTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1");
-        var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1"));
-        var policy = PolicyHelperFunctions.frameworkPolicy(Map.of(), CX_POLICY_2025_09_NS + "access");
+        var accessPolicy = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isAnyOf", true, "test-group1"));
+        var policy = frameworkPolicy("Membership", Operator.EQ, "active", "use", false);
         var contractPolicy = PROVIDER.createPolicyDefinition(policy);
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
