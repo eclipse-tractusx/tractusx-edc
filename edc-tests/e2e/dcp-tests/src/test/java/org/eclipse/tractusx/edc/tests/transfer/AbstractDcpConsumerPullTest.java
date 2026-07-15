@@ -33,6 +33,7 @@ import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredentialC
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.model.VerifiableCredentialResource;
 import org.eclipse.edc.identityhub.spi.verifiablecredentials.store.CredentialStore;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.tractusx.edc.tests.participant.DataspaceIssuer;
@@ -69,8 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -336,7 +336,7 @@ public abstract class AbstractDcpConsumerPullTest extends ConsumerPullBaseTest {
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), CX_POLICY_2025_09_NS + "access");
+        return frameworkPolicy("Membership", Operator.EQ, "active", "access", false);
     }
 
     protected abstract RuntimeExtension credentialStoreRuntime();
@@ -347,8 +347,8 @@ public abstract class AbstractDcpConsumerPullTest extends ConsumerPullBaseTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), CX_POLICY_2025_09_NS + "access"), "MembershipCredential"),
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "FrameworkAgreement", "DataExchangeGovernance:1.0"), "use"), "DataExchangeGovernance use case")
+                    Arguments.of(frameworkPolicy("Membership", Operator.EQ, "active", "access", false), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy("FrameworkAgreement", Operator.EQ, "DataExchangeGovernance:1.0", "use", false), "DataExchangeGovernance use case")
             );
         }
     }

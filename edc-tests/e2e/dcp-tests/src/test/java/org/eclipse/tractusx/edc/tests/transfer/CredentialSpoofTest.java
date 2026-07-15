@@ -32,6 +32,7 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.utils.LazySupplier;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
@@ -60,7 +61,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.transfer.dcp.runtime.Runtimes.dcpRuntime;
 import static org.eclipse.tractusx.edc.tests.transfer.dcp.runtime.Runtimes.stsRuntime;
 
@@ -221,7 +222,7 @@ public class CredentialSpoofTest {
     }
 
     protected JsonObject createAccessPolicy(String bpn) {
-        return bpnPolicy(bpn);
+        return bpnPolicy(Operator.IS_ANY_OF, bpn);
     }
 
 }
