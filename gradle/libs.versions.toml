@@ -254,6 +254,6 @@ edc-sts = [
 
 [plugins]
 docker = { id = "com.bmuschko.docker-remote-api", version = "10.0.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.4.3" }
+shadow = { id = "com.gradleup.shadow", version = "9.5.1" }
 swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.52" }
 edc-build = { id = "org.eclipse.edc.edc-build", version.ref = "edc-build" }
