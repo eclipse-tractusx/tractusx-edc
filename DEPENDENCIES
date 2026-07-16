@@ -50,7 +50,7 @@ maven/mavencentral/com.google.code.findbugs/jsr305/3.0.2, Apache-2.0 and CC-BY-2
 maven/mavencentral/com.google.code.gson/gson/2.13.2, Apache-2.0, approved, #20656
 maven/mavencentral/com.google.crypto.tink/tink/1.20.0, Apache-2.0, approved, #28384
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.41.0, Apache-2.0, approved, #22631
-maven/mavencentral/com.google.protobuf/protobuf-java/4.33.0, BSD-3-Clause, approved, clearlydefined
+maven/mavencentral/com.google.protobuf/protobuf-java/4.33.0, BSD-3-Clause, approved, #29831
 maven/mavencentral/com.microsoft.azure/msal4j-persistence-extension/1.3.0, MIT, approved, #14411
 maven/mavencentral/com.microsoft.azure/msal4j/1.15.0, MIT, approved, clearlydefined
 maven/mavencentral/com.microsoft.azure/msal4j/1.23.1, MIT, approved, clearlydefined
