@@ -19,6 +19,8 @@
 
 package org.eclipse.tractusx.edc.tests.policy;
 
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
@@ -41,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static jakarta.json.Json.createArrayBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -94,7 +98,7 @@ public class PolicyDefinitionV4EndToEndTest {
     @ParameterizedTest(name = "{1}")
     @ArgumentsSource(InvalidContractPolicyProvider.class)
     void shouldNotAcceptInvalidPolicyDefinitions(JsonObject policy, String description) {
-        PROVIDER.createPolicyDefinitionAndExpectValidationFailure(policy);
+        checkForValidationFailure(policy);
     }
 
     private static class ValidContractPolicyProvider implements ArgumentsProvider {
@@ -196,6 +200,28 @@ public class PolicyDefinitionV4EndToEndTest {
                             frameworkConstraint(Map.of("WarrantyDefinition", "cx.warranty.contractEndDate:1"), "use", Operator.EQ, false)), "Policy with mutually exclusive constraints")
             );
         }
+    }
+
+    private void checkForValidationFailure(JsonObject policy) {
+        var response = createPolicyDefinition(policy);
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.body().jsonPath().getString("[0].type")).isEqualTo("ValidationFailure");
+    }
+
+    private Response createPolicyDefinition(JsonObject policy) {
+        var requestBody = Json.createObjectBuilder()
+                .add(CONTEXT, createArrayBuilder()
+                        .add("https://w3id.org/edc/connector/management/v2")
+                        .build())
+                .add("@type", "PolicyDefinition")
+                .add("policy", policy)
+                .build();
+        return (Response) PROVIDER.baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when()
+                .post("/policydefinitions", new Object[0])
+                .then().extract();
     }
 
     private static JsonObject policyFromRules(String ruleType, JsonObject... rules) {

@@ -100,6 +100,7 @@ edc-ext-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 edc-lib-jsonld = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-validator-data-address-http-data = { module = "org.eclipse.edc:validator-data-address-http-data", version.ref = "edc" }
 edc-runtime-metamodel = { module = "org.eclipse.edc:runtime-metamodel", version.ref = "edc" }
+edc-api-management-validator-jsonschema = { module = "org.eclipse.edc:management-api-schema-validator", version.ref = "edc" }
 
 # EDC lib dependencies
 edc-lib-api = { module = "org.eclipse.edc:api-lib", version.ref = "edc" }
