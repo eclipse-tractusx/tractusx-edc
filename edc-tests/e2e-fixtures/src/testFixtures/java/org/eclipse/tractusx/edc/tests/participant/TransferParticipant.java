@@ -38,13 +38,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static io.restassured.http.ContentType.JSON;
-import static jakarta.json.Json.createArrayBuilder;
-import static jakarta.json.Json.createObjectBuilder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-
 /**
  * Extension of {@link TractusxParticipantBase} with Transfer specific configuration
  */
@@ -71,28 +64,6 @@ public class TransferParticipant extends TractusxParticipantBase {
                 "edc.callback.default.uri", "http://localhost:" + eventSubscription.getPort(),
                 "edc.callback.default.transactional", "true"
         )));
-    }
-
-    public void createPolicyDefinitionAndExpectValidationFailure(JsonObject policy) {
-        var requestBody = createObjectBuilder()
-                .add(CONTEXT, createArrayBuilder()
-                        .add("https://w3id.org/edc/connector/management/v2")
-                        .build())
-                .add(TYPE, "PolicyDefinition")
-                .add("policy", policy)
-                .build();
-
-        var response = baseManagementRequest()
-                .contentType(JSON)
-                .body(requestBody)
-                .when()
-                .post("/policydefinitions")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(400)
-                .contentType(JSON)
-                .extract().jsonPath();
-        assertThat(response.getString("[0].type")).isEqualTo("ValidationFailure");
     }
 
     public static class Builder extends TractusxParticipantBase.Builder<TransferParticipant, Builder> {

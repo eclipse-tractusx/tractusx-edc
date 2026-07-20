@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.jakartaJson)
     implementation(libs.edc.spi.jsonld)
     implementation(libs.jsonschema)
+    compileOnly(libs.edc.api.management.validator.jsonschema)
 
     testImplementation(libs.jacksonJsonP)
     testImplementation(libs.titaniumJsonLd)
