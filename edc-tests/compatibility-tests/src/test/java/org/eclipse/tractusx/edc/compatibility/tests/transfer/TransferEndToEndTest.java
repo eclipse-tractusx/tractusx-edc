@@ -28,6 +28,7 @@ import org.eclipse.edc.spi.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.compatibility.tests.CompatibilityTest;
+import org.eclipse.tractusx.edc.compatibility.tests.fixtures.DockerHost;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.IdentityHubParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipant;
 import org.eclipse.tractusx.edc.compatibility.tests.fixtures.RemoteParticipantExtension;
@@ -77,15 +78,11 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipant;
 import static org.eclipse.tractusx.edc.compatibility.tests.fixtures.DcpHelperFunctions.configureParticipantContext;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.ODRL_CONTEXT;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.dataUsageEndDate;
-import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
-import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 @CompatibilityTest
 public class TransferEndToEndTest {
 
-    private static final String DSP_2025_PATH_SUFFIX = "/2025-1";
     private static final String OLDEST_STABLE_VERSION = "/v3";
     private static final String HTTP_PULL_TRANSFER_TYPE = "HttpData-PULL";
     private static final String DUMMY_DATA_RESPONSE = "data";
@@ -262,118 +259,7 @@ public class TransferEndToEndTest {
         createContractDefinitionLegacyManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
     }
 
-    private String prepareAndExecuteTransferProcess(RemoteParticipant consumer, TractusxDcpParticipantBase provider, String assetId) {
-        var contractRequest = buildContractRequest(consumer, provider, assetId);
-        var agreementId = negotiate(consumer, contractRequest);
-
-        return createTransferProcess(consumer, provider, agreementId, assetId);
-    }
-
-    private JsonObject buildContractRequest(RemoteParticipant consumer, TractusxDcpParticipantBase provider, String assetId) {
-        var dataset = await().atMost(ASYNC_TIMEOUT)
-                .pollInterval(ASYNC_POLL_INTERVAL)
-                .ignoreExceptions()
-                .until(() -> consumer.getDatasetForAsset(provider, assetId), Objects::nonNull);
-
-        var catalogPolicy = dataset.getJsonArray("http://www.w3.org/ns/odrl/2/hasPolicy").getFirst().asJsonObject();
-        var policy = createObjectBuilder(catalogPolicy)
-                .add("target", assetId)
-                .add("assigner", provider.getDid())
-                .build();
-
-        var requestContext = createArrayBuilder()
-                .add(ODRL_CONTEXT)
-                .add("https://w3id.org/catenax/2025/9/policy/context.jsonld")
-                .add(createObjectBuilder().add("@vocab", EDC_NAMESPACE))
-                .build();
-
-        var protocolUrl = provider.getProtocolUrl();
-        var counterPartyAddress = protocolUrl.endsWith(DSP_2025_PATH_SUFFIX)
-                ? protocolUrl
-                : protocolUrl + DSP_2025_PATH_SUFFIX;
-
-        return createObjectBuilder()
-                .add("@context", requestContext)
-                .add("@type", "ContractRequest")
-                .add("counterPartyAddress", counterPartyAddress)
-                .add("protocol", DSP_2025)
-                .add("policy", policy)
-                .build();
-    }
-
-    private String negotiate(RemoteParticipant consumer, JsonObject contractRequest) {
-        var negotiationId = consumer.baseManagementRequest()
-                .contentType(JSON)
-                .body(contractRequest)
-                .when()
-                .post("/contractnegotiations")
-                .then()
-                .log().ifError()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getString("'@id'");
-
-        await()
-                .atMost(ASYNC_TIMEOUT)
-                .pollInterval(ASYNC_POLL_INTERVAL)
-                .until(() -> {
-                    var state = consumer.getContractNegotiationState(negotiationId);
-                    if ("TERMINATED".equals(state)) {
-                        var errorDetail = consumer.baseManagementRequest()
-                                .when()
-                                .get("/contractnegotiations/{id}", negotiationId)
-                                .then()
-                                .statusCode(200)
-                                .extract()
-                                .jsonPath()
-                                .getString("errorDetail");
-                        throw new AssertionError("Contract negotiation " + negotiationId + " TERMINATED: " + errorDetail);
-                    }
-                    return "FINALIZED".equals(state);
-                });
-
-        return consumer.baseManagementRequest()
-                .when()
-                .get("/contractnegotiations/{id}", negotiationId)
-                .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .get("contractAgreementId")
-                .toString();
-    }
-
-    private String createTransferProcess(RemoteParticipant consumer, TractusxDcpParticipantBase provider, String agreementId, String assetId) {
-        var transferRequest = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder()
-                        .add("@vocab", EDC_NAMESPACE)
-                        .build())
-                .add(TYPE, "TransferRequest")
-                .add("counterPartyAddress", provider.getProtocolUrl())
-                .add("contractId", agreementId)
-                .add("assetId", assetId)
-                .add("protocol", DSP_2025)
-                .add("transferType", HTTP_PULL_TRANSFER_TYPE)
-                .build();
-
-        return consumer.baseManagementRequest()
-                .contentType(JSON)
-                .body(transferRequest)
-                .when()
-                .post("/transferprocesses")
-                .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getString("'@id'");
-    }
-
     private String startTransferProcess(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String assetId) {
-        if (consumer instanceof RemoteParticipant legacyConsumer) {
-            return prepareAndExecuteTransferProcess(legacyConsumer, provider, assetId);
-        }
-
         return consumer.requestAssetFrom(assetId, provider)
                 .withTransferType(HTTP_PULL_TRANSFER_TYPE)
                 .execute();
