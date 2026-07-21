@@ -255,7 +255,7 @@ public class TransferEndToEndTest {
         var contractPolicyId = createPolicyDefinitionManagementContext(provider, contractPolicy);
         var noConstraintPolicyId = createPolicyDefinitionManagementContext(provider, noConstraintPolicy());
 
-        createContractDefinitionLegacyManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
+        createContractDefinitionManagementContext(provider, assetId, UUID.randomUUID().toString(), noConstraintPolicyId, contractPolicyId);
     }
 
     private String startTransferProcess(TractusxDcpParticipantBase consumer, TractusxDcpParticipantBase provider, String assetId) {
@@ -321,7 +321,7 @@ public class TransferEndToEndTest {
                 .extract().jsonPath().getString(ID);
     }
 
-    private void createContractDefinitionLegacyManagementContext(TractusxDcpParticipantBase participant, String assetId, String definitionId, String accessPolicyId, String contractPolicyId) {
+    private void createContractDefinitionManagementContext(TractusxDcpParticipantBase participant, String assetId, String definitionId, String accessPolicyId, String contractPolicyId) {
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder()
                         .add("@vocab", EDC_NAMESPACE)
