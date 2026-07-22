@@ -31,7 +31,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.PolicyType;
-import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4;
+import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,8 +51,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.bpnPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.emptyPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
 @EndToEndTest
@@ -161,8 +161,8 @@ public class CatalogTestDspV08 {
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the new BPN validation)")
     void requestCatalog_filteredByBpn_shouldReject() {
-        var mustBeGreekPhilosopher = PolicyHelperFunctionsV4.bpnGroupPolicy("isAnyOf", true, "greek_customer", "philosopher");
-        var mustBeGreekMathematician = PolicyHelperFunctionsV4.bpnGroupPolicy("isNoneOf", true, "greek_customer", "mathematician");
+        var mustBeGreekPhilosopher = PolicyHelperFunctions.bpnGroupPolicy("isAnyOf", true, "greek_customer", "philosopher");
+        var mustBeGreekMathematician = PolicyHelperFunctions.bpnGroupPolicy("isNoneOf", true, "greek_customer", "mathematician");
 
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
