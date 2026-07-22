@@ -44,7 +44,7 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 /**

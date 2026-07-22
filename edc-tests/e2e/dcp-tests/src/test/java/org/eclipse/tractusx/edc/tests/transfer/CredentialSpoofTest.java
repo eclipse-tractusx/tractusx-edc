@@ -61,7 +61,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.transfer.dcp.runtime.Runtimes.dcpRuntime;
 import static org.eclipse.tractusx.edc.tests.transfer.dcp.runtime.Runtimes.stsRuntime;
 

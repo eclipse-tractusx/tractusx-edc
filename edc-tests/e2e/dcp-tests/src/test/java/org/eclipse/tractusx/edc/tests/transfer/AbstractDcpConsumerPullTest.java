@@ -70,7 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctionsV4.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
