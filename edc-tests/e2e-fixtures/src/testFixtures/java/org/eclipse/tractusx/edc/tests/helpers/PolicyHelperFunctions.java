@@ -1,4 +1,7 @@
 /********************************************************************************
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2025 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+ * Copyright (c) 2026 Cofinity-X GmbH
  * Copyright (c) 2026 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
