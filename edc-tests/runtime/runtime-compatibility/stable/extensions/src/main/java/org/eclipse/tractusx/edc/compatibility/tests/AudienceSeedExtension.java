@@ -46,13 +46,40 @@ public class AudienceSeedExtension implements ServiceExtension {
     @Provider
     public BdrsClient bdrsClient(ServiceExtensionContext context) {
         var dids = readDidsMapping(context);
-        return dids::get;
+        return new BdrsClient() {
+            @Override
+            public String resolveDid(String bpn) {
+                return dids.get(bpn);
+            }
+
+            @Override
+            public String resolveBpn(String did) {
+                return dids.entrySet().stream()
+                        .filter(e -> e.getValue().equals(did))
+                        .map(Map.Entry::getKey)
+                        .findFirst()
+                        .orElse(null);
+            }
+        };
     }
 
     @Provider
     public AudienceResolver audienceResolver(ServiceExtensionContext context) {
         var dids = readDidsMapping(context);
-        return message -> Result.success(dids.get(message.getCounterPartyId()));
+        return message -> {
+            var counterPartyId = message.getCounterPartyId();
+
+            if (counterPartyId.startsWith("did:")) {
+                return Result.success(counterPartyId);
+            }
+
+            var audience = dids.get(counterPartyId);
+            if (audience != null) {
+                return Result.success(audience);
+            }
+
+            return Result.failure("No DID found for counter-party: " + counterPartyId);
+        };
     }
 
     private Map<String, String> readDidsMapping(ServiceExtensionContext context) {
