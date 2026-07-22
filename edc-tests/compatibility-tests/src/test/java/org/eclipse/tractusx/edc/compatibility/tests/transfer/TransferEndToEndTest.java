@@ -168,9 +168,6 @@ public class TransferEndToEndTest {
     @BeforeAll
     static void beforeAll() {
 
-        addAudienceMapping(REMOTE_PARTICIPANT);
-        addAudienceMapping(LOCAL_PARTICIPANT);
-
         configureParticipant(LOCAL_PARTICIPANT, ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
         configureParticipant(REMOTE_PARTICIPANT, ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
         configureParticipantContext(ISSUER, IDENTITY_HUB_PARTICIPANT, LOCAL_IDENTITY_HUB);
@@ -183,16 +180,6 @@ public class TransferEndToEndTest {
         var remoteKey = "testing.edc.bdrs.remote-" + UUID.randomUUID().toString().substring(0, 8);
         System.setProperty(remoteKey + ".key", LOCAL_PARTICIPANT.getId());
         System.setProperty(remoteKey + ".value", LOCAL_PARTICIPANT.getDid());
-    }
-
-    private static void addAudienceMapping(TractusxDcpParticipantBase target) {
-        var bpnKey = "testing.edc.bdrs." + UUID.randomUUID().toString().substring(0, 8);
-        System.setProperty(bpnKey + ".key", target.getId());
-        System.setProperty(bpnKey + ".value", target.getDid());
-
-        var didKey = "testing.edc.bdrs." + UUID.randomUUID().toString().substring(0, 8);
-        System.setProperty(didKey + ".key", target.getDid());
-        System.setProperty(didKey + ".value", target.getDid());
     }
 
     @ParameterizedTest
