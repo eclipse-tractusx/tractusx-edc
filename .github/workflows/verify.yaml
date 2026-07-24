@@ -117,7 +117,7 @@ jobs:
       # generates coverage-report.md
       - name: JaCoCo Code Coverage Report
         id: jacoco_reporter
-        uses: PavanMudigonda/jacoco-reporter@e8b54bfea6a667d1a68624dae8a06ba31670667d # v5.1
+        uses: PavanMudigonda/jacoco-reporter@112997f0c32da82d8bfa4a972b4afe67a15529fe # v5.2.1
         with:
           coverage_results_path: build/reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml
           skip_check_run: true
