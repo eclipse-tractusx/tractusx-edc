@@ -176,10 +176,6 @@ public class TransferEndToEndTest {
         vault.storeSecret(LOCAL_PARTICIPANT.getPrivateKeyAlias(), LOCAL_PARTICIPANT.getPrivateKeyAsString());
         vault.storeSecret(LOCAL_PARTICIPANT.getFullKeyId(), LOCAL_PARTICIPANT.getPublicKeyAsString());
         vault.storeSecret("client_secret_alias", "clientSecret");
-
-        var remoteKey = "testing.edc.bdrs.remote-" + UUID.randomUUID().toString().substring(0, 8);
-        System.setProperty(remoteKey + ".key", LOCAL_PARTICIPANT.getId());
-        System.setProperty(remoteKey + ".value", LOCAL_PARTICIPANT.getDid());
     }
 
     @ParameterizedTest

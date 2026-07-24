@@ -157,7 +157,6 @@ public class RemoteParticipant extends DcpParticipant {
             config.put("edc.datasource." + ds + ".name", ds);
             config.putAll(datasourceEnvironmentVariables(ds, postgresqlConfig));
         });
-        config.put("org.eclipse.tractusx.edc.postgresql.migration.schema", postgresqlConfig.getString("tx.edc.postgresql.migration.schema"));
         config.put("tx.edc.postgresql.migration.schema", postgresqlConfig.getString("tx.edc.postgresql.migration.schema"));
         return config;
     }
