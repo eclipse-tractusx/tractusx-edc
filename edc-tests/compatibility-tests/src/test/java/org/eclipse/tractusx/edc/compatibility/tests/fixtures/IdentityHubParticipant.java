@@ -70,7 +70,7 @@ public class IdentityHubParticipant {
     }
 
     public URI getResolutionApi() {
-        return credentialsApi.get();
+        return URI.create(credentialsApi.get().toString());
     }
 
     public String didFor(String participantId) {

@@ -76,7 +76,7 @@ public class DcpHelperFunctions {
 
         credentials.forEach(credentialStore::create);
 
-        accountService.findById(participant.getDid())
+        accountService.findById(participant.getParticipantContextId())
                 .onSuccess(account -> vault.storeSecret(account.getSecretAlias(), "clientSecret"));
 
     }
