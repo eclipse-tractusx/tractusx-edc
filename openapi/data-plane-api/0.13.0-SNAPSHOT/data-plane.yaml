@@ -142,23 +142,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
       deprecated: true
-  /aas/request:
-    post:
-      tags:
-      - Data Plane Proxy API
-      operationId: requestAsset
-      requestBody:
-        content:
-          '*/*':
-            schema:
-              $ref: "#/components/schemas/AssetRequest"
-      responses:
-        default:
-          description: Requests asset data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AssetRequest"
   /v3/dataflows/{id}/trigger:
     post:
       tags:
@@ -205,6 +188,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
+  /aas/request:
+    post:
+      tags:
+      - Data Plane Proxy API
+      operationId: requestAsset
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/AssetRequest"
+      responses:
+        default:
+          description: Requests asset data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetRequest"
   /check/readiness:
     get:
       tags:
