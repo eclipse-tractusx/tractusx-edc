@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "ExclusiveUsageConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/ExclusiveUsageConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/exclusive-usage-constraint-schema.json",
+  "definitions": {
+    "ExclusiveUsageConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "ExclusiveUsage"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/ExclusiveUsageDataConsumerRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ExclusiveUsageDataConsumerRightOperand": {
+      "type": "string",
+      "const": "cx.exclusiveUsage.dataConsumer:1",
+      "$comment": "{\"permission\":\"The Data Consumer has the exclusive right to use the Data within the scope of the agreed purposes (cx-policy:UsagePurpose). The Data Provider’s right to use the Data it has provided for its own internal purposes remains unaffected.\"}"
+    }
+  }
+}

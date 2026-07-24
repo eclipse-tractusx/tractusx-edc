@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "MembershipConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/MembershipConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/membership-constraint-schema.json",
+  "definitions": {
+    "MembershipConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "Membership"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "type": "string",
+          "const": "active"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

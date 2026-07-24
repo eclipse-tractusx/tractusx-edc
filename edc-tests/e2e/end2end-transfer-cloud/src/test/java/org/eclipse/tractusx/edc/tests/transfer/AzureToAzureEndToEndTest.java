@@ -25,6 +25,7 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -155,7 +156,7 @@ public class AzureToAzureEndToEndTest {
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
+        var policyId = provider().createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destfolder = "destfolder";
@@ -209,7 +210,7 @@ public class AzureToAzureEndToEndTest {
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
+        var policyId = provider().createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destination = createObjectBuilder()
@@ -260,7 +261,7 @@ public class AzureToAzureEndToEndTest {
 
         // create objects in EDC
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
+        var policyId = provider().createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, consumer().getBpn()));
         provider().createContractDefinition(assetId, "def-1", policyId, policyId);
 
         var destinationContainerName = UUID.randomUUID().toString();

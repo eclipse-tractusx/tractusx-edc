@@ -34,8 +34,12 @@ dependencies {
     implementation(libs.edc.spi.decentralized.claims)
     implementation(libs.edc.spi.policyengine)
     implementation(libs.edc.spi.vc)
+    implementation(libs.edc.lib.jsonld)
     implementation(libs.jakartaJson)
     implementation(libs.edc.spi.jsonld)
+    implementation(libs.jsonschema)
+    compileOnly(libs.edc.api.management.validator.jsonschema)
+
     testImplementation(libs.jacksonJsonP)
     testImplementation(libs.titaniumJsonLd)
 

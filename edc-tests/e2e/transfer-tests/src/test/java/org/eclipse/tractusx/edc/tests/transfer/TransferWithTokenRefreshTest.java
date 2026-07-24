@@ -25,6 +25,7 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.tests.MockBdrsClient;
@@ -247,10 +248,10 @@ public class TransferWithTokenRefreshTest {
     }
 
     protected JsonObject createAccessPolicy(String bpn) {
-        return bpnPolicy(bpn);
+        return bpnPolicy(Operator.IS_ANY_OF, bpn);
     }
 
     protected JsonObject createContractPolicy(String bpn) {
-        return bpnPolicy(bpn);
+        return bpnPolicy(Operator.IS_ANY_OF, bpn);
     }
 }

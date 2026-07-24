@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "ConfidentialInformationSharingConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/ConfidentialInformationSharingConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/confidential-information-sharing-constraint-schema.json",
+  "definitions": {
+    "ConfidentialInformationSharingConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "ConfidentialInformationSharing"
+        },
+        "operator": {
+          "type": "string",
+          "const": "isAnyOf"
+        },
+        "rightOperand": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "anyOf": [
+              {"$ref": "#/definitions/SharingAffiliatesRightOperand"},
+              {"$ref": "#/definitions/SharingManagedLegalEntityRightOperand"}
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "SharingAffiliatesRightOperand": {
+      "type": "string",
+      "const": "cx.sharing.affiliates:1",
+      "$comment": "{\"permission\":\"The Data Consumer may only disclose Confidential Information to Affiliated Companies if and to the extent that the Data Provider has expressly permitted such disclosure in accordance with the Data Exchange Governance or the cx-policy:affiliates.*. The Data Consumer may only disclose Confidential Information to Affiliated Companies to the extent that the Affiliated Companies and their employees are bound to Confidentiality Obligations at least equivalent to those set forth in this Agreement. Furthermore, access to and use of the relevant Data must be restricted to those employees of the Affiliated Company who require the Data in order to exercise the agreed usage rights ('need to know').\"}"
+    },
+    "SharingManagedLegalEntityRightOperand": {
+      "type": "string",
+      "const": "cx.sharing.managedLegalEntity:1",
+      "$comment": "{\"permission\":\"The Data Consumer may only disclose Confidential Information to those companies for which the Data Consumer acts in an 'is managed by' relationship (within the meaning of the Catena-X Standard 'CX-0074') if and to the extent those companies are expressly listed in cx-policy:managedLegalEntity.*. The Data Consumer may only disclose Confidential Information to those Companies to the extent that those Companies and their employees are bound to Confidentiality Obligations at least equivalent to those set forth in this Agreement. Furthermore, access to and use of the relevant Data must be restricted to those employees of the Company who require the Data in order to exercise the agreed usage rights ('need to know').\"}"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "WarrantyDurationConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/WarrantyDurationConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/warranty-duration-constraint-schema.json",
+  "definitions": {
+    "WarrantyDurationConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "WarrantyDurationMonths"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/WarrantyDurationMonthsRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WarrantyDurationMonthsRightOperand": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$",
+      "$comment": "{\"permission\":\"The provision of the Data is subject to a warranty for material and legal defects for a period specified herein in months.\"}"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -17,26 +17,25 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-plugins {
-    `java-library`
-    `java-test-fixtures`
-}
+package org.eclipse.tractusx.edc.policy.cx.validator.jsonschema;
 
-dependencies {
-    testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+import jakarta.json.JsonObject;
+import org.eclipse.edc.validator.spi.ValidationResult;
+import org.eclipse.edc.validator.spi.Validator;
 
-    testImplementation(libs.edc.junit)
-    testImplementation(libs.restAssured)
-    testImplementation(libs.testcontainers.keycloak)
-}
+public class CxJsonSchemaPolicyDefinitionValidator implements Validator<JsonObject> {
 
-edcBuild {
-    publish.set(false)
-}
+    private static final String POLICY_ATTRIBUTE_NAME = "policy";
 
-configurations.all {
-    resolutionStrategy {
-        val version = libs.versions.jsonschema.get()
-        force("com.networknt:json-schema-validator:${version}")
+    private final CxJsonSchemaPolicyValidator policyValidator;
+
+    public CxJsonSchemaPolicyDefinitionValidator() {
+        this.policyValidator = new CxJsonSchemaPolicyValidator();
+    }
+
+    @Override
+    public ValidationResult validate(JsonObject input) {
+        var policy = input.getJsonObject(POLICY_ATTRIBUTE_NAME);
+        return policyValidator.validate(policy);
     }
 }
