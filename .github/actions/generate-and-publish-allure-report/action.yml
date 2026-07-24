@@ -43,9 +43,11 @@ runs:
 
     - name: Build Allure test report
       shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
       run: |
         npm install -g allure-commandline
-        allure generate allure-results --clean -o "${{ inputs.version }}"
+        allure generate allure-results --clean -o "$VERSION"
 
     - name: Publish Allure test report to gh-pages
       uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
