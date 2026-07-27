@@ -30,14 +30,14 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.discovery.cx.service.BpnlAndDsp08ConnectorDiscoveryServiceImpl;
-import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
-import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryService;
+import org.eclipse.tractusx.edc.discovery.spi.CacheConfig;
+import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryService;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.time.Clock;
 
-import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.DEFAULT_CACHE_EXPIRY_MS;
-import static org.eclipse.tractusx.edc.discovery.v4alpha.ConnectorDiscoveryExtension.TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY;
+import static org.eclipse.tractusx.edc.discovery.ConnectorDiscoveryExtension.DEFAULT_CACHE_EXPIRY_MS;
+import static org.eclipse.tractusx.edc.discovery.ConnectorDiscoveryExtension.TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY;
 
 @Extension(value = ConnectorDiscoveryBpnlAndDsp08ServiceExtension.NAME)
 public class ConnectorDiscoveryBpnlAndDsp08ServiceExtension implements ServiceExtension {

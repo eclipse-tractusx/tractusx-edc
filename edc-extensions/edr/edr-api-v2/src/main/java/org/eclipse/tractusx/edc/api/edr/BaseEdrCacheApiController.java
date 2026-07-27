@@ -95,7 +95,8 @@ public class BaseEdrCacheApiController {
         var participantContext = participantContextSupplier.get()
                 .orElseThrow(exceptionMapper(ContractDefinition.class));
 
-        var contractNegotiation = contractNegotiationService.initiateNegotiation(participantContext, enrichContractRequest(contractRequest));
+        var contractNegotiation = contractNegotiationService.initiateNegotiation(participantContext, enrichContractRequest(contractRequest))
+                .orElseThrow(InvalidRequestException::new);
 
         var idResponse = IdResponse.Builder.newInstance()
                 .id(contractNegotiation.getId())

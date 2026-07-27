@@ -30,9 +30,9 @@ import org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants;
 import org.eclipse.edc.protocol.spi.ProtocolVersion;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.web.spi.exception.InvalidRequestException;
-import org.eclipse.tractusx.edc.discovery.v4alpha.service.BaseConnectorDiscoveryServiceImpl;
-import org.eclipse.tractusx.edc.discovery.v4alpha.spi.CacheConfig;
-import org.eclipse.tractusx.edc.discovery.v4alpha.spi.ConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.service.BaseConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.spi.CacheConfig;
+import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryRequest;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.List;

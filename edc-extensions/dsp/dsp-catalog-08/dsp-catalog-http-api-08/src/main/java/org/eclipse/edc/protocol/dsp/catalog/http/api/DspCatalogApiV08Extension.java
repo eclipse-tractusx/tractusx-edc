@@ -30,7 +30,7 @@ import org.eclipse.edc.protocol.dsp.catalog.http.api.decorator.ContinuationToken
 import org.eclipse.edc.protocol.dsp.catalog.validation.CatalogRequestMessageValidator;
 import org.eclipse.edc.protocol.dsp.http.spi.message.ContinuationTokenManager;
 import org.eclipse.edc.protocol.dsp.http.spi.message.DspRequestHandler;
-import org.eclipse.edc.protocol.spi.DataspaceProfileContextRegistry;
+import org.eclipse.edc.protocol.spi.ProtocolWebhookResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -43,6 +43,8 @@ import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
+
+import java.util.Optional;
 
 import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_NAMESPACE_V_08;
@@ -72,7 +74,7 @@ public class DspCatalogApiV08Extension implements ServiceExtension {
     @Inject
     private CriterionOperatorRegistry criterionOperatorRegistry;
     @Inject
-    private DataspaceProfileContextRegistry dataspaceProfileContextRegistry;
+    private ProtocolWebhookResolver protocolWebhookResolver;
     @Inject
     private TypeTransformerRegistry transformerRegistry;
     @Inject
@@ -104,13 +106,15 @@ public class DspCatalogApiV08Extension implements ServiceExtension {
     }
 
     private void registerDataService() {
-        var webhook = dataspaceProfileContextRegistry.getWebhook(DATASPACE_PROTOCOL_HTTP);
-        if (webhook != null) {
-            dataServiceRegistry.register(DATASPACE_PROTOCOL_HTTP, (ctx, protocol) -> DataService.Builder.newInstance()
-                    .endpointDescription("dspace:connector")
-                    .endpointUrl(webhook.url())
-                    .build());
-        }
+        dataServiceRegistry.register(DATASPACE_PROTOCOL_HTTP, this::createDataService);
+    }
+
+    private DataService createDataService(String participantContextId, String protocol) {
+        return Optional.ofNullable(protocolWebhookResolver.getWebhook(participantContextId, protocol))
+                .map(webhook -> DataService.Builder.newInstance()
+                        .endpointDescription("dspace:connector")
+                        .endpointUrl(webhook.url())
+                        .build()).orElse(null);
     }
 
     private ContinuationTokenManager continuationTokenManager(Monitor monitor) {

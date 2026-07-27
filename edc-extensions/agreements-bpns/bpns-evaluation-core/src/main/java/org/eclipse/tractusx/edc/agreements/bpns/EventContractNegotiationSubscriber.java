@@ -47,8 +47,12 @@ public class EventContractNegotiationSubscriber implements EventSubscriber {
         var agreement = payload.getContractAgreement();
         var agreementId = agreement.getId();
 
-        var providerBpn = extractBpn(agreement.getProviderId());
-        var consumerBpn = extractBpn(agreement.getConsumerId());
+        var providerBpn = extractBpn(agreementId, agreement.getProviderId());
+        var consumerBpn = extractBpn(agreementId, agreement.getConsumerId());
+
+        if (providerBpn == null || consumerBpn == null) {
+            return;
+        }
 
         var entry = AgreementsBpnsEntry.Builder.newInstance()
                 .withAgreementId(agreementId)
@@ -59,9 +63,15 @@ public class EventContractNegotiationSubscriber implements EventSubscriber {
         store.save(entry).onFailure(failure -> monitor.severe(failure.getFailureDetail()));
     }
 
-    private String extractBpn(String id) {
-        return id.startsWith(DID_PREFIX)
-                ? bdrsClient.resolveBpn(id)
-                : id;
+    private String extractBpn(String agreementId, String id) {
+        if (!id.startsWith(DID_PREFIX)) {
+            return id;
+        }
+        var bpn = bdrsClient.resolveBpn(id);
+        if (bpn == null) {
+            monitor.severe("Could not resolve BPN for DID '%s' on agreement '%s'. The agreement will not be stored."
+                    .formatted(id, agreementId));
+        }
+        return bpn;
     }
 }

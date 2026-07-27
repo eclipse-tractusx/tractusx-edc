@@ -37,7 +37,7 @@ dependencies {
         exclude("org.eclipse.edc", "vault-hashicorp")
     }
     runtimeOnly(project(":edc-tests:runtime:runtime-compatibility:stable:extensions"))
-    runtimeOnly(stableLibs.edc.identity.trust.sts.remote.client)
+    runtimeOnly(stableLibs.edc.spi.decentralized.claims)
     runtimeOnly(stableLibs.edc.auth.oauth2.client)
 }
 
@@ -55,6 +55,7 @@ tasks.shadowJar {
     mergeServiceFiles()
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     archiveFileName.set("${project.name}.jar")
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer())
 }
 
 // configure the "dockerize" task

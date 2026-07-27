@@ -122,6 +122,7 @@ public class EmptyAssetSelectorValidatorTest {
         }
 
         return PROVIDER.baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(requestBody.build())
                 .when()

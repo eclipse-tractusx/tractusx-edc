@@ -36,6 +36,65 @@ In addition, in order to map BPNs to DIDs, a new service is required, called the
 must be configured:
 - `controlplane.bdrs.server.url`: base URL of the BPN-DID Resolution Service ("BDRS")
 
+#### Database configuration
+
+When bringing your own database, respectively not installing postgres (`install.postgresql: false`), use the following information:
+
+```yaml
+postgresql:
+  jdbcUrl: "jdbc:postgresql://{{ "{{" }} .Release.Name }}-postgresql:5432/edc"
+  auth:
+    username: "postgres"
+    password: "password"
+```
+
+When installing postgres with the chart, it is **RECOMMENDED** to use a custom user beside the admin user:
+
+> [!note]
+> The value `postgresql.jdbUrl` is composed in the deployments using a dependent variable of the database name and the name of the postgress deployment.
+
+```yaml
+postgresql:
+  auth:
+    database: "postgres"
+    username: "postgres"
+    password: "password" # generated if empty
+  customUser: # name or exisitng secret must be set
+    name: "edc"
+    database: "edc" # must ge different than postgresql.auth.database
+    password: "password" # generated if empty
+```
+
+When installing postgres with the chart, you can alteratively not create and use a custom user (**NOT RECOMMENDED**).
+
+```yaml
+postgresql:
+  auth:
+    database: "postgres"
+    username: "postgres"
+    password: "password" # generated if empty
+  customUser:
+    existingSecret: "" # explicitly set to empty
+    name: "" # explicitly set to empty
+```
+
+Further you can also reuse existing secrets instead:
+
+```yaml
+postgresql:
+  auth:
+    existingSecret: "my-existing-secret-name"
+    secretKeys:
+      adminPasswordKey: "postgres-password"
+  customUser:
+    existingSecret: "my-existing-secret-name"
+    secretKeys:
+      password: "CUSTOM_PASSWORD"
+      name: "CUSTOM_USER"
+      database: "CUSTOM_DB"
+```
+
+
 ### Launching the application
 
 As an easy starting point, please consider using [this example configuration](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-tests/deployment/src/main/resources/helm/tractusx-connector-test.yaml)

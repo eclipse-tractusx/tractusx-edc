@@ -23,6 +23,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record TokenResponse(@JsonProperty("access_token") String accessToken,
                             @JsonProperty("refresh_token") String refreshToken,
-                            @JsonProperty("expires") Long expiresInSeconds,
+                            @JsonProperty("expires") Long expiresInLegacy, // TODO: Still needed because older implementations use this non-spec-compliant value, can be removed when only 0.12.x based connectors are in the field
+                            @JsonProperty("expires_in") Long expiresIn,
                             @JsonProperty("token_type") String tokenType) {
+
+    public Long expiresInSeconds() {
+        // Remove when the expiresInLegacy becomes obsolete, change expiresIn to expiresInSeconds
+        return expiresIn() != null ? expiresIn() : expiresInLegacy();
+    }
 }

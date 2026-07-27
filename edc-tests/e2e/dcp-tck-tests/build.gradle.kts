@@ -31,9 +31,9 @@ dependencies {
     testImplementation(libs.nimbus.jwt)
     testImplementation(libs.restAssured)
 
-    testImplementation(libs.dsp.tck.runtime)
+    testImplementation(libs.tck.runtime)
     testImplementation(libs.dcp.system)
-    testImplementation(libs.dsp.tck.core)
+    testImplementation(libs.tck.core)
     testImplementation(libs.wiremock)
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.testcontainers.junit)

@@ -56,7 +56,7 @@ available within the management API context and is exposed through the data plan
 the following request:
 
 ```http request
-POST /v4alpha/dataflows/{{TRANSFER_PROCESS_ID}}/trigger HTTP/1.1
+POST /v3/dataflows/{{TRANSFER_PROCESS_ID}}/trigger HTTP/1.1
 Host: https://provider-data.plane/api/management
 X-Api-Key: password
 Content-Type: application/json

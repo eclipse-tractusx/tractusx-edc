@@ -21,12 +21,12 @@ package org.eclipse.tractusx.edc.dataplane.tokenrefresh.api.v1;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,8 +43,7 @@ import org.eclipse.tractusx.edc.spi.tokenrefresh.dataplane.model.TokenResponse;
 public interface TokenRefreshApi {
 
     @Operation(description = "Resolves all groups for a particular BPN",
-            parameters = { @Parameter(name = "grant_type", description = "The grant type. Must be \"refresh_token\""),
-                    @Parameter(name = "refresh_token", description = "The refresh token") },
+            requestBody = @RequestBody(description = "Form parameters: grant_type=refresh_token&refresh_token=<the refresh token>"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "The access token and refresh token were updated. Expiry should be " +
                             "interpreted as starting from the time of message reception, allowing for some leeway.",
@@ -54,5 +53,5 @@ public interface TokenRefreshApi {
                     @ApiResponse(responseCode = "400", description = "Request body was malformed, query parameters were missing, etc.",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ApiErrorDetail.class))))
             })
-    TokenResponse refreshToken(String grantType, String refreshToken, String bearerToken);
+    TokenResponse refreshToken(String grantType, String refreshToken, String bearerToken, String formParameters);
 }

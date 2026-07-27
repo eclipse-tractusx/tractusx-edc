@@ -142,7 +142,7 @@ public class CredentialSpoofTest {
 
         var presentationService = STS_RUNTIME.getService(VerifiablePresentationService.class);
 
-        withMock((membershipCredential) -> presentationService.createPresentation(MALICIOUS_ACTOR.getDid(), List.of(membershipCredential.getVerifiableCredential()), null, PROVIDER.getDid()));
+        withMock((membershipCredential) -> presentationService.createPresentation(MALICIOUS_ACTOR.getParticipantContextId(), List.of(membershipCredential.getVerifiableCredential()), null, PROVIDER.getDid()));
 
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
@@ -168,7 +168,7 @@ public class CredentialSpoofTest {
 
         var presentationService = STS_RUNTIME.getService(VerifiablePresentationService.class);
 
-        withMock((membershipCredential) -> presentationService.createPresentation(CONSUMER.getDid(), List.of(membershipCredential.getVerifiableCredential()), null, PROVIDER.getDid()));
+        withMock((membershipCredential) -> presentationService.createPresentation(CONSUMER.getParticipantContextId(), List.of(membershipCredential.getVerifiableCredential()), null, PROVIDER.getDid()));
 
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 

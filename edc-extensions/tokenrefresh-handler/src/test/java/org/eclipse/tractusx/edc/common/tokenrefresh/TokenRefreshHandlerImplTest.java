@@ -34,6 +34,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.Buffer;
 import org.assertj.core.api.Assertions;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceCache;
 import org.eclipse.edc.http.spi.EdcHttpClient;
@@ -115,7 +116,8 @@ class TokenRefreshHandlerImplTest {
     void refresh_validateCorrectRequest() throws IOException {
         when(edrCache.get(anyString())).thenReturn(StoreResult.success(createEdr().build()));
         when(mockedTokenService.createToken(any(), anyMap(), isNull())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-auth-token").build()));
-        var tokenResponse = new TokenResponse("new-access-token", "new-refresh-token", 60 * 5L, "bearer");
+        var expires = 60 * 5L;
+        var tokenResponse = new TokenResponse("new-access-token", "new-refresh-token", expires, expires, "bearer");
         var successResponse = createResponse(tokenResponse, 200, "");
         when(mockedHttpClient.execute(any())).thenReturn(successResponse);
         var res = tokenRefreshHandler.refreshToken("token-id");
@@ -128,7 +130,19 @@ class TokenRefreshHandlerImplTest {
                 });
         verify(mockedHttpClient).execute(argThat(r -> {
             var hdr = r.header("Content-Type");
-            return hdr != null && hdr.equalsIgnoreCase("application/x-www-form-urlencoded");
+            var body = r.body();
+            Buffer sink = new Buffer();
+            try {
+                if (body != null) {
+                    body.writeTo(sink);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return hdr != null &&
+                    hdr.equalsIgnoreCase("application/x-www-form-urlencoded") &&
+                    body != null &&
+                    sink.readUtf8().contains("grant_type=refresh_token&refresh_token=foo-refresh-token");
         }));
     }
 

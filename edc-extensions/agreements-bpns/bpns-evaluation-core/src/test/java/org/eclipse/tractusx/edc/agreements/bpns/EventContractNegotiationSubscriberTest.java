@@ -41,6 +41,8 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -172,5 +174,42 @@ class EventContractNegotiationSubscriberTest {
         subscriber.on(envelope);
 
         verify(monitor).severe(failureDetail);
+    }
+
+    @Test
+    void on_shouldLogSevereAndSkipSave_whenBpnResolutionReturnsNull() {
+        var agreementId = UUID.randomUUID().toString();
+        var providerId = "did:provider";
+        var consumerId = "did:consumer";
+
+        var subscriberWithNullResolver = new EventContractNegotiationSubscriber(
+                store, monitor, new MockBdrsClient((s) -> s, (s) -> null));
+
+        var agreement = ContractAgreement.Builder.newInstance()
+                .id(agreementId)
+                .providerId(providerId)
+                .consumerId(consumerId)
+                .assetId("asset")
+                .policy(Policy.Builder.newInstance().assignee(consumerId).build())
+                .build();
+
+        var event = ContractNegotiationFinalized.Builder.newInstance()
+                .contractNegotiationId(UUID.randomUUID().toString())
+                .contractAgreement(agreement)
+                .counterPartyAddress("counterPartyAddress")
+                .counterPartyId("counterPartyId")
+                .protocol("protocol")
+                .build();
+
+        var envelope = EventEnvelope.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
+                .at(System.currentTimeMillis())
+                .payload(event)
+                .build();
+
+        subscriberWithNullResolver.on(envelope);
+
+        verify(monitor, times(2)).severe(anyString());
+        verify(store, never()).save(any());
     }
 }

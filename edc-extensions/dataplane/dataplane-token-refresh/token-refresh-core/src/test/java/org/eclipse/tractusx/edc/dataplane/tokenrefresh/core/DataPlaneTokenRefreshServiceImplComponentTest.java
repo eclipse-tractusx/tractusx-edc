@@ -220,7 +220,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
         var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
-        assertThat(tokenResponse).isFailed().detail().isEqualTo("Authentication token validation failed: Token verification failed");
+        assertThat(tokenResponse).isFailed().detail().isEqualTo("Authentication token validation failed: JWT signature not valid");
     }
 
     @DisplayName("Verify that a refresh attempt fails if no \"token\" claim is present")

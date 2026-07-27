@@ -64,6 +64,7 @@ public class DelegatedAuthEndToEndTest {
         var token = KEYCLOAK.issueToken();
 
         CONNECTOR.baseManagementRequest()
+                .basePath("/v3")
                 .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .post("/assets/request")

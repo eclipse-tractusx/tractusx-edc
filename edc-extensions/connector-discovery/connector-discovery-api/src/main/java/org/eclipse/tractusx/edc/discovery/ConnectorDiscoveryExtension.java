@@ -1,0 +1,128 @@
+/*
+ * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+package org.eclipse.tractusx.edc.discovery;
+
+import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.did.spi.resolution.DidResolverRegistry;
+import org.eclipse.edc.jsonld.spi.JsonLd;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
+import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
+import org.eclipse.edc.web.jersey.providers.jsonld.JerseyJsonLdInterceptor;
+import org.eclipse.edc.web.spi.WebService;
+import org.eclipse.edc.web.spi.configuration.ApiContext;
+import org.eclipse.tractusx.edc.discovery.api.ConnectorDiscoveryController;
+import org.eclipse.tractusx.edc.discovery.api.v3.ConnectorDiscoveryV3Controller;
+import org.eclipse.tractusx.edc.discovery.api.v4alpha.ConnectorDiscoveryV4AlphaController;
+import org.eclipse.tractusx.edc.discovery.service.DefaultConnectorDiscoveryServiceImpl;
+import org.eclipse.tractusx.edc.discovery.spi.CacheConfig;
+import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.spi.ConnectorDiscoveryService;
+import org.eclipse.tractusx.edc.discovery.spi.ConnectorParamsDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.transformers.JsonObjectToConnectorDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.transformers.JsonObjectToConnectorParamsDiscoveryRequest;
+import org.eclipse.tractusx.edc.discovery.validators.ConnectorDiscoveryRequestValidator;
+import org.eclipse.tractusx.edc.discovery.validators.ConnectorParamsDiscoveryRequestValidator;
+
+import java.time.Clock;
+
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
+import static org.eclipse.tractusx.edc.discovery.ConnectorDiscoveryExtension.NAME;
+
+@Extension(value = NAME)
+public class ConnectorDiscoveryExtension implements ServiceExtension {
+
+    public static final String TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY = "tx.edc.connector.discovery.cache.expiry";
+
+    public static final String NAME = "Connector Discovery API Extension";
+
+    public static final String DEFAULT_CACHE_EXPIRY_MS = 1000 * 60 * 120 + "";
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+
+    @Inject
+    private WebService webService;
+    @Inject
+    private TypeTransformerRegistry transformerRegistry;
+    @Inject
+    private JsonObjectValidatorRegistry validatorRegistry;
+    @Inject
+    private ConnectorDiscoveryService connectorDiscoveryService;
+    @Inject
+    private JsonLd jsonLd;
+    @Inject
+    private TypeManager typeManager;
+    @Inject
+    private DidResolverRegistry didResolver;
+    @Inject
+    private EdcHttpClient httpClient;
+    @Inject
+    private Clock clock;
+    @Inject
+    private Monitor monitor;
+
+    @Setting(description = "Expiry time for caching protocol version information in milliseconds",
+             key = TX_EDC_CONNECTOR_DISCOVERY_CACHE_EXPIRY, defaultValue = DEFAULT_CACHE_EXPIRY_MS)
+    private long connectorDiscoveryCacheExpiry;
+
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        var managementTypeTransformerRegistry = transformerRegistry.forContext("management-api");
+
+        managementTypeTransformerRegistry.register(new JsonObjectToConnectorParamsDiscoveryRequest());
+        validatorRegistry.register(ConnectorParamsDiscoveryRequest.TYPE, ConnectorParamsDiscoveryRequestValidator.instance());
+
+        managementTypeTransformerRegistry.register(new JsonObjectToConnectorDiscoveryRequest());
+        validatorRegistry.register(ConnectorDiscoveryRequest.TYPE, ConnectorDiscoveryRequestValidator.instance());
+
+        var connectorDiscoveryController = new ConnectorDiscoveryController(
+                connectorDiscoveryService, managementTypeTransformerRegistry, validatorRegistry, monitor);
+
+        webService.registerResource(ApiContext.MANAGEMENT,
+                new ConnectorDiscoveryV4AlphaController(connectorDiscoveryController, monitor));
+        webService.registerDynamicResource(
+                ApiContext.MANAGEMENT, ConnectorDiscoveryV4AlphaController.class,
+                new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
+
+        webService.registerResource(ApiContext.MANAGEMENT,
+                new ConnectorDiscoveryV3Controller(connectorDiscoveryController));
+        webService.registerDynamicResource(
+                ApiContext.MANAGEMENT, ConnectorDiscoveryV3Controller.class,
+                new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, "MANAGEMENT_API"));
+
+    }
+
+    @Provider(isDefault = true)
+    public ConnectorDiscoveryService defaultConnectorDiscoveryService() {
+        return new DefaultConnectorDiscoveryServiceImpl(httpClient, didResolver, typeManager.getMapper(),
+                new CacheConfig(connectorDiscoveryCacheExpiry, clock), monitor);
+    }
+}

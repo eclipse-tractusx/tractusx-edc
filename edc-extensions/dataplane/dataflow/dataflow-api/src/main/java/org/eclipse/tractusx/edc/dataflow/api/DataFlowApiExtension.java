@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,7 +27,8 @@ import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
-import org.eclipse.tractusx.edc.dataflow.api.v4alpha.DataFlowApiController;
+import org.eclipse.tractusx.edc.dataflow.api.v3.DataFlowV3ApiController;
+import org.eclipse.tractusx.edc.dataflow.api.v4alpha.DataFlowV4AlphaApiController;
 import org.eclipse.tractusx.edc.spi.dataflow.DataFlowService;
 
 @Extension(DataFlowApiExtension.NAME)
@@ -48,7 +50,9 @@ public class DataFlowApiExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerResource(ApiContext.MANAGEMENT, new DataFlowApiController(monitor, dataFlowService));
+        var dataFlowApiController = new DataFlowApiController(monitor, dataFlowService);
+        webService.registerResource(ApiContext.MANAGEMENT, new DataFlowV4AlphaApiController(dataFlowApiController, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new DataFlowV3ApiController(dataFlowApiController));
     }
 
 }

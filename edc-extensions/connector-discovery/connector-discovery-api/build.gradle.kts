@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.edc.lib.validator)
     implementation(libs.edc.lib.util)
     implementation(libs.edc.boot)
+    implementation(libs.edc.api.core)
     implementation(libs.edc.api.management.config)
     implementation(libs.jakarta.rsApi)
 

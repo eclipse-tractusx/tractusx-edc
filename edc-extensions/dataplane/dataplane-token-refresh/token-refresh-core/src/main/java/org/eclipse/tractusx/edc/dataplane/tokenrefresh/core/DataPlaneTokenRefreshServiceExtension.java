@@ -22,7 +22,7 @@ package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
-import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
+import org.eclipse.edc.jwt.spi.signer.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;

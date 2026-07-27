@@ -130,7 +130,7 @@ public class AzureToAzureTest {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post()
+                .post("/start")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200);
@@ -167,7 +167,7 @@ public class AzureToAzureTest {
                         blobAddress(sourceContainerName, PROVIDER_AZURITE_ACCOUNT.name(), AZBLOB_PROVIDER_KEY_ALIAS, dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME)),
                         blobAddress(destinationContainerName, CONSUMER_AZURITE_ACCOUNT.name(), AZBLOB_CONSUMER_KEY_ALIAS, dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME))
                 ).build())
-                .post()
+                .post("/start")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200);
@@ -220,7 +220,7 @@ public class AzureToAzureTest {
                         blobAddress(sourceContainerName, PROVIDER_AZURITE_ACCOUNT.name(), AZBLOB_PROVIDER_KEY_ALIAS, dspaceProperty(EDC_NAMESPACE + "blobName", blobName)),
                         blobAddress(destinationContainerName, CONSUMER_AZURITE_ACCOUNT.name(), AZBLOB_CONSUMER_KEY_ALIAS, dspaceProperty(EDC_NAMESPACE + "blobName", blobName))
                 ).build())
-                .post()
+                .post("/start")
                 .then()
                 .log().ifValidationFails()
                 .log().ifValidationFails()
@@ -264,7 +264,7 @@ public class AzureToAzureTest {
                 .baseUri(START_DATAFLOW_URI.get().toString())
                 .contentType(ContentType.JSON)
                 .body(request)
-                .post()
+                .post("/start")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200);
@@ -299,7 +299,7 @@ public class AzureToAzureTest {
                         blobAddress(destinationContainerName, CONSUMER_AZURITE_ACCOUNT.name(), AZBLOB_CONSUMER_KEY_ALIAS, dspaceProperty(EDC_NAMESPACE + "blobName", TESTFILE_NAME))
                     ).build()
                 )
-                .post()
+                .post("/start")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200);

@@ -16,6 +16,7 @@
 #  under the License.
 #
 #  SPDX-License-Identifier: Apache-2.0
+#  Assisted-By: Claude-Opus-4.8
 #################################################################################
 
 
@@ -37,8 +38,51 @@ updates:
     cooldown:
       default-days: 7
     ignore:
-      - dependency-name: "org.eclipse.dataspacetck.dsp:*"
-      - dependency-name: "org.eclipse.dataspacetck.dcp:*"
+      - dependency-name: "org.eclipse.dataspacetck.*"
+    groups:
+      test-dependencies:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.assertj*"
+          - "org.awaitility*"
+          - "org.testcontainers*"
+          - "com.github.dasniko:testcontainers-keycloak"
+          - "io.rest-assured*"
+          - "org.wiremock*"
+          - "io.qameta.allure*"
+      build-tooling:
+        patterns:
+          - "com.bmuschko*"
+          - "com.gradleup*"
+          - "io.swagger*"
+          - "com.diffplug.spotless*"
+          - "org.sonarqube*"
+          - "com.github.ben-manes*"
+          - "org.jreleaser*"
+      logging:
+        patterns:
+          - "org.apache.logging.log4j*"
+          - "org.slf4j*"
+          - "ch.qos.logback*"
+          - "io.opentelemetry*"
+      serialization-and-crypto:
+        patterns:
+          - "com.fasterxml.jackson*"
+          - "jakarta.json*"
+          - "jakarta.ws.rs*"
+          - "com.apicatalog*"
+          - "com.networknt*"
+          - "org.bouncycastle*"
+          - "com.nimbusds*"
+      cloud-sdks:
+        patterns:
+          - "software.amazon.awssdk*"
+          - "com.azure*"
+      database:
+        patterns:
+          - "org.postgresql*"
+          - "org.flywaydb*"
 
   # Github Actions
   -
@@ -55,6 +99,10 @@ updates:
     open-pull-requests-limit: 50
     cooldown:
       default-days: 7
+    groups:
+      github-actions-all:
+        patterns:
+          - "*"
 
   # Docker
   - package-ecosystem: "docker"
@@ -71,3 +119,7 @@ updates:
     open-pull-requests-limit: 50
     cooldown:
       default-days: 7
+    groups:
+      docker-base-images:
+        patterns:
+          - "*"

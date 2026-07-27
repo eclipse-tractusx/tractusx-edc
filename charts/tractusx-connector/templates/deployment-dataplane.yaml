@@ -3,6 +3,7 @@
   #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
   #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
   #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+  #  Copyright (c) 2026 Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. (represented by Fraunhofer ISST)
   #
   #  See the NOTICE file(s) distributed with this work for additional
   #  information regarding copyright ownership.
@@ -238,14 +239,68 @@ spec:
             ################
             ## POSTGRESQL ##
             ################
-
-            # default datasource
+            {{ if not .Values.install.postgresql }}
+            # default datasource, no postgresql secret available
             - name: "EDC_DATASOURCE_DEFAULT_USER"
               value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
             - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
               value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
             - name: "EDC_DATASOURCE_DEFAULT_URL"
               value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
+            {{- else }}
+            {{- $hasCustomUser := or .Values.postgresql.customUser.name .Values.postgresql.customUser.existingSecret -}}
+            {{- if $hasCustomUser }}
+            # custom user section activated (customUser.name or customUser.existingSecret exist)
+            {{- $customUserSecretName := .Values.postgresql.customUser.existingSecret | default (include "txdc.postgresql.custom-user-secret" .) -}}
+            {{- $pwKey := .Values.postgresql.customUser | dig "secretKeys" "password" "CUSTOM_PASSWORD" -}}
+            {{- $nameKey := .Values.postgresql.customUser | dig "secretKeys" "name" "CUSTOM_USER" -}}
+            {{- $dbKey := .Values.postgresql.customUser | dig "secretKeys" "database" "CUSTOM_DB" }}
+            - name: "EDC_DATASOURCE_DEFAULT_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $customUserSecretName | quote }}
+                  key: {{ $nameKey | quote }}
+            - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $customUserSecretName | quote }}
+                  key: {{ $pwKey | quote }}
+            # dependent variable to automatically construct the datasource url
+            - name: EDC_DATASOURCE_DEFAULT_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $customUserSecretName | quote }}
+                  key: {{ $dbKey | quote }}
+            - name: EDC_DATASOURCE_DEFAULT_URL
+              value: "jdbc:postgresql://{{ include "txdc.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}/$(EDC_DATASOURCE_DEFAULT_DB)"
+            {{- else }}
+            {{ $adminUserSecretName := .Values.postgresql.auth.existingSecret | default (include "txdc.postgresql.fullname" .) -}}
+            {{- $pwKey := .Values.postgresql.auth | dig "secretKeys" "adminPasswordKey" "postgres-password" }}
+            # admin user section activated (customUser.name or customUser.existingSecret don't exist)
+            # for auth commonly only deviating key for postgresPassword may be defined via secretKeys.adminPasswordKey
+            # for name and db, we assume the same keys and defaults from cloudpirates admin secret
+            {{- $nameKey := .Values.postgresql.auth | dig "secretKeys" "name" "username" -}}
+            {{- $dbKey := .Values.postgresql.auth | dig "secretKeys" "database" "database" }}            
+            - name: "EDC_DATASOURCE_DEFAULT_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $adminUserSecretName | quote }}
+                  key: {{ $nameKey | quote }}
+            - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $adminUserSecretName | quote }}
+                  key: {{ $pwKey | quote }}
+            # dependent variable to automatically construct the datasource url
+            - name: EDC_DATASOURCE_DEFAULT_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $adminUserSecretName | quote }}
+                  key: {{ $dbKey | quote }}
+            - name: EDC_DATASOURCE_DEFAULT_URL
+              value: "jdbc:postgresql://{{ include "txdc.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}/$(EDC_DATASOURCE_DEFAULT_DB)"
+            {{- end }}
+            {{- end }}
 
             #########################
             ## DATA PLANE PUBLIC API

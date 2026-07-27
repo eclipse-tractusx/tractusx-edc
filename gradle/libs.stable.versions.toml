@@ -2,8 +2,8 @@
 format.version = "1.1"
 
 [versions]
-tractusx = "0.9.0"
-edc = "0.11.1"
+tractusx = "0.12.1"
+edc = "0.15.1"
 
 [libraries]
 tx-edc-controlplane-postgresql-hashicorp-vault = { module = "org.eclipse.tractusx.edc:edc-controlplane-postgresql-hashicorp-vault", version.ref = "tractusx" }
@@ -11,5 +11,5 @@ tx-edc-dataplane-postgresql-hashicorp-vault = { module = "org.eclipse.tractusx.e
 edc-boot-spi = { module = "org.eclipse.edc:boot-spi", version.ref = "edc" }
 edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 tx-bdrs-client-spi = { module = "org.eclipse.tractusx.edc:bdrs-client-spi", version.ref = "tractusx" }
-edc-identity-trust-sts-remote-client = { module = "org.eclipse.edc:identity-trust-sts-remote-client", version.ref = "edc" }
+edc-spi-decentralized-claims = { module = "org.eclipse.edc:decentralized-claims-spi", version.ref = "edc" }
 edc-auth-oauth2-client = { module = "org.eclipse.edc:oauth2-client", version.ref = "edc" }

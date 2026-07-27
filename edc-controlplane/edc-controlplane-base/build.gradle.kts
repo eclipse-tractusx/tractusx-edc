@@ -29,6 +29,13 @@ configurations.all {
 
     // decentralized-claims-sts-remote-client excluded because we have the tx-dcp-sts-div that takes care to define the correct client in case of DIV
     exclude("org.eclipse.edc", "decentralized-claims-sts-remote-client")
+
+    // We decided to not provide the federated catalog feature with this runtime
+    exclude("org.eclipse.edc", "federated-catalog-api")
+    exclude("org.eclipse.edc", "federated-catalog-spi")
+    exclude("org.eclipse.edc", "federated-catalog-core")
+    exclude("org.eclipse.edc", "federated-catalog-core-2025")
+    exclude("org.eclipse.edc", "federated-catalog-cache-sql")
 }
 
 dependencies {
