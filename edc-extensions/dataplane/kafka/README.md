@@ -1,9 +1,7 @@
 # Kafka Streaming Extension
 
 The Kafka streaming extension provides the `KafkaBroker-PULL` transfer type, enabling real-time,
-event-driven data exchange between sovereign partners over Apache Kafka. It is implemented as an EDC
-data-plane extension and ships in the standard `tractusx-connector` runtime (via `edc-dataplane-base`),
-so it does not require a separate deployment.
+event-driven data exchange between sovereign partners over Apache Kafka.
 
 Unlike a proxied transfer, data flows **directly** from the provider's Kafka broker to the consumer.
 The EDC stays in charge of access: the data-plane extension provisions short-lived OAuth2
@@ -11,6 +9,7 @@ credentials (and, optionally, Kafka ACLs) for the duration of a negotiated trans
 retains full control over the consumer's access throughout.
 
 <!-- TOC -->
+* [Including the extension in a runtime](#including-the-extension-in-a-runtime)
 * [Overview](#overview)
 * [Architecture](#architecture)
   * [Components](#components)
@@ -32,9 +31,25 @@ retains full control over the consumer's access throughout.
   * [Transport encryption (SASL_SSL)](#transport-encryption-sasl_ssl)
 * [Interoperability and Standards](#interoperability-and-standards)
 * [Troubleshooting](#troubleshooting)
-* [Decision records](#decision-records)
 * [NOTICE](#notice)
 <!-- TOC -->
+
+## Including the extension in a runtime
+
+The extension is **not** part of the released `tractusx-connector` runtimes — it is opt-in, so
+adopters who need Kafka streaming assemble it into their own runtime. Add the data-plane extension
+to the data plane and the data address validator to the control plane:
+
+```kotlin
+// data plane
+implementation(project(":edc-extensions:dataplane:kafka:kafka-broker-extension"))
+
+// control plane
+implementation(project(":edc-extensions:dataplane:kafka:validator-data-address-kafka"))
+```
+
+Both modules are published as regular Maven artifacts under the `org.eclipse.tractusx.edc` group, so
+runtimes built outside this repository can depend on them the same way.
 
 ## Overview
 
@@ -267,9 +282,6 @@ When `edc.dataplane.kafka.acl.enabled=true`:
 3. On suspend/terminate, the ACLs are revoked immediately — closing the access window even before the
    token expires. On resume they are re-created.
 
-See the [Hybrid OAuth2 + Kafka ACL Security](../decision-records/kafka-streaming/2025-07-11-kafka-hybrid-acl-security/README.md)
-decision record for the rationale.
-
 ### Transport encryption (SASL_SSL)
 
 Because the extension allows topic consumption across company borders, end-to-end encryption is
@@ -323,12 +335,6 @@ particular [Modules, Runtimes, and Components](https://eclipse-edc.github.io/doc
 - Verify the admin client has superuser privileges in Kafka.
 - Confirm the JWT contains a `sub` claim (used as the Kafka principal).
 - Check that the Kafka broker has an authorizer configured (`StandardAuthorizer`).
-
-## Decision records
-
-- [Hybrid OAuth2 + Kafka ACL security](../decision-records/kafka-streaming/2025-07-11-kafka-hybrid-acl-security/README.md)
-- [Kafka on Kubernetes: Strimzi vs Bitnami](../decision-records/kafka-streaming/2025-07-17-kafka-on-kubernetes/README.md)
-- [Kafka streaming extension migration](../decision-records/kafka-streaming/2026-04-30-kafka-streaming-extension/README.md)
 
 ## NOTICE
 

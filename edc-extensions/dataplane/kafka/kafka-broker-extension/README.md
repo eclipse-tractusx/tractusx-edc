@@ -36,65 +36,13 @@ via a provisioner and an EDR service. The provisioning lifecycle:
 ## Configuration
 
 Kafka ACL management is optional and disabled by default. When enabled, the data plane manages
-broker-level authorization for each transfer through a Kafka admin client. The following settings configure
-that admin client (see also the [Kafka Streaming documentation](../../../../docs/development/kafka-streaming/README.md#configuration)):
-
-| Property                                    | Description                                       | Default     |
-|---------------------------------------------|---------------------------------------------------|-------------|
-| `edc.dataplane.kafka.acl.enabled`           | Enable Kafka ACL management.                      | `false`     |
-| `edc.dataplane.kafka.acl.bootstrap.servers` | Kafka broker addresses for admin ACL operations.  | —           |
-| `edc.dataplane.kafka.acl.security.protocol` | Security protocol for the admin client.           | `PLAINTEXT` |
-| `edc.dataplane.kafka.acl.sasl.mechanism`    | SASL mechanism for the admin client.              | —           |
-| `edc.dataplane.kafka.acl.sasl.jaas.config`  | JAAS config for the admin client.                 | —           |
-
-The bootstrap servers, security protocol, and SASL settings are only required when ACL management is
-enabled (`edc.dataplane.kafka.acl.enabled=true`).
-
-## DataAddress schema
-
-When creating a Kafka asset, use the following properties in the `DataAddress`:
-
-| Key                       | Description                                                                                       | Mandatory |
-|---------------------------|---------------------------------------------------------------------------------------------------|-----------|
-| `type`                    | Identifier of Kafka data address. Must be `KafkaBroker`.                                          | yes       |
-| `topic`                   | The Kafka topic the consumer is allowed to poll.                                                  | yes       |
-| `kafka.bootstrap.servers` | Kafka bootstrap servers.                                                                          | yes       |
-| `kafka.sasl.mechanism`    | SASL mechanism, typically `OAUTHBEARER`.                                                          | yes       |
-| `kafka.security.protocol` | `SASL_PLAINTEXT` or `SASL_SSL`.                                                                   | yes       |
-| `kafka.poll.duration`     | ISO-8601 polling duration (e.g. `PT10S`). Defaults to 1 second.                                   | no        |
-| `kafka.group.prefix`      | Consumer group prefix the consumer is authorized to use. Defaults to the consumer participant id. | no        |
-| `tokenUrl`                | OAuth2 token endpoint for retrieving access tokens.                                               | yes       |
-| `revokeUrl`               | OAuth2 token revocation endpoint. If omitted, token revocation is skipped.                        | no        |
-| `clientId`                | OAuth2 client ID.                                                                                 | yes       |
-| `clientSecretKey`         | Vault entry containing the OAuth2 client secret for `clientId`.                                   | yes       |
-
-The `clientSecretKey` property must point to a vault entry holding the OAuth2
-client secret. The client must have permission to read the configured topic.
-
-## Example: register a Kafka asset
-
-```json
-{
-  "@context": { "@vocab": "https://w3id.org/edc/v0.0.1/ns/" },
-  "@id": "kafka-asset-1",
-  "properties": { "name": "Kafka stream" },
-  "dataAddress": {
-    "type": "KafkaBroker",
-    "topic": "shopfloor-events",
-    "kafka.bootstrap.servers": "kafka.example.com:9092",
-    "kafka.sasl.mechanism": "OAUTHBEARER",
-    "kafka.security.protocol": "SASL_PLAINTEXT",
-    "kafka.poll.duration": "PT5S",
-    "kafka.group.prefix": "consumer-",
-    "tokenUrl": "https://oauth.example.com/token",
-    "revokeUrl": "https://oauth.example.com/revoke",
-    "clientId": "kafka-broker-client",
-    "clientSecretKey": "kafka-broker-client-secret"
-  }
-}
-```
+broker-level authorization for each transfer through a Kafka admin client, configured via the
+`edc.dataplane.kafka.acl.*` settings — see
+[Configuration](../README.md#configuration).
 
 ## Further reading
 
-- ADR: [`docs/development/decision-records/kafka-streaming/2026-04-30-kafka-streaming-extension`](../../../../docs/development/decision-records/kafka-streaming/2026-04-30-kafka-streaming-extension/README.md)
-- Documentation: [`docs/development/kafka-streaming`](../../../../docs/development/kafka-streaming/README.md)
+The `KafkaBroker` data address schema, the full configuration reference (EDC data plane, Kafka
+broker, Keycloak), the security and token model, the end-to-end transfer workflow, and how to
+include the extension in a runtime are documented in
+[Kafka Streaming Extension](../README.md).
