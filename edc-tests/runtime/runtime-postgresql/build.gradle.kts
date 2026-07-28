@@ -35,6 +35,10 @@ dependencies {
         exclude("org.eclipse.edc", "vault-hashicorp")
     }
     implementation(project(":edc-extensions:single-participant-vault"))
+
+    // Kafka streaming is opt-in and not part of the base runtimes, so the e2e Kafka test needs it wired in here
+    implementation(project(":edc-extensions:dataplane:kafka:kafka-broker-extension"))
+    implementation(project(":edc-extensions:dataplane:kafka:validator-data-address-kafka"))
 }
 
 application {

@@ -1,0 +1,43 @@
+@startuml
+/'
+SPDX-License-Identifier: CC-BY-4.0
+SPDX-FileCopyrightText: (c) 2026 Contributors to the Eclipse Foundation
+'/
+package "Provider ecosystem" #AliceBlue {
+    [Provider Application] as ProviderApp
+}
+
+package "Provider cluster" #AliceBlue {
+    [Control Plane] as ProviderCP
+    package "Data Plane" {
+        [Kafka Extension] as ProviderKE
+    }
+    [Kafka Service] as Kafka
+    [OAuth Service] as OAuthService
+    [Vault]
+    interface "OAuth Token API" as OAuth2API
+    OAuth2API - OAuthService
+}
+
+package "Consumer cluster" #LightYellow {
+    [Control Plane] as ConsumerCP
+}
+package "Consumer ecosystem" #LightYellow {
+    [Consumer Application] as ConsumerApp
+}
+
+interface "Producer API" as ProducerAPI
+ProducerAPI - Kafka
+interface "Consumer API" as ConsumeAPI
+ConsumeAPI - Kafka
+
+ProviderApp --> ProducerAPI : Send stream of data to topic
+ConsumerCP <--> ProviderCP : Initiate negotiation, transfer
+ProviderCP --> ProviderKE : Start/suspend/terminate data flow\n(Data Plane Signaling)
+ProviderKE --> OAuth2API : Mint/revoke access token
+[Vault] <--> ProviderKE : Read client secret,\nstore/delete token
+ProviderKE --> Kafka : Create/revoke ACLs (optional,\nvia admin client)
+Kafka --> OAuth2API : Validate token
+ConsumerApp --> ConsumerCP : Get EDR
+ConsumerApp --> ConsumeAPI : Poll data (SASL/OAUTHBEARER)
+@enduml
