@@ -25,6 +25,7 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.kafka.KafkaExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
@@ -185,7 +186,7 @@ public class KafkaPullEndToEndTest {
      */
     private String startKafkaPullTransfer(String assetId, String contractDefinitionId, Map<String, Object> dataAddress) {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
-        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, CONSUMER.getBpn()));
         PROVIDER.createContractDefinition(assetId, contractDefinitionId, policyId, policyId);
 
         return CONSUMER.requestAssetFrom(assetId, PROVIDER)
