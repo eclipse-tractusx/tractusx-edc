@@ -21,6 +21,7 @@ package org.eclipse.tractusx.edc.policy.cx.validator.jsonschema;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.dialect.Dialects;
@@ -31,7 +32,6 @@ import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 import org.eclipse.edc.validator.spi.Violation;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class CxJsonSchemaPolicyValidator implements Validator<JsonObject> {
@@ -43,27 +43,25 @@ public class CxJsonSchemaPolicyValidator implements Validator<JsonObject> {
 
     private static final String CX_POLICY_SCHEMA = CX_POLICY_SCHEMA_PREFIX + "/policy-schema.json";
 
-    private final SchemaRegistry schemaRegistry;
     private final ObjectMapper objectMapper;
+    private final Schema schemaValidator;
 
-    private final Map<String, String> prefixMappings = new HashMap<>() {
-        {
-            put(CX_POLICY_SCHEMA_PREFIX + "/schema", CX_POLICY_SCHEMA_LOCATION);
-            put(CX_POLICY_SCHEMA_PREFIX, CX_POLICY_SCHEMA_LOCATION);
-            put(DSPACE_2025_SCHEMA_PREFIX, DSPACE_2025_SCHEMA_LOCATION);
-        }
-    };
+    private static final Map<String, String> PREFIX_MAPPINGS = Map.of(
+            CX_POLICY_SCHEMA_PREFIX + "/schema", CX_POLICY_SCHEMA_LOCATION,
+            CX_POLICY_SCHEMA_PREFIX, CX_POLICY_SCHEMA_LOCATION,
+            DSPACE_2025_SCHEMA_PREFIX, DSPACE_2025_SCHEMA_LOCATION
+    );
 
     public CxJsonSchemaPolicyValidator() {
         this.objectMapper = JacksonJsonLd.createObjectMapper();
-        this.schemaRegistry = SchemaRegistry.withDialect(Dialects.getDraft201909(), builder -> builder
-                .schemaIdResolvers(schemaIdResolvers -> prefixMappings.forEach(schemaIdResolvers::mapPrefix))
+        var schemaRegistry = SchemaRegistry.withDialect(Dialects.getDraft201909(), builder -> builder
+                .schemaIdResolvers(schemaIdResolvers -> PREFIX_MAPPINGS.forEach(schemaIdResolvers::mapPrefix))
                 .resourceLoaders(resourceLoaders -> resourceLoaders.add(IriResourceLoader.getInstance())));
+        this.schemaValidator = schemaRegistry.getSchema(SchemaLocation.of(CX_POLICY_SCHEMA));
     }
 
     @Override
     public ValidationResult validate(JsonObject input) {
-        var schemaValidator = schemaRegistry.getSchema(SchemaLocation.of(CX_POLICY_SCHEMA));
         var node = objectMapper.convertValue(input, JsonNode.class);
         var response = schemaValidator.validate(node);
         if (response.isEmpty()) {

@@ -23,6 +23,9 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 
+import static org.eclipse.edc.validator.spi.ValidationResult.failure;
+import static org.eclipse.edc.validator.spi.Violation.violation;
+
 public class CxJsonSchemaPolicyDefinitionValidator implements Validator<JsonObject> {
 
     private static final String POLICY_ATTRIBUTE_NAME = "policy";
@@ -35,7 +38,15 @@ public class CxJsonSchemaPolicyDefinitionValidator implements Validator<JsonObje
 
     @Override
     public ValidationResult validate(JsonObject input) {
-        var policy = input.getJsonObject(POLICY_ATTRIBUTE_NAME);
-        return policyValidator.validate(policy);
+        if (!input.containsKey(POLICY_ATTRIBUTE_NAME)) {
+            return failure(violation("Attribute '%s' is missing from PolicyDefinition.".formatted(POLICY_ATTRIBUTE_NAME), POLICY_ATTRIBUTE_NAME));
+        }
+
+        var policy = input.get(POLICY_ATTRIBUTE_NAME);
+        if (!(policy instanceof JsonObject)) {
+            return failure(violation("Attribute '%s' is not a valid JSON object.".formatted(POLICY_ATTRIBUTE_NAME), POLICY_ATTRIBUTE_NAME));
+        }
+
+        return policyValidator.validate((JsonObject) policy);
     }
 }
