@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "BusinessPartnerNumberConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/BusinessPartnerNumberConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/business-partner-number-constraint-schema.json",
+  "definitions": {
+    "BusinessPartnerNumberConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "BusinessPartnerNumber"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "isAnyOf",
+            "isNoneOf"
+          ]
+        },
+        "rightOperand": {
+          "type":"array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/BusinessPartnerNumberRightOperand"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "BusinessPartnerNumberRightOperand": {
+      "type": "string",
+      "pattern": "^BPNL[0-9A-Z]{12}$"
+    }
+  }
+}

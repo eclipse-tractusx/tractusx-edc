@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "UsagePurposeConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/UsagePurposeConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/usage-purpose-constraint-schema.json",
+  "definitions": {
+    "UsagePurposeConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "UsagePurpose"
+        },
+        "operator": {
+          "type": "string",
+          "const": "isAnyOf"
+        },
+        "rightOperand": {
+          "type":"array",
+          "minItems": 1,
+          "items": {
+            "anyOf": [
+              {"$ref": "#/definitions/CoreLegalRequirementForThirdPartyRightOperand"},
+              {"$ref": "#/definitions/CoreIndustrycoreRightOperand"},
+              {"$ref": "#/definitions/CoreQualityNotificationsRightOperand"},
+              {"$ref": "#/definitions/CoreDigitalTwinRegistry"},
+              {"$ref": "#/definitions/PcfBaseRightOperand"},
+              {"$ref": "#/definitions/QualityBaseRightOperand"},
+              {"$ref": "#/definitions/DcmBaseRightOperand"},
+              {"$ref": "#/definitions/PurisBaseRightOperand"},
+              {"$ref": "#/definitions/CircularDppRightOperand"},
+              {"$ref": "#/definitions/CircularSmcRightOperand"},
+              {"$ref": "#/definitions/CircularMarketplaceRightOperand"},
+              {"$ref": "#/definitions/CircularMaterialaccountingRightOperand"},
+              {"$ref": "#/definitions/BpdmGateUploadRightOperand"},
+              {"$ref": "#/definitions/BpdmGateDownloadRightOperand"},
+              {"$ref": "#/definitions/BpdmPoolRightOperand"},
+              {"$ref": "#/definitions/BpdmVasDataqualityUploadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasDataqualityDownloadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasCountryrisk"},
+              {"$ref": "#/definitions/BpdmVasBdvUploadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasFpdUploadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasFpdDownloadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasSwdUploadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasSwdDownloadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasNpsUploadRightOperand"},
+              {"$ref": "#/definitions/BpdmVasNpsDownloadRightOperand"},
+              {"$ref": "#/definitions/CcmBaseRightOperand"},
+              {"$ref": "#/definitions/BpdmPoolAllRightOperand"},
+              {"$ref": "#/definitions/LogisticsBaseRightOperand"},
+              {"$ref": "#/definitions/EngineeringBaseRightOperand"},
+              {"$ref": "#/definitions/MaterialaccountingBaseRightOperand"},
+              {"$ref": "#/definitions/EsdscomBaseRightOperand"},
+              {"$ref": "#/definitions/EcuBaseRightOperand"},
+              {"$ref": "#/definitions/UsagePurposeIndividualRightOperand"}
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "CoreLegalRequirementForThirdPartyRightOperand": {
+      "type": "string",
+      "const": "cx.core.legalRequirementForThirdparty:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: facilitating compliance with mandatory regulatory requirements for tracking and reporting battery cells, modules & high-voltage batteries.\",\"additionalInformation\":\"Typically used for: Traction Battery Code\"}"
+    },
+    "CoreIndustrycoreRightOperand": {
+      "type": "string",
+      "const": "cx.core.industrycore:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: Establishing a digital representation of the automotive supply chain to enable a component specific data exchange.\",\"additionalInformation\":\"Typically used for: SerialPart, Batch, JustInSequencePart,SingleLevelBomAsBuilt, PartAsPlanned, SingleLevelBomAsPlanned, PartSiteInformationAsPlanned, UniqueIDPushAPI\"}"
+    },
+    "CoreQualityNotificationsRightOperand": {
+      "type": "string",
+      "const": "cx.core.qualityNotifications:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: quality analyses to identify and select affected components and to send quality notifications to affected customers or suppliers.\",\"additionalInformation\":\"Typically used for: Notification API\"}"
+    },
+    "CoreDigitalTwinRegistry": {
+      "type": "string",
+      "const": "cx.core.digitalTwinRegistry:1",
+       "$comment": "{\"permission\":\"The Data Consumer may  use the Data for any of the following purposes: Identifying data offers of submodels within the Catena-X ecosystem.\",\"additionalInformation\":\"Typically used for: Digital Twin Registry Asset\"}"
+    },
+    "PcfBaseRightOperand": {
+      "type": "string",
+      "const": "cx.pcf.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) sending and receiving product-specific CO2 data and related functionalities such as (but not limited to) certificate exchange and notifications, (ii) conducting plausibility checks and validation measures, (iii) calculating aggregated PCFs of Data Consumer (including calculations operated by a technical service provider that (a) is certified for Catena-X, (b) is not authorized to evaluate data beyond such calculation and (c) provides calculations exclusively for Data Consumer's own purposes.\",\"additionalInformation\":\"Typically used for: PCF Model, PCF Exchange API\"}"
+    },
+    "QualityBaseRightOperand": {
+      "type": "string",
+      "const": "cx.quality.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data  for any of the following purposes: (i) early identification of anomalies in the use of the product, (ii) collaborative root-cause analysis of a problem / error and determining corrective action, (iii) component tracing to optimize technical actions (in combination with use case Traceability), (iv) confirming corrective action, (v) preventive field observation to detect anomalies, (vi) processing notifications of quality alerts (supply chain bottom-up) and quality investigations (supply chain top-down) (possibly in combination with the use case Traceability).\",\"additionalInformation\":\"Typically used for: Fleet Vehicles, Quality Task, QualityTaskAttachment, PartsAnalysis, ManufacturedPartsQInformation, FleetDiagnosticData, FleetClaim\"}"
+    },
+    "DcmBaseRightOperand": {
+      "type": "string",
+      "const": "cx.dcm.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) sending and receiving product-specific demand and capacity data, as well as the associated product functionalities, (ii) early identification of imbalances resulting from demand and capacity comparison, (iii) sending and receiving messages and notifications related to imbalances and to exchanged demand and capacity data, (iv) initiate a collaborative approach to solve imbalances.\",\"additionalInformation\":\"Typically used for: Material Demand, WeekBasedCapacityGroup, IdBasedRequestForUpdate, IdBasedComment\"}"
+    },
+    "PurisBaseRightOperand": {
+      "type": "string",
+      "const": "cx.puris.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: optimizing processes, which includes, without limitation, regular exchange of data to prevent and/or solve shortages in the supply chain, conducting plausibility checks against other sources and/or collecting information to facilitate sound decision making, all of the above in the context of predictive unit real-time information relating to production and/or logistics.\",\"additionalInformation\":\"Typically used for: Item Stock, Short-Term Material Demand, Planned Production Output, Delivery Information\"}"
+    },
+    "CircularDppRightOperand": {
+      "type": "string",
+      "const": "cx.circular.dpp:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in accordance to those applicable public legal regulation directly requiring digital product passports or affecting the contents or handling of digital product passports.\",\"additionalInformation\":\"Typically used for: Digital Product Pass, Battery Pass\"}"
+     },
+    "CircularSmcRightOperand": {
+      "type": "string",
+      "const": "cx.circular.smc:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data about secondary material content (SMC) in line with the following purpose: optimize the SMC-usage.\",\"additionalInformation\":\"Typically used for: SMC-Calculated, SMC-Verifiable\"}"
+     },
+    "CircularMarketplaceRightOperand": {
+      "type": "string",
+      "const": "cx.circular.marketplace:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: buy, sell and/or procure parts and materials.\",\"additionalInformation\":\"Typically used for: Market Place Offer\"}"
+     },
+    "CircularMaterialaccountingRightOperand": {
+      "type": "string",
+      "const": "cx.circular.materialaccounting:1",
+       "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) display, process, analysis, correlate, modify and amend data, (ii) for (e.g. enablement of) chain of custody processes and commercial transaction related thereto and allocation of material to parts to the supply chain.\"}"
+     },
+    "BpdmGateUploadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.gate.upload:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: verifying, curating and enriching the Data to create a record of basic information about all entities with a BPN in the Catena-X data space accessible to all participants (Golden Record) and for early warning services (Value Added Services, VASs).\",\"additionalInformation\":\"Typically used for: Gate Data Model\"}"
+     },
+    "BpdmGateDownloadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.gate.download:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the basic information about entities with a BPN in the Catena-X data space provided by the Core Service B Provider for any of the following purposes: (i) identifying counterparty, (ii) usage in Value Added Services (VASs).\",\"additionalInformation\":\"Typically used for: Gate Data Model\"}"
+     },
+    "BpdmPoolRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.pool:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) identifying participants within the Catena-X data space, (ii) identifying counterparty (iii), usage in  information processes, (iv) invitation of additional participants into the Catena-X data space, (v) usage in Value Added Services (VASs), \",\"additionalInformation\":\"Typically used for: Pool Data Models\"}"
+     },
+    "BpdmVasCountryrisk": {
+      "type": "string",
+      "const": "cx.bpdm.vas.countryrisk:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: screening participants's business data to identify risks when collaborating with a new/existing business partner according to official or company-specific country risk assessments.\",\"additionalInformation\":\"Typically used for: Country Risk Data Model, Gate Data Model, Pool Data Models\"}"
+     },
+    "BpdmVasDataqualityUploadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.dataquality.upload:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) assessing Data Provider's data quality, (ii) creating benchmarks for future screenings of other participants' data to fulfill the goals of the Data Quality Dashboard application.\",\"additionalInformation\":\"Typically used for: Business Partner Data Model\"}"
+     },
+    "BpdmVasDataqualityDownloadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.dataquality.download:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: Assessing quality of own data.\",\"additionalInformation\":\"Typically used for: Data Quality Dashboard Data Model\"}"
+     },
+    "BpdmVasBdvUploadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.bdv.upload:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: screening relevant Data Provider's submitted bank data to verify Data Provider's bank data.\",\"additionalInformation\":\"Typically used for: Gate Data Model, Bank Data Verification Data Model\"}"
+     },
+    "BpdmVasBdvDownloadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.bdv.download:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: verifying Data Consumer's submitted bank data.\",\"additionalInformation\":\"Typically used for: Bank Data Verification Data Model\"}"
+     },
+    "BpdmVasFpdUploadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.fpd.upload:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: screening Data Provider's submitted business partner data to assess occurrence of fraud.\",\"additionalInformation\":\"Typically used for: Fraud Prevention Data Model\"}"
+     },
+    "BpdmVasFpdDownloadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.fpd.download:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: Assessing fraud risks in transactions with another participant.\",\"additionalInformation\":\"Typically used for: Fraud Prevention Data Model\"}"
+    },
+    "BpdmVasSwdUploadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.swd.upload:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: screening Data Provider's submitted beneficial ownership data to assess trade compliance.\",\"additionalInformation\":\"Typically used for: Gate Data Model\"}"
+    },
+    "BpdmVasSwdDownloadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.swd.download:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: assessing trade sanction risks in transactions with another participant.\",\"additionalInformation\":\"Typically used for: Sanction Party Watch List Dashboard Data Model\"}"
+    },
+    "BpdmVasNpsUploadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.nps.upload:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: verifying Data Provider's submitted Business Partner Data against Natural Person data entries.\",\"additionalInformation\":\"Typically used for: Gate Data Model\"}"
+    },
+    "BpdmVasNpsDownloadRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.vas.nps.download:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data in line with the following purpose: verifying its submitted Business Partner Data.\",\"additionalInformation\":\"Typically used for: Natural Person Screening Data Model\"}"
+    },
+    "CcmBaseRightOperand": {
+      "type": "string",
+      "const": "cx.ccm.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the exchanged business partner certificates in line with the following purpose: Verification and validation of the existence of a certification.\",\"additionalInformation\":\"Typically used for: Business Partner Certificate\"}"
+    },
+    "BpdmPoolAllRightOperand": {
+      "type": "string",
+      "const": "cx.bpdm.poolAll:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the basic information about all entities with a BPN in the Catena-X data space provided by the Core Service B Provider for any of the following purposes: (i) identifying internal counterparties, (ii) usage in internal information processes, (iii) usage in Value Added Services (VAS).\",\"additionalInformation\":\"Typically used for: Pool Data Model\"}"
+    },
+    "LogisticsBaseRightOperand": {
+      "type": "string",
+      "const": "cx.logistics.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the logistic Data for any of the following purposes: (i) tracking of load carriers, reusable boxes and any packaging, (ii) early identification of delay or damages on transport, and (iii) identification of affected part instances or batch instances on respective transport units.\",\"additionalInformation\":\"Typically used for: asset_tracker_links, batch, global_transport_label, sensor_data, packing_list, serial_part\"}"
+    },
+    "EngineeringBaseRightOperand": {
+      "type": "string",
+      "const": "cx.engineering.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) [joint] development of products (e.g., 3D Designs, Simulations) in accordance with the provisions of the ContractReference with the Data Provider, (ii) [joint] development of products (e.g., 3D Designs, Simulations) in accordance with the provisions of the ContractReference, including integrating directed parts of third party manufacturers, as agreed with the Data Provider; the Data Consumer may share the Data with the respective third party manufacturer to the extent required; this relates in particular to such Data that the third party supplier requires, in order to facilitate the final assembly of the directed parts into the product as to be developed by the Data Provider, (iii) regulatory compliance (e.g., material information in master data for secondar material content checks), (iv) mock-up and integration (e.g., collision checks in 3D), (v) versioning & release notifications of products (e.g., new product version that shall be used in a new product generation), (vi) interface alignments (e.g., between interacting systems on physical, logical and functional level). The Data Consumer is prohibited to use the Data for reverse engineering, e.g., by using material classifications for redeveloping and building the respective Data Provider's product as such.\",\"additionalInformation\":\"Typically used for: requirement, digital engineering master data\"}"
+    },
+    "MaterialaccountingBaseRightOperand": {
+      "type": "string",
+      "const": "cx.materialaccounting.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) creating material balances along all stages of the reverse value chain, (ii) accounting of secondary material flows and calculating secondary material content, (iii) verifying the fulfillment of regulatory (open or closed loop) secondary material quotas and fulfilling related legal reporting obligations. \",\"additionalInformation\":\"Typically used for: VehicleInformation, WasteCode, RecyclingBatch, Material, RecyclingInformation, Composition\"}"
+    },
+    "EsdscomBaseRightOperand": {
+      "type": "string",
+      "const": "cx.esdscom.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) conducting plausibility checks and validation measures, (ii) inhouse processing in data management systems and data bases (e.g., in occupational health and environment management systems, inhouse substance databases), (iii) reporting, registration, and notification duties, (iv) fulfilling import/export requirements of chemicals, (v) dangerous goods classification, (vi) any other not listed data usage required, in order to meet related legal requirements.\",\"additionalInformation\":\"Typically used for: eSDScom\"}"
+    },
+     "EcuBaseRightOperand": {
+      "type": "string",
+      "const": "cx.ecu.base:1",
+      "$comment": "{\"permission\":\"The Data Consumer may use the Data for any of the following purposes: (i) issuing digital certificates for a control unit, e.g., for creating a digital identity for the control unit, (ii) registering a digital device identity already created by the Data Provider, (iii) enabling debug functions on the control unit, (iv) performing updates or customization of the control unit, e.g., overwriting an initial key/password with a value generated by the Data Consumer, (v) dangerous goods classification, (vi) integrating cryptographic keys into products or infrastructure of the Data Consumer to enable secure communication with the control unit, (vii) tracking the software status and changes to a control unit.\",\"additionalInformation\":\"Typically used for: CryptoMaterial,SoftwareInformation\"}"
+    },
+    "UsagePurposeIndividualRightOperand": {
+      "type": "string",
+      "$comment": "{\"permission\":\"Data Provider and Data Consumer are free to individually agree this certain purpose of use. The legal meaning of this certain purpose need to be agreed individually between Data Provider and Data Consumer.\"}"
+    }
+  }
+}

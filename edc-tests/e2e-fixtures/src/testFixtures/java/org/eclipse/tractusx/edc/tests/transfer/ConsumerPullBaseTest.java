@@ -22,6 +22,7 @@ package org.eclipse.tractusx.edc.tests.transfer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.ParticipantAwareTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -167,10 +168,10 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
     }
 
     protected JsonObject createAccessPolicy(String bpn) {
-        return bpnPolicy(bpn);
+        return bpnPolicy(Operator.IS_ANY_OF, bpn);
     }
 
     protected JsonObject createContractPolicy(String bpn) {
-        return bpnPolicy(bpn);
+        return bpnPolicy(Operator.IS_ANY_OF, bpn);
     }
 }

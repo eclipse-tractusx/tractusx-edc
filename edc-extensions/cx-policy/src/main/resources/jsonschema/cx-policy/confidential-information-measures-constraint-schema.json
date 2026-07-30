@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "ConfidentialInformationMeasuresConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/ConfidentialInformationMeasuresConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/confidential-information-measures-constraint-schema.json",
+  "definitions": {
+    "ConfidentialInformationMeasuresConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "ConfidentialInformationMeasures"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/ConfidentialityMeasuresRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ConfidentialityMeasuresRightOperand": {
+      "type": "string",
+      "const": "cx.confidentiality.measures:1",
+      "$comment": "{\"permission\":\"The Data Consumer is obliged to take all appropriate technical and organisational measures to protect the Confidential Information of the Data Provider, in order to prevent unauthorised disclosure to third parties. The Data Consumer is also obliged to inform the Data Provider without undue delay about any unauthorised disclosure of Confidential Information.\"}"
+    }
+  }
+}

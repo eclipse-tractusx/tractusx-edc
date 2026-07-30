@@ -61,6 +61,7 @@ import org.eclipse.tractusx.edc.policy.cx.usage.ExcludingUsageConstraintFunction
 import org.eclipse.tractusx.edc.policy.cx.usage.UsagePurposeConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.usage.UsageRestrictionConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.validator.CxPolicyDefinitionValidator;
+import org.eclipse.tractusx.edc.policy.cx.validator.jsonschema.CxJsonSchemaPolicyDefinitionValidator;
 import org.eclipse.tractusx.edc.policy.cx.versionchange.VersionChangesConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyConstraintFunction;
 import org.eclipse.tractusx.edc.policy.cx.warranty.WarrantyDefinitionConstraintFunction;
@@ -71,7 +72,9 @@ import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPar
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.eclipse.edc.connector.api.management.schema.ManagementApiSchemaValidatorExtension.V_4_PREFIX;
 import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_TYPE;
+import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_TYPE_TERM;
 import static org.eclipse.edc.connector.policy.monitor.spi.PolicyMonitorContext.POLICY_MONITOR_SCOPE;
 import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
@@ -119,6 +122,8 @@ public class CxPolicyExtension implements ServiceExtension {
     public static final String NAME = "CX Policy";
     private static final Set<String> RULE_SCOPES = Set.of(CATALOG_REQUEST_SCOPE, NEGOTIATION_REQUEST_SCOPE,
             TRANSFER_PROCESS_REQUEST_SCOPE, CATALOG_SCOPE, NEGOTIATION_SCOPE, TRANSFER_PROCESS_SCOPE);
+
+    private static final String V4_POLICY_DEFINITION_TYPE = V_4_PREFIX + EDC_POLICY_DEFINITION_TYPE_TERM;
 
     private static String withCxPolicyNsPrefix(String name) {
         return CX_POLICY_2025_09_NS + name;
@@ -374,6 +379,7 @@ public class CxPolicyExtension implements ServiceExtension {
     @Override
     public void prepare() {
         validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, CxPolicyDefinitionValidator.instance());
+        validatorRegistry.register(V4_POLICY_DEFINITION_TYPE, new CxJsonSchemaPolicyDefinitionValidator());
     }
 
     @Override

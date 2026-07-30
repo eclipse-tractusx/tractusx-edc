@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "WarrantyConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/WarrantyConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/warranty-definition-constraint-schema.json",
+  "definitions": {
+    "WarrantyConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "WarrantyDefinition"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/WarrantyContractEndDateRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WarrantyContractEndDateRightOperand": {
+      "type": "string",
+      "const": "cx.warranty.contractEndDate:1",
+      "$comment": "{\"permission\":\"The provision of the Data is subject to a warranty for material defects and defects in title until the end of the Agreement concluded via the Registered Connector (RC).\"}"
+    }
+  }
+}
