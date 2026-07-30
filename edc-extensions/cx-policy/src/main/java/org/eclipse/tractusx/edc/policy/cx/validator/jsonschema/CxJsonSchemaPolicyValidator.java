@@ -36,18 +36,17 @@ import java.util.Map;
 
 public class CxJsonSchemaPolicyValidator implements Validator<JsonObject> {
     private static final String CX_POLICY_SCHEMA_PREFIX = "https://w3id.org/catenax/2025/9/policy";
-    private static final String CX_POLICY_SCHEMA_LOCATION = "classpath:schema/cx-policy";
+    private static final String CX_POLICY_SCHEMA_LOCATION = "classpath:jsonschema/cx-policy";
 
     private static final String DSPACE_2025_SCHEMA_PREFIX = "https://w3id.org/dspace/2025/1/negotiation";
-    private static final String DSPACE_2025_SCHEMA_LOCATION = "classpath:schema/dspace";
+    private static final String DSPACE_2025_SCHEMA_LOCATION = "classpath:jsonschema/dspace";
 
-    private static final String CX_POLICY_SCHEMA = CX_POLICY_SCHEMA_PREFIX + "/policy-schema.json";
+    private static final String CX_POLICY_SCHEMA = CX_POLICY_SCHEMA_PREFIX + "/schema/policy-schema.json";
 
     private final ObjectMapper objectMapper;
     private final Schema schemaValidator;
 
     private static final Map<String, String> PREFIX_MAPPINGS = Map.of(
-            CX_POLICY_SCHEMA_PREFIX + "/schema", CX_POLICY_SCHEMA_LOCATION,
             CX_POLICY_SCHEMA_PREFIX, CX_POLICY_SCHEMA_LOCATION,
             DSPACE_2025_SCHEMA_PREFIX, DSPACE_2025_SCHEMA_LOCATION
     );

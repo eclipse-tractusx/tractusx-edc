@@ -26,6 +26,7 @@ import org.eclipse.tractusx.edc.policy.cx.validator.jsonschema.CxJsonSchemaPolic
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 
@@ -44,6 +45,25 @@ class CxJsonSchemaPolicyDefinitionValidatorTest {
         var result = validator.validate(policyDefinition);
 
         assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void shouldResolveReferencedSchemas_whenPolicyContainsConstraints() {
+        var constraint = Json.createObjectBuilder()
+                        .add("leftOperand", "Membership")
+                        .add("operator", "eq")
+                        .add("rightOperand", "active");
+        var permission = Json.createObjectBuilder()
+                       .add("action", "access")
+                        .add("constraint", Json.createArrayBuilder().add(constraint));
+        var policy = Json.createObjectBuilder()
+                       .add(TYPE, "Set")
+                        .add(ID, "id")
+                        .add("permission", Json.createArrayBuilder().add(permission))
+                        .build();
+        var policyDefinition = policyDefinition(policy);
+
+        assertThatNoException().isThrownBy(() -> validator.validate(policyDefinition));
     }
 
     @Test
