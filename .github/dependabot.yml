@@ -83,6 +83,7 @@ updates:
         patterns:
           - "org.postgresql*"
           - "org.flywaydb*"
+          - "org.apache.kafka*"
 
   # Github Actions
   -
