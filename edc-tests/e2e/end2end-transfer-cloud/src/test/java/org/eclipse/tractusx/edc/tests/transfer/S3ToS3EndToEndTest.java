@@ -48,6 +48,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -118,8 +119,9 @@ public class S3ToS3EndToEndTest {
 
         // create objects in EDC
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
-        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
-        PROVIDER.createContractDefinition(assetId, "def-1", policyId, policyId);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         var destination = Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
@@ -174,8 +176,9 @@ public class S3ToS3EndToEndTest {
         );
 
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
-        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
-        PROVIDER.createContractDefinition(assetId, "def-1", policyId, policyId);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         var destination = Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
