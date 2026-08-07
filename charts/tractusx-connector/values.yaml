@@ -332,6 +332,40 @@ controlplane:
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
 
+  ## HTTPRoute declaration to expose the network service via Gateway API.
+  ## Each entry creates an HTTPRoute attached to the specified
+  ## parentRefs (Gateway resources).
+  httpRoutes:
+    ## Public / Internet facing HTTPRoute
+    - enabled: false
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-control.local"
+      # -- Additional HTTPRoute annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this HTTPRoute resource
+      endpoints:
+        - protocol
+      # -- [parentRefs](https://gateway-api.sigs.k8s.io/api-types/httproute/#parentrefs) referencing Gateway resources
+      parentRefs: []
+      # - name: gateway
+      #   namespace: traefik
+      #   sectionName: https
+    ## Private / Intranet facing HTTPRoute
+    - enabled: false
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-control.intranet"
+      # -- Additional HTTPRoute annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this HTTPRoute resource
+      endpoints:
+        - management
+        - control
+      # -- [parentRefs](https://gateway-api.sigs.k8s.io/api-types/httproute/#parentrefs) referencing Gateway resources
+      parentRefs: []
+      # - name: gateway
+      #   namespace: traefik
+      #   sectionName: https
+
   # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
   volumeMounts:
   # -- [volume](https://kubernetes.io/docs/concepts/storage/volumes/) directories
@@ -573,6 +607,25 @@ dataplane:
         issuer: ""
         # -- If preset enables certificate generation via cert-manager cluster-wide issuer
         clusterIssuer: ""
+
+  ## HTTPRoute declaration to expose the network service via Gateway API.
+  ## Each entry creates an HTTPRoute attached to the specified
+  ## parentRefs (Gateway resources).
+  httpRoutes:
+    ## Public / Internet facing HTTPRoute
+    - enabled: false
+      # -- The hostname to be used to precisely map incoming traffic onto the underlying network service
+      hostname: "edc-data.local"
+      # -- Additional HTTPRoute annotations to add
+      annotations: {}
+      # -- EDC endpoints exposed by this HTTPRoute resource
+      endpoints:
+        - public
+      # -- [parentRefs](https://gateway-api.sigs.k8s.io/api-types/httproute/#parentrefs) referencing Gateway resources
+      parentRefs: []
+      # - name: gateway
+      #   namespace: traefik
+      #   sectionName: https
 
   # -- declare where to mount [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) into the container
   volumeMounts:
