@@ -4,21 +4,11 @@ Thanks for your interest in this project.
 
 ## Project description
 
-The companies involved want to increase the automotive industry's
-competitiveness, improve efficiency through industry-specific cooperation and
-accelerate company processes through standardization and access to information
-and data. A special focus is also on SMEs, whose active participation is of
-central importance for the network's success. That is why Catena-X has been
-conceived from the outset as an open network with solutions ready for SMEs,
-where these companies will be able to participate quickly and with little IT
-infrastructure investment. Tractus-X is meant to be the PoC project of the
-Catena-X alliance focusing on parts traceability.
-
-* <https://projects.eclipse.org/projects/automotive.tractusx>
+Here you can find the latest project description: <https://projects.eclipse.org/projects/automotive.tractusx>
 
 ## Project licenses
 
-The Tractus-X project uses the following licenses:
+The Eclipse Tractus-X project uses the following licenses:
 
 * Apache-2.0 for code
 * CC-BY-4.0 for non-code
