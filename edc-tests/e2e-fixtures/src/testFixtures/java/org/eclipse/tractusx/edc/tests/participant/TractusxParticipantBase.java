@@ -38,6 +38,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -57,7 +58,6 @@ import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.Agreement
 import static org.eclipse.tractusx.edc.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
-
 
 /**
  * Base class for doing E2E tests with participants.
@@ -81,17 +81,41 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
     }
-    
+
+    /**
+     * Overrides the upstream variant to set an id with a random UUID
+     */
+    @Override
+    public String createPolicyDefinition(JsonObject policy) {
+        var body = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "PolicyDefinition")
+                .add(ID, UUID.randomUUID().toString())
+                .add("policy", policy)
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/v3/policydefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(JSON)
+                .extract().jsonPath().getString("@id");
+    }
+
     @NotNull
     public String getBpn() {
         return bpn;
     }
-    
+
     @NotNull
     public String getDid() {
         return did;
     }
-    
+
     /**
      * Allows overriding the participant id, as for DSP 0.8 tests the provider's BPN has to be used.
      *
@@ -162,7 +186,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public ParticipantDataApi data() {
         return data;
     }
-
 
     /**
      * Returns the consumer data plane api for fetching data via consumer proxy
@@ -274,7 +297,6 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
                 .add(TYPE, "QuerySpec");
 
-
         return given()
                 .baseUri(federatedCatalog.get().toString())
                 .header("x-api-key", MANAGEMENT_API_KEY)
@@ -329,7 +351,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         protected Builder(P participant) {
             super(participant);
         }
-        
+
         public B bpn(String bpn) {
             this.participant.bpn = bpn;
             return self();
@@ -339,7 +361,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             this.participant.did = did;
             return self();
         }
-        
+
         public B protocolVersionPath(String path) {
             this.participant.protocolVersionPath = path;
             return self();

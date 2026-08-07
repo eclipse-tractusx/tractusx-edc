@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.edc.tests.catalog;
 
+import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition;
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.policy.spi.store.PolicyDefinitionStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
@@ -45,6 +47,7 @@ import java.util.Map;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
+import static org.eclipse.edc.spi.query.Criterion.criterion;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
@@ -58,7 +61,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicyWithRightOperandAsArray;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.QueryHelperFunctions.createQuery;
@@ -74,7 +76,6 @@ public class CatalogTest {
             .protocol(DSP_2025)
             .protocolVersionPath(DSP_2025_PATH)
             .build();
-
 
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
@@ -138,12 +139,10 @@ public class CatalogTest {
         PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
 
-
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
     }
-
 
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
@@ -167,7 +166,6 @@ public class CatalogTest {
         PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
 
-
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
@@ -177,13 +175,13 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using BPN group validation)")
     void requestCatalog_filteredByBpnGroup_shouldReturnOffer() {
         var allowedGroup = "allowed-group";
-        var accessPolicy = bpnGroupPolicyWithRightOperandAsArray(Operator.IS_ANY_OF, allowedGroup, "test-group");
+        var accessPolicy = bpnGroupPolicy(Operator.IS_ANY_OF, allowedGroup, "test-group");
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), allowedGroup);
 
         PROVIDER.createAsset("test-asset");
         var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy);
-        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
         PROVIDER.createContractDefinition("test-asset", "def", accessPolicyId, contractPolicyId);
 
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
@@ -196,7 +194,6 @@ public class CatalogTest {
 
         var mustBeGreekPhilosopher = bpnGroupPolicy(Operator.IS_ANY_OF, "greek_customer", "philosopher");
         var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_NONE_OF, "greek_customer", "mathematician");
-
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
         var philosopherId = PROVIDER.createPolicyDefinition(mustBeGreekPhilosopher);
@@ -211,7 +208,6 @@ public class CatalogTest {
         PROVIDER.createContractDefinition("test-asset2", "def2", philosopherId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset3", "def3", mathId, noConstraintPolicyId);
 
-
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
@@ -224,11 +220,13 @@ public class CatalogTest {
         var id = "philosopher-policy";
         PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class)
                 .create(buildLegacyPolicyDefinition(id, "greek_customer", Operator.EQ, "philosopher"));
+        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
 
-        PROVIDER.createContractDefinition("test-asset2", "def1", id, id);
+        PROVIDER_RUNTIME.getService(ContractDefinitionStore.class)
+                .save(buildContractDefinition("test-asset2", "def1", id, noConstraintPolicyId));
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
@@ -309,4 +307,12 @@ public class CatalogTest {
                 .build();
     }
 
+    private ContractDefinition buildContractDefinition(String assetId, String contractDefinitionId, String accessPolicyId, String contractPolicyId) {
+        return ContractDefinition.Builder.newInstance()
+                .id(contractDefinitionId)
+                .accessPolicyId(accessPolicyId)
+                .contractPolicyId(contractPolicyId)
+                .assetsSelectorCriterion(criterion("id", "=", assetId))
+                .build();
+    }
 }

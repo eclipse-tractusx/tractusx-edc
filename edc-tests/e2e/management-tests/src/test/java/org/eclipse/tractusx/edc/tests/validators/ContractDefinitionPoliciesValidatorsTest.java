@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,41 +19,33 @@
 
 package org.eclipse.tractusx.edc.tests.validators;
 
-import io.restassured.response.ValidatableResponse;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-
-import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ACCESSPOLICY_ID;
-import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_ASSETS_SELECTOR;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition.CONTRACT_DEFINITION_CONTRACTPOLICY_ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 
 @EndToEndTest
-public class EmptyAssetSelectorValidatorTest {
+public class ContractDefinitionPoliciesValidatorsTest {
 
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
@@ -66,52 +58,72 @@ public class EmptyAssetSelectorValidatorTest {
     private static final PostgresExtension POSTGRES = new PostgresExtension(PROVIDER.getName());
 
     @RegisterExtension
-    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES,
-            () -> PROVIDER.getConfig().merge(ConfigFactory.fromMap(
-                    Map.of("tx.edc.validator.contractdefinitions.block-empty-asset-selector", "true"))
-            )
-    );
+    private static final RuntimeExtension PROVIDER_RUNTIME = pgRuntime(PROVIDER, POSTGRES);
 
     @Test
-    @DisplayName("Provider gets 400 when no asset selector is used")
-    void shouldFail_whenContractDefinitionHasNoAssetSelector() {
-        var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy());
+    void shouldFail_whenAccessPolicyDefinedAsContractPolicy() {
         var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy());
 
-        createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, null)
+        var contractDefinition = contractDefinition("contract-definition", contractPolicyId, contractPolicyId);
+        PROVIDER.baseManagementRequest()
+                .contentType(JSON)
+                .body(contractDefinition)
+                .when()
+                .post("/v3/contractdefinitions")
+                .then().assertThat()
+                .log().ifValidationFails()
                 .statusCode(400)
-                .body("message", contains("mandatory array '%s' is missing"
-                        .formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
+                .body("[0].message", equalTo(
+                        "Policy '%s' does not have the expected permission action 'https://w3id.org/catenax/2025/9/policy/access'"
+                                .formatted(contractPolicyId)));
     }
 
     @Test
-    @DisplayName("Provider gets 400 when empty asset selector is used")
-    void shouldFail_whenContractDefinitionHasEmptyAssetSelector() {
+    void shouldFail_whenContractPolicyDefinedAsAccessPolicy() {
         var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy());
-        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy());
 
-        createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, createArrayBuilder().build())
+        var contractDefinition = contractDefinition("contract-definition", accessPolicyId, accessPolicyId);
+        PROVIDER.baseManagementRequest()
+                .contentType(JSON)
+                .body(contractDefinition)
+                .when()
+                .post("/v3/contractdefinitions")
+                .then().assertThat()
                 .statusCode(400)
-                .body("message", contains("array '%s' should at least contains '1' elements"
-                        .formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
+                .body("[0].message",
+                        equalTo("Policy '%s' does not have the expected permission action 'http://www.w3.org/ns/odrl/2/use'"
+                                .formatted(accessPolicyId)));
     }
 
     @Test
-    @DisplayName("Provider gets 200 when asset selector has a valid criterion")
-    void shouldPass_whenContractDefinitionHasCorrectAssetSelector() {
+    void shouldPass_whenContractDefinitionHasCorrectPolicies() {
         var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy());
         var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy());
-        var assetSelector = Json.createArrayBuilder()
-                .add(createObjectBuilder()
-                        .add(TYPE, "Criterion")
-                        .add(EDC_NAMESPACE + "operandLeft", EDC_NAMESPACE + "id")
-                        .add(EDC_NAMESPACE + "operator", "=")
-                        .add(EDC_NAMESPACE + "operandRight", "assetId")
-                        .build())
+
+        PROVIDER.createContractDefinition("assetId", "contract-definition", accessPolicyId, contractPolicyId);
+    }
+
+    @Test
+    void shouldFail_whenUpdatingPolicyThatIsReferencedByContractDefinition() {
+        var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy());
+        PROVIDER.createContractDefinition("assetId", "contract-definition", accessPolicyId, contractPolicyId);
+
+        var policyDefinition = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "PolicyDefinition")
+                .add(ID, contractPolicyId)
+                .add("policy", accessPolicy())
                 .build();
 
-        createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, assetSelector)
-                .statusCode(200);
+        PROVIDER.baseManagementRequest()
+                .contentType(JSON)
+                .body(policyDefinition)
+                .when()
+                .put("/v3/policydefinitions/" + contractPolicyId)
+                .then().assertThat()
+                .statusCode(400)
+                .body("[0].message", equalTo("Policy Definition is referenced by a Contract Definition"));
     }
 
     private JsonObject accessPolicy() {
@@ -151,24 +163,18 @@ public class EmptyAssetSelectorValidatorTest {
                 .build();
     }
 
-    private ValidatableResponse createContractDefinitionRequest(String definitionId, String accessPolicyId, String contractPolicyId, JsonArray criterionArray) {
-        var requestBody = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder().add(EDC_PREFIX, EDC_NAMESPACE))
-                .add(ID, definitionId)
+    private JsonObject contractDefinition(String id, String accessPolicyId, String contractPolicyId) {
+        return createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder())
+                .add(ID, id)
                 .add(TYPE, EDC_NAMESPACE + "ContractDefinition")
                 .add(CONTRACT_DEFINITION_ACCESSPOLICY_ID, accessPolicyId)
-                .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, contractPolicyId);
-
-        if (criterionArray != null) {
-            requestBody.add(CONTRACT_DEFINITION_ASSETS_SELECTOR, criterionArray);
-        }
-
-        return PROVIDER.baseManagementRequest()
-                .contentType(JSON)
-                .body(requestBody.build())
-                .when()
-                .post("/v3/contractdefinitions")
-                .then();
+                .add(CONTRACT_DEFINITION_CONTRACTPOLICY_ID, contractPolicyId)
+                .add("assetsSelector", createArrayBuilder().add(createObjectBuilder()
+                        .add("@type", "CriterionDto")
+                        .add("operandLeft", "https://w3id.org/edc/v0.0.1/ns/id")
+                        .add("operator", "=")
+                        .add("operandRight", "asset")))
+                .build();
     }
-
 }
