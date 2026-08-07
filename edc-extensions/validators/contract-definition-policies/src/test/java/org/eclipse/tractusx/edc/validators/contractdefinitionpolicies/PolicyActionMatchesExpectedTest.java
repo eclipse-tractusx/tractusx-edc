@@ -148,7 +148,7 @@ class PolicyActionMatchesExpectedTest {
 
     @Test
     void shouldPass_whenExpectedActionMatchesActualAction() {
-        var policyDefinition = createPolicyDefinitionWithAction(expectedAction);
+        var policyDefinition = createPolicyDefinitionWithAction(EXPECTED_ACTION);
         when(policyDefinitionService.findById("policy-id")).thenReturn(policyDefinition);
 
         var result = policyActionMatchesExpected.validate(createInput());
