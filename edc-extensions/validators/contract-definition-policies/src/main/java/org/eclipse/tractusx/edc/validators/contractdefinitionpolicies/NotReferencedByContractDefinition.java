@@ -66,7 +66,6 @@ public class NotReferencedByContractDefinition implements Validator<JsonString> 
                 .compose(this::isListEmpty)
                 .map(v -> ValidationResult.success())
                 .orElse(failure -> ValidationResult.failure(violation(failure.getFailureDetail(), path.toString())));
-
     }
 
     private ServiceResult<Void> isListEmpty(List<ContractDefinition> list) {

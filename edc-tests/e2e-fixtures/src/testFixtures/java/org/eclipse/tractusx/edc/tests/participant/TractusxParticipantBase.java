@@ -83,7 +83,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     }
 
     /**
-     * Overrides the upstream variant to set an id an a random UUID
+     * Overrides the upstream variant to set an id with a random UUID
      */
     @Override
     public String createPolicyDefinition(JsonObject policy) {

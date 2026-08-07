@@ -43,11 +43,11 @@ class PolicyActionMatchesExpectedTest {
 
     private final JsonLdPath path = new JsonLdPath("contractPolicyId");
     private final PolicyDefinitionService policyDefinitionService = mock();
-    private final String expectedAction = "use";
+    private static final String EXPECTED_ACTION = "use";
     private final PolicyActionMatchesExpected policyActionMatchesExpected = new PolicyActionMatchesExpected(
             path,
             policyDefinitionService,
-            expectedAction);
+            EXPECTED_ACTION);
 
     private JsonObject createInput() {
         // Simplified input for testing purposes.
@@ -60,15 +60,19 @@ class PolicyActionMatchesExpectedTest {
     }
 
     private PolicyDefinition createPolicyDefinitionWithAction(String actionType) {
+        var action = Action.Builder.newInstance()
+                .type(actionType)
+                .build();
+        var permission = Permission.Builder.newInstance()
+                .action(action)
+                .build();
+        var policy = Policy.Builder.newInstance()
+                .permission(permission)
+                .build();
+
         return PolicyDefinition.Builder.newInstance()
                 .id("policy-id")
-                .policy(Policy.Builder.newInstance()
-                        .permission(Permission.Builder.newInstance()
-                                .action(Action.Builder.newInstance()
-                                        .type(actionType)
-                                        .build())
-                                .build())
-                        .build())
+                .policy(policy)
                 .build();
     }
 
