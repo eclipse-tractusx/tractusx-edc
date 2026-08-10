@@ -335,7 +335,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
     }
 
     @Override
-    protected JsonObject createContractPolicy(String bpn) {
+    protected JsonObject createContractPolicy() {
         return frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), "use");
     }
 

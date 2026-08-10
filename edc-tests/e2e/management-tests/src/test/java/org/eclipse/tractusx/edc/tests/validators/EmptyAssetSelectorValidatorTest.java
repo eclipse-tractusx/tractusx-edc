@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.tests.validators;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -49,6 +48,8 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.hamcrest.Matchers.contains;
 
@@ -75,8 +76,8 @@ public class EmptyAssetSelectorValidatorTest {
     @Test
     @DisplayName("Provider gets 400 when no asset selector is used")
     void shouldFail_whenContractDefinitionHasNoAssetSelector() {
-        var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy());
-        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy());
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(PROVIDER_BPN));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
 
         createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, null)
                 .statusCode(400)
@@ -87,8 +88,8 @@ public class EmptyAssetSelectorValidatorTest {
     @Test
     @DisplayName("Provider gets 400 when empty asset selector is used")
     void shouldFail_whenContractDefinitionHasEmptyAssetSelector() {
-        var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy());
-        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy());
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(PROVIDER_BPN));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
 
         createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, createArrayBuilder().build())
                 .statusCode(400)
@@ -99,8 +100,8 @@ public class EmptyAssetSelectorValidatorTest {
     @Test
     @DisplayName("Provider gets 200 when asset selector has a valid criterion")
     void shouldPass_whenContractDefinitionHasCorrectAssetSelector() {
-        var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy());
-        var contractPolicyId = PROVIDER.createPolicyDefinition(contractPolicy());
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(PROVIDER_BPN));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
         var assetSelector = Json.createArrayBuilder()
                 .add(createObjectBuilder()
                         .add(TYPE, "Criterion")
@@ -112,43 +113,6 @@ public class EmptyAssetSelectorValidatorTest {
 
         createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, assetSelector)
                 .statusCode(200);
-    }
-
-    private JsonObject accessPolicy() {
-        return createObjectBuilder()
-                .add("@context", createArrayBuilder()
-                        .add("https://w3id.org/dspace/2025/1/odrl-profile.jsonld")
-                        .add("https://w3id.org/catenax/2025/9/policy/context.jsonld"))
-                .add("@type", "Set")
-                .add("permission", createObjectBuilder()
-                        .add("action", "access")
-                        .add("constraint", createObjectBuilder()
-                                .add("leftOperand", "Membership")
-                                .add("operator", "eq")
-                                .add("rightOperand", "active")))
-                .build();
-    }
-
-    private JsonObject contractPolicy() {
-        return createObjectBuilder()
-                .add("@context", createArrayBuilder()
-                        .add("https://w3id.org/dspace/2025/1/odrl-profile.jsonld")
-                        .add("https://w3id.org/catenax/2025/9/policy/context.jsonld"))
-                .add("@type", "Set")
-                .add("permission", createObjectBuilder()
-                        .add("action", "use")
-                        .add("constraint", createObjectBuilder()
-                                .add("and", createArrayBuilder()
-                                        .add(createObjectBuilder()
-                                                .add("leftOperand", "UsagePurpose")
-                                                .add("operator", "isAnyOf")
-                                                .add("rightOperand", createArrayBuilder()
-                                                        .add("cx.core.digitalTwinRegistry:1")))
-                                        .add(createObjectBuilder()
-                                                .add("leftOperand", "FrameworkAgreement")
-                                                .add("operator", "eq")
-                                                .add("rightOperand", "DataExchangeGovernance:1.0")))))
-                .build();
     }
 
     private ValidatableResponse createContractDefinitionRequest(String definitionId, String accessPolicyId, String contractPolicyId, JsonArray criterionArray) {

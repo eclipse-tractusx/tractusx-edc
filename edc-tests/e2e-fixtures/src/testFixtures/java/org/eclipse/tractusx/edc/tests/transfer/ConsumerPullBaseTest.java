@@ -79,7 +79,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
         provider().createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
-        var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(createContractPolicy());
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL")
                 .withDestination(httpDataDestination()).execute();
@@ -125,7 +125,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
         provider().createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
-        var contractPolicyId = provider().createPolicyDefinition(createContractPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(createContractPolicy());
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = consumer().requestAssetFrom(assetId, provider()).withTransferType("HttpData-PULL")
                 .withDestination(httpDataDestination()).execute();
@@ -171,7 +171,7 @@ public abstract class ConsumerPullBaseTest implements ParticipantAwareTest {
         return bpnPolicy(bpn);
     }
 
-    protected JsonObject createContractPolicy(String bpn) {
+    protected JsonObject createContractPolicy() {
         return frameworkPolicy(Map.of(), "use");
     }
 }
