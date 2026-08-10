@@ -66,4 +66,24 @@ class JsonObjectFromEndpointDataReferenceEntryTransformerTest {
         assertThat(jsonObject.getJsonString(EDR_ENTRY_PROVIDER_ID).getString()).isNotNull().isEqualTo(dto.getProviderId());
 
     }
+
+    @Test
+    void transform_withoutContractNegotiationId() {
+
+        var dto = EndpointDataReferenceEntry.Builder.newInstance()
+                .assetId("id")
+                .transferProcessId("tpId")
+                .agreementId("aId")
+                .providerId("providerId")
+                .build();
+
+        var jsonObject = transformer.transform(dto, context);
+
+        assertThat(jsonObject).isNotNull();
+        assertThat(jsonObject.containsKey(EDR_ENTRY_CONTRACT_NEGOTIATION_ID)).isFalse();
+        assertThat(jsonObject.getJsonString(EDR_ENTRY_AGREEMENT_ID).getString()).isEqualTo(dto.getAgreementId());
+        assertThat(jsonObject.getJsonString(EDR_ENTRY_ASSET_ID).getString()).isEqualTo(dto.getAssetId());
+        assertThat(jsonObject.getJsonString(EDR_ENTRY_TRANSFER_PROCESS_ID).getString()).isEqualTo(dto.getTransferProcessId());
+        assertThat(jsonObject.getJsonString(EDR_ENTRY_PROVIDER_ID).getString()).isEqualTo(dto.getProviderId());
+    }
 }

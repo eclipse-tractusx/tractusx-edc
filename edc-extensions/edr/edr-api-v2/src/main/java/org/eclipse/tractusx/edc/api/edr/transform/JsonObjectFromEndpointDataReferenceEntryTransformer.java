@@ -48,15 +48,21 @@ public class JsonObjectFromEndpointDataReferenceEntryTransformer extends Abstrac
 
     @Override
     public @Nullable JsonObject transform(@NotNull EndpointDataReferenceEntry entry, @NotNull TransformerContext context) {
-        return jsonFactory.createObjectBuilder()
+        var builder = jsonFactory.createObjectBuilder()
                 .add(ID, entry.getId())
                 .add(TYPE, EDR_ENTRY_TYPE)
                 .add(EDR_ENTRY_PROVIDER_ID, entry.getProviderId())
                 .add(EDR_ENTRY_ASSET_ID, entry.getAssetId())
                 .add(EDR_ENTRY_AGREEMENT_ID, entry.getAgreementId())
                 .add(EDR_ENTRY_TRANSFER_PROCESS_ID, entry.getTransferProcessId())
-                .add(EDR_ENTRY_CREATED_AT, entry.getCreatedAt())
-                .add(EDR_ENTRY_CONTRACT_NEGOTIATION_ID, entry.getContractNegotiationId())
-                .build();
+                .add(EDR_ENTRY_CREATED_AT, entry.getCreatedAt());
+
+        // the contract negotiation id is optional: it is not set when the negotiation cannot be
+        // resolved from the agreement when the transfer starts. jakarta.json rejects null values.
+        if (entry.getContractNegotiationId() != null) {
+            builder.add(EDR_ENTRY_CONTRACT_NEGOTIATION_ID, entry.getContractNegotiationId());
+        }
+
+        return builder.build();
     }
 }
