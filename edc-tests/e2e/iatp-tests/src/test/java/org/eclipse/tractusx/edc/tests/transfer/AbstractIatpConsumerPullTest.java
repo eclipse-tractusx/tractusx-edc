@@ -336,7 +336,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
 
     @Override
     protected JsonObject createContractPolicy(String bpn) {
-        return frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), CX_POLICY_2025_09_NS + "access");
+        return frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), "use");
     }
 
     protected abstract RuntimeExtension credentialStoreRuntime();
@@ -347,7 +347,7 @@ public abstract class AbstractIatpConsumerPullTest extends ConsumerPullBaseTest 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), CX_POLICY_2025_09_NS + "access"), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "Membership", "active"), "use"), "MembershipCredential"),
                     Arguments.of(frameworkPolicy(Map.of(CX_POLICY_2025_09_NS + "FrameworkAgreement", "DataExchangeGovernance:1.0"), "use"), "DataExchangeGovernance use case")
             );
         }

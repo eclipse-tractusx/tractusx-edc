@@ -20,10 +20,10 @@
 
 package org.eclipse.tractusx.edc.tests.catalog;
 
-import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
-import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition;
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.policy.spi.store.PolicyDefinitionStore;
+import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
@@ -34,6 +34,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.PolicyType;
+import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,6 @@ import java.util.Map;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
-import static org.eclipse.edc.spi.query.Criterion.criterion;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
@@ -220,13 +220,19 @@ public class CatalogTest {
         var id = "philosopher-policy";
         PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class)
                 .create(buildLegacyPolicyDefinition(id, "greek_customer", Operator.EQ, "philosopher"));
-        var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
 
         PROVIDER_RUNTIME.getService(ContractDefinitionStore.class)
-                .save(buildContractDefinition("test-asset2", "def1", id, noConstraintPolicyId));
+                .save(ContractDefinition.Builder.newInstance()
+                        .id("def1")
+                        .participantContextId("general-test-id") // configured edc.participant.context.id
+                        .accessPolicyId(id)
+                        .contractPolicyId(contractPolicyId)
+                        .assetsSelectorCriterion(new Criterion("https://w3id.org/edc/v0.0.1/ns/id", "=", "test-asset2"))
+                        .build());
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
@@ -307,12 +313,4 @@ public class CatalogTest {
                 .build();
     }
 
-    private ContractDefinition buildContractDefinition(String assetId, String contractDefinitionId, String accessPolicyId, String contractPolicyId) {
-        return ContractDefinition.Builder.newInstance()
-                .id(contractDefinitionId)
-                .accessPolicyId(accessPolicyId)
-                .contractPolicyId(contractPolicyId)
-                .assetsSelectorCriterion(criterion("id", "=", assetId))
-                .build();
-    }
 }
