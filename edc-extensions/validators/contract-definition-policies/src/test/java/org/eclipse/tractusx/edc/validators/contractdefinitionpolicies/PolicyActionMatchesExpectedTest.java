@@ -147,23 +147,6 @@ class PolicyActionMatchesExpectedTest {
     }
 
     @Test
-    void shouldFail_whenPolicyHasNoPermissions() {
-        var policyDefinition = PolicyDefinition.Builder.newInstance()
-                .id("policy-id")
-                .policy(Policy.Builder.newInstance().build())
-                .build();
-        when(policyDefinitionService.findById("policy-id")).thenReturn(policyDefinition);
-
-        var result = policyActionMatchesExpected.validate(createInput());
-
-        assertThat(result).isFailed().extracting(ValidationFailure::getViolations).asInstanceOf(list(Violation.class))
-                .isNotEmpty()
-                .anySatisfy(violation -> Assertions.assertThat(violation.path()).isEqualTo(path.toString()))
-                .anySatisfy(violation -> Assertions.assertThat(violation.message())
-                        .isEqualTo("Policy 'policy-id' does not have any permissions"));
-    }
-
-    @Test
     void shouldPass_whenExpectedActionMatchesActualAction() {
         var policyDefinition = createPolicyDefinitionWithAction(EXPECTED_ACTION);
         when(policyDefinitionService.findById("policy-id")).thenReturn(policyDefinition);
