@@ -57,8 +57,6 @@ public class JsonObjectFromEndpointDataReferenceEntryTransformer extends Abstrac
                 .add(EDR_ENTRY_TRANSFER_PROCESS_ID, entry.getTransferProcessId())
                 .add(EDR_ENTRY_CREATED_AT, entry.getCreatedAt());
 
-        // the contract negotiation id is optional: it is not set when the negotiation cannot be
-        // resolved from the agreement when the transfer starts. jakarta.json rejects null values.
         if (entry.getContractNegotiationId() != null) {
             builder.add(EDR_ENTRY_CONTRACT_NEGOTIATION_ID, entry.getContractNegotiationId());
         }
