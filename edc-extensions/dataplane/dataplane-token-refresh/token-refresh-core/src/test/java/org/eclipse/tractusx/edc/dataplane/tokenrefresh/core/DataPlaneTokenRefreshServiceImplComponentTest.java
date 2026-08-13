@@ -61,6 +61,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -432,6 +433,8 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .issuer(CONSUMER_DID)
                 .subject(CONSUMER_DID)
                 .audience(PROVIDER_DID)
+                .issueTime(Date.from(clock.instant()))
+                .expirationTime(Date.from(clock.instant().plusSeconds(60)))
                 .claim("token", accessToken);
     }
 
