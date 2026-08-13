@@ -53,6 +53,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.net.URI;
 import java.text.ParseException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -278,6 +280,8 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .subject(CONSUMER_DID)
                 .audience("did:web:bob")
                 .jwtID(getJwtId(accessToken))
+                .issueTime(Date.from(Instant.now()))
+                .expirationTime(Date.from(Instant.now().plusSeconds(60)))
                 .build();
         var authToken = createJwt(consumerKey, claims);
 
@@ -377,6 +381,8 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .subject(CONSUMER_DID)
                 .audience("did:web:bob")
                 .jwtID(getJwtId(accessToken))
+                .issueTime(Date.from(Instant.now()))
+                .expirationTime(Date.from(Instant.now().plusSeconds(60)))
                 .build();
         return createJwt(signerKey, claims);
     }

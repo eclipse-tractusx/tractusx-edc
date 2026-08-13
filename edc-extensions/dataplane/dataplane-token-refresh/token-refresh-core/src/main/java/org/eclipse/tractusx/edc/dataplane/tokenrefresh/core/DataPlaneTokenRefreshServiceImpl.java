@@ -133,6 +133,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
                 new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
                 new ClaimIsPresentRule(TOKEN_ID_CLAIM),
+                new ExpirationIssuedAtValidationRule(clock, tokenExpiryToleranceSeconds, false),
                 new AuthTokenAudienceRule(accessTokenDataStore));
         this.participantContextSupplier = participantContextSupplier;
         accessTokenAuthorizationRules = List.of(new IssuerEqualsSubjectRule(),
