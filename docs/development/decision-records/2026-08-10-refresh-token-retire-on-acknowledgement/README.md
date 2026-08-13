@@ -22,11 +22,16 @@ production: a refresh takes longer than a proxy or ingress in front of the publi
 with HTTP 504, or the consumer cancels and the access log shows 499. The provider has rotated; the consumer still holds
 the old refresh token; it never saw the new one. Every subsequent refresh is answered with HTTP 401 because the token
 presented no longer matches the stored one. The transfer is permanently broken and can only be recovered by
-renegotiating the contract — for a failure mode that is a plain network timeout.
+restarting the transfer process — for a failure mode that is a plain network timeout.
 
 The observation that resolves this is that **the acknowledgement already exists in the protocol**. A consumer that
 presents the new refresh token can only have obtained it from the response it is confirming. No extra message, no
 profile change, and no timer is needed — the provider simply defers retirement until it sees that evidence.
+
+The refresh token is sender-constrained: holding one does not authorise a refresh. Every request must also carry an
+authentication token signed with the key behind the consumer's DID and issued by the participant the EDR was issued to
+(`AuthTokenAudienceRule`), so an intercepted or leaked refresh token is unusable on its own, however often it is
+replayed. Retention changes how long the consumer's own copy stays valid, not who is able to use it.
 
 ## Approach
 
@@ -44,11 +49,8 @@ public record RefreshToken(String refreshToken, Long expiresIn, String refreshEn
 `null` there and are treated as having no predecessor, so no migration of existing vault entries is required. The record
 additionally ignores unknown properties, so a further component could be added without breaking records already stored.
 
-Only the refresh token is retained; the access token is issued fresh on both paths. `resolve()` validates an access
-token against its own claims and the existence of the `AccessTokenData` entry rather than against a stored string, and
-`DataPlaneAuthorizationServiceImpl` sets no `exp` claim, so every issue — including one serving a repeat — gets the full
-configured lifetime. Issuing it fresh keeps a live bearer credential out of the vault, keeps the record to a single
-added component, and hands the consumer a usable access token however late it retries.
+The record holds refresh tokens only. The access token is never stored — every call mints a new one, whether it rotates
+the refresh token or serves a repeat, so a consumer retrying late still gets a usable access token.
 
 At most two generations of refresh token are live at any time, and the older one is retired by the very request that
 proves it is no longer needed.
@@ -76,10 +78,10 @@ existing end-to-end assertions are unaffected.
 
 ## Further considerations
 
-**Security.** The superseded token stays usable for one extra generation, unbounded in time. This does not widen the
-attack surface: a refresh request must also carry an authentication token signed with the consumer's DID key, so an
-attacker able to use the old token could equally use the current one. Revocation is unaffected — it deletes the vault
-entry and the access token data, dropping both generations at once.
+**Security.** The superseded token stays usable for one extra generation, unbounded in time. That widens an existing
+window: a captured *complete* refresh request can be replayed for a generation longer, and without the 401 collision
+that makes such an intrusion visible. The authentication token must therefore carry an `exp` claim and is validated
+against it.
 
 **Standards conformance.** The behaviour stays within [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749). Section 6
 makes both halves of rotation optional — "The authorization server MAY issue a new refresh token […] The authorization
@@ -95,9 +97,8 @@ it is indistinguishable from the legitimate retry this decision exists to suppor
 
 ## NOTICE
 
-This work is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
+This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
-- SPDX-License-Identifier: Apache-2.0
+- SPDX-License-Identifier: CC-BY-4.0
 - SPDX-FileCopyrightText: 2026 Cofinity-X GmbH
-- SPDX-FileCopyrightText: 2026 Contributors to the Eclipse Foundation
-- Source URL: <https://github.com/eclipse-tractusx/tractusx-edc>
+- Source URL: [https://github.com/eclipse-tractusx/tractusx-edc](https://github.com/eclipse-tractusx/tractusx-edc)
