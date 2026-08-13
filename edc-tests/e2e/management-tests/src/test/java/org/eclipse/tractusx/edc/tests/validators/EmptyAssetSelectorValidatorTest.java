@@ -48,6 +48,8 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 import static org.hamcrest.Matchers.contains;
 
@@ -74,27 +76,32 @@ public class EmptyAssetSelectorValidatorTest {
     @Test
     @DisplayName("Provider gets 400 when no asset selector is used")
     void shouldFail_whenContractDefinitionHasNoAssetSelector() {
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(PROVIDER_BPN));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
 
-        var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", null);
-
-        requestResponse.statusCode(400)
-                .body("message", contains("mandatory array '%s' is missing".formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
-
+        createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, null)
+                .statusCode(400)
+                .body("message", contains("mandatory array '%s' is missing"
+                        .formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
     }
 
     @Test
     @DisplayName("Provider gets 400 when empty asset selector is used")
     void shouldFail_whenContractDefinitionHasEmptyAssetSelector() {
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(PROVIDER_BPN));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
 
-        var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", createArrayBuilder().build());
-
-        requestResponse.statusCode(400)
-                .body("message", contains("array '%s' should at least contains '1' elements".formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
+        createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, createArrayBuilder().build())
+                .statusCode(400)
+                .body("message", contains("array '%s' should at least contains '1' elements"
+                        .formatted(CONTRACT_DEFINITION_ASSETS_SELECTOR)));
     }
 
     @Test
     @DisplayName("Provider gets 200 when asset selector has a valid criterion")
     void shouldPass_whenContractDefinitionHasCorrectAssetSelector() {
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(PROVIDER_BPN));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
         var assetSelector = Json.createArrayBuilder()
                 .add(createObjectBuilder()
                         .add(TYPE, "Criterion")
@@ -104,9 +111,8 @@ public class EmptyAssetSelectorValidatorTest {
                         .build())
                 .build();
 
-        var requestResponse = createContractDefinitionRequest("definitionId", "accessPolicyId", "contractPolicy", assetSelector);
-
-        requestResponse.statusCode(200);
+        createContractDefinitionRequest("definitionId", accessPolicyId, contractPolicyId, assetSelector)
+                .statusCode(200);
     }
 
     private ValidatableResponse createContractDefinitionRequest(String definitionId, String accessPolicyId, String contractPolicyId, JsonArray criterionArray) {

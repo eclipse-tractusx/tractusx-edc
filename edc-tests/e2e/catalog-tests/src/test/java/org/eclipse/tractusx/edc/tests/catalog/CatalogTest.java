@@ -20,6 +20,8 @@
 
 package org.eclipse.tractusx.edc.tests.catalog;
 
+import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition;
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.policy.spi.store.PolicyDefinitionStore;
 import org.eclipse.edc.jsonld.spi.JsonLd;
@@ -32,6 +34,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.policy.model.PolicyType;
+import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +61,6 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_N
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetAssetId;
 import static org.eclipse.tractusx.edc.tests.helpers.CatalogHelperFunctions.getDatasetPolicies;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
-import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicyWithRightOperandAsArray;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.QueryHelperFunctions.createQuery;
@@ -74,7 +76,6 @@ public class CatalogTest {
             .protocol(DSP_2025)
             .protocolVersionPath(DSP_2025_PATH)
             .build();
-
 
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
@@ -138,12 +139,10 @@ public class CatalogTest {
         PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
 
-
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
     }
-
 
     @Test
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)")
@@ -167,7 +166,6 @@ public class CatalogTest {
         PROVIDER.createContractDefinition("test-asset2", "def2", onlyConsumerId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset3", "def3", onlyDiogenesId, noConstraintPolicyId);
 
-
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
@@ -177,13 +175,13 @@ public class CatalogTest {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using BPN group validation)")
     void requestCatalog_filteredByBpnGroup_shouldReturnOffer() {
         var allowedGroup = "allowed-group";
-        var accessPolicy = bpnGroupPolicyWithRightOperandAsArray(Operator.IS_ANY_OF, allowedGroup, "test-group");
+        var accessPolicy = bpnGroupPolicy(Operator.IS_ANY_OF, allowedGroup, "test-group");
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), allowedGroup);
 
         PROVIDER.createAsset("test-asset");
         var accessPolicyId = PROVIDER.createPolicyDefinition(accessPolicy);
-        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
         PROVIDER.createContractDefinition("test-asset", "def", accessPolicyId, contractPolicyId);
 
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
@@ -196,7 +194,6 @@ public class CatalogTest {
 
         var mustBeGreekPhilosopher = bpnGroupPolicy(Operator.IS_ANY_OF, "greek_customer", "philosopher");
         var mustBeGreekMathematician = bpnGroupPolicy(Operator.IS_NONE_OF, "greek_customer", "mathematician");
-
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
         var philosopherId = PROVIDER.createPolicyDefinition(mustBeGreekPhilosopher);
@@ -211,7 +208,6 @@ public class CatalogTest {
         PROVIDER.createContractDefinition("test-asset2", "def2", philosopherId, noConstraintPolicyId);
         PROVIDER.createContractDefinition("test-asset3", "def3", mathId, noConstraintPolicyId);
 
-
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
         assertThat(catalog).hasSize(2);
@@ -224,11 +220,19 @@ public class CatalogTest {
         var id = "philosopher-policy";
         PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class)
                 .create(buildLegacyPolicyDefinition(id, "greek_customer", Operator.EQ, "philosopher"));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
 
-        PROVIDER.createContractDefinition("test-asset2", "def1", id, id);
+        PROVIDER_RUNTIME.getService(ContractDefinitionStore.class)
+                .save(ContractDefinition.Builder.newInstance()
+                        .id("def1")
+                        .participantContextId("general-test-id") // configured edc.participant.context.id
+                        .accessPolicyId(id)
+                        .contractPolicyId(contractPolicyId)
+                        .assetsSelectorCriterion(new Criterion("https://w3id.org/edc/v0.0.1/ns/id", "=", "test-asset2"))
+                        .build());
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);

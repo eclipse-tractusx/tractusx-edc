@@ -60,6 +60,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -131,7 +132,7 @@ public class TransferWithTokenRefreshTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
                 .withDestination(httpDataDestination()).execute();
@@ -191,7 +192,7 @@ public class TransferWithTokenRefreshTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
                 .withDestination(httpDataDestination()).execute();
@@ -252,7 +253,7 @@ public class TransferWithTokenRefreshTest {
         return bpnPolicy(bpn);
     }
 
-    protected JsonObject createContractPolicy(String bpn) {
-        return bpnPolicy(bpn);
+    protected JsonObject createContractPolicy() {
+        return frameworkPolicy(Map.of(), "use");
     }
 }

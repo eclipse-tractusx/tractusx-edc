@@ -137,8 +137,9 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 "contentType", "application/json",
                 "isNonFinite", "true");
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
-        provider().createContractDefinition(assetId, "def-1", policyId, policyId);
+        var accessPolicyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         var destination = httpDataAddress(destinationUrl);
         var consumerTransferProcessId = consumer()
