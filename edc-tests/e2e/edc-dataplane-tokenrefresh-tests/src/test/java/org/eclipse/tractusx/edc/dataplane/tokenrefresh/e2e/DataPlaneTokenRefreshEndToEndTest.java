@@ -315,6 +315,8 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .subject(CONSUMER_DID)
                 /* missing: .audience("did:web:bob")*/
                 .jwtID(getJwtId(accessToken))
+                .issueTime(Date.from(Instant.now()))
+                .expirationTime(Date.from(Instant.now().plusSeconds(60)))
                 .build();
         var authToken = createJwt(consumerKey, claims);
 
@@ -351,6 +353,8 @@ public class DataPlaneTokenRefreshEndToEndTest {
                 .subject(CONSUMER_DID)
                 .audience("did:web:bob")
                 .jwtID(tokenId)
+                .issueTime(Date.from(Instant.now()))
+                .expirationTime(Date.from(Instant.now().plusSeconds(60)))
                 .build();
 
         var authToken = createJwt(consumerKey, claims);
