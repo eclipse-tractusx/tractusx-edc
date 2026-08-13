@@ -19,6 +19,14 @@
 
 package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core;
 
-public record RefreshToken(String refreshToken, Long expiresIn, String refreshEndpoint) {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jetbrains.annotations.Nullable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record RefreshToken(String refreshToken, Long expiresIn, String refreshEndpoint,
+                           @Nullable String previousRefreshToken) {
+
+    public RefreshToken(String refreshToken, Long expiresIn, String refreshEndpoint) {
+        this(refreshToken, expiresIn, refreshEndpoint, null);
+    }
 }

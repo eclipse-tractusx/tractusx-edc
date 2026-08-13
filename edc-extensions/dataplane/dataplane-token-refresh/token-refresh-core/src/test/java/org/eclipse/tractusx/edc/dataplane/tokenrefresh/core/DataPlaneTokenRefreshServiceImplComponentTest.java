@@ -57,7 +57,10 @@ import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
@@ -86,11 +89,13 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
     private final ParticipantContextSupplier participantContextSupplier = () -> ServiceResult.success(
             ParticipantContext.Builder.newInstance().participantContextId("participantContextId").identity("identity").build()
     );
+    private static final long TOKEN_EXPIRY_SECONDS = 300L;
     private DataPlaneTokenRefreshServiceImpl tokenRefreshService;
     private final InMemoryAccessTokenDataStore tokenDataStore = new InMemoryAccessTokenDataStore(CriterionOperatorRegistryImpl.ofDefaults());
     private final Monitor monitor = mock();
     private final InMemoryVault vault = new InMemoryVault(mock(), null);
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final MutableClock clock = new MutableClock(Instant.now());
     private ECKey consumerKey;
     private ECKey providerKey;
 
@@ -101,7 +106,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         consumerKey = new ECKeyGenerator(Curve.P_384).keyID(CONSUMER_DID + "#consumer-key").keyUse(KeyUse.SIGNATURE).generate();
 
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
-        tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(Clock.systemUTC(),
+        tokenRefreshService = new DataPlaneTokenRefreshServiceImpl(clock,
                 new TokenValidationServiceImpl(),
                 didPkResolverMock,
                 localPublicKeyService,
@@ -111,7 +116,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 monitor,
                 TEST_REFRESH_ENDPOINT,
                 1,
-                300L,
+                TOKEN_EXPIRY_SECONDS,
                 () -> providerKey.getKeyID(),
                 vault,
                 objectMapper, participantContextSupplier);
@@ -177,6 +182,93 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
                 .doesNotContainKey("refreshToken");
     }
 
+    @DisplayName("Verify that a refresh whose response got lost can be repeated with the same refresh token")
+    @Test
+    void refresh_whenResponseWasLost_returnsCurrentRefreshTokenAndFreshAccessToken() throws JOSEException {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        var refreshToken = edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString();
+
+        // the client never sees this response, e.g. because a proxy in between timed out
+        var lostResponse = tokenRefreshService.refreshToken(refreshToken, createAuthToken(tokenId, edr.getToken()))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        clock.advanceBy(Duration.ofSeconds(10));
+
+        // ...so it retries with the only refresh token it has, and gets the very same pair back
+        var retriedResponse = tokenRefreshService.refreshToken(refreshToken, createAuthToken(tokenId, edr.getToken()));
+
+        assertThat(retriedResponse).withFailMessage(retriedResponse::getFailureDetail).isSucceeded()
+                // the refresh token is the one the client failed to receive, not a rotated one
+                .satisfies(tr -> assertThat(tr.refreshToken()).isEqualTo(lostResponse.refreshToken()))
+                // the access token is minted fresh, so the client gets a usable one however late it retries
+                .satisfies(tr -> assertThat(tokenRefreshService.resolve(tr.accessToken())).isSucceeded());
+    }
+
+    @DisplayName("Verify that the token pair handed out on a repeat can be refreshed again")
+    @Test
+    void refresh_afterRepeat_newTokenIsUsable() throws JOSEException {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        var refreshToken = edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString();
+
+        tokenRefreshService.refreshToken(refreshToken, createAuthToken(tokenId, edr.getToken()))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+        var repeated = tokenRefreshService.refreshToken(refreshToken, createAuthToken(tokenId, edr.getToken()))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        var nextResponse = tokenRefreshService.refreshToken(repeated.refreshToken(), createAuthToken(tokenId, repeated.accessToken()));
+
+        assertThat(nextResponse).withFailMessage(nextResponse::getFailureDetail).isSucceeded()
+                .satisfies(tr -> assertThat(tr.refreshToken()).isNotEqualTo(repeated.refreshToken()));
+    }
+
+    @DisplayName("Verify that a rotated refresh token is rejected once the client proved it received the new one")
+    @Test
+    void refresh_whenSupersededTokenWasAcknowledged_shouldFail() throws JOSEException {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        var firstRefreshToken = edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString();
+        var second = tokenRefreshService.refreshToken(firstRefreshToken, createAuthToken(tokenId, edr.getToken()))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        // using the second token proves that the client received it, which retires the first one
+        tokenRefreshService.refreshToken(second.refreshToken(), createAuthToken(tokenId, second.accessToken()))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        assertThat(tokenRefreshService.refreshToken(firstRefreshToken, createAuthToken(tokenId, edr.getToken())))
+                .isFailed()
+                .detail()
+                .isEqualTo("Access token validation failed: Provided refresh token does not match the stored refresh token.");
+    }
+
+    @DisplayName("Verify that a rotated refresh token stays acceptable no matter how long the client takes to retry")
+    @Test
+    void refresh_whenResponseWasLostLongAgo_stillSucceeds() throws JOSEException {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        var refreshToken = edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString();
+        var lostResponse = tokenRefreshService.refreshToken(refreshToken, createAuthToken(tokenId, edr.getToken()))
+                .orElseThrow(f -> new AssertionError(f.getFailureDetail()));
+
+        // the client still has not proven receipt, so its only refresh token must remain usable - there is no window
+        // after which it is retired
+        clock.advanceBy(Duration.ofDays(1));
+
+        var retriedResponse = tokenRefreshService.refreshToken(refreshToken, createAuthToken(tokenId, edr.getToken()));
+
+        assertThat(retriedResponse).withFailMessage(retriedResponse::getFailureDetail).isSucceeded()
+                .satisfies(tr -> assertThat(tr.refreshToken()).isEqualTo(lostResponse.refreshToken()));
+    }
+
     @DisplayName("Verify that a stolen refresh token cannot be used to refresh an access token")
     @Test
     void refresh_originalTokenWasIssuedToDifferentPrincipal() throws JOSEException {
@@ -197,8 +289,7 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
         var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
-        // todo: once the AuthTokenAudienceRule is re-enabled in the DataPlaneTokenRefreshServiceImpl the following assertion needs to be uncommented
-        // assertThat(tokenResponse).isFailed().detail().isEqualTo("Authentication token validation failed: Principal 'did:web:bob' is not authorized to refresh this token.");
+        assertThat(tokenResponse).isFailed().detail().isEqualTo("Authentication token validation failed: Principal 'did:web:bob' is not authorized to refresh this token.");
     }
 
     @DisplayName("Verify that a spoofed refresh attempt is rejected ")
@@ -328,6 +419,13 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         assertThat(vault.resolveSecret(tokenId)).isNull();
     }
 
+    private String createAuthToken(String tokenId, String accessToken) throws JOSEException {
+        var jwsHeader = new JWSHeader.Builder(JWSAlgorithm.ES384).keyID(consumerKey.getKeyID()).build();
+        var signedAuthToken = new SignedJWT(jwsHeader, getAuthTokenClaims(tokenId, accessToken).build());
+        signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
+        return signedAuthToken.serialize();
+    }
+
     private JWTClaimsSet.Builder getAuthTokenClaims(String tokenId, String accessToken) {
         return new JWTClaimsSet.Builder()
                 .jwtID(tokenId)
@@ -359,6 +457,36 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
             return jwt.getJWTClaimsSet().getClaims();
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Clock that only moves when the test tells it to, so that token expiry can be exercised without waiting.
+     */
+    private static class MutableClock extends Clock {
+        private Instant instant;
+
+        MutableClock(Instant instant) {
+            this.instant = instant;
+        }
+
+        void advanceBy(Duration duration) {
+            instant = instant.plus(duration);
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneOffset.UTC;
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            return this;
+        }
+
+        @Override
+        public Instant instant() {
+            return instant;
         }
     }
 }

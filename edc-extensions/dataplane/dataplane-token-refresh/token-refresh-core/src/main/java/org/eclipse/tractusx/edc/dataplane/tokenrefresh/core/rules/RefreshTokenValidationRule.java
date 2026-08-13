@@ -39,12 +39,18 @@ import static org.eclipse.edc.spi.result.Result.success;
 /**
  * Validates that the refresh token information associated with a token's ID ({@code jti}), that is stored in the {@link Vault}
  * matches a refresh token string. The refresh token in question is passed into the CTor.
+ * <p>
+ * The token that the last refresh replaced is accepted as well: a client presenting it never received the response of
+ * that refresh, and retiring it before the client has proven receipt would strand the transfer for good. In that case
+ * {@link #replayedToken()} carries the stored record, so that the current refresh token can be handed out again
+ * instead of rotating a second time. Instances are therefore single-use, one per refresh request.
  */
 public class RefreshTokenValidationRule implements TokenValidationRule {
     private final Vault vault;
     private final String incomingRefreshToken;
     private final ObjectMapper objectMapper;
     private final ParticipantContext participantContext;
+    private RefreshToken replayedToken;
 
     public RefreshTokenValidationRule(Vault vault, String incomingRefreshToken, ObjectMapper objectMapper, ParticipantContext participantContext) {
         this.vault = vault;
@@ -62,9 +68,20 @@ public class RefreshTokenValidationRule implements TokenValidationRule {
             return failure("No refresh token with the ID '%s' was found in the vault.".formatted(tokenId));
         }
         return parse(storedRefreshTokenJson)
-                .compose(rt -> incomingRefreshToken.equals(rt.refreshToken()) ?
-                        success() :
-                        failure("Provided refresh token does not match the stored refresh token."));
+                .compose(rt -> {
+                    if (incomingRefreshToken.equals(rt.refreshToken())) {
+                        return success();
+                    }
+                    if (incomingRefreshToken.equals(rt.previousRefreshToken())) {
+                        replayedToken = rt;
+                        return success();
+                    }
+                    return failure("Provided refresh token does not match the stored refresh token.");
+                });
+    }
+
+    public @Nullable RefreshToken replayedToken() {
+        return replayedToken;
     }
 
     private Result<RefreshToken> parse(String storedRefreshTokenJson) {
