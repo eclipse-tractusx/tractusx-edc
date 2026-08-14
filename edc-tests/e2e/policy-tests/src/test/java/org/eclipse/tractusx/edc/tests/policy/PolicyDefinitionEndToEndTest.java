@@ -46,9 +46,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static com.apicatalog.jsonld.lang.Keywords.ID;
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -243,16 +245,17 @@ public class PolicyDefinitionEndToEndTest {
     private Response createPolicyDefinition(ManagementApiVersion apiVersion, JsonObject policy) {
         JsonValue context;
         switch (apiVersion) {
-            case V3 -> context = Json.createObjectBuilder()
+            case V3 -> context = createObjectBuilder()
                     .add("@vocab", "https://w3id.org/edc/v0.0.1/ns/")
                     .build();
             case V4 -> context = Json.createValue(EDC_CONNECTOR_MANAGEMENT_CONTEXT_V2);
             default -> context = null;
         }
 
-        var requestBody = Json.createObjectBuilder()
+        JsonObject requestBody = createObjectBuilder()
                 .add(CONTEXT, context)
                 .add(TYPE, "PolicyDefinition")
+                .add(ID, UUID.randomUUID().toString())
                 .add("policy", policy)
                 .build();
         return (Response) PROVIDER.baseManagementRequest()
@@ -273,7 +276,7 @@ public class PolicyDefinitionEndToEndTest {
         contextArrayBuilder.add(ODRL_CONTEXT);
         contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
 
-        return Json.createObjectBuilder()
+        return createObjectBuilder()
                 .add(ID, "id")
                 .add(CONTEXT, contextArrayBuilder)
                 .add(TYPE, "Set")
@@ -282,7 +285,7 @@ public class PolicyDefinitionEndToEndTest {
     }
 
     private static JsonObject policyWithEmptyRule(String action) {
-        var rule = Json.createObjectBuilder()
+        var rule = createObjectBuilder()
                 .add("action", action)
                 .build();
         var rulesArrayBuilder = Json.createArrayBuilder();
@@ -291,7 +294,7 @@ public class PolicyDefinitionEndToEndTest {
         contextArrayBuilder.add(ODRL_CONTEXT);
         contextArrayBuilder.add(CX_POLICY_2025_09_CONTEXT);
 
-        return Json.createObjectBuilder()
+        return createObjectBuilder()
                 .add(ID, "id")
                 .add(CONTEXT, contextArrayBuilder)
                 .add(TYPE, "Set")

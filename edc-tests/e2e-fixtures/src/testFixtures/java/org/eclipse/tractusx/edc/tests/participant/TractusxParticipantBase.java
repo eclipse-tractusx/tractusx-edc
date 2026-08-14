@@ -88,7 +88,31 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
     }
-    
+
+    /**
+     * Overrides the upstream variant to set an id with a random UUID
+     */
+    @Override
+    public String createPolicyDefinition(JsonObject policy) {
+        var body = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "PolicyDefinition")
+                .add(ID, UUID.randomUUID().toString())
+                .add("policy", policy)
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/v3/policydefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(JSON)
+                .extract().jsonPath().getString("@id");
+    }
+
     @NotNull
     public String getBpn() {
         return bpn;
@@ -328,9 +352,9 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     // They are needed for support of DSP version v0.8
     public void setProtocol(String protocol) {
         if (DSP_2025.equals(protocol)) {
-            this.protocol = new Protocol(DSP_2025, DSP_2025_PATH);
+            this.protocol = new Participant.Protocol(DSP_2025, DSP_2025_PATH);
         } else {
-            this.protocol = new Protocol(DSP_08, DSP_08_PATH);
+            this.protocol = new Participant.Protocol(DSP_08, DSP_08_PATH);
         }
     }
 
@@ -347,7 +371,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
         protected Builder(P participant) {
             super(participant);
         }
-        
+
         public B bpn(String bpn) {
             this.participant.bpn = bpn;
             return self();
@@ -357,9 +381,9 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             this.participant.did = did;
             return self();
         }
-        
+
         public B protocolVersionPath(String path) {
-            this.participant.protocol = new Protocol(this.participant.protocol.name(), path);
+            this.participant.protocol = new Participant.Protocol(this.participant.protocol.name(), path);
             return self();
         }
 
@@ -394,5 +418,4 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
             return participant;
         }
     }
-
 }

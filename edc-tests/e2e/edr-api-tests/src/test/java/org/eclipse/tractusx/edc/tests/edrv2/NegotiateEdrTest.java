@@ -68,6 +68,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_D
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions.createEvent;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
@@ -79,14 +80,14 @@ public class NegotiateEdrTest {
             .name(CONSUMER_NAME)
             .id(CONSUMER_DID)
             .bpn(CONSUMER_BPN)
-            .protocol(DSP_2025, DSP_2025_PATH)
+            .protocol(DSP_2025)
             .build();
 
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_DID)
             .bpn(PROVIDER_BPN)
-            .protocol(DSP_2025, DSP_2025_PATH)
+            .protocol(DSP_2025)
             .build();
 
     @RegisterExtension
@@ -142,7 +143,7 @@ public class NegotiateEdrTest {
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1", "test-group2");
         var accessPolicy = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isNoneOf", true, "forbidden-policy"));
-        var contractPolicy = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isAnyOf", true, "test-group1", "test-group2"));
+        var contractPolicy = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
 

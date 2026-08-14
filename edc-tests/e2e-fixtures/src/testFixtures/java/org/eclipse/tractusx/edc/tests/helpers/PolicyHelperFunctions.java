@@ -87,6 +87,10 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject bpnPolicy(String... bpns) {
+        return bpnPolicy(Operator.IS_ANY_OF, bpns);
+    }
+
     public static JsonObject bpnGroupPolicy(String operator, boolean rightOperandAsArray, String... allowedGroups) {
 
         var groupConstraint = atomicConstraint("BusinessPartnerGroup", operator, Arrays.asList(allowedGroups), rightOperandAsArray);
@@ -131,6 +135,21 @@ public class PolicyHelperFunctions {
                             .build())
                         .build())
                 .build();
+
+        return Json.createObjectBuilder()
+                .add(CONTEXT, Json.createArrayBuilder()
+                        .add(ODRL_CONTEXT)
+                        .add(CX_POLICY_2025_09_CONTEXT))
+                .add(TYPE, "Set")
+                .add(ID, "id")
+                .add("permission", Json.createArrayBuilder().add(permission))
+                .build();
+    }
+
+    public static JsonObject frameworkPolicy(Map<?, ?> operandMappings, String action) {
+        var normalizedOperandMappings = operandMappings.entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey().toString(), entry -> (Object) entry.getValue()));
+        var permission = frameworkConstraint(normalizedOperandMappings, action, Operator.EQ, false);
 
         return Json.createObjectBuilder()
                 .add(CONTEXT, Json.createArrayBuilder()
@@ -306,6 +325,10 @@ public class PolicyHelperFunctions {
                 .add("action", "use")
                 .add("constraint", constraint)
                 .build()));
+    }
+
+    public static JsonObject inForceDateUsagePolicy(String operatorStart, Object startDate, String operatorEnd, Object endDate) {
+        return inForceDatePolicyLegacy(operatorStart, startDate, operatorEnd, endDate);
     }
 
     private static String operatorValueWithoutNamespace(Operator operator) {

@@ -61,6 +61,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -80,13 +81,13 @@ public class TransferWithTokenRefreshTest {
             .name(CONSUMER_NAME)
             .id(CONSUMER_DID)
             .bpn(CONSUMER_BPN)
-            .protocol(DSP_2025, DSP_2025_PATH)
+            .protocol(DSP_2025)
             .build();
     private static final TransferParticipant PROVIDER = TransferParticipant.Builder.newInstance()
             .name(PROVIDER_NAME)
             .id(PROVIDER_DID)
             .bpn(PROVIDER_BPN)
-            .protocol(DSP_2025, DSP_2025_PATH)
+            .protocol(DSP_2025)
             .build();
 
     @RegisterExtension
@@ -130,7 +131,7 @@ public class TransferWithTokenRefreshTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
                 .withDestination(httpDataDestination()).execute();
@@ -190,7 +191,7 @@ public class TransferWithTokenRefreshTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER).withTransferType("HttpData-PULL")
                 .withDestination(httpDataDestination()).execute();
@@ -251,7 +252,7 @@ public class TransferWithTokenRefreshTest {
         return bpnPolicy(Operator.IS_ANY_OF, bpn);
     }
 
-    protected JsonObject createContractPolicy(String bpn) {
-        return bpnPolicy(Operator.IS_ANY_OF, bpn);
+    protected JsonObject createContractPolicy() {
+        return frameworkPolicy(Map.of(), "use");
     }
 }
