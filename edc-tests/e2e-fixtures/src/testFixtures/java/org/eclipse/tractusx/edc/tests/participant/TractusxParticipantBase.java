@@ -105,7 +105,7 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/policydefinitions")
+                .post("/policydefinitions")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)
