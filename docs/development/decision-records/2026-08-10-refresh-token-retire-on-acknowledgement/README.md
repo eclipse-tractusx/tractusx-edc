@@ -7,7 +7,9 @@ replacement. The proof of receipt is the consumer presenting the new refresh tok
 replaced remains acceptable, and presenting it again returns the current refresh token — the one the consumer failed to
 receive — instead of rotating a second time. The access token is issued fresh on both paths.
 
-This is a behavioural change with no configuration surface and no way to opt out.
+This is a behavioural change with no configuration surface and no way to opt out. There is nothing worth switching off:
+the old behaviour is the one that breaks transfers on a network timeout, and the new one costs one extra string in the
+vault record. The request and response formats are unchanged, so conforming consumers see no difference either way.
 
 ## Rationale
 
