@@ -56,6 +56,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -147,9 +148,8 @@ public class CredentialSpoofTest {
 
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-        var policy = createAccessPolicy(CONSUMER.getBpn());
-        var accessPolicyId = PROVIDER.createPolicyDefinition(policy);
-        var contractPolicyId = PROVIDER.createPolicyDefinition(policy);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
@@ -173,9 +173,8 @@ public class CredentialSpoofTest {
 
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
-        var policy = createAccessPolicy(CONSUMER.getBpn());
-        var accessPolicyId = PROVIDER.createPolicyDefinition(policy);
-        var contractPolicyId = PROVIDER.createPolicyDefinition(policy);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)

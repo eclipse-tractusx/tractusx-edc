@@ -46,11 +46,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.apicatalog.jsonld.lang.Keywords.ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_CONNECTOR_MANAGEMENT_CONTEXT_V2;
 import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
@@ -252,6 +253,10 @@ public class PolicyDefinitionEndToEndTest {
 
         var requestBody = Json.createObjectBuilder()
                 .add(CONTEXT, context)
+                //.add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "PolicyDefinition")
+                .add(ID, UUID.randomUUID().toString())
+                .add("policy", policy)
                 .add(TYPE, "PolicyDefinition")
                 .add("policy", policy)
                 .build();

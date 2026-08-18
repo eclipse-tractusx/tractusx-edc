@@ -22,7 +22,6 @@ package org.eclipse.tractusx.edc.validators.emptyassetselector;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import org.assertj.core.api.Assertions;
-import org.eclipse.edc.spi.query.CriterionOperator;
 import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.spi.ValidationFailure;
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.when;
 class EmptyAssetSelectorValidatorTest {
 
     CriterionOperatorRegistry criterionOperatorRegistry = mock();
-    CriterionOperator criterionOperator = new CriterionOperator(CriterionOperatorRegistry.IN, Iterable.class, null);
 
     private final JsonObjectValidator validator = EmptyAssetSelectorValidator.instance(criterionOperatorRegistry);
 
@@ -56,7 +54,7 @@ class EmptyAssetSelectorValidatorTest {
 
         var criterion = createObjectBuilder()
                 .add(CRITERION_OPERAND_LEFT, value("operandLeft"))
-                .add(CRITERION_OPERATOR, value(CriterionOperatorRegistry.IN))
+                .add(CRITERION_OPERATOR, value("="))
                 .add(CRITERION_OPERAND_RIGHT, value("operandRight"));
 
         var contractDefinition = createObjectBuilder()
@@ -65,7 +63,7 @@ class EmptyAssetSelectorValidatorTest {
                 .add(CONTRACT_DEFINITION_ASSETS_SELECTOR, createArrayBuilder().add(criterion))
                 .build();
 
-        when(criterionOperatorRegistry.get(CriterionOperatorRegistry.IN)).thenReturn(criterionOperator);
+        when(criterionOperatorRegistry.isSupported("=")).thenReturn(true);
 
         var result = validator.validate(contractDefinition);
 

@@ -109,6 +109,10 @@ public class PolicyHelperFunctions {
                 .build();
     }
 
+    public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, String action) {
+        return frameworkPolicy(leftOperand, operator, rightOperand, action, false);
+    }
+
     public static JsonObject frameworkPolicy(String leftOperand, Operator operator, Object rightOperand, String action, boolean createRightOperandsAsArray) {
         var constraint = atomicConstraint(leftOperand, operatorValueWithoutNamespace(operator), rightOperand, createRightOperandsAsArray);
 
