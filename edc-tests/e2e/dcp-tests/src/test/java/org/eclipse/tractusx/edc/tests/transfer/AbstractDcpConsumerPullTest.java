@@ -335,7 +335,7 @@ public abstract class AbstractDcpConsumerPullTest extends ConsumerPullBaseTest {
     }
 
     @Override
-    protected JsonObject createContractPolicy(String bpn) {
+    protected JsonObject createContractPolicy() {
         return frameworkPolicy("Membership", Operator.EQ, "active", "access", false);
     }
 
