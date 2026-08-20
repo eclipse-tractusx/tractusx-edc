@@ -97,7 +97,7 @@ public class TransferPullEndToEndTest {
             PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
             var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-            var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy(CONSUMER.getBpn()));
+            var contractPolicyId = PROVIDER.createPolicyDefinition(createContractPolicy());
             PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")

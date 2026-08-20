@@ -49,11 +49,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_CONNECTOR_MANAGEMENT_CONTEXT_V2;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.cx.CxJsonLdExtension.CX_POLICY_2025_09_CONTEXT;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
@@ -245,19 +248,16 @@ public class PolicyDefinitionEndToEndTest {
         JsonValue context;
         switch (apiVersion) {
             case V3 -> context = Json.createObjectBuilder()
-                    .add("@vocab", "https://w3id.org/edc/v0.0.1/ns/")
+                    .add(VOCAB, EDC_NAMESPACE)
                     .build();
             case V4 -> context = Json.createValue(EDC_CONNECTOR_MANAGEMENT_CONTEXT_V2);
             default -> context = null;
         }
 
-        var requestBody = Json.createObjectBuilder()
+        JsonObject requestBody = createObjectBuilder()
                 .add(CONTEXT, context)
-                //.add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
                 .add(TYPE, "PolicyDefinition")
                 .add(ID, UUID.randomUUID().toString())
-                .add("policy", policy)
-                .add(TYPE, "PolicyDefinition")
                 .add("policy", policy)
                 .build();
         return (Response) PROVIDER.baseManagementRequest()
