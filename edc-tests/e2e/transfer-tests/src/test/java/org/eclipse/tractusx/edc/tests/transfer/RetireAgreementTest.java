@@ -26,8 +26,6 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +48,8 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025_P
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnGroupPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_POLL_INTERVAL;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
@@ -107,8 +107,8 @@ public class RetireAgreementTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1");
-        var accessPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.bpnGroupPolicy(Operator.IS_ANY_OF, "test-group1"));
-        var policy = PolicyHelperFunctions.frameworkPolicy(Map.of(), "use");
+        var accessPolicy = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isAnyOf", true, "test-group1"));
+        var policy = frameworkPolicy(Map.of(), "use");
         var contractPolicy = PROVIDER.createPolicyDefinition(policy);
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
