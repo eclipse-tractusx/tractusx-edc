@@ -62,7 +62,7 @@ public class PolicyActionMatchesExpected implements Validator<JsonObject> {
                     violation(format("Policy with ID '%s' does not exist", policyId), path.toString()));
         }
 
-        var hasExpectedAction =  policyDefinition.getPolicy().getPermissions().stream()
+        var hasExpectedAction = policyDefinition.getPolicy().getPermissions().stream()
                 .map(Permission::getAction)
                 .map(Action::getType)
                 .allMatch(expectedAction::equals);

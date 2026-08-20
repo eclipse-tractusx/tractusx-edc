@@ -35,7 +35,6 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcess
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions;
 import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.helpers.ReceivedEvent;
