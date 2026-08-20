@@ -44,7 +44,7 @@ inputs:
   k8sversion:
     required: false
     description: "Version of Kubernetes to use"
-    default: "v1.34.3"
+    default: "v1.36.1"
 
 runs:
   using: "composite"
@@ -60,6 +60,11 @@ runs:
     - name: Create k8s Kind Cluster
       uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
       with:
+        # kind >= v0.32.0 is required for the current node images (containerd config v4);
+        # the kind-action default (v0.31.0) fails "kind load" with:
+        #   "unknown containerd config version: 4 (supported versions: 2 and 3)".
+        # Drop this pin once helm/kind-action's default kind version is >= v0.32.0.
+        version: v0.32.0
         node_image: kindest/node:${{ inputs.k8sversion }}
 
     - name: Build docker images
