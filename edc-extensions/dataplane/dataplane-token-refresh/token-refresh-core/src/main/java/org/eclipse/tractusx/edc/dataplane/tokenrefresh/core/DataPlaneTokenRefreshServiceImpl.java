@@ -414,7 +414,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
 
     /**
      * Executes the given action and records how long it took. Phases exceeding {@link #SLOW_PHASE_THRESHOLD_MS} are
-     * logged at WARNING so that a slow/stalled external dependency (DID resolution, Vault, database) can be identified
+     * logged at DEBUG so that a slow/stalled external dependency (DID resolution, Vault, database) can be identified
      * from the logs even when the overall request eventually completes.
      */
     private <T> T timed(String phase, Supplier<T> action) {
