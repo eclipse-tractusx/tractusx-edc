@@ -216,7 +216,7 @@ public class CatalogTest {
         var id = "philosopher-policy";
         PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class)
                 .create(buildLegacyPolicyDefinition(id, "greek_customer", Operator.EQ, "philosopher"));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(emptyPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
@@ -224,7 +224,7 @@ public class CatalogTest {
         PROVIDER_RUNTIME.getService(ContractDefinitionStore.class)
                 .save(ContractDefinition.Builder.newInstance()
                         .id("def1")
-                        .participantContextId("general-test-id") // configured edc.participant.context.id
+                        .participantContextId(PROVIDER.getParticipantContextId())
                         .accessPolicyId(id)
                         .contractPolicyId(contractPolicyId)
                         .assetsSelectorCriterion(new Criterion("https://w3id.org/edc/v0.0.1/ns/id", "=", "test-asset2"))
