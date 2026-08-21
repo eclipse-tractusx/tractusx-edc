@@ -23,7 +23,6 @@ import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
-import org.apache.kafka.clients.admin.DescribeAclsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -59,9 +58,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
 
 @Testcontainers
 class KafkaAclServiceImplTestcontainersTest {
@@ -70,6 +71,8 @@ class KafkaAclServiceImplTestcontainersTest {
     private static final String TEST_TOPIC = "test-topic";
     private static final TopicPartition TEST_PARTITION = new TopicPartition(TEST_TOPIC, 0);
     private static final Duration POLL_TIMEOUT = Duration.ofSeconds(2);
+    private static final Duration ACL_PROPAGATION_TIMEOUT = Duration.ofSeconds(30);
+    private static final Duration ACL_POLL_INTERVAL = Duration.ofMillis(200);
     private static final String TEST_OAUTH_SUBJECT = "test-user";
     // Deliberately distinct from the OAuth subject: the GROUP ACL is named by the group prefix (PREFIXED),
     // while the ACL principal remains the subject.
@@ -125,13 +128,12 @@ class KafkaAclServiceImplTestcontainersTest {
     }
 
     @Test
-    void createAclsForSubject_shouldCreateAclsSuccessfully() throws Exception {
+    void createAclsForSubject_shouldCreateAclsSuccessfully() {
         Result<Void> result = aclService.createAclsForSubject(TEST_OAUTH_SUBJECT, TEST_TOPIC, TEST_GROUP_PREFIX, TEST_TRANSFER_PROCESS_ID);
 
         assertThat(result.succeeded()).isTrue();
 
-        DescribeAclsResult describeResult = adminClient.describeAcls(AclBindingFilter.ANY);
-        Collection<AclBinding> aclBindings = describeResult.values().get();
+        Collection<AclBinding> aclBindings = awaitAcls(acls -> acls.size() == 3);
 
         assertThat(aclBindings).hasSize(3);
 
@@ -169,7 +171,7 @@ class KafkaAclServiceImplTestcontainersTest {
             consumer.assign(List.of(TEST_PARTITION));
             consumer.seekToBeginning(List.of(TEST_PARTITION));
 
-            ConsumerRecords<String, String> records = consumer.poll(POLL_TIMEOUT);
+            ConsumerRecords<String, String> records = pollUntilRecords(consumer);
 
             assertThat(records.count()).isEqualTo(1);
             assertThat(records.iterator().next().value()).isEqualTo("test-value");
@@ -190,38 +192,34 @@ class KafkaAclServiceImplTestcontainersTest {
     }
 
     @Test
-    void revokeAclsForTransferProcess_shouldRemoveAclsSuccessfully() throws Exception {
+    void revokeAclsForTransferProcess_shouldRemoveAclsSuccessfully() {
         Result<Void> createResult = aclService.createAclsForSubject(TEST_OAUTH_SUBJECT, TEST_TOPIC, TEST_GROUP_PREFIX, TEST_TRANSFER_PROCESS_ID);
         assertThat(createResult.succeeded()).isTrue();
 
-        DescribeAclsResult describeResult = adminClient.describeAcls(AclBindingFilter.ANY);
-        Collection<AclBinding> aclsBeforeRevoke = describeResult.values().get();
+        Collection<AclBinding> aclsBeforeRevoke = awaitAcls(acls -> acls.size() == 3);
 
         Result<Void> revokeResult = aclService.revokeAclsForTransferProcess(TEST_TRANSFER_PROCESS_ID);
 
         assertThat(revokeResult.succeeded()).isTrue();
 
-        DescribeAclsResult describeAfterRevoke = adminClient.describeAcls(AclBindingFilter.ANY);
-        Collection<AclBinding> aclsAfterRevoke = describeAfterRevoke.values().get();
+        Collection<AclBinding> aclsAfterRevoke = awaitAcls(Collection::isEmpty);
 
         assertThat(aclsBeforeRevoke).hasSize(3);
         assertThat(aclsAfterRevoke).isEmpty();
     }
 
     @Test
-    void revokeAclsForSubject_shouldRemoveAclsSuccessfully() throws Exception {
+    void revokeAclsForSubject_shouldRemoveAclsSuccessfully() {
         Result<Void> createResult = aclService.createAclsForSubject(TEST_OAUTH_SUBJECT, TEST_TOPIC, TEST_GROUP_PREFIX, TEST_TRANSFER_PROCESS_ID);
         assertThat(createResult.succeeded()).isTrue();
 
-        DescribeAclsResult describeResult = adminClient.describeAcls(AclBindingFilter.ANY);
-        Collection<AclBinding> aclsBeforeRevoke = describeResult.values().get();
+        Collection<AclBinding> aclsBeforeRevoke = awaitAcls(acls -> acls.size() == 3);
 
         Result<Void> revokeResult = aclService.revokeAclsForSubject(TEST_OAUTH_SUBJECT, TEST_TOPIC, TEST_GROUP_PREFIX);
 
         assertThat(revokeResult.succeeded()).isTrue();
 
-        DescribeAclsResult describeAfterRevoke = adminClient.describeAcls(AclBindingFilter.ANY);
-        Collection<AclBinding> aclsAfterRevoke = describeAfterRevoke.values().get();
+        Collection<AclBinding> aclsAfterRevoke = awaitAcls(Collection::isEmpty);
 
         assertThat(aclsBeforeRevoke).hasSize(3);
         assertThat(aclsAfterRevoke).isEmpty();
@@ -238,7 +236,7 @@ class KafkaAclServiceImplTestcontainersTest {
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps)) {
             consumer.assign(List.of(TEST_PARTITION));
             consumer.seekToBeginning(List.of(TEST_PARTITION));
-            ConsumerRecords<String, String> records = consumer.poll(POLL_TIMEOUT);
+            ConsumerRecords<String, String> records = pollUntilRecords(consumer);
             assertThat(records.count()).isEqualTo(1);
         }
 
@@ -259,7 +257,7 @@ class KafkaAclServiceImplTestcontainersTest {
     }
 
     @Test
-    void multipleTransferProcesses_shouldTrackAclsIndependently() throws Exception {
+    void multipleTransferProcesses_shouldTrackAclsIndependently() {
         String transferProcess1 = "transfer-1";
         String transferProcess2 = "transfer-2";
         String user1 = "user1";
@@ -274,8 +272,9 @@ class KafkaAclServiceImplTestcontainersTest {
         Result<Void> revokeResult = aclService.revokeAclsForTransferProcess(transferProcess1);
         assertThat(revokeResult.succeeded()).isTrue();
 
-        DescribeAclsResult describeResult = adminClient.describeAcls(AclBindingFilter.ANY);
-        Collection<AclBinding> remainingAcls = describeResult.values().get();
+        Collection<AclBinding> remainingAcls = awaitAcls(acls ->
+                acls.stream().noneMatch(acl -> acl.entry().principal().equals("User:" + user1)) &&
+                        acls.stream().anyMatch(acl -> acl.entry().principal().equals("User:" + user2)));
 
         boolean user2AclsExist = remainingAcls.stream()
                 .anyMatch(acl -> acl.entry().principal().equals("User:" + user2));
@@ -338,6 +337,22 @@ class KafkaAclServiceImplTestcontainersTest {
                 }
             }).isInstanceOf(GroupAuthorizationException.class);
         }
+    }
+
+    private Collection<AclBinding> awaitAcls(Predicate<Collection<AclBinding>> condition) {
+        return await()
+                .atMost(ACL_PROPAGATION_TIMEOUT)
+                .pollInterval(ACL_POLL_INTERVAL)
+                .until(() -> adminClient.describeAcls(AclBindingFilter.ANY).values().get(), condition);
+    }
+
+    private ConsumerRecords<String, String> pollUntilRecords(KafkaConsumer<String, String> consumer) {
+        ConsumerRecords<String, String> records = ConsumerRecords.empty();
+        long deadline = System.currentTimeMillis() + ACL_PROPAGATION_TIMEOUT.toMillis();
+        while (records.isEmpty() && System.currentTimeMillis() < deadline) {
+            records = consumer.poll(POLL_TIMEOUT);
+        }
+        return records;
     }
 
     private Properties createConsumerProperties(String username) {
