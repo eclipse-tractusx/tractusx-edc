@@ -24,7 +24,6 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
-import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.aws.FlociExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
@@ -49,6 +48,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -117,8 +117,9 @@ public class S3ToS3EndToEndTest {
 
         // create objects in EDC
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
-        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, CONSUMER.getBpn()));
-        PROVIDER.createContractDefinition(assetId, "def-1", policyId, policyId);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         var destination = Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
@@ -173,8 +174,9 @@ public class S3ToS3EndToEndTest {
         );
 
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
-        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, CONSUMER.getBpn()));
-        PROVIDER.createContractDefinition(assetId, "def-1", policyId, policyId);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         var destination = Json.createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")

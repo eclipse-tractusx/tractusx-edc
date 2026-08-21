@@ -26,7 +26,6 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,7 +108,7 @@ public class RetireAgreementTest {
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1");
         var accessPolicy = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isAnyOf", true, "test-group1"));
-        var policy = frameworkPolicy("Membership", Operator.EQ, "active", "use", false);
+        var policy = frameworkPolicy(Map.of(), "use");
         var contractPolicy = PROVIDER.createPolicyDefinition(policy);
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 

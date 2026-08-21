@@ -65,6 +65,7 @@ dependencies {
     implementation(project(":edc-extensions:edr:edr-api-v2"))
     implementation(project(":edc-extensions:edr:edr-callback"))
     implementation(project(":edc-extensions:tokenrefresh-handler"))
+    implementation(project(":edc-extensions:validators:contract-definition-policies"))
     implementation(project(":edc-extensions:validators:empty-asset-selector"))
     implementation(project(":edc-extensions:connector-discovery:connector-discovery-api"))
     implementation(project(":edc-extensions:connector-discovery:cx-connector-discovery"))

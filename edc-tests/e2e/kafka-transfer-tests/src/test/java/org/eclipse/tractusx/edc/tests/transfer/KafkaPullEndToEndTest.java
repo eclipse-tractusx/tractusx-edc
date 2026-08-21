@@ -25,7 +25,6 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.kafka.KafkaExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
@@ -60,6 +59,7 @@ import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_B
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 import static org.eclipse.tractusx.edc.tests.runtimes.Runtimes.pgRuntime;
 
@@ -186,8 +186,9 @@ public class KafkaPullEndToEndTest {
      */
     private String startKafkaPullTransfer(String assetId, String contractDefinitionId, Map<String, Object> dataAddress) {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
-        var policyId = PROVIDER.createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, CONSUMER.getBpn()));
-        PROVIDER.createContractDefinition(assetId, contractDefinitionId, policyId, policyId);
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(CONSUMER.getBpn()));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        PROVIDER.createContractDefinition(assetId, contractDefinitionId, accessPolicyId, contractPolicyId);
 
         return CONSUMER.requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("KafkaBroker-PULL")

@@ -36,6 +36,7 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.tractusx.edc.tests.helpers.EdrNegotiationHelperFunctions;
+import org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions;
 import org.eclipse.tractusx.edc.tests.helpers.ReceivedEvent;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
 import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
@@ -142,7 +143,7 @@ public class NegotiateEdrTest {
 
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "test-group1", "test-group2");
         var accessPolicy = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isNoneOf", true, "forbidden-policy"));
-        var contractPolicy = PROVIDER.createPolicyDefinition(bpnGroupPolicy("isAnyOf", true, "test-group1", "test-group2"));
+        var contractPolicy = PROVIDER.createPolicyDefinition(PolicyHelperFunctions.frameworkPolicy(Map.of(), "use"));
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicy, contractPolicy);
 
 
