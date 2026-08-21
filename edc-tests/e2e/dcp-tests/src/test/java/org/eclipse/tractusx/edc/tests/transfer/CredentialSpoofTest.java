@@ -55,13 +55,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.PROVIDER_NAME;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.emptyPolicy;
 import static org.eclipse.tractusx.edc.tests.transfer.dcp.runtime.Runtimes.dcpRuntime;
 import static org.eclipse.tractusx.edc.tests.transfer.dcp.runtime.Runtimes.stsRuntime;
 
@@ -148,7 +148,7 @@ public class CredentialSpoofTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(emptyPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
@@ -173,7 +173,7 @@ public class CredentialSpoofTest {
         PROVIDER.createAsset(assetId, Map.of(), dataAddress);
 
         var accessPolicyId = PROVIDER.createPolicyDefinition(createAccessPolicy(CONSUMER.getBpn()));
-        var contractPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
+        var contractPolicyId = PROVIDER.createPolicyDefinition(emptyPolicy());
         PROVIDER.createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         MALICIOUS_ACTOR.getCatalog(PROVIDER)
