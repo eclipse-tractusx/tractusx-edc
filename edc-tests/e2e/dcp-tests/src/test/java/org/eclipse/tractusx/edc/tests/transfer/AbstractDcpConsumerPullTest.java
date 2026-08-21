@@ -336,7 +336,7 @@ public abstract class AbstractDcpConsumerPullTest extends ConsumerPullBaseTest {
 
     @Override
     protected JsonObject createContractPolicy() {
-        return frameworkPolicy("Membership", Operator.EQ, "active", "access", false);
+        return frameworkPolicy("Membership", Operator.EQ, "active", "use", false);
     }
 
     protected abstract RuntimeExtension credentialStoreRuntime();
@@ -347,7 +347,7 @@ public abstract class AbstractDcpConsumerPullTest extends ConsumerPullBaseTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of(frameworkPolicy("Membership", Operator.EQ, "active", "access", false), "MembershipCredential"),
+                    Arguments.of(frameworkPolicy("Membership", Operator.EQ, "active", "use", false), "MembershipCredential"),
                     Arguments.of(frameworkPolicy("FrameworkAgreement", Operator.EQ, "DataExchangeGovernance:1.0", "use", false), "DataExchangeGovernance use case")
             );
         }
