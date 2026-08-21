@@ -115,8 +115,11 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         var collected = new ArrayList<ConsumerRecord<String, String>>();
         try (var consumer = new KafkaConsumer<String, String>(props)) {
             consumer.subscribe(Collections.singletonList(topic));
-            ConsumerRecords<String, String> records = consumer.poll(timeout);
-            records.forEach(collected::add);
+            var deadline = System.nanoTime() + timeout.toNanos();
+            while (collected.isEmpty() && System.nanoTime() < deadline) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+                records.forEach(collected::add);
+            }
         }
         return collected;
     }
