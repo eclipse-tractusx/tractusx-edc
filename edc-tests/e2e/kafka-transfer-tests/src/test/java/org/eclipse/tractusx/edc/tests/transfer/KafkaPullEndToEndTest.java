@@ -25,7 +25,6 @@ import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.tractusx.edc.tests.kafka.KafkaExtension;
 import org.eclipse.tractusx.edc.tests.participant.TransferParticipant;
