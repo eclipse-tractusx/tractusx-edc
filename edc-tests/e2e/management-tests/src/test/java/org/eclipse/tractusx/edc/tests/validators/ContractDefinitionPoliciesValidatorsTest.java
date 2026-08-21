@@ -69,10 +69,11 @@ public class ContractDefinitionPoliciesValidatorsTest {
         var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
         var contractDefinition = contractDefinition("contract-definition", contractPolicyId, contractPolicyId);
         PROVIDER.baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(contractDefinition)
                 .when()
-                .post("/v3/contractdefinitions")
+                .post("/contractdefinitions")
                 .then().assertThat()
                 .log().ifValidationFails()
                 .statusCode(400)
@@ -87,10 +88,11 @@ public class ContractDefinitionPoliciesValidatorsTest {
 
         var contractDefinition = contractDefinition("contract-definition", accessPolicyId, accessPolicyId);
         PROVIDER.baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(contractDefinition)
                 .when()
-                .post("/v3/contractdefinitions")
+                .post("/contractdefinitions")
                 .then().assertThat()
                 .statusCode(400)
                 .body("[0].message",
@@ -120,10 +122,11 @@ public class ContractDefinitionPoliciesValidatorsTest {
                 .build();
 
         PROVIDER.baseManagementRequest()
+                .basePath("/v3")
                 .contentType(JSON)
                 .body(policyDefinition)
                 .when()
-                .put("/v3/policydefinitions/" + contractPolicyId)
+                .put("/policydefinitions/" + contractPolicyId)
                 .then().assertThat()
                 .statusCode(400)
                 .body("[0].message", equalTo("Policy Definition is referenced by a Contract Definition"));
