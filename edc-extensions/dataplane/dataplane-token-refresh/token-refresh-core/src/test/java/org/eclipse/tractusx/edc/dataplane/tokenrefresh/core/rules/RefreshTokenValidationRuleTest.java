@@ -22,10 +22,12 @@ package org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.rules;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.RefreshToken;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.dataplane.tokenrefresh.core.TestFunctions.createAccessToken;
 import static org.mockito.Mockito.mock;
@@ -35,6 +37,7 @@ class RefreshTokenValidationRuleTest {
 
     private static final String TEST_TOKEN_ID = "test-jti";
     private static final String TEST_REFRESH_TOKEN = "test-refresh-token";
+    private static final String TEST_PREVIOUS_REFRESH_TOKEN = "test-previous-refresh-token";
     private final Vault vault = mock();
     private final String participantContextId = "participantContextId";
     private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance()
@@ -77,11 +80,12 @@ class RefreshTokenValidationRuleTest {
     }
 
     @Test
-    void checkRule_refreshTokenDoesNotMatch() {
+    void checkRule_refreshTokenDoesNotMatch_shouldNotFlagReplay() {
         when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(
                 """
                         {
-                          "refreshToken": "someRefreshToken"
+                          "refreshToken": "someRefreshToken",
+                          "previousRefreshToken": "someOtherRefreshToken"
                         }
                         """);
 
@@ -89,19 +93,44 @@ class RefreshTokenValidationRuleTest {
                 .isFailed()
                 .detail()
                 .isEqualTo("Provided refresh token does not match the stored refresh token.");
+        assertThat(rule.replayedToken()).isNull();
     }
 
     @Test
-    void checkRule_success() {
+    void checkRule_success_currentTokenMatches_shouldNotFlagReplay() {
         when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(
                 """
                         {
-                          "refreshToken": "%s"
+                          "refreshToken": "%s",
+                          "expiresIn": 3600,
+                          "refreshEndpoint": "http://foo.bar/refresh",
+                          "previousRefreshToken": "%s"
                         }
-                        """.formatted(TEST_REFRESH_TOKEN));
+                        """.formatted(TEST_REFRESH_TOKEN, TEST_PREVIOUS_REFRESH_TOKEN));
 
         assertThat(rule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
                 .isSucceeded();
+        assertThat(rule.replayedToken()).isNull();
+    }
+
+    @Test
+    void checkRule_success_previousTokenMatches_shouldFlagReplay() {
+        when(vault.resolveSecret(participantContextId, TEST_TOKEN_ID)).thenReturn(
+                """
+                        {
+                          "refreshToken": "%s",
+                          "expiresIn": 3600,
+                          "refreshEndpoint": "http://foo.bar/refresh",
+                          "previousRefreshToken": "%s"
+                        }
+                        """.formatted(TEST_REFRESH_TOKEN, TEST_PREVIOUS_REFRESH_TOKEN));
+
+        var replayRule = new RefreshTokenValidationRule(vault, TEST_PREVIOUS_REFRESH_TOKEN, new ObjectMapper(), participantContext);
+
+        assertThat(replayRule.checkRule(createAccessToken(TEST_TOKEN_ID), Map.of()))
+                .isSucceeded();
+        assertThat(replayRule.replayedToken())
+                .isEqualTo(new RefreshToken(TEST_REFRESH_TOKEN, 3600L, "http://foo.bar/refresh", TEST_PREVIOUS_REFRESH_TOKEN));
     }
 
     @Test
