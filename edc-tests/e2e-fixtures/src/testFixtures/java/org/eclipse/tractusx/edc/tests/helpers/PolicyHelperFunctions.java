@@ -359,14 +359,14 @@ public class PolicyHelperFunctions {
 
     public static JsonObject frameworkConstraint(Map<String, Object> operandMappings, String action, Operator operator, boolean createRightOperandsAsArray) {
         var constraints = operandMappings.entrySet().stream()
-                .map(constraint -> atomicConstraint(constraint.getKey(), operator.getOdrlRepresentation(), constraint.getValue(), createRightOperandsAsArray))
+                .map(constraint -> atomicConstraint(constraint.getKey(), operatorValueWithoutNamespace(operator), constraint.getValue(), createRightOperandsAsArray))
                 .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add);
 
         if (action.contains("use")) {
-            if (!operandMappings.containsKey(FRAMEWORK_AGREEMENT_LITERAL)) {
+            if (!operandMappings.containsKey(FRAMEWORK_AGREEMENT_KEY)) {
                 constraints.add(frameworkAgreementConstraint());
             }
-            if (!operandMappings.containsKey(USAGE_PURPOSE_LITERAL)) {
+            if (!operandMappings.containsKey(USAGE_PURPOSE_KEY)) {
                 constraints.add(usagePurposeConstraint());
             }
         }

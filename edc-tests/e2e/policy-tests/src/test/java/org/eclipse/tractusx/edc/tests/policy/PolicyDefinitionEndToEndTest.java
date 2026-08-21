@@ -49,10 +49,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static jakarta.json.Json.createObjectBuilder;
+import static com.apicatalog.jsonld.lang.Keywords.ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_CONNECTOR_MANAGEMENT_CONTEXT_V2;
@@ -254,7 +253,7 @@ public class PolicyDefinitionEndToEndTest {
             default -> context = null;
         }
 
-        JsonObject requestBody = createObjectBuilder()
+        var requestBody = Json.createObjectBuilder()
                 .add(CONTEXT, context)
                 .add(TYPE, "PolicyDefinition")
                 .add(ID, UUID.randomUUID().toString())
