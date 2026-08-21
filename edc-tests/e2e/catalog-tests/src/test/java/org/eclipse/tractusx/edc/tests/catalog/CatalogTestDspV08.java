@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.CX_POLICY_2025_09_NS;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -188,14 +189,15 @@ public class CatalogTestDspV08 {
     @DisplayName("Verify that the consumer receives only the offers he is permitted to (using the legacy CX policy)")
     void requestCatalog_filteredByBpn_UsingLegacyCxPolicy_shouldReject() {
         PROVIDER.storeBusinessPartner(CONSUMER.getBpn(), "greek_customer", "philosopher");
-        var id = "philosopher-policy";
+        var ap = "philosopher-policy";
         PROVIDER_RUNTIME.getService(PolicyDefinitionStore.class)
-                .create(buildLegacyPolicyDefinition(id, "greek_customer", Operator.EQ, "philosopher"));
+                .create(buildLegacyPolicyDefinition(ap, "greek_customer", Operator.EQ, "philosopher"));
+        var cp = PROVIDER.createPolicyDefinition(emptyPolicy());
 
         PROVIDER.createAsset("test-asset1");
         PROVIDER.createAsset("test-asset2");
 
-        PROVIDER.createContractDefinition("test-asset2", "def1", id, id);
+        PROVIDER.createContractDefinition("test-asset2", "def1", ap, cp);
 
         // act
         var catalog = CONSUMER.getCatalogDatasets(PROVIDER);
@@ -208,7 +210,7 @@ public class CatalogTestDspV08 {
 
     private PolicyDefinition buildLegacyPolicyDefinition(String id, String leftExpression, Operator operator, Object rightExpression) {
         var action = Action.Builder.newInstance()
-                .type("access")
+                .type(CX_POLICY_2025_09_NS + "access")
                 .build();
 
         var constraint = AtomicConstraint.Builder.newInstance()
