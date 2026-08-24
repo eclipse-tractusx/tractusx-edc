@@ -47,8 +47,10 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.FRAMEWORK_AGREEMENT_LITERAL;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.bpnPolicy;
 import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.frameworkPolicy;
+import static org.eclipse.tractusx.edc.tests.helpers.PolicyHelperFunctions.legacyFrameworkPolicy;
 import static org.eclipse.tractusx.edc.tests.participant.TractusxParticipantBase.ASYNC_TIMEOUT;
 
 /**
@@ -95,6 +97,34 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
     }
 
     @Test
+    void httpPushDataTransfer_withLegacyUsagePolicy() {
+        var sourceUrl = createMockHttpDataUrl(MOCK_BACKEND_SOURCE_PATH);
+        var destinationUrl = createMockHttpDataUrl(MOCK_BACKEND_DESTINATION_PATH);
+
+        var assetId = UUID.randomUUID().toString();
+        Map<String, Object> dataAddress = Map.of(
+                "name", "transfer-test",
+                "baseUrl", sourceUrl,
+                "type", "HttpData",
+                "contentType", "application/json");
+        provider().createAsset(assetId, Map.of(), dataAddress);
+        var accessPolicyId = provider().createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, consumer().getBpn()));
+        var policyId = provider().createPolicyDefinition(frameworkPolicy("FrameworkAgreement", Operator.EQ, "DataExchangeGovernance:1.0", "use", false));
+        provider().createContractDefinition(assetId, "def-1", accessPolicyId, policyId);
+
+        var destination = httpDataAddress(destinationUrl);
+        var transferProcessId = consumer()
+                .requestAssetFrom(assetId, provider())
+                .withDestination(destination)
+                .withTransferType("HttpData-PUSH")
+                .execute();
+
+        await().atMost(ASYNC_TIMEOUT).untilAsserted(() -> transferProcessIsInState(transferProcessId, COMPLETED));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_SOURCE_PATH)));
+        server.verify(anyRequestedFor(urlPathEqualTo(MOCK_BACKEND_DESTINATION_PATH)));
+    }
+
+    @Test
     void httpPushNonFiniteDataTransfer() {
         var sourceUrl = createMockHttpDataUrl(MOCK_BACKEND_SOURCE_PATH);
         var destinationUrl = createMockHttpDataUrl(MOCK_BACKEND_DESTINATION_PATH);
@@ -107,8 +137,9 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
                 "contentType", "application/json",
                 "isNonFinite", "true");
         provider().createAsset(assetId, Map.of(), dataAddress);
-        var policyId = provider().createPolicyDefinition(bpnPolicy(Operator.IS_ANY_OF, consumer().getBpn()));
-        provider().createContractDefinition(assetId, "def-1", policyId, policyId);
+        var accessPolicyId = provider().createPolicyDefinition(bpnPolicy(consumer().getBpn()));
+        var contractPolicyId = provider().createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
 
         var destination = httpDataAddress(destinationUrl);
         var consumerTransferProcessId = consumer()
@@ -140,7 +171,8 @@ public abstract class ProviderPushBaseTest implements ParticipantAwareTest, Runt
 
         consumer().terminateTransfer(consumerTransferProcessId);
         consumer().awaitTransferToBeInState(consumerTransferProcessId, TransferProcessStates.TERMINATED);
-        await().untilAsserted(() -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.TERMINATED));
+        await().atMost(ASYNC_TIMEOUT)
+                .untilAsserted(() -> dataFlowIsInState(providerTransferProcessId, DataFlowStates.TERMINATED));
     }
 
     private void waitAndAssert(Duration duration, Runnable... assertions) {

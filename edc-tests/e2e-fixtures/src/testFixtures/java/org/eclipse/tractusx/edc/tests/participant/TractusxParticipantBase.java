@@ -88,7 +88,31 @@ public abstract class TractusxParticipantBase extends IdentityParticipant {
     public void createAsset(String id) {
         createAsset(id, new HashMap<>(), Map.of("type", "test-type"));
     }
-    
+
+    /**
+     * Overrides the upstream variant to set an id with a random UUID
+     */
+    @Override
+    public String createPolicyDefinition(JsonObject policy) {
+        var body = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "PolicyDefinition")
+                .add(ID, UUID.randomUUID().toString())
+                .add("policy", policy)
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/policydefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(JSON)
+                .extract().jsonPath().getString("@id");
+    }
+
     @NotNull
     public String getBpn() {
         return bpn;
