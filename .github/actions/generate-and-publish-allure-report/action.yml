@@ -42,11 +42,12 @@ runs:
         path: allure-results
 
     - name: Build Allure test report
-      uses: simple-elf/allure-report-action@v1.13
-      with:
-        gh_pages: gh-pages
-        allure_results: allure-results
-        allure_report: ${{ inputs.version }}
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        npm install -g allure-commandline
+        allure generate allure-results --clean -o "$VERSION"
 
     - name: Publish Allure test report to gh-pages
       uses: peaceiris/actions-gh-pages@v4
