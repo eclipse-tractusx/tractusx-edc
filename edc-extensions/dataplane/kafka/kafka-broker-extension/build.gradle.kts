@@ -30,6 +30,7 @@ dependencies {
     implementation(project(":edc-extensions:dataplane:kafka:data-address-kafka"))
 
     testImplementation(libs.edc.junit)
+    testImplementation(libs.awaitility)
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.kafka)
 }

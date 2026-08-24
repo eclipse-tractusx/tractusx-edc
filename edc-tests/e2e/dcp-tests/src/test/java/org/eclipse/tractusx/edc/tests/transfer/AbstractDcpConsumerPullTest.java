@@ -104,19 +104,26 @@ public abstract class AbstractDcpConsumerPullTest extends ConsumerPullBaseTest {
         var accessPolicyId = provider().createPolicyDefinition(createAccessPolicy(consumer().getBpn()));
         var contractPolicyId = provider().createPolicyDefinition(contractPolicy);
         provider().createContractDefinition(assetId, "def-1", accessPolicyId, contractPolicyId);
-        var transferProcessId = consumer().requestAssetFrom(assetId, provider())
+
+        var initialTransferProcessId = consumer().requestAssetFrom(assetId, provider())
                 .withTransferType("HttpData-PULL")
                 .withDestination(httpDataDestination())
                 .execute();
 
+        var agreementId = consumer().getTransferProcessField(initialTransferProcessId, "contractId");
+
+        var transferProcessId = new AtomicReference<>(initialTransferProcessId);
         var edr = new AtomicReference<JsonObject>();
 
-        // wait until transfer process completes
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    var tpState = consumer().getTransferProcessState(transferProcessId);
-                    assertThat(tpState).isNotNull().isEqualTo(TransferProcessStates.STARTED.toString());
+                    var current = transferProcessId.get();
+                    if (TransferProcessStates.TERMINATED.toString().equals(consumer().getTransferProcessState(current))) {
+                        current = consumer().initiateTransfer(provider(), agreementId, null, httpDataDestination(), "HttpData-PULL");
+                        transferProcessId.set(current);
+                    }
+                    assertThat(consumer().getTransferProcessState(current)).isEqualTo(TransferProcessStates.STARTED.toString());
                 });
 
         // wait until EDC is available on the consumer side
@@ -124,7 +131,7 @@ public abstract class AbstractDcpConsumerPullTest extends ConsumerPullBaseTest {
         await().pollInterval(fibonacci())
                 .atMost(ASYNC_TIMEOUT)
                 .untilAsserted(() -> {
-                    edr.set(consumer().edrs().getEdr(transferProcessId));
+                    edr.set(consumer().edrs().getEdr(transferProcessId.get()));
                     assertThat(edr).isNotNull();
                 });
 
