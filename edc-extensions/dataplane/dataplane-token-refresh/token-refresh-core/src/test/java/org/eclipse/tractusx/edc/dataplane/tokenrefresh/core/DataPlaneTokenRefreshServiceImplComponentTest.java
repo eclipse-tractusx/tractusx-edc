@@ -312,7 +312,51 @@ class DataPlaneTokenRefreshServiceImplComponentTest {
         signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
         var tokenResponse = tokenRefreshService.refreshToken(edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize());
 
-        assertThat(tokenResponse).isFailed().detail().isEqualTo("Authentication token validation failed: Token verification failed");
+        assertThat(tokenResponse).isFailed().detail().isEqualTo("Authentication token validation failed: JWT signature not valid");
+    }
+
+    @DisplayName("Verify that an authentication token without an expiry is rejected")
+    @Test
+    void refresh_whenAuthTokenHasNoExpiry_shouldFail() throws JOSEException {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        // without an expiry an intercepted refresh request could be replayed indefinitely
+        var claimsSet = new JWTClaimsSet.Builder()
+                .jwtID(tokenId)
+                .issuer(CONSUMER_DID)
+                .subject(CONSUMER_DID)
+                .audience(PROVIDER_DID)
+                .claim("token", edr.getToken())
+                .build();
+
+        var jwsHeader = new JWSHeader.Builder(JWSAlgorithm.ES384).keyID(consumerKey.getKeyID()).build();
+        var signedAuthToken = new SignedJWT(jwsHeader, claimsSet);
+        signedAuthToken.sign(CryptoConverter.createSigner(consumerKey));
+
+        assertThat(tokenRefreshService.refreshToken(edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString(), signedAuthToken.serialize()))
+                .isFailed()
+                .detail()
+                .contains("Required expiration time (exp) claim is missing in token");
+    }
+
+    @DisplayName("Verify that an expired authentication token is rejected")
+    @Test
+    void refresh_whenAuthTokenExpired_shouldFail() throws JOSEException {
+        var tokenId = "test-token-id";
+        var edr = tokenRefreshService.obtainToken(tokenParams(tokenId), DataAddress.Builder.newInstance().type("test-type").build(), Map.of(AUDIENCE_PROPERTY, CONSUMER_DID))
+                .orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
+
+        var authToken = createAuthToken(tokenId, edr.getToken());
+
+        // the authentication token outlives its own validity, e.g. because it was captured and replayed later
+        clock.advanceBy(Duration.ofSeconds(120));
+
+        assertThat(tokenRefreshService.refreshToken(edr.getAdditional().get(EDR_PROPERTY_REFRESH_TOKEN).toString(), authToken))
+                .isFailed()
+                .detail()
+                .contains("Token has expired (exp)");
     }
 
     @DisplayName("Verify that an authentication token without an expiry is rejected")
