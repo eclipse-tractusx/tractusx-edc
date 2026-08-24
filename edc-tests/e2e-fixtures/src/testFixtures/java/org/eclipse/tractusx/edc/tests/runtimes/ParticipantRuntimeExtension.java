@@ -26,6 +26,7 @@ import org.eclipse.edc.iam.decentralizedclaims.spi.SecureTokenService;
 import org.eclipse.edc.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
+import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -42,6 +43,8 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.security.PrivateKey;
+import java.time.Instant;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -93,7 +96,10 @@ public class ParticipantRuntimeExtension extends RuntimePerClassExtension implem
                         @Override
                         public TokenParameters.Builder decorate(TokenParameters.Builder tokenParameters) {
                             claims.forEach(tokenParameters::claims);
-                            return tokenParameters;
+                            var now = Instant.now();
+                            return tokenParameters
+                                    .claims(JwtRegisteredClaimNames.ISSUED_AT, Date.from(now))
+                                    .claims(JwtRegisteredClaimNames.EXPIRATION_TIME, Date.from(now.plusSeconds(300)));
                         }
                     };
                     return jwtGenerationService.generate(participantContextId, privateAlias, new KeyIdDecorator(kid), decorator);
