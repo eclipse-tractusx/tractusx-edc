@@ -78,6 +78,7 @@ import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.EDR_PROPERTY_REFRES
 public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshService, DataPlaneAccessTokenService {
     public static final String ACCESS_TOKEN_CLAIM = "token";
     public static final String TOKEN_ID_CLAIM = "jti";
+    private static final long SLOW_PHASE_THRESHOLD_MS = 5000;
     private final long tokenExpirySeconds;
     private final List<TokenValidationRule> authenticationTokenValidationRules;
     private final ParticipantContextSupplier participantContextSupplier;
@@ -128,6 +129,7 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 new ClaimIsPresentRule(AUDIENCE), // we don't check the contents, only it is present
                 new ClaimIsPresentRule(ACCESS_TOKEN_CLAIM),
                 new ClaimIsPresentRule(TOKEN_ID_CLAIM),
+                new ExpirationIssuedAtValidationRule(clock, tokenExpiryToleranceSeconds, false),
                 new AuthTokenAudienceRule(accessTokenDataStore));
         this.participantContextSupplier = participantContextSupplier;
         accessTokenAuthorizationRules = List.of(new IssuerEqualsSubjectRule(),
@@ -146,7 +148,8 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
      *     <li>verify the token's signature</li>
      *     <li>assert {@code iss} and {@code sub} claims are identical</li>
      *     <li>assert the the token contains an {@code token} claim, and that the value is identical to the access token we have on record</li>
-     *     <li>assert that the {@code refreshToken} parameter is identical to the refresh token we have on record</li>
+     *     <li>assert that the {@code refreshToken} parameter is identical to the refresh token we have on record, or to
+     *     the one that record superseded</li>
      * </ul>
      *
      * @param refreshToken        The refresh token that was issued in the original/previous token request.
@@ -155,9 +158,11 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
     @Override
     public Result<TokenResponse> refreshToken(String refreshToken, String authenticationToken) {
 
-        authenticationToken = authenticationToken.replace("Bearer", "").trim();
+        var authToken = authenticationToken.replace("Bearer", "").trim();
 
-        var authTokenRes = tokenValidationService.validate(authenticationToken, publicKeyResolver, authenticationTokenValidationRules);
+        var authTokenRes = timed("validate-authentication-token [DID resolution]",
+                () -> tokenValidationService.validate(authToken,
+                        publicKeyResolver, authenticationTokenValidationRules));
         if (authTokenRes.failed()) {
             var msg = "Authentication token validation failed: %s".formatted(authTokenRes.getFailureDetail());
             monitor.debug(msg);
@@ -175,8 +180,10 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
         // 2. extract access token and validate it
         var accessToken = authTokenRes.getContent().getStringClaim("token");
         var refreshTokenValidationRule = new RefreshTokenValidationRule(vault, refreshToken, objectMapper, participantContext);
-        var accessTokenDataResult = tokenValidationService.validate(accessToken, localPublicKeyService, refreshTokenValidationRule)
-                .map(accessTokenClaims -> accessTokenDataStore.getById(accessTokenClaims.getStringClaim(JwtRegisteredClaimNames.JWT_ID)));
+
+        Result<AccessTokenData> accessTokenDataResult = timed("validate-access-token [Vault resolveSecret + store getById]",
+                () -> tokenValidationService.validate(accessToken, localPublicKeyService, refreshTokenValidationRule)
+                        .map(accessTokenClaims -> accessTokenDataStore.getById(accessTokenClaims.getStringClaim(JwtRegisteredClaimNames.JWT_ID))));
 
         if (accessTokenDataResult.failed()) {
             var msg = "Access token validation failed: %s".formatted(accessTokenDataResult.getFailureDetail());
@@ -191,7 +198,11 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
                 .build();
 
         var newAccessToken = createToken(newTokenParams).map(tr -> tr.tokenRepresentation().getToken());
-        var newRefreshToken = createToken(TokenParameters.Builder.newInstance().build()).map(tr -> tr.tokenRepresentation().getToken());
+
+        var replayed = refreshTokenValidationRule.replayedToken();
+        var newRefreshToken = replayed != null
+                ? ServiceResult.success(replayed.refreshToken())
+                : createToken(TokenParameters.Builder.newInstance().build()).map(tr -> tr.tokenRepresentation().getToken());
         if (newAccessToken.failed() || newRefreshToken.failed()) {
             var errors = new ArrayList<>(newAccessToken.getFailureMessages());
             errors.addAll(newRefreshToken.getFailureMessages());
@@ -200,13 +211,19 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             return Result.failure(msg);
         }
 
-        storeRefreshToken(existingAccessTokenData.id(), new RefreshToken(newRefreshToken.getContent(), tokenExpirySeconds, refreshEndpoint), participantContext);
+        if (replayed != null) {
+            monitor.info("Refresh token for '%s' was already rotated, handing out the current one again.".formatted(existingAccessTokenData.id()));
+            return Result.success(new TokenResponse(newAccessToken.getContent(), newRefreshToken.getContent(), tokenExpirySeconds, tokenExpirySeconds, "bearer"));
+        }
+
+        timed("store-refresh-token [Vault storeSecret]",
+                () -> storeRefreshToken(existingAccessTokenData.id(), new RefreshToken(newRefreshToken.getContent(), tokenExpirySeconds, refreshEndpoint, refreshToken), participantContext));
 
         // the ClaimToken is created based solely on the TokenParameters. The additional information (refresh token...) is persisted separately
         var claimToken = ClaimToken.Builder.newInstance().claims(newTokenParams.getClaims()).build();
         var accessTokenData = new AccessTokenData(existingAccessTokenData.id(), claimToken, existingAccessTokenData.dataAddress(), existingAccessTokenData.additionalProperties());
 
-        var storeResult = accessTokenDataStore.update(accessTokenData);
+        var storeResult = timed("update-access-token [store update]", () -> accessTokenDataStore.update(accessTokenData));
 
         if (storeResult.failed()) {
             monitor.severe("Failed to store refreshed access token data: %s".formatted(storeResult.getFailureDetail()));
@@ -377,6 +394,24 @@ public class DataPlaneTokenRefreshServiceImpl implements DataPlaneTokenRefreshSe
             return Result.success(objectMapper.writeValueAsString(object));
         } catch (JsonProcessingException e) {
             return Result.failure(e.getMessage());
+        }
+    }
+
+    /**
+     * Executes the given action and records how long it took. Phases exceeding {@link #SLOW_PHASE_THRESHOLD_MS} are
+     * logged at DEBUG so that a slow/stalled external dependency (DID resolution, Vault, database) can be identified
+     * from the logs even when the overall request eventually completes.
+     */
+    private <T> T timed(String phase, Supplier<T> action) {
+        var start = System.nanoTime();
+        try {
+            return action.get();
+        } finally {
+            var elapsedMs = (System.nanoTime() - start) / 1_000_000;
+            var msg = "refreshToken phase '%s' took %d ms".formatted(phase, elapsedMs);
+            if (elapsedMs >= SLOW_PHASE_THRESHOLD_MS) {
+                monitor.debug(msg);
+            }
         }
     }
 
