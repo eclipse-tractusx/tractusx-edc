@@ -64,7 +64,7 @@ allprojects {
 
     dependencies {
 
-        implementation("org.slf4j:slf4j-api:2.0.17")
+        implementation("org.slf4j:slf4j-api:2.0.18")
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
@@ -74,11 +74,35 @@ allprojects {
             implementation("net.minidev:json-smart:2.6.0") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
-            implementation("com.azure:azure-core-http-netty:1.16.3") {
+            implementation("com.azure:azure-core-http-netty:1.16.6") {
                 because("Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
             }
-            implementation("io.netty:netty-codec-http2:4.2.9.Final") {
+            implementation("io.netty:netty-codec-http2:4.2.17.Final") {
                 because("Version 4.1.123.Final vulnerability: https://www.cve.org/CVERecord?id=CVE-2025-8916")
+            }
+            implementation("tools.jackson.core:jackson-core:3.2.2") {
+                because("older version has vulnerability")
+            }
+            implementation("com.fasterxml.jackson.core:jackson-core:2.22.2") {
+                because("older version has vulnerability")
+            }
+            implementation("org.eclipse.jetty:jetty-server:12.1.12") {
+                because("older version has vulnerability")
+            }
+            implementation("org.eclipse.jetty:jetty-http:12.1.12") {
+                because("older version has vulnerability")
+            }
+            implementation("org.eclipse.jetty:jetty-security:12.1.12") {
+                because("older version has vulnerability")
+            }
+            implementation("org.eclipse.jetty:jetty-session:12.1.12") {
+                because("older version has vulnerability")
+            }
+            implementation("org.eclipse.jetty.ee10:jetty-ee10-servlet:12.1.12") {
+                because("older version has vulnerability")
+            }
+            implementation("org.eclipse.jetty.websocket:jetty-websocket:12.1.12") {
+                because("older version has vulnerability")
             }
         }
     }
