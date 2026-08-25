@@ -64,7 +64,14 @@ allprojects {
 
     dependencies {
 
-        implementation("org.slf4j:slf4j-api:2.0.17")
+        implementation("org.slf4j:slf4j-api:2.0.18")
+
+        implementation(platform("io.netty:netty-bom:4.1.137.Final")) {
+            because("CVE-2026-56819/56745/55833/55831/59901/50010/47691/45674/45416/44249/42587/42584/42579/42583: netty fixed in 4.1.136; CVE-2026-59903 (CorsHandler Vary header cache poisoning) backported to 4.1.137")
+        }
+        implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.4")) {
+            because("CVE-2026-54513/54512 + GHSA-r7wm-3cxj-wff9: jackson-databind/core fixed in 2.21.4")
+        }
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
@@ -74,11 +81,11 @@ allprojects {
             implementation("net.minidev:json-smart:2.6.0") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
-            implementation("com.azure:azure-core-http-netty:1.16.3") {
+            implementation("com.azure:azure-core-http-netty:1.16.6") {
                 because("Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
             }
-            implementation("io.netty:netty-codec-http2:4.2.9.Final") {
-                because("Version 4.1.123.Final vulnerability: https://www.cve.org/CVERecord?id=CVE-2025-8916")
+            implementation("tools.jackson.core:jackson-core:3.2.2") {
+                because("older version has vulnerability")
             }
         }
     }
