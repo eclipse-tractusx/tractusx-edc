@@ -73,6 +73,15 @@ allprojects {
             because("CVE-2026-54513/54512 + GHSA-r7wm-3cxj-wff9: jackson-databind/core fixed in 2.21.4")
         }
 
+        if (!project.path.startsWith(":edc-tests:runtime:runtime-compatibility:stable")) {
+            implementation(platform("org.eclipse.jetty:jetty-bom:12.1.10")) {
+                because("CVE-2026-10050: jetty-security auth bypass via Digest encoding collision (fixed 12.1.10); CVE-2026-2332: jetty-http request smuggling via chunked extension quoted-string parsing (fixed 12.1.7); CVE-2026-1605: jetty-server DoS via unreleased JDK Inflater from compressed requests (fixed 12.1.6)")
+            }
+            implementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.1.10")) {
+                because("CVE-2026-10050: aligns Jetty ee10 modules with jetty-bom 12.1.10")
+            }
+        }
+
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
             implementation("org.yaml:snakeyaml:2.6") {
