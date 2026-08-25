@@ -65,16 +65,16 @@ allprojects {
     dependencies {
         implementation("org.slf4j:slf4j-api:2.0.18")
 
-        implementation(enforcedPlatform("io.netty:netty-bom:4.1.136.Final")) {
-            because("CVE-2026-56819/56745/55833/55831/59901/50010/47691/45674/45416/44249/42587/42584/42579/42583: netty fixed in 4.1.136")
+        implementation(platform("io.netty:netty-bom:4.1.137.Final")) {
+            because("CVE-2026-56819/56745/55833/55831/59901/50010/47691/45674/45416/44249/42587/42584/42579/42583: netty fixed in 4.1.136; CVE-2026-59903 (CorsHandler Vary header cache poisoning) backported to 4.1.137")
         }
-        implementation(enforcedPlatform("org.eclipse.jetty:jetty-bom:12.1.10")) {
+        implementation(platform("org.eclipse.jetty:jetty-bom:12.1.10")) {
             because("CVE-2026-10050: jetty-security Digest auth bypass, fixed in 12.1.10")
         }
-        implementation(enforcedPlatform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.1.10")) {
+        implementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.1.10")) {
             because("CVE-2026-10050: aligns Jetty ee10 modules with jetty-bom 12.1.10")
         }
-        implementation(enforcedPlatform("com.fasterxml.jackson:jackson-bom:2.21.4")) {
+        implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.4")) {
             because("CVE-2026-54513/54512 + GHSA-r7wm-3cxj-wff9: jackson-databind/core fixed in 2.21.4")
         }
 
