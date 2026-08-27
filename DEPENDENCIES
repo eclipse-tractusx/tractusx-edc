@@ -119,12 +119,12 @@ maven/mavencentral/io.netty/netty-transport/4.1.130.Final, Apache-2.0 AND BSD-3-
 maven/mavencentral/io.netty/netty-transport/4.1.132.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.30.0, Apache-2.0, approved, #30125
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.30.0-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.30.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.30.0-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.30.0-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.43.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.64.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.30.0-alpha, Apache-2.0, approved, #30532
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.30.0, Apache-2.0, approved, #30533
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.30.0-alpha, Apache-2.0, approved, #30534
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.30.0-alpha, Apache-2.0, approved, #30535
+maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.43.0, Apache-2.0, approved, #30446
+maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.64.0-alpha, Apache-2.0, approved, #30536
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.61.0, Apache-2.0, approved, #29641
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.64.0, Apache-2.0, approved, #29872
@@ -391,9 +391,9 @@ maven/mavencentral/org.eclipse.jetty/jetty-server/12.1.7, EPL-2.0 OR Apache-2.0,
 maven/mavencentral/org.eclipse.jetty/jetty-session/12.1.7, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-util/12.1.7, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
-maven/mavencentral/org.flywaydb/flyway-core/13.3.0, , restricted, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-cockroachdb/13.3.0, , restricted, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-postgresql/13.3.0, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/13.3.0, Apache-2.0, approved, #30537
+maven/mavencentral/org.flywaydb/flyway-database-cockroachdb/13.3.0, Apache-2.0, approved, #30538
+maven/mavencentral/org.flywaydb/flyway-database-postgresql/13.3.0, Apache-2.0, approved, #30539
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/4.0.0-M3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/4.0.0-M3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-locator/4.0.0-M3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
@@ -444,7 +444,7 @@ maven/mavencentral/software.amazon.awssdk/http-auth-aws/2.42.34, Apache-2.0, app
 maven/mavencentral/software.amazon.awssdk/http-auth-spi/2.42.34, Apache-2.0, approved, #26497
 maven/mavencentral/software.amazon.awssdk/http-auth/2.42.34, Apache-2.0, approved, #26498
 maven/mavencentral/software.amazon.awssdk/http-client-spi/2.42.34, Apache-2.0, approved, #26499
-maven/mavencentral/software.amazon.awssdk/iam/2.42.34, , restricted, clearlydefined
+maven/mavencentral/software.amazon.awssdk/iam/2.42.34, Apache-2.0, approved, #30540
 maven/mavencentral/software.amazon.awssdk/identity-spi/2.42.34, Apache-2.0, approved, #26500
 maven/mavencentral/software.amazon.awssdk/json-utils/2.42.34, Apache-2.0, approved, #26501
 maven/mavencentral/software.amazon.awssdk/metrics-spi/2.42.34, Apache-2.0, approved, #26502
