@@ -1,0 +1,62 @@
+/********************************************************************************
+ * Copyright (c) 2025 Metaform Systems, Inc.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+package org.eclipse.edc.connector.controlplane.transform.edc.participantcontext.to;
+
+import jakarta.json.JsonObject;
+import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
+import org.eclipse.edc.transform.spi.TransformerContext;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
+
+import static org.eclipse.edc.participantcontext.spi.types.ParticipantContext.PARTICIPANT_CONTEXT_IDENTITY_IRI;
+import static org.eclipse.edc.participantcontext.spi.types.ParticipantContext.PARTICIPANT_CONTEXT_PROPERTIES_IRI;
+
+public class JsonObjectToParticipantContextTransformer extends AbstractJsonLdTransformer<JsonObject, ParticipantContext> {
+    public JsonObjectToParticipantContextTransformer() {
+        super(JsonObject.class, ParticipantContext.class);
+    }
+
+    @Override
+    public @Nullable ParticipantContext transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext context) {
+        var participantContext = ParticipantContext.Builder.newInstance();
+        var nodeId = nodeId(jsonObject);
+        var id = nodeId != null ? nodeId : UUID.randomUUID().toString();
+        participantContext.participantContextId(id);
+        participantContext.id(id);
+
+        transformString(jsonObject.get(PARTICIPANT_CONTEXT_IDENTITY_IRI), participantContext::identity, context);
+
+        var properties = jsonObject.get(PARTICIPANT_CONTEXT_PROPERTIES_IRI);
+        if (properties != null) {
+            var jsonValue = nodeJsonValue(properties);
+            if (jsonValue instanceof JsonObject json) {
+                visitProperties(json, (key, value) -> participantContext.property(key, transformGenericProperty(value, context)));
+            } else {
+                context.reportProblem("Expected properties to be a JsonObject");
+                return null;
+            }
+        }
+
+        return participantContext.build();
+    }
+}
