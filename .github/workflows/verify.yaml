@@ -69,7 +69,7 @@ jobs:
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
         run: |
-          ./gradlew checkstyleMain checkstyleTest
+          ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
 
   verify-javadoc:
     permissions:
