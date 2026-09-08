@@ -36,6 +36,9 @@ configurations.all {
     exclude("org.eclipse.edc", "federated-catalog-core")
     exclude("org.eclipse.edc", "federated-catalog-core-2025")
     exclude("org.eclipse.edc", "federated-catalog-cache-sql")
+
+    // replaced by :edc-extensions:control-plane-transform until the multi-valued right operand fix is released upstream
+    exclude(group = "org.eclipse.edc", module = "control-plane-transform")
 }
 
 dependencies {
@@ -50,6 +53,7 @@ dependencies {
     implementation(project(":edc-extensions:agreements-bpns"))
     implementation(project(":edc-extensions:bdrs-client"))
     implementation(project(":edc-extensions:bpn-validation"))
+    implementation(project(":edc-extensions:control-plane-transform"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":edc-extensions:data-flow-properties-provider"))
