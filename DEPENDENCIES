@@ -26,6 +26,7 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.4, Apache
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.19.1, Apache-2.0, approved, #21911
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.19.2, Apache-2.0, approved, #21911
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.21, Apache-2.0, approved, #25587
+maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.22, Apache-2.0, approved, #28540
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.18.4.1, Apache-2.0 AND MIT, approved, #16371
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.21.2, Apache-2.0 AND MIT, approved, #25590
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.3, Apache-2.0, approved, #16372
@@ -391,9 +392,9 @@ maven/mavencentral/org.eclipse.jetty/jetty-server/12.1.7, EPL-2.0 OR Apache-2.0,
 maven/mavencentral/org.eclipse.jetty/jetty-session/12.1.7, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-util/12.1.7, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
-maven/mavencentral/org.flywaydb/flyway-core/13.4.0, , restricted, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-cockroachdb/13.4.0, , restricted, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-postgresql/13.4.0, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/13.5.0, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-database-cockroachdb/13.5.0, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-database-postgresql/13.5.0, , restricted, clearlydefined
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/4.0.0-M3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/4.0.0-M3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-locator/4.0.0-M3, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
@@ -461,6 +462,3 @@ maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.42.34, Apac
 maven/mavencentral/software.amazon.awssdk/utils-lite/2.42.34, Apache-2.0, approved, #26513
 maven/mavencentral/software.amazon.awssdk/utils/2.42.34, Apache-2.0, approved, #26514
 maven/mavencentral/software.amazon.eventstream/eventstream/1.0.1, Apache-2.0, approved, #19691
-maven/mavencentral/tools.jackson.core/jackson-core/3.1.5, Apache-2.0 AND MIT, approved, #26415
-maven/mavencentral/tools.jackson.core/jackson-databind/3.1.5, Apache-2.0, approved, #26439
-maven/mavencentral/tools.jackson/jackson-bom/3.1.5, Apache-2.0, approved, #26520
