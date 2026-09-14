@@ -109,6 +109,16 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.14.0-
 | runtime.envConfigMapNames | list | `[]` | [Kubernetes ConfigMap Resource](https://kubernetes.io/docs/concepts/configuration/configmap/) names to load environment variables from |
 | runtime.envSecretNames | list | `[]` | [Kubernetes Secret Resource](https://kubernetes.io/docs/concepts/configuration/secret/) names to load environment variables from |
 | runtime.envValueFrom | object | `{}` | "valueFrom" environment variable references that will be added to deployment pods. Name is templated. ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#envvarsource-v1-core |
+| runtime.httpRoutes[0].annotations | object | `{}` | Additional HTTPRoute annotations to add |
+| runtime.httpRoutes[0].enabled | bool | `false` |  |
+| runtime.httpRoutes[0].endpoints | list | `["protocol","public"]` | EDC endpoints exposed by this HTTPRoute resource |
+| runtime.httpRoutes[0].hostname | string | `"edc-control.local"` | The hostname to be used to precisely map incoming traffic onto the underlying network service |
+| runtime.httpRoutes[0].parentRefs | list | `[]` | [parentRefs](https://gateway-api.sigs.k8s.io/api-types/httproute/#parentrefs) referencing Gateway resources |
+| runtime.httpRoutes[1].annotations | object | `{}` | Additional HTTPRoute annotations to add |
+| runtime.httpRoutes[1].enabled | bool | `false` |  |
+| runtime.httpRoutes[1].endpoints | list | `["management","control"]` | EDC endpoints exposed by this HTTPRoute resource |
+| runtime.httpRoutes[1].hostname | string | `"edc-control.intranet"` | The hostname to be used to precisely map incoming traffic onto the underlying network service |
+| runtime.httpRoutes[1].parentRefs | list | `[]` | [parentRefs](https://gateway-api.sigs.k8s.io/api-types/httproute/#parentrefs) referencing Gateway resources |
 | runtime.image.pullPolicy | string | `"IfNotPresent"` | [Kubernetes image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) to use |
 | runtime.image.repository | string | `""` | Which derivate of the control plane to use. When left empty the deployment will select the correct image automatically |
 | runtime.image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion |
