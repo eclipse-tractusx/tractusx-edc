@@ -72,7 +72,6 @@ updates:
           - "jakarta.json*"
           - "jakarta.ws.rs*"
           - "com.apicatalog*"
-          - "com.networknt*"
           - "org.bouncycastle*"
           - "com.nimbusds*"
       cloud-sdks:
