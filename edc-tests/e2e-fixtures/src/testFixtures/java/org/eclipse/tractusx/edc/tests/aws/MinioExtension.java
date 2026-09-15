@@ -24,10 +24,12 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.junit.utils.LazySupplier;
+import org.eclipse.tractusx.edc.tests.testcontainer.MinioContainerManager;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.MinIOContainer;
+import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.regions.Region;
@@ -49,9 +51,25 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String S3_REGION = Region.US_WEST_2.id();
 
+    /**
+     * MinIO's classic {@code minio/minio} image is no longer published on Docker Hub following the
+     * rebrand to the commercial AIStor product (which denies all S3 operations until a paid license
+     * is installed). We therefore use the open-source MinIO Community Edition image published on
+     * quay.io under the GNU AGPLv3 license. It is fully S3/MinIO API compatible and requires no
+     * license key.
+     *
+     * <p>The concrete image tag lives in a dummy {@code Dockerfile} test resource so that Dependabot
+     * can propose updates to it (see the {@code dependabot-managed-testcontainers} decision record).
+     * The tag is read from that file here, keeping the code and Dependabot in sync with a single
+     * source of truth instead of a floating {@code latest} tag.
+     */
+    private static final DockerImageName MINIO_IMAGE = DockerImageName
+            .parse(MinioContainerManager.getMinioTestContainerName())
+            .asCompatibleSubstituteFor("minio/minio");
+
     private final String accessKeyId = "test-access-key";
     private final String secretAccessKey = UUID.randomUUID().toString();
-    private final MinIOContainer minioContainer = new MinIOContainer("minio/minio")
+    private final MinIOContainer minioContainer = new MinIOContainer(MINIO_IMAGE)
             .withEnv("MINIO_ROOT_USER", accessKeyId)
             .withEnv("MINIO_ROOT_PASSWORD", secretAccessKey)
             .withExposedPorts(9000)
