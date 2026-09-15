@@ -425,7 +425,7 @@ maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved
 maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.7, MIT, approved, CQ9827
 maven/mavencentral/org.slf4j/slf4j-api/2.0.17, MIT, approved, #5915
-maven/mavencentral/org.slf4j/slf4j-api/2.0.18, MIT, approved, #5915
+maven/mavencentral/org.slf4j/slf4j-api/2.0.19, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
 maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #16046
 maven/mavencentral/org.yaml/snakeyaml/2.5, Apache-2.0, approved, #23100
