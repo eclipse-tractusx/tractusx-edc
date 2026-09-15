@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,8 +21,9 @@ package org.eclipse.tractusx.edc.tests.testcontainer;
 
 import static org.eclipse.tractusx.edc.tests.testcontainer.TestContainerManager.getContainerNameFromDependabotManagedDockerfile;
 
-public class PostgresContainerManager {
-    public static String getPostgresTestContainerName() {
-        return getContainerNameFromDependabotManagedDockerfile(PostgresContainerManager.class, "/postgres/Dockerfile");
+public class FlociContainerManager {
+    public static String getFlociTestContainerName() {
+        return getContainerNameFromDependabotManagedDockerfile(FlociContainerManager.class, "/floci/Dockerfile");
     }
 }
+

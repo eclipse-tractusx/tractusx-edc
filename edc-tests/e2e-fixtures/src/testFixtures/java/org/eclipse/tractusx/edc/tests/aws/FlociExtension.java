@@ -25,6 +25,7 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.junit.utils.LazySupplier;
+import org.eclipse.tractusx.edc.tests.testcontainer.FlociContainerManager;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -55,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FlociExtension implements BeforeAllCallback, AfterAllCallback {
 
-    private static final DockerImageName FLOCI_IMAGE = DockerImageName.parse("hectorvent/floci:latest");
+    private static final DockerImageName FLOCI_IMAGE = DockerImageName.parse(FlociContainerManager.getFlociTestContainerName());
     private static final String S3_REGION = Region.US_WEST_2.id();
     private static final int EDGE_PORT = 4566;
     private static final String SYSTEM_PROPERTY_AWS_ACCESS_KEY_ID = "aws.accessKeyId";
