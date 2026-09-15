@@ -57,11 +57,6 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
      * is installed). We therefore use the open-source MinIO Community Edition image published on
      * quay.io under the GNU AGPLv3 license. It is fully S3/MinIO API compatible and requires no
      * license key.
-     *
-     * <p>The concrete image tag lives in a dummy {@code Dockerfile} test resource so that Dependabot
-     * can propose updates to it (see the {@code dependabot-managed-testcontainers} decision record).
-     * The tag is read from that file here, keeping the code and Dependabot in sync with a single
-     * source of truth instead of a floating {@code latest} tag.
      */
     private static final DockerImageName MINIO_IMAGE = DockerImageName
             .parse(MinioContainerManager.getMinioTestContainerName())
