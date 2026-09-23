@@ -5,7 +5,7 @@ Consumer against their own control plane and triggers the retrieval of a catalog
 Provider. Before executing a catalog request, a data consumer must identify which versions of the DSP the data provider
 supports and select one to use in the data transfer request chain.
 
-## Discovering of connectors and the corrext DSP version parameters to address it
+## Discovering of connectors and the correct DSP version parameters to address it
 
 As explained in the Dataspace Protocol Specification _"Connectors implementing the Dataspace Protocol may operate on
 different versions and bindings. Therefore, it is necessary that they can discover such information reliably and
