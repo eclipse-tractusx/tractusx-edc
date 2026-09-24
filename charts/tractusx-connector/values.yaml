@@ -48,6 +48,10 @@ participant:
   bpnl: "BPNLCHANGEME"
   # -- Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy)
   contextId: "UUID CHANGEME"
+  credential:
+    # -- A list of accepted content types of the revocation list credential.
+    revocationMimetype:
+      - "application/json"
 
 dcp:
   # -- Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer
@@ -684,7 +688,6 @@ postgresql:
   persistence:
     enabled: false
     size: 10Gi
-    storageClass: standard
   resources:
     limits:
       cpu: 1

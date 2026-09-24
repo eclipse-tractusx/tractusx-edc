@@ -1,6 +1,7 @@
 #################################################################################
 #  Copyright (c) 2024 ZF Friedrichshafen AG
 #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2026 Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. (represented by Fraunhofer ISST)
 #  Copyright (c) 2021,2024 Contributors to the Eclipse Foundation
 #
 #  See the NOTICE file(s) distributed with this work for additional
@@ -39,6 +40,10 @@ participant:
   bpnl: "BPNLCHANGEME"
   # -- Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy)
   contextId: "UUID CHANGEME"
+  credential:
+    # -- A list of accepted content types of the revocation list credential.
+    revocationMimetype:
+      - "application/json"
 
 dcp:
   # -- Configures the trusted issuers for this runtime. If no supportedTypes are specified, the value defaults to "*" for that issuer

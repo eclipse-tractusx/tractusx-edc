@@ -71,6 +71,7 @@ helm install my-release tractusx-edc/tractusx-connector-memory --version 0.14.0-
 | nameOverride | string | `""` |  |
 | participant.bpnl | string | `"BPNLCHANGEME"` | BPNL Number |
 | participant.contextId | string | `"UUID CHANGEME"` | Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy) |
+| participant.credential.revocationMimetype | list | `["application/json"]` | A list of accepted content types of the revocation list credential. |
 | participant.id | string | `"did:web:changeme"` | Participant Id, resp. the Decentralized IDentifier (DID) of the connector |
 | runtime.affinity | object | `{}` | [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) to configure which nodes the pods can be scheduled on |
 | runtime.autoscaling.enabled | bool | `false` | Enables [horizontal pod autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |

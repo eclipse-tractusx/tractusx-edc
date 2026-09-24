@@ -352,6 +352,7 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.14.0-SNAPSHO
 | networkPolicy.enabled | bool | `false` | If `true` network policy will be created to restrict access to control- and dataplane |
 | participant.bpnl | string | `"BPNLCHANGEME"` | BPNL Number |
 | participant.contextId | string | `"UUID CHANGEME"` | Participant Context Id - Newly introduced id for a connector instance (needed for multitenancy) |
+| participant.credential.revocationMimetype | list | `["application/json"]` | A list of accepted content types of the revocation list credential. |
 | participant.id | string | `"did:web:changeme"` | Participant Id, resp. the Decentralized IDentifier (DID) of the connector |
 | postgresql.auth.database | string | postgres | Database of the root user. If an exisisting secret is used, this value is overwritten into the existing secret. |
 | postgresql.auth.existingSecret | string | {{ .Release.Name }}-postgresql | Name of the existing secret containing the superuser credentials. |
@@ -370,7 +371,6 @@ helm install my-release tractusx-edc/tractusx-connector --version 0.14.0-SNAPSHO
 | postgresql.jdbcUrl | string | `"jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/edc"` |  |
 | postgresql.persistence.enabled | bool | `false` |  |
 | postgresql.persistence.size | string | `"10Gi"` |  |
-| postgresql.persistence.storageClass | string | `"standard"` |  |
 | postgresql.resources.limits.cpu | int | `1` |  |
 | postgresql.resources.limits.memory | string | `"1Gi"` |  |
 | postgresql.resources.requests.cpu | string | `"250m"` |  |
