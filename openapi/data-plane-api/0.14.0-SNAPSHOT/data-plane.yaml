@@ -81,20 +81,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
-  /check/liveness:
-    get:
-      tags:
-      - Application Observability
-      description: Performs a liveness probe to determine whether the runtime is working
-        properly.
-      operationId: getLiveness
-      responses:
-        "200":
-          description: The runtime is working properly.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HealthStatus"
   /v4alpha/dataflows/{id}/trigger:
     post:
       tags:
@@ -142,23 +128,20 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
       deprecated: true
-  /aas/request:
-    post:
+  /check/liveness:
+    get:
       tags:
-      - Data Plane Proxy API
-      operationId: requestAsset
-      requestBody:
-        content:
-          '*/*':
-            schema:
-              $ref: "#/components/schemas/AssetRequest"
+      - Application Observability
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: getLiveness
       responses:
-        default:
-          description: Requests asset data
+        "200":
+          description: The runtime is working properly.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AssetRequest"
+                $ref: "#/components/schemas/HealthStatus"
   /v3/dataflows/{id}/trigger:
     post:
       tags:
@@ -205,6 +188,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
+  /aas/request:
+    post:
+      tags:
+      - Data Plane Proxy API
+      operationId: requestAsset
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/AssetRequest"
+      responses:
+        default:
+          description: Requests asset data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetRequest"
   /check/readiness:
     get:
       tags:
