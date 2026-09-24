@@ -688,7 +688,6 @@ postgresql:
   persistence:
     enabled: false
     size: 10Gi
-    storageClass: standard
   resources:
     limits:
       cpu: 1
