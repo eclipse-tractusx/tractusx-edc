@@ -31,7 +31,7 @@ import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
+import org.eclipse.tractusx.edc.tests.aws.S3MockExtension;
 import org.eclipse.tractusx.edc.tests.azure.AzureBlobClient;
 import org.eclipse.tractusx.edc.tests.azure.AzuriteExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +74,7 @@ public class MultiCloudTest {
                     .configurationProvider(() -> RuntimeConfig.Azure.blobstoreDataplaneConfig(CONTROL_API_URI, AZURITE_HOST_PORT)));
 
     @RegisterExtension
-    private static final MinioExtension MINIO_CONTAINER = new MinioExtension();
+    private static final S3MockExtension S3_CONTAINER = new S3MockExtension();
 
     @RegisterExtension
     private static final AzuriteExtension AZURITE_CONTAINER = new AzuriteExtension(AZURITE_HOST_PORT, CONSUMER_AZURITE_ACCOUNT);
@@ -98,7 +98,7 @@ public class MultiCloudTest {
 
         vault.storeSecret(BLOB_KEY_ALIAS, CONSUMER_AZURITE_ACCOUNT.key());
 
-        var bucketName = MINIO_CONTAINER.createBucket();
+        var bucketName = S3_CONTAINER.createBucket();
 
         var request = Json.createObjectBuilder()
                 .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/2025/1/"))
@@ -117,11 +117,11 @@ public class MultiCloudTest {
                 .add("destinationDataAddress", Json.createObjectBuilder()
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, S3_CONTAINER.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, S3_CONTAINER.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, S3_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("flowType", "PUSH")
@@ -140,7 +140,7 @@ public class MultiCloudTest {
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
-                .untilAsserted(() -> assertThat(MINIO_CONTAINER.listObjects(bucketName))
+                .untilAsserted(() -> assertThat(S3_CONTAINER.listObjects(bucketName))
                         .isNotEmpty().containsAll(filesNames));
     }
 
@@ -152,7 +152,7 @@ public class MultiCloudTest {
         blobStoreClient.uploadBlob(sourceContainer, fileData, TESTFILE_NAME);
         vault.storeSecret(BLOB_KEY_ALIAS, CONSUMER_AZURITE_ACCOUNT.key());
 
-        var bucketName = MINIO_CONTAINER.createBucket();
+        var bucketName = S3_CONTAINER.createBucket();
 
         var request = Json.createObjectBuilder()
                 .add("@context", Json.createObjectBuilder().add("@vocab", EDC_NAMESPACE).add("dspace", "https://w3id.org/dspace/2025/1/"))
@@ -171,11 +171,11 @@ public class MultiCloudTest {
                 .add("destinationDataAddress", Json.createObjectBuilder()
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, S3_CONTAINER.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, S3_CONTAINER.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, S3_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("flowType", "PUSH")
@@ -193,18 +193,18 @@ public class MultiCloudTest {
 
         await().pollInterval(Duration.ofSeconds(2))
                 .atMost(Duration.ofSeconds(60))
-                .untilAsserted(() -> assertThat(MINIO_CONTAINER.listObjects(bucketName))
+                .untilAsserted(() -> assertThat(S3_CONTAINER.listObjects(bucketName))
                         .isNotEmpty().contains(TESTFILE_NAME));
     }
 
 
     @Test
     void transferFile_s3ToAzureMultipleFiles(Vault vault) {
-        var bucketName = MINIO_CONTAINER.createBucket();
+        var bucketName = S3_CONTAINER.createBucket();
 
         var filesNames = new ArrayDeque<String>();
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
-        fileNames.forEach(filename -> MINIO_CONTAINER
+        fileNames.forEach(filename -> S3_CONTAINER
                 .uploadObjectOnBucket(bucketName, filename, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath()));
 
         var containerName = UUID.randomUUID().toString();
@@ -222,11 +222,11 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, S3_CONTAINER.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, S3_CONTAINER.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, S3_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("destinationDataAddress", Json.createObjectBuilder()
@@ -258,13 +258,13 @@ public class MultiCloudTest {
 
     @Test
     void transferFile_s3ToAzureMultipleFiles_whenConsumerDefinesBloblName_success(Vault vault) {
-        var bucketName = MINIO_CONTAINER.createBucket();
+        var bucketName = S3_CONTAINER.createBucket();
 
         var putResponse = new AtomicBoolean(true);
         var filesNames = new ArrayDeque<String>();
 
         var fileNames = IntStream.rangeClosed(1, 2).mapToObj(i -> PREFIX_FOR_MUTIPLE_FILES + i + '_' + TESTFILE_NAME).toList();
-        fileNames.forEach(filename -> MINIO_CONTAINER
+        fileNames.forEach(filename -> S3_CONTAINER
                 .uploadObjectOnBucket(bucketName, filename, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath()));
 
         assertThat(putResponse.get()).isTrue();
@@ -284,11 +284,11 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_PREFIX, PREFIX_FOR_MUTIPLE_FILES))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, S3_CONTAINER.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, S3_CONTAINER.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, S3_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("destinationDataAddress", Json.createObjectBuilder()
@@ -322,8 +322,8 @@ public class MultiCloudTest {
 
     @Test
     void transferFile_s3ToAzure(Vault vault) {
-        var bucketName = MINIO_CONTAINER.createBucket();
-        MINIO_CONTAINER.uploadObjectOnBucket(bucketName, TESTFILE_NAME, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
+        var bucketName = S3_CONTAINER.createBucket();
+        S3_CONTAINER.uploadObjectOnBucket(bucketName, TESTFILE_NAME, TestUtils.getFileFromResourceName(TESTFILE_NAME).toPath());
 
         var containerName = UUID.randomUUID().toString();
         blobStoreClient.createContainer(containerName);
@@ -340,11 +340,11 @@ public class MultiCloudTest {
                         .add("dspace:endpointType", S3BucketSchema.TYPE)
                         .add("dspace:endpointProperties", Json.createArrayBuilder()
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.OBJECT_NAME, TESTFILE_NAME))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, MINIO_CONTAINER.getS3region()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.REGION, S3_CONTAINER.getS3region()))
                                 .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.BUCKET_NAME, bucketName))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, MINIO_CONTAINER.getCredentials().accessKeyId()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, MINIO_CONTAINER.getCredentials().secretAccessKey()))
-                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, MINIO_CONTAINER.getEndpointOverride()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ACCESS_KEY_ID, S3_CONTAINER.getCredentials().accessKeyId()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.SECRET_ACCESS_KEY, S3_CONTAINER.getCredentials().secretAccessKey()))
+                                .add(dspaceProperty(EDC_NAMESPACE + S3BucketSchema.ENDPOINT_OVERRIDE, S3_CONTAINER.getEndpointOverride()))
                         )
                 )
                 .add("destinationDataAddress", Json.createObjectBuilder()
