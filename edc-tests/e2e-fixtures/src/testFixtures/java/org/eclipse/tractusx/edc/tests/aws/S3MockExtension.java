@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Cofinity-X
+ * Copyright (c) 2026 Cofinity-X
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,11 +24,12 @@ import org.eclipse.edc.aws.s3.AwsClientProviderConfiguration;
 import org.eclipse.edc.aws.s3.AwsClientProviderImpl;
 import org.eclipse.edc.aws.s3.S3ClientRequest;
 import org.eclipse.edc.junit.utils.LazySupplier;
-import org.eclipse.tractusx.edc.tests.testcontainer.MinioContainerManager;
+import org.eclipse.tractusx.edc.tests.testcontainer.S3MockContainerManager;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.testcontainers.containers.MinIOContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -42,44 +43,40 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.net.URI;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
+/**
+ * S3-compatible storage for transfer tests. S3Mock does not validate AWS credentials or signatures.
+ */
+public class S3MockExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String S3_REGION = Region.US_WEST_2.id();
-
-    /**
-     * MinIO's classic {@code minio/minio} image is no longer published on Docker Hub following the
-     * rebrand to the commercial AIStor product (which denies all S3 operations until a paid license
-     * is installed). We therefore use the open-source MinIO Community Edition image published on
-     * quay.io under the GNU AGPLv3 license. It is fully S3/MinIO API compatible and requires no
-     * license key.
-     */
-    private static final DockerImageName MINIO_IMAGE = DockerImageName
-            .parse(MinioContainerManager.getMinioTestContainerName())
-            .asCompatibleSubstituteFor("minio/minio");
+    private static final int S3_PORT = 9090;
+    private static final DockerImageName S3_MOCK_IMAGE = DockerImageName
+            .parse(S3MockContainerManager.getS3MockTestContainerName());
 
     private final String accessKeyId = "test-access-key";
     private final String secretAccessKey = UUID.randomUUID().toString();
-    private final MinIOContainer minioContainer = new MinIOContainer(MINIO_IMAGE)
-            .withEnv("MINIO_ROOT_USER", accessKeyId)
-            .withEnv("MINIO_ROOT_PASSWORD", secretAccessKey)
-            .withExposedPorts(9000)
+    private final GenericContainer<?> s3MockContainer = new GenericContainer<>(S3_MOCK_IMAGE)
+            .withExposedPorts(S3_PORT)
+            .waitingFor(Wait.forHttp("/").forPort(S3_PORT).forStatusCode(200)
+                    .withStartupTimeout(Duration.ofMinutes(2)))
             .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
     private final LazySupplier<AwsClientProvider> clientProvider = new LazySupplier<>(() ->
             new AwsClientProviderImpl(getConfiguration()));
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        minioContainer.start();
+        s3MockContainer.start();
     }
 
     @Override
     public void afterAll(ExtensionContext context) {
-        minioContainer.stop();
+        s3MockContainer.stop();
     }
 
     public AwsCredentials getCredentials() {
@@ -87,7 +84,7 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
     }
 
     public String getEndpointOverride() {
-        return "http://localhost:%s/".formatted(minioContainer.getFirstMappedPort());
+        return "http://%s:%s/".formatted(s3MockContainer.getHost(), s3MockContainer.getMappedPort(S3_PORT));
     }
 
     public S3Client s3Client() {
@@ -127,3 +124,4 @@ public class MinioExtension implements BeforeAllCallback, AfterAllCallback {
     }
 
 }
+
