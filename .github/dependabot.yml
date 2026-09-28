@@ -111,7 +111,7 @@ updates:
       - "resources"
       - "edc-extensions/bdrs-client/src/test/resources"
       - "edc-tests/e2e-fixtures/src/testFixtures/resources/postgres"
-      - "edc-tests/e2e-fixtures/src/testFixtures/resources/minio"
+      - "edc-tests/e2e-fixtures/src/testFixtures/resources/s3mock"
       - "edc-tests/e2e-fixtures/src/testFixtures/resources/floci"
     labels:
       - "dependabot"

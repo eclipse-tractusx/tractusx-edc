@@ -21,9 +21,10 @@ package org.eclipse.tractusx.edc.tests.testcontainer;
 
 import static org.eclipse.tractusx.edc.tests.testcontainer.TestContainerManager.getContainerNameFromDependabotManagedDockerfile;
 
-public class MinioContainerManager {
-    public static String getMinioTestContainerName() {
-        return getContainerNameFromDependabotManagedDockerfile(MinioContainerManager.class, "/minio/Dockerfile");
+public class S3MockContainerManager {
+    public static String getS3MockTestContainerName() {
+        return getContainerNameFromDependabotManagedDockerfile(S3MockContainerManager.class, "/s3mock/Dockerfile");
     }
 }
+
 

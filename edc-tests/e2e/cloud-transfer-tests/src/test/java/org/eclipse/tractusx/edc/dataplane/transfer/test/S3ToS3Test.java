@@ -31,7 +31,7 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.tractusx.edc.tests.aws.MinioExtension;
+import org.eclipse.tractusx.edc.tests.aws.S3MockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -85,10 +85,10 @@ public class S3ToS3Test {
     );
 
     @RegisterExtension
-    private static final MinioExtension PROVIDER_CONTAINER = new MinioExtension();
+    private static final S3MockExtension PROVIDER_CONTAINER = new S3MockExtension();
 
     @RegisterExtension
-    private static final MinioExtension CONSUMER_CONTAINER = new MinioExtension();
+    private static final S3MockExtension CONSUMER_CONTAINER = new S3MockExtension();
 
     private final String providerEndpointOverride = PROVIDER_CONTAINER.getEndpointOverride();
     private final String consumerEndpointOverride = CONSUMER_CONTAINER.getEndpointOverride();
