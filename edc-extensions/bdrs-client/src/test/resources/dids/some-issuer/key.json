@@ -1,8 +1,0 @@
-{
-  "kty": "EC",
-  "d": "arZU14k-y7k0JDZeCKtwzFWuMRn1dCYC4ctiGYlLxw0",
-  "crv": "P-256",
-  "kid": "did:web:nginx:some-issuer#key-1",
-  "x": "gd6e0gQBxgxqoRZJZ6wZiPRyFtbku6p_ku0ABZMc8sw",
-  "y": "haNx7VBQnEESYj3njdKpxhmSMD_c2iZtGDYPlUOhzeE"
-}

@@ -1,8 +1,0 @@
-{
-  "kty": "EC",
-  "d": "ZdN2hUL21R98sWQnRjbTCJUJBee25MvlzpbrxD-VddM",
-  "crv": "P-256",
-  "kid": "did:web:nginx:bdrs-client#key-1",
-  "x": "qwVTSIR5bqMmm9HDtIquinOStrQQ7t5K1NVsDauk9mg",
-  "y": "4EysaL6Q64wU65AvNyCfyEd3eec9UZ-nIDNoCxhaKio"
-}

@@ -1,2 +1,0 @@
-All modules in this directory are only temporary and they should be replaced with their upstream counterparts at the
-earliest opportunity. changes made here should be upstreamed ASAP, lest we run the risk of feature divergence!
