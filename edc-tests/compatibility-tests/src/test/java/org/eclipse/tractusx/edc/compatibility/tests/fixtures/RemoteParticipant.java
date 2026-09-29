@@ -1,0 +1,197 @@
+/*******************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ******************************************************************************/
+
+package org.eclipse.tractusx.edc.compatibility.tests.fixtures;
+
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.tractusx.edc.tests.participant.DcpParticipant;
+import org.eclipse.tractusx.edc.tests.participant.TractusxDcpParticipantBase;
+import org.eclipse.tractusx.edc.tests.runtimes.PostgresExtension;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static io.restassured.http.ContentType.JSON;
+import static jakarta.json.Json.createObjectBuilder;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_ASSIGNER_ATTRIBUTE;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_TARGET_ATTRIBUTE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DSP_2025;
+
+public class RemoteParticipant extends DcpParticipant {
+    private final List<String> datasources = List.of("asset", "contractdefinition",
+            "contractnegotiation", "policy", "transferprocess", "bpn",
+            "policy-monitor", "edr", "dataplane", "accesstokendata", "dataplaneinstance");
+    private final Map<String, String> agreementAssetIds = new ConcurrentHashMap<>();
+    private static final String HTTP_PULL_TRANSFER_TYPE = "HttpData-PULL";
+
+    @Override
+    public String negotiateContract(Participant provider, JsonObject offer) {
+        var participant = (TractusxDcpParticipantBase) provider;
+        var correctedOffer = createObjectBuilder(offer)
+                .add(ODRL_ASSIGNER_ATTRIBUTE, createObjectBuilder().add(ID, participant.getDid()))
+                .build();
+
+        var agreementId = super.negotiateContract(provider, correctedOffer);
+        agreementAssetIds.put(agreementId, extractAssetId(offer));
+        return agreementId;
+    }
+
+    @Override
+    public String initiateTransfer(
+            Participant provider,
+            String agreementId,
+            JsonObject privateProperties,
+            JsonObject destination,
+            String transferType,
+            JsonArray callbacks) {
+
+        var transferRequest = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder()
+                        .add("@vocab", EDC_NAMESPACE)
+                        .build())
+                .add(TYPE, "TransferRequest")
+                .add("counterPartyAddress", provider.getProtocolUrl())
+                .add("contractId", agreementId)
+                .add("assetId", agreementAssetIds.remove(agreementId))
+                .add("protocol", DSP_2025)
+                .add("transferType", transferType != null ? transferType : HTTP_PULL_TRANSFER_TYPE)
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(transferRequest)
+                .when()
+                .post("/transferprocesses")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("'@id'");
+    }
+
+    private String extractAssetId(JsonObject offer) {
+        var target = offer.get(ODRL_TARGET_ATTRIBUTE);
+        var targetObj = (JsonObject) target;
+        return targetObj.getString(ID, null);
+    }
+
+    public Config getConfig(DcpParticipant participant, PostgresExtension postgresql) {
+        var postgresqlConfig = postgresql.getConfig(getName());
+
+        Map<String, String> settings = new HashMap<>() {
+            {
+                put("edc.participant.id", id);
+                put("edc.api.auth.key", MANAGEMENT_API_KEY);
+                put("web.http.port", String.valueOf(getFreePort()));
+                put("web.http.path", "/api");
+                put("web.http.protocol.port", String.valueOf(controlPlaneProtocol.get().getPort()));
+                put("web.http.protocol.path", controlPlaneProtocol.get().getPath());
+                put("web.http.management.port", String.valueOf(controlPlaneManagement.get().getPort()));
+                put("web.http.management.path", controlPlaneManagement.get().getPath());
+                put("web.http.control.port", String.valueOf(getFreePort()));
+                put("web.http.control.path", "/control");
+                put("edc.transfer.send.retry.limit", "1");
+                put("edc.transfer.send.retry.base-delay.ms", "100");
+                put("edc.dsp.callback.address", controlPlaneProtocol.get().toString());
+                putAll(datasourceEnvironmentVariables("default", postgresqlConfig));
+                put("edc.iam.sts.oauth.token.url", stsUri.get().toString() + "/token");
+                put("edc.iam.sts.oauth.client.id", getDid());
+                put("edc.iam.sts.oauth.client.secret.alias", "client_secret_alias");
+                put("testing.edc.vaults.1.key", "client_secret_alias");
+                put("testing.edc.vaults.1.value", "clientSecret");
+                put("testing.edc.vaults.2.key", getPrivateKeyAlias());
+                put("testing.edc.vaults.2.value", getPrivateKeyAsString());
+                put("testing.edc.vaults.3.key", getFullKeyId());
+                put("testing.edc.vaults.3.value", getPublicKeyAsString());
+                put("edc.iam.issuer.id", getDid());
+                put("edc.iam.did.web.use.https", "false");
+                put("tractusx.edc.participant.bpn", getBpn());
+                put("testing.edc.bdrs.1.key", participant.getId());
+                put("testing.edc.bdrs.1.value", participant.getDid());
+                put("edc.iam.trusted-issuer.issuer.id", trustedIssuer);
+                put("edc.sql.schema.autocreate", "false");
+                put("edc.participant.context.id", "participant-context-id");
+                put("web.http.public.path", dataPlanePublic.get().getPath());
+                put("web.http.public.port", String.valueOf(dataPlanePublic.get().getPort()));
+                put("edc.transfer.proxy.token.signer.privatekey.alias", getPrivateKeyAlias());
+                put("edc.transfer.proxy.token.verifier.publickey.alias", getFullKeyId());
+                putAll(datasourceConfig(postgresqlConfig));
+            }
+        };
+
+        return ConfigFactory.fromMap(settings);
+    }
+
+    private Map<String, String> datasourceConfig(Config postgresqlConfig) {
+
+        var config = new HashMap<String, String>();
+        datasources.forEach(ds -> {
+            config.put("edc.datasource." + ds + ".name", ds);
+            config.putAll(datasourceEnvironmentVariables(ds, postgresqlConfig));
+        });
+        config.put("tx.edc.postgresql.migration.schema", postgresqlConfig.getString("tx.edc.postgresql.migration.schema"));
+        return config;
+    }
+
+    private Map<String, String> datasourceEnvironmentVariables(String datasourceName, Config postgresqlConfig) {
+        return Map.of(
+                "edc.datasource." + datasourceName + ".url", postgresqlConfig.getString("edc.datasource.default.url"),
+                "edc.datasource." + datasourceName + ".user", postgresqlConfig.getString("edc.datasource.default.user"),
+                "edc.datasource." + datasourceName + ".password", postgresqlConfig.getString("edc.datasource.default.password")
+        );
+    }
+
+    public static class Builder extends TractusxDcpParticipantBase.Builder<RemoteParticipant, Builder> {
+
+        protected Builder() {
+            super(new RemoteParticipant());
+        }
+
+        protected Builder(RemoteParticipant participant) {
+            super(participant);
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        public Builder protocol(String protocolName, String path) {
+            participant.protocol = new Protocol(protocolName, path);
+            return protocolVersionPath(path);
+        }
+
+        @Override
+        public RemoteParticipant build() {
+            super.build();
+            return participant;
+        }
+    }
+}

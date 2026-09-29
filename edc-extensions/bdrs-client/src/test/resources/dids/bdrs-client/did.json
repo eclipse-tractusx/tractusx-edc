@@ -1,0 +1,23 @@
+{
+  "service": [],
+  "verificationMethod": [
+    {
+      "id": "did:web:nginx:bdrs-client#key-1",
+      "type": "JsonWebKey2020",
+      "controller": "did:web:nginx:bdrs-client",
+      "publicKeyMultibase": null,
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "kid": "did:web:nginx:bdrs-client#key-1",
+        "x": "qwVTSIR5bqMmm9HDtIquinOStrQQ7t5K1NVsDauk9mg",
+        "y": "4EysaL6Q64wU65AvNyCfyEd3eec9UZ-nIDNoCxhaKio"
+      }
+    }
+  ],
+  "authentication": [],
+  "id": "http://tx-test.com/7bffc00d-3142-4cf2-a858-57c7493577f1",
+  "@context": [
+    "https://w3id.org/did-resolution/v1"
+  ]
+}

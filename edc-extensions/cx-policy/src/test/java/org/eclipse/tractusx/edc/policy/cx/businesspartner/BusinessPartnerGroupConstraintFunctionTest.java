@@ -1,0 +1,108 @@
+/********************************************************************************
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+package org.eclipse.tractusx.edc.policy.cx.businesspartner;
+
+import jakarta.json.Json;
+import org.eclipse.edc.participant.spi.ParticipantAgent;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
+import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.result.StoreResult;
+import org.eclipse.tractusx.edc.policy.cx.TestParticipantAgentPolicyContext;
+import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
+import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class BusinessPartnerGroupConstraintFunctionTest {
+
+    private final ParticipantAgent participantAgent = mock();
+    private final BusinessPartnerStore store = mock();
+    private final BdrsClient bdrsClient = mock();
+    private final BusinessPartnerGroupConstraintFunction<ParticipantAgentPolicyContext> function = new BusinessPartnerGroupConstraintFunction<>(store, bdrsClient);
+    private final ParticipantAgentPolicyContext context = new TestParticipantAgentPolicyContext(participantAgent);
+
+    @Test
+    void evaluate() {
+        var identity = "BPNL00000000001A";
+        var rightValue = List.of("group1", "group2");
+        when(participantAgent.getIdentity()).thenReturn(identity);
+        when(store.resolveForBpn(identity)).thenReturn(StoreResult.success(List.of("group1", "group2")));
+        assertThat(function.evaluate(Operator.IS_ANY_OF, rightValue, null, context)).isTrue();
+    }
+
+    @Test
+    void evaluate_withDid() {
+        var didIdentity = "did:example:some-identity";
+        var bpn = "BPNL00000000001A";
+        var allowedGroups = List.of("group1", "group2");
+        when(participantAgent.getIdentity()).thenReturn(didIdentity);
+        when(bdrsClient.resolveBpn(didIdentity)).thenReturn(bpn);
+        when(store.resolveForBpn(bpn)).thenReturn(StoreResult.success(allowedGroups));
+        assertThat(function.evaluate(Operator.IS_ANY_OF, allowedGroups, null, context)).isTrue();
+    }
+
+    @Test
+    void validate_whenIsAnyOfAndValidRightValueArePassed_thenSuccess() {
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var bpn2 = Json.createValue("BPNL00000000002B");
+        var rightValue = List.of(Map.of("@value", bpn1), Map.of("@value", bpn2));
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenIsNoneOfAndValidRightValueArePassed_thenSuccess() {
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var bpn2 = Json.createValue("BPNL00000000002B");
+        var rightValue = List.of(Map.of("@value", bpn1), Map.of("@value", bpn2));
+        var result = function.validate(Operator.IS_NONE_OF, rightValue, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenValidOperatorAndOneRightValueIsPassed_thenSuccess() {
+        var bpn1 = Json.createValue("BPNL00000000001A");
+        var rightValue = List.of(Map.of("@value", bpn1));
+        var result = function.validate(Operator.IS_ANY_OF, rightValue, null);
+        assertThat(result.succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenDuplicateItemsArePassed_thenFails() {
+        var rightValue = List.of("BPNL00000000001A", "BPNL00000000001A");
+        var result = function.validate(Operator.IS_NONE_OF, rightValue, null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid right-operand: ");
+    }
+
+    @Test
+    void validate_whenInvalidOperator_thenFailure() {
+        var rightValue = List.of("BPNL00000000001A");
+        var result = function.validate(Operator.EQ, rightValue, null);
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureDetail()).contains("Invalid operator");
+    }
+}

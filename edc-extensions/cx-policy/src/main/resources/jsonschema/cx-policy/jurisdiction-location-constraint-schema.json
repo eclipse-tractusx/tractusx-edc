@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "JurisdictionLocationConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/JurisdictionLocationConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/jurisdiction-location-constraint-schema.json",
+  "definitions": {
+    "JurisdictionLocationConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "JurisdictionLocation"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/LocationStringRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LocationStringRightOperand": {
+      "type": "string",
+      "$comment": "{\"permission\":\"The exclusive venue for all disputes arising from the Agreement concluded via the Registered Connector (RC) shall be at the competent court at the location specified herein.\"}"
+    }
+  }
+}

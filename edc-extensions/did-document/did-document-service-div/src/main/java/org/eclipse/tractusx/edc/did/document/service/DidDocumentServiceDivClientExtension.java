@@ -1,0 +1,77 @@
+/********************************************************************************
+ * Copyright (c) 2025 SAP SE
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+package org.eclipse.tractusx.edc.did.document.service;
+
+import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provides;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.iam.dcp.sts.div.oauth.DivOauth2Client;
+import org.eclipse.tractusx.edc.spi.did.document.service.DidDocumentServiceClient;
+
+import java.net.URI;
+
+@Provides(DidDocumentServiceClient.class)
+public class DidDocumentServiceDivClientExtension implements ServiceExtension {
+
+    @Inject
+    private EdcHttpClient httpClient;
+
+    @Inject(required = false)
+    private DivOauth2Client divOauth2Client;
+
+    @Inject
+    private TypeManager typeManager;
+
+    @Inject
+    private Monitor monitor;
+
+    @Setting(key = "tx.edc.iam.sts.div.url", description = "STS Div endpoint", required = false)
+    private String divUrl;
+
+    @Setting(key = "edc.participant.id", description = "EDC Participant Id")
+    private String ownDid;
+
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+
+        if (divUrl == null || divUrl.isBlank() || divOauth2Client == null) {
+            monitor.info("DidDocumentServiceDIVClient will not be registered because DIV URL not configured or an implementation of DivOauth2Client is missing");
+        } else {
+            var client = new DidDocumentServiceDivClient(
+                    httpClient,
+                    divOauth2Client,
+                    typeManager.getMapper(),
+                    getHostWithScheme(divUrl),
+                    ownDid,
+                    monitor);
+            context.registerService(DidDocumentServiceClient.class, client);
+        }
+    }
+
+    private String getHostWithScheme(String url) {
+        var uri = URI.create(url);
+        return "%s://%s".formatted(uri.getScheme(), uri.getAuthority());
+    }
+}

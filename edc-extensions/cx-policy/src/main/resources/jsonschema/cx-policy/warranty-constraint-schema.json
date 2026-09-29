@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "WarrantyConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/WarrantyConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/warranty-constraint-schema.json",
+  "definitions": {
+    "WarrantyConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "Warranty"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "oneOf": [
+            {"$ref": "#/definitions/WarrantyNoneRightOperand"},
+            {"$ref": "#/definitions/WarrantyContractReferenceRightOperand"},
+            {"$ref": "#/definitions/WarrantyDataQualityIssuesRightOperand"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "WarrantyNoneRightOperand": {
+      "type": "string",
+      "const": "cx.warranty.none:1",
+      "$comment": "{\"permission\":\"The provision of the Data is made with the exclusion of any warranty for material defects and defects in title, unless the Data Provider fraudulently conceals such a defect.\"}"
+    },
+    "WarrantyContractReferenceRightOperand": {
+      "type": "string",
+      "const": "cx.warranty.contractReference:1",
+      "$comment": "{\"permission\":\"The provision of the Data is subject to the warranty for material defects and defects in title as agreed in the description of the subject matter of performance according to the referenced contract (leftOperand: ContractReference).\"}"
+    },
+    "WarrantyDataQualityIssuesRightOperand": {
+      "type": "string",
+      "const": "cx.warranty.dataQualityIssues:1",
+      "$comment": "{\"permission\":\"In the event of a material deviation from the contractually agreed data quality, the Data Provider shall be entitled to (i) demand the rectification of defects by provision of Data in the quality owed, (ii) terminate the contract in the event of failure to remedy the defect, and (iii) claim damages in accordance with the liability provisions set out below.\"}"
+    }
+  }
+}

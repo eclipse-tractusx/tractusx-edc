@@ -1,0 +1,2 @@
+helm-docs --log-level debug
+

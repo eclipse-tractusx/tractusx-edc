@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "ContractTerminationConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/ContractTerminationConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/contract-termination-constraint-schema.json",
+  "definitions": {
+    "ContractTerminationConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "ContractTermination"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "oneOf": [
+            {"$ref": "#/definitions/DataDeletionRightOperand"},
+            {"$ref": "#/definitions/DataKeepingRightOperand"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "DataDeletionRightOperand": {
+      "type": "string",
+      "const": "cx.data.deletion:1",
+      "$comment": "{\"permission\":\"Upon expiry of the period of use (in accordance with cx-policy:DataUsageEnd) as well as in the event of termination, the Data Consumer shall be obliged to delete the Data (including all copies in backup systems that can be deleted with reasonable effort) from all systems and storage media and, upon request, confirm this to the Data Provider in text form. The foregoing obligation shall apply accordingly to the extent that the Data Consumer is permitted to provide the data to Affiliated Companies (in accordance with cx-policy:affiliates.*) or to companies for which the Data Consumer acts in an 'is managed by' relationship (within the meaning of the Catena-X Standard CX-0076) (in accordance with cx-policy:contractingCompany.*). The Data Consumer is entitled to make and retain a copy of the Data for as long as necessary to safeguard legitimate interests vis-à-vis the Data Provider - particularly for the purpose of demonstrating breaches of contractual obligations arising from the provision of the Data.\"}"
+    },
+    "DataKeepingRightOperand": {
+      "type": "string",
+      "const": "cx.data.keeping:1",
+      "$comment": "{\"permission\":\"Upon expiry of the period of use (in accordance with cx-policy:dataUsageEnd) as well as in the event of termination, the Data Consumer shall not be obliged to delete the Data (including all copies in backup systems that can be deleted with reasonable effort) from all systems and storage media. The foregoing shall apply accordingly to the extent that the Data Consumer is permitted to provide the Data to Affiliated Companies (in accordance with leftOperand cx-policy:affiliates.*) or to companies for which the Data Consumer acts in an 'is managed by' relationship (within the meaning of the Catena-X Standard CX-0076) (in accordance with cx-policy:contractingCompany.*). In such case, the Data Consumer shall be entitled to continue using the Data exclusively within the scope of the purpose limitation and other conditions of the contract. The Data Consumer shall take all necessary measures to protect the Data against unauthorised access by third parties.\"}"
+    }
+  }
+}

@@ -1,0 +1,89 @@
+#################################################################################
+#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+
+---
+name: "Trivy"
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  git-sha7:
+    name: Determine short git sha
+    runs-on: ubuntu-latest
+    outputs:
+      value: ${{ steps.git-sha7.outputs.SHA7 }}
+    steps:
+      - name: Resolve git 7-chars sha
+        id: git-sha7
+        run: |
+          echo "SHA7=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+  trivy-analyze-config:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "config"
+      output-file: "trivy-results-config.sarif"
+
+  trivy-edc-runtime-memory:
+    needs: [ git-sha7 ]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "image"
+      image-ref: "tractusx/edc-runtime-memory:sha-${{ needs.git-sha7.outputs.value }}"
+      output-file: "trivy-results-edc-runtime-memory.sarif"
+
+  trivy-edc-controlplane:
+    needs: [ git-sha7 ]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "image"
+      image-ref: "tractusx/edc-controlplane-postgresql-hashicorp-vault:sha-${{ needs.git-sha7.outputs.value }}"
+      output-file: "trivy-results-edc-controlplane-postgresql-hashicorp-vault.sarif"
+
+  trivy-edc-dataplane:
+    needs: [ git-sha7 ]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: eclipse-tractusx/sig-infra/.github/workflows/reusable-trivy.yaml@main
+    with:
+      scan-type: "image"
+      image-ref: "tractusx/edc-dataplane-hashicorp-vault:sha-${{ needs.git-sha7.outputs.value }}"
+      output-file: "trivy-results-edc-dataplane-hashicorp-vault.sarif"

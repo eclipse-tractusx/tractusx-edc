@@ -1,0 +1,23 @@
+{
+  "service": [],
+  "verificationMethod": [
+    {
+      "id": "did:web:nginx:some-issuer#key-1",
+      "type": "JsonWebKey2020",
+      "controller": "did:web:nginx:some-issuer",
+      "publicKeyMultibase": null,
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "kid": "did:web:nginx:some-issuer#key-1",
+        "x": "gd6e0gQBxgxqoRZJZ6wZiPRyFtbku6p_ku0ABZMc8sw",
+        "y": "haNx7VBQnEESYj3njdKpxhmSMD_c2iZtGDYPlUOhzeE"
+      }
+    }
+  ],
+  "authentication": [],
+  "id": "http://tx-test.com/55e94aab-a5df-44c7-bb4d-10b3085381ee",
+  "@context": [
+    "https://w3id.org/did-resolution/v1"
+  ]
+}

@@ -1,0 +1,89 @@
+#################################################################################
+#  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+#  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#################################################################################
+
+
+---
+name: "Publish Maven Artefacts to Maven Central"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: false
+        description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: false
+        description: 'a semver string denoting the version. Append -SNAPSHOT for snapshots. If omitted, the version is taken from gradle.properties'
+    secrets:
+      ORG_GPG_PRIVATE_KEY:
+        required: false
+        description: 'GPG private key for signing'
+      ORG_GPG_PASSPHRASE:
+        required: false
+        description: 'GPG passphrase'
+      CENTRAL_SONATYPE_TOKEN_USERNAME:
+        required: false
+        description: 'Sonatype token username'
+      CENTRAL_SONATYPE_TOKEN_PASSWORD:
+        required: false
+        description: 'Sonatype token password'
+
+permissions:
+  contents: read
+
+jobs:
+  maven-release:
+    name: 'Publish all artefacts to MavenCentral'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-java
+
+      - name: Set version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          echo "Input Version: $INPUT_VERSION"
+
+          # set the input version in gradle.properties, if passed
+          if [ ! -z "$INPUT_VERSION" ];
+          then
+            sed -i 's#^version=.*#version='"$INPUT_VERSION"'#g' $(find . -name "gradle.properties")
+          fi
+
+          grep version gradle.properties | (echo -n "Publishing using " && cat)
+
+      - uses: ./.github/actions/publish-maven-artifacts
+        with:
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
+          username: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+          password: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}

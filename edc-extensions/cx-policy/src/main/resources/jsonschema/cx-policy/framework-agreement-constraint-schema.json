@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "FrameworkAgreementConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/FrameworkAgreementConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/framework-agreement-constraint-schema.json",
+  "definitions": {
+    "FrameworkAgreementConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "FrameworkAgreement"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "$ref": "#/definitions/DataExchangeGovernanceRightOperand"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DataExchangeGovernanceRightOperand": {
+      "type": "string",
+      "const": "DataExchangeGovernance:1.0",
+      "$comment": "{\"permission\":\"Data Provider and Data Consumer agree to the Data Exchange Governance published by the Catena-X Automotive Network e.V. (Association) as basis for this Agreement concluded via the Registered Connector (RC). The Data Exchange Governance can be found here: https://catenax-ev.github.io/docs/regulatory-framework/20000ft/data-exchange-governance after CX-Saturn has been released. The subject matter of the Agreement concluded via the RC is the provision of the Data for a limited period of one (1) year (unless otherwise agreed in [dataProvisioningEndDate](https://w3id.org/catenax/2025/9/policy/data-provisioning-end-date-constraint-schema.json) or [dataProvisioningEndDurationDays](https://w3id.org/catenax/2025/9/policy/data-provisioning-end-duration-days-constraint-schema.json)and granting a right to use the Data for a period of one (1) year (unless agreed otherwise in [dataUsageEndDate](https://w3id.org/catenax/2025/9/policy/data-usage-end-date-constraint-schema.json) or [dataUsageEndDurationDays](https://w3id.org/catenax/2025/9/policy/data-usage-end-duration-days-constraint-schema.json) or open-ended [DataUsageEndUnlimited](https://w3id.org/catenax/2025/9/policy/data-usage-end-definition-constraint-schema.json)). The provision of the Data shall be effected via the API specified by the dataset attribute dct:type. The Agreement concluded via the RC covers only the exchange of Data effected on the basis of the API version (as specified in the dataset attribute base-URL), the Asset-Version (dataset attribute cx-common:version), and the Aspect Model Version as applicable at the time of concluding the Agreement. Unless agreed otherwise in [VersionChanges](https://w3id.org/catenax/2025/9/policy/version-changes-constraint-schema.json), the Agreement concluded via the RC must be renegotiated in the event of any change to at least one of these versions. Unless otherwise agreed between the Parties within the Agreement concluded via the RC (in accordance with [UsagePurpose](https://w3id.org/catenax/2025/9/policy/usage-purpose-constraint-schema.json), the Data Provider grants the Data Consumer a non-exclusive right, limited in time to the duration of this contract (in accordance with [dataUsageEndDate](https://w3id.org/catenax/2025/9/policy/data-usage-end-date-constraint-schema.json) or [dataUsageEndDurationDays](https://w3id.org/catenax/2025/9/policy/data-usage-end-duration-days-constraint-schema.json) or open-ended [DataUsageEndUnlimited](https://w3id.org/catenax/2025/9/policy/data-usage-end-definition-constraint-schema.json)), to use the Data in accordance with the Contractual Usage Purposes (in accordance with [Usage Purpose](https://w3id.org/catenax/2025/9/policy/usage-purpose-constraint-schema.json)).\"}"
+    }
+  }
+}

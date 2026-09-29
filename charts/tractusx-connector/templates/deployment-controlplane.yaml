@@ -1,0 +1,439 @@
+#
+  #  Copyright (c) 2023 ZF Friedrichshafen AG
+  #  Copyright (c) 2023 Mercedes-Benz Tech Innovation GmbH
+  #  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+  #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
+  #  Copyright (c) 2026 Fraunhofer-Gesellschaft zur Foerderung der angewandten Forschung e.V. (represented by Fraunhofer ISST)
+  #
+  #  See the NOTICE file(s) distributed with this work for additional
+  #  information regarding copyright ownership.
+  #
+  #  This program and the accompanying materials are made available under the
+  #  terms of the Apache License, Version 2.0 which is available at
+  #  https://www.apache.org/licenses/LICENSE-2.0
+  #
+  #  Unless required by applicable law or agreed to in writing, software
+  #  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+  #  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+  #  License for the specific language governing permissions and limitations
+  #  under the License.
+  #
+  #  SPDX-License-Identifier: Apache-2.0
+  #
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "txdc.fullname" . }}-controlplane
+  labels:
+    {{- include "txdc.controlplane.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.controlplane.autoscaling.enabled }}
+  replicas: {{ .Values.controlplane.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "txdc.controlplane.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.controlplane.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "txdc.controlplane.selectorLabels" . | nindent 8 }}
+        {{- with .Values.controlplane.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "txdc.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.controlplane.podSecurityContext | nindent 8 }}
+      {{- if or .Values.controlplane.initContainers .Values.customCaCerts }}
+      initContainers:
+        {{- if .Values.controlplane.initContainers }}
+        {{- toYaml .Values.controlplane.initContainers | nindent 8 }}
+        {{- end }}
+        {{- if .Values.customCaCerts }}
+        - name: custom-cacerts
+          # either use the specified image, or use the default one
+          {{- if .Values.controlplane.image.repository }}
+          image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cp /opt/java/openjdk/lib/security/cacerts /workdir/
+              find /cacerts -type f \( -iname \*.crt -o -iname \*.pem \) -exec echo "{}" \; | while read PEM_FILE_PATH; do
+                PEM_FILE=${PEM_FILE_PATH##*/}
+                ALIAS=${PEM_FILE%.*}
+                echo "adding ${PEM_FILE} with alias ${ALIAS} to cacerts ..."
+                keytool -import -noprompt -trustcacerts -alias ${ALIAS} -file ${PEM_FILE_PATH} -keystore /workdir/cacerts -storepass changeit
+              done
+          securityContext:
+            {{- toYaml .Values.controlplane.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: custom-cacertificates
+              mountPath: /cacerts
+            - name: custom-cacerts
+              mountPath: /workdir
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.controlplane.securityContext | nindent 12 }}
+
+          # either use the specified image, or use the default one
+          {{- if .Values.controlplane.image.repository }}
+          image: "{{ .Values.controlplane.image.repository }}:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          image: "tractusx/edc-controlplane-postgresql-hashicorp-vault:{{ .Values.controlplane.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.controlplane.image.pullPolicy }}
+          args: [ --log-level={{ .Values.controlplane.logs.level | required ".Values.controlplane.logs.level is required" }} ]
+          ports:
+          {{- range $key,$value := .Values.controlplane.endpoints }}
+            - name: {{ $key }}
+              containerPort: {{ $value.port }}
+              protocol: TCP
+          {{- end }}
+          {{- if .Values.controlplane.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.controlplane.endpoints.default.path }}/check/liveness
+              port: {{ .Values.controlplane.endpoints.default.port }}
+            initialDelaySeconds: {{ .Values.controlplane.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.controlplane.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.controlplane.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.controlplane.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.controlplane.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.controlplane.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.controlplane.endpoints.default.path }}/check/readiness
+              port: {{ .Values.controlplane.endpoints.default.port }}
+            initialDelaySeconds: {{ .Values.controlplane.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.controlplane.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.controlplane.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.controlplane.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.controlplane.readinessProbe.successThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.controlplane.resources | nindent 12 }}
+          env:
+          {{- if .Values.controlplane.debug.enabled }}
+            - name: "JAVA_TOOL_OPTIONS"
+            {{- if .Values.controlplane.debug.suspendOnStart }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=%v" .Values.controlplane.debug.port }}
+            {{- else }}
+              value: >-
+                {{ printf "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%v" .Values.controlplane.debug.port }}
+            {{- end }}
+          {{- end }}
+
+
+            ########################
+            ## ID CONFIGURATION ##
+            ########################
+            - name: EDC_PARTICIPANT_ID
+              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
+            - name: "EDC_IAM_ISSUER_ID"
+              value: {{ .Values.participant.id | required ".Values.participant.id is required" | quote }}
+            - name: "EDC_IAM_CREDENTIAL_REVOCATION_MIMETYPE"
+              value: {{ join "," .Values.participant.credential.revocationMimetype | required ".Values.participant.credential.revocationMimetype is required" | quote }}
+            - name: "EDC_PARTICIPANT_CONTEXT_ID"
+              value: {{ .Values.participant.contextId | required ".Values.participant.contextId is required" | quote }}
+            - name: "TRACTUSX_EDC_PARTICIPANT_BPN"
+              value: {{ .Values.participant.bpnl | required ".Values.participant.bpnl is required" | quote }}
+
+            ###########################
+            ## LOGGING CONFIGURATION ##
+            ###########################
+            {{ if .Values.log4j2.enableJsonLogs}}
+            - name: LOG4J_CONFIGURATION_FILE
+              value: "/app/log4j2.yaml"
+            {{ end }}
+
+            #######
+            # API #
+            #######
+            {{- if .Values.controlplane.endpoints.management.jwksUrl }}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_DAC_KEY_URL"
+              value: {{ .Values.controlplane.endpoints.management.jwksUrl | quote}}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_TYPE"
+              value: "delegated"
+            {{- else }}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_KEY"
+              value: {{ .Values.controlplane.endpoints.management.authKey | required ".Values.controlplane.endpoints.management.authKey is required" | quote }}
+            - name: "WEB_HTTP_MANAGEMENT_AUTH_TYPE"
+              value: "tokenbased"
+            {{- end }}
+
+            - name: "WEB_HTTP_PORT"
+              value: {{ .Values.controlplane.endpoints.default.port | quote }}
+            - name: "WEB_HTTP_PATH"
+              value: {{ .Values.controlplane.endpoints.default.path | quote }}
+            - name: "WEB_HTTP_MANAGEMENT_PORT"
+              value: {{ .Values.controlplane.endpoints.management.port | quote }}
+            - name: "WEB_HTTP_MANAGEMENT_PATH"
+              value: {{ .Values.controlplane.endpoints.management.path | quote }}
+            - name: "WEB_HTTP_CONTROL_PORT"
+              value: {{ .Values.controlplane.endpoints.control.port | quote }}
+            - name: "WEB_HTTP_CONTROL_PATH"
+              value: {{ .Values.controlplane.endpoints.control.path | quote }}
+            - name: "WEB_HTTP_PROTOCOL_PORT"
+              value: {{ .Values.controlplane.endpoints.protocol.port | quote }}
+            - name: "WEB_HTTP_PROTOCOL_PATH"
+              value: {{ .Values.controlplane.endpoints.protocol.path | quote }}
+            - name: "EDC_CONTROL_ENDPOINT"
+              value: {{ include "txdc.controlplane.url.control" .}}
+
+
+            #########
+            ## DSP ##
+            #########
+
+            - name: "EDC_DSP_CALLBACK_ADDRESS"
+              value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" .) .Values.controlplane.endpoints.protocol.path | quote }}
+            - name: "EDC_OAUTH_PROVIDER_AUDIENCE"
+              value: "idsc:IDS_CONNECTORS_ALL"
+            - name: "EDC_OAUTH_ENDPOINT_AUDIENCE"
+              value: {{ printf "%s%s" (include "txdc.controlplane.url.protocol" . ) .Values.controlplane.endpoints.protocol.path | quote }}
+
+            ################
+            ## POSTGRESQL ##
+            ################
+            {{ if not .Values.install.postgresql }}
+            # default datasource, no postgresql secret available
+            - name: "EDC_DATASOURCE_DEFAULT_USER"
+              value: {{ .Values.postgresql.auth.username | required ".Values.postgresql.auth.username is required" | quote }}
+            - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
+              value: {{ .Values.postgresql.auth.password | required ".Values.postgresql.auth.password is required" | quote }}
+            - name: "EDC_DATASOURCE_DEFAULT_URL"
+              value: {{ tpl .Values.postgresql.jdbcUrl . | quote }}
+            {{- else }}
+            {{- $hasCustomUser := or .Values.postgresql.customUser.name .Values.postgresql.customUser.existingSecret -}}
+            {{- if $hasCustomUser }}
+            # custom user section activated (customUser.name or customUser.existingSecret exist)
+            {{- $customUserSecretName := .Values.postgresql.customUser.existingSecret | default (include "txdc.postgresql.custom-user-secret" .) -}}
+            {{- $pwKey := .Values.postgresql.customUser | dig "secretKeys" "password" "CUSTOM_PASSWORD" -}}
+            {{- $nameKey := .Values.postgresql.customUser | dig "secretKeys" "name" "CUSTOM_USER" -}}
+            {{- $dbKey := .Values.postgresql.customUser | dig "secretKeys" "database" "CUSTOM_DB" }}
+            - name: "EDC_DATASOURCE_DEFAULT_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $customUserSecretName | quote }}
+                  key: {{ $nameKey | quote }}
+            - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $customUserSecretName | quote }}
+                  key: {{ $pwKey | quote }}
+            # dependent variable to automatically construct the datasource url
+            - name: EDC_DATASOURCE_DEFAULT_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $customUserSecretName | quote }}
+                  key: {{ $dbKey | quote }}
+            - name: EDC_DATASOURCE_DEFAULT_URL
+              value: "jdbc:postgresql://{{ include "txdc.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}/$(EDC_DATASOURCE_DEFAULT_DB)"
+            {{- else }}
+            {{ $adminUserSecretName := .Values.postgresql.auth.existingSecret | default (include "txdc.postgresql.fullname" .) -}}
+            {{- $pwKey := .Values.postgresql.auth | dig "secretKeys" "adminPasswordKey" "postgres-password" }}            
+            # admin user section activated (customUser.name or customUser.existingSecret don't exist)
+            # for auth commonly only deviating key for postgresPassword may be defined via secretKeys.adminPasswordKey
+            # for name and db, we assume the same keys and defaults from cloudpirates admin secret
+            {{- $nameKey := .Values.postgresql.auth | dig "secretKeys" "name" "username" -}}
+            {{- $dbKey := .Values.postgresql.auth | dig "secretKeys" "database" "database" }}            
+            - name: "EDC_DATASOURCE_DEFAULT_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $adminUserSecretName | quote }}
+                  key: {{ $nameKey | quote }}
+            - name: "EDC_DATASOURCE_DEFAULT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $adminUserSecretName | quote }}
+                  key: {{ $pwKey | quote }}
+            # dependent variable to automatically construct the datasource url
+            - name: EDC_DATASOURCE_DEFAULT_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $adminUserSecretName | quote }}
+                  key: {{ $dbKey | quote }}
+            - name: EDC_DATASOURCE_DEFAULT_URL
+              value: "jdbc:postgresql://{{ include "txdc.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}/$(EDC_DATASOURCE_DEFAULT_DB)"
+            {{- end }}
+            {{- end }}
+
+
+          #############################
+            ## DCP / STS / DIV CONFIG ##
+            #############################
+            - name: "EDC_IAM_STS_OAUTH_TOKEN_URL"
+              value: {{ .Values.dcp.sts.oauth.token_url | required ".Values.dcp.sts.oauth.token_url is required" | quote}}
+            - name: "EDC_IAM_STS_OAUTH_CLIENT_ID"
+              value: {{ .Values.dcp.sts.oauth.client.id | required ".Values.dcp.sts.oauth.client.id is required" | quote}}
+            - name: "EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS"
+              value: {{ .Values.dcp.sts.oauth.client.secret_alias | required ".Values.dcp.sts.oauth.client.secret_alias is required" | quote}}
+            {{- if .Values.dcp.sts.div.url }}
+            - name: "TX_EDC_IAM_STS_DIV_URL"
+              value: {{ .Values.dcp.sts.div.url | quote }}
+            {{- end }}
+            {{- range $index, $issuer := .Values.dcp.trustedIssuers }}
+            {{- if eq (kindOf $issuer) "string" }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
+              value: {{ $issuer | quote }}
+            {{- else }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID"
+              value: {{ $issuer.id | quote }}
+            {{- if $issuer.supportedTypes }}
+            - name: "EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_SUPPORTEDTYPES"
+              value: {{ $issuer.supportedTypes | toJson | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            - name: "TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED"
+              value: {{ .Values.dcp.didService.selfRegistration.enabled | quote}}
+            - name: "TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED"
+              value: {{ and (eq (int .Values.controlplane.replicaCount) 1) (not .Values.controlplane.autoscaling.enabled) | quote }}
+            - name: "TX_EDC_DCP_CACHE_ENABLED"
+              value: {{ .Values.dcp.cache.enabled | quote }}
+            - name: "TX_EDC_DCP_CACHE_VALIDITY_SECONDS"
+              value: {{ .Values.dcp.cache.validity | quote }}
+
+            #################
+            ## BDRS CLIENT ##
+            #################
+
+            - name: "TX_EDC_IAM_DCP_BDRS_SERVER_URL"
+              value: {{ .Values.controlplane.bdrs.server.url | required ".Values.controlplane.bdrs.server.url is required" | quote }}
+            {{- if .Values.controlplane.bdrs.cache_validity_seconds }}
+            - name: "TX_EDC_IAM_DCP_BDRS_CACHE_VALIDITY"
+              value: {{ .Values.controlplane.bdrs.cache_validity_seconds | quote}}
+            {{- end}}
+
+            ###########
+            ## VAULT ##
+            ###########
+
+            # see extension https://github.com/eclipse-edc/Connector/tree/main/extensions/common/vault/vault-hashicorp
+            - name: "EDC_VAULT_HASHICORP_URL"
+              value: {{ tpl .Values.vault.hashicorp.url . | quote }}
+            - name: "EDC_VAULT_HASHICORP_TOKEN"
+              value: {{ .Values.vault.hashicorp.token | required ".Values.vault.hashicorp.token is required" | quote }}
+            - name: "EDC_VAULT_HASHICORP_TIMEOUT_SECONDS"
+              value: {{ .Values.vault.hashicorp.timeout | quote }}
+            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_ENABLED"
+              value: {{ .Values.vault.hashicorp.healthCheck.enabled | quote }}
+            - name: "EDC_VAULT_HASHICORP_HEALTH_CHECK_STANDBY_OK"
+              value: {{ .Values.vault.hashicorp.healthCheck.standbyOk | quote }}
+            - name: "EDC_VAULT_HASHICORP_API_SECRET_PATH"
+              value: {{ .Values.vault.hashicorp.paths.secret | quote }}
+            - name: "EDC_VAULT_HASHICORP_API_HEALTH_CHECK_PATH"
+              value: {{ .Values.vault.hashicorp.paths.health | quote }}
+            {{- if .Values.vault.hashicorp.paths.folder }}
+            - name: "EDC_VAULT_HASHICORP_FOLDER"
+              value: {{ .Values.vault.hashicorp.paths.folder | quote }}
+            {{- end }}
+
+            ###################
+            ## POLICY ENGINE ##
+            ###################
+            - name: "EDC_POLICY_VALIDATION_ENABLED"
+              value: {{ .Values.controlplane.policy.validation.enabled | quote }}
+
+            ######################################
+            ## Additional environment variables ##
+            ######################################
+
+            - name: "EDC_RUNTIME_ID"
+              value: {{ include "txdc.fullname" .}}-controlplane
+          {{- range $key, $value := .Values.controlplane.envValueFrom }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                {{- tpl (toYaml $value) $ | nindent 16 }}
+          {{- end }}
+          {{- range $key, $value := .Values.controlplane.env }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- if and (or .Values.controlplane.envSecretNames .Values.controlplane.envConfigMapNames) (or (gt (len .Values.controlplane.envSecretNames) 0) (gt (len .Values.controlplane.envConfigMapNames) 0)) }}
+          envFrom:
+          {{- range $value := .Values.controlplane.envSecretNames }}
+            - secretRef:
+                name: {{ $value | quote }}
+          {{- end }}
+          {{- range $value := .Values.controlplane.envConfigMapNames }}
+            - configMapRef:
+                name: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+           {{- if .Values.controlplane.volumeMounts }}
+           {{- toYaml .Values.controlplane.volumeMounts | nindent 12 }}
+           {{- end}}
+            - name: "configuration"
+              mountPath: "/app/opentelemetry.properties"
+              subPath: "opentelemetry.properties"
+            - name: log4j2-config
+              mountPath: /app/log4j2.yaml
+              subPath: log4j2.yaml
+            {{- if .Values.customCaCerts }}
+            - name: custom-cacerts
+              mountPath: /opt/java/openjdk/lib/security/cacerts
+              subPath: cacerts
+            {{- end }}
+            - name: "tmp"
+              mountPath: "/tmp"
+      volumes:
+       {{- if .Values.controlplane.volumeMounts }}
+       {{- toYaml .Values.controlplane.volumes | nindent 8 }}
+       {{- end}}
+        - name: "configuration"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-controlplane
+            items:
+              - key: "opentelemetry.properties"
+                path: "opentelemetry.properties"
+        - name: "log4j2-config"
+          configMap:
+            name: {{ include "txdc.fullname" . }}-log4j2
+            items:
+              - key: "log4j2.yaml"
+                path: "log4j2.yaml"
+        {{- if .Values.customCaCerts }}
+        - name: custom-cacertificates
+          configMap:
+            name: {{ include "txdc.fullname" . }}-custom-cacerts
+            defaultMode: 0400
+        - name: custom-cacerts
+          emptyDir:
+            sizeLimit: 1Mi
+        {{- end }}
+        - name: "tmp"
+          emptyDir: { }
+      {{- with .Values.controlplane.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controlplane.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controlplane.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

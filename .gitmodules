@@ -1,0 +1,3 @@
+[submodule "edc"]
+	path = edc
+	url = https://github.com/eclipse-dataspaceconnector/DataSpaceConnector.git

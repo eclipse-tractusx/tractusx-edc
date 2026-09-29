@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "PrecedenceConstraintSchema",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/PrecedenceConstraint"
+    }
+  ],
+  "$id": "https://w3id.org/catenax/2025/9/policy/precedence-constraint-schema.json",
+  "definitions": {
+    "PrecedenceConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": {
+          "type": "string",
+          "const": "Precedence"
+        },
+        "operator": {
+          "type": "string",
+          "const": "eq"
+        },
+        "rightOperand": {
+          "oneOf": [
+            {"$ref": "#/definitions/PrecedenceContractReferenceRightOperand"},
+            {"$ref": "#/definitions/PrecedenceRcAgreementRightOperand"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "PrecedenceContractReferenceRightOperand": {
+      "type": "string",
+      "const": "cx.precedence.contractReference:1",
+      "$comment": "{\"permission\":\"The Parties are free to agree on additional provisions in a separately referenced contract, in addition to the arrangements made via the Registered Connector (RC) Process (referenced in leftOperand: contractReference). In the event of any conflict between the provisions agreed via the RC Process and those of the referenced contract, the provisions of the contract shall take precedence.\"}"
+    },
+    "PrecedenceRcAgreementRightOperand": {
+      "type": "string",
+      "const": "cx.precedence.rcAgreement:1",
+      "$comment": "{\"permission\":\"The Parties are free to agree on additional provisions in a referenced contract (as referenced in leftOperand: contractReference) in addition to the arrangements agreed via the Registered Connector (RC) Process. In such case, the provisions agreed via the RC Process shall take precedence over the provisions of the referenced contract.\"}"
+    }
+  }
+}
