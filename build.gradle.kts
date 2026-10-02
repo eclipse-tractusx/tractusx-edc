@@ -63,7 +63,7 @@ allprojects {
     apply(plugin = "jacoco")
 
     dependencies {
-        implementation("org.slf4j:slf4j-api:2.0.19")
+        implementation("org.slf4j:slf4j-api:2.0.20")
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
