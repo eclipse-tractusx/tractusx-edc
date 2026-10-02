@@ -23,6 +23,12 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
+configurations.all {
+    // an exclusion in edc-controlplane-base does not propagate to its consumers, so the copy carried in
+    // :edc-extensions:control-plane-transform would otherwise sit next to the upstream module it replaces
+    exclude(group = "org.eclipse.edc", module = "control-plane-transform")
+}
+
 dependencies {
     implementation(project(":edc-controlplane:edc-controlplane-base"))
     implementation(project(":edc-dataplane:edc-dataplane-base")) {
