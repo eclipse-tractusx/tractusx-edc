@@ -19,56 +19,100 @@
 
 package org.eclipse.tractusx.edc.validators.contractdefinitionpolicies;
 
+import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractDefinition;
 import org.eclipse.edc.connector.controlplane.services.spi.contractdefinition.ContractDefinitionService;
+import org.eclipse.edc.connector.controlplane.services.spi.policydefinition.PolicyDefinitionService;
+import org.eclipse.edc.policy.model.Action;
+import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.policy.model.Rule;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
+import org.eclipse.tractusx.edc.policy.cx.validator.PolicyTypeResolver;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
+import static org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition.EDC_POLICY_DEFINITION_POLICY;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.spi.query.Criterion.criterion;
 import static org.eclipse.edc.spi.query.CriterionOperatorRegistry.EQUAL;
-import static org.eclipse.edc.spi.result.ServiceResult.conflict;
 import static org.eclipse.edc.spi.result.ServiceResult.success;
 import static org.eclipse.edc.validator.spi.Violation.violation;
+import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConstants.ACTION_ACCESS;
 
-public class NotReferencedByContractDefinition implements Validator<JsonString> {
+/**
+ * Prevents a policy definition from being switched between access and usage while a contract definition
+ * references it. Updates that keep the policy type, and policies that no contract definition references, are allowed.
+ */
+public class NotReferencedByContractDefinition implements Validator<JsonObject> {
 
     private final JsonLdPath path;
     private final ContractDefinitionService contractDefinitionService;
+    private final PolicyDefinitionService policyDefinitionService;
 
-    public NotReferencedByContractDefinition(JsonLdPath path, ContractDefinitionService contractDefinitionService) {
+    public NotReferencedByContractDefinition(JsonLdPath path, ContractDefinitionService contractDefinitionService,
+                                             PolicyDefinitionService policyDefinitionService) {
         this.path = path;
         this.contractDefinitionService = contractDefinitionService;
+        this.policyDefinitionService = policyDefinitionService;
     }
 
     @Override
-    public ValidationResult validate(JsonString id) {
-        var queryAccessPolicy = QuerySpec.Builder.newInstance()
-                .filter(criterion("accessPolicyId", EQUAL, id.getString()))
-                .build();
+    public ValidationResult validate(JsonObject input) {
+        if (!(input.get(ID) instanceof JsonString id)) {
+            return ValidationResult.success();
+        }
 
-        var queryContractPolicy = QuerySpec.Builder.newInstance()
-                .filter(criterion("contractPolicyId", EQUAL, id.getString()))
-                .build();
+        var existing = policyDefinitionService.findById(id.getString());
+        if (existing == null) {
+            return ValidationResult.success();
+        }
 
-        var referencedContractDefinitions = contractDefinitionService.search(queryAccessPolicy)
-                .compose(accessPolicyMatches -> contractDefinitionService.search(queryContractPolicy)
-                        .compose(contractPolicyMatches -> ServiceResult.success(
-                                Stream.concat(accessPolicyMatches.stream(), contractPolicyMatches.stream()).toList())));
-
-        return referencedContractDefinitions
-                .compose(this::isListEmpty)
+        return findReferencingContractDefinitions(id.getString())
+                .compose(referencing -> referencing.isEmpty() || sameType(existing.getPolicy(), input)
+                        ? success()
+                        : ServiceResult.<Void>conflict("Policy Definition is referenced by a Contract Definition"))
                 .map(v -> ValidationResult.success())
                 .orElse(failure -> ValidationResult.failure(violation(failure.getFailureDetail(), path.toString())));
     }
 
-    private ServiceResult<Void> isListEmpty(List<ContractDefinition> list) {
-        return list.isEmpty() ? success() : conflict("Policy Definition is referenced by a Contract Definition");
+    private ServiceResult<List<ContractDefinition>> findReferencingContractDefinitions(String policyId) {
+        var queryAccessPolicy = QuerySpec.Builder.newInstance()
+                .filter(criterion("accessPolicyId", EQUAL, policyId))
+                .build();
+
+        var queryContractPolicy = QuerySpec.Builder.newInstance()
+                .filter(criterion("contractPolicyId", EQUAL, policyId))
+                .build();
+
+        return contractDefinitionService.search(queryAccessPolicy)
+                .compose(accessPolicyMatches -> contractDefinitionService.search(queryContractPolicy)
+                        .map(contractPolicyMatches -> Stream.concat(accessPolicyMatches.stream(), contractPolicyMatches.stream()).toList()));
+    }
+
+    private boolean sameType(Policy stored, JsonObject input) {
+        try {
+            return storedType(stored).equals(PolicyTypeResolver.resolve(input.getJsonArray(EDC_POLICY_DEFINITION_POLICY).getJsonObject(0)));
+        } catch (RuntimeException e) {
+            // unresolvable new type: cannot prove it is unchanged
+            return false;
+        }
+    }
+
+    // same defaulting as PolicyTypeResolver: no rule actions means access
+    private String storedType(Policy policy) {
+        return Stream.of(policy.getPermissions(), policy.getProhibitions(), policy.getObligations())
+                .flatMap(List::stream)
+                .map(Rule::getAction)
+                .filter(Objects::nonNull)
+                .map(Action::getType)
+                .findFirst()
+                .orElse(ACTION_ACCESS);
     }
 }

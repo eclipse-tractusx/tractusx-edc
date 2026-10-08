@@ -63,7 +63,7 @@ public class ContractDefinitionPoliciesValidatorExtension implements ServiceExte
         validatorRegistry.register(CONTRACT_DEFINITION_TYPE, contractDefinitionsValidator);
 
         var policyDefinitionsValidator = JsonObjectValidator.newValidator()
-                .verifyId(path -> new NotReferencedByContractDefinition(path, contractDefinitionService))
+                .verify(path -> new NotReferencedByContractDefinition(path, contractDefinitionService, policyDefinitionService))
                 .build();
         validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, policyDefinitionsValidator);
     }
