@@ -50,13 +50,13 @@ import static org.eclipse.tractusx.edc.policy.cx.validator.PolicyValidationConst
  * Prevents a policy definition from being switched between access and usage while a contract definition
  * references it. Updates that keep the policy type, and policies that no contract definition references, are allowed.
  */
-public class NotReferencedByContractDefinition implements Validator<JsonObject> {
+public class PolicyTypeNotChangedWhenReferenced implements Validator<JsonObject> {
 
     private final JsonLdPath path;
     private final ContractDefinitionService contractDefinitionService;
     private final PolicyDefinitionService policyDefinitionService;
 
-    public NotReferencedByContractDefinition(JsonLdPath path, ContractDefinitionService contractDefinitionService,
+    public PolicyTypeNotChangedWhenReferenced(JsonLdPath path, ContractDefinitionService contractDefinitionService,
                                              PolicyDefinitionService policyDefinitionService) {
         this.path = path;
         this.contractDefinitionService = contractDefinitionService;
@@ -70,12 +70,12 @@ public class NotReferencedByContractDefinition implements Validator<JsonObject> 
         }
 
         var existing = policyDefinitionService.findById(id.getString());
-        if (existing == null) {
+        if (existing == null || sameType(existing.getPolicy(), input)) {
             return ValidationResult.success();
         }
 
         return findReferencingContractDefinitions(id.getString())
-                .compose(referencing -> referencing.isEmpty() || sameType(existing.getPolicy(), input)
+                .compose(referencing -> referencing.isEmpty()
                         ? success()
                         : ServiceResult.<Void>conflict("Changing the policy type is forbidden if a contract definition references the policy definition."))
                 .map(v -> ValidationResult.success())

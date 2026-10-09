@@ -52,13 +52,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class NotReferencedByContractDefinitionTest {
+class PolicyTypeNotChangedWhenReferencedTest {
 
     private final JsonLdPath path = new JsonLdPath("@id");
     private final ContractDefinitionService contractDefinitionService = mock();
     private final PolicyDefinitionService policyDefinitionService = mock();
-    private final NotReferencedByContractDefinition validator =
-            new NotReferencedByContractDefinition(path, contractDefinitionService, policyDefinitionService);
+    private final PolicyTypeNotChangedWhenReferenced validator =
+            new PolicyTypeNotChangedWhenReferenced(path, contractDefinitionService, policyDefinitionService);
 
     @Test
     void shouldPass_whenPolicyDoesNotExistYet() {
@@ -83,11 +83,11 @@ class NotReferencedByContractDefinitionTest {
     @Test
     void shouldPass_whenReferencedAndTypeUnchanged() {
         stored(ACTION_USAGE);
-        referencedBy(List.of(mock(ContractDefinition.class)), List.of());
 
         var result = validator.validate(input(ACTION_USAGE));
 
         assertThat(result).isSucceeded();
+        verifyNoInteractions(contractDefinitionService);
     }
 
     @Test
@@ -102,7 +102,7 @@ class NotReferencedByContractDefinitionTest {
                 .isNotEmpty()
                 .anySatisfy(violation -> Assertions.assertThat(violation.path()).isEqualTo(path.toString()))
                 .anySatisfy(violation -> Assertions.assertThat(violation.message())
-                        .isEqualTo("Policy Definition is referenced by a Contract Definition"));
+                        .isEqualTo("Changing the policy type is forbidden if a contract definition references the policy definition."));
     }
 
     @Test
@@ -121,7 +121,7 @@ class NotReferencedByContractDefinitionTest {
         when(contractDefinitionService.search(any(QuerySpec.class)))
                 .thenReturn(ServiceResult.conflict("accessPolicy search failed"));
 
-        var result = validator.validate(input(ACTION_ACCESS));
+        var result = validator.validate(input(ACTION_USAGE));
 
         assertThat(result).isFailed()
                 .extracting(ValidationFailure::getViolations).asInstanceOf(list(Violation.class))
@@ -135,7 +135,7 @@ class NotReferencedByContractDefinitionTest {
                 .thenReturn(ServiceResult.success(List.of()))
                 .thenReturn(ServiceResult.conflict("contractPolicy search failed"));
 
-        var result = validator.validate(input(ACTION_ACCESS));
+        var result = validator.validate(input(ACTION_USAGE));
 
         assertThat(result).isFailed()
                 .extracting(ValidationFailure::getViolations).asInstanceOf(list(Violation.class))

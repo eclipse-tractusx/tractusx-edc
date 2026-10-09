@@ -129,7 +129,7 @@ public class ContractDefinitionPoliciesValidatorsTest {
                 .put("/policydefinitions/" + contractPolicyId)
                 .then().assertThat()
                 .statusCode(400)
-                .body("[0].message", equalTo("Policy Definition is referenced by a Contract Definition"));
+                .body("[0].message", equalTo("Changing the policy type is forbidden if a contract definition references the policy definition."));
     }
 
     @Test
