@@ -77,7 +77,7 @@ public class NotReferencedByContractDefinition implements Validator<JsonObject> 
         return findReferencingContractDefinitions(id.getString())
                 .compose(referencing -> referencing.isEmpty() || sameType(existing.getPolicy(), input)
                         ? success()
-                        : ServiceResult.<Void>conflict("Policy Definition is referenced by a Contract Definition"))
+                        : ServiceResult.<Void>conflict("Changing the policy type is forbidden if a contract definition references the policy definition."))
                 .map(v -> ValidationResult.success())
                 .orElse(failure -> ValidationResult.failure(violation(failure.getFailureDetail(), path.toString())));
     }
