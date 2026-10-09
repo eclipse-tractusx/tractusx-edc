@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2026 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -129,7 +130,30 @@ public class ContractDefinitionPoliciesValidatorsTest {
                 .put("/policydefinitions/" + contractPolicyId)
                 .then().assertThat()
                 .statusCode(400)
-                .body("[0].message", equalTo("Policy Definition is referenced by a Contract Definition"));
+                .body("[0].message", equalTo("Changing the policy type is forbidden if a contract definition references the policy definition."));
+    }
+
+    @Test
+    void shouldPass_whenUpdatingReferencedPolicyWithoutChangingItsType() {
+        var accessPolicyId = PROVIDER.createPolicyDefinition(bpnPolicy(PROVIDER_BPN));
+        var contractPolicyId = PROVIDER.createPolicyDefinition(frameworkPolicy(Map.of(), "use"));
+        PROVIDER.createContractDefinition("assetId", "contract-definition", accessPolicyId, contractPolicyId);
+
+        var policyDefinition = createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(TYPE, "PolicyDefinition")
+                .add(ID, contractPolicyId)
+                .add("policy", frameworkPolicy(Map.of(), "use"))
+                .build();
+
+        PROVIDER.baseManagementRequest()
+                .basePath("/v3")
+                .contentType(JSON)
+                .body(policyDefinition)
+                .when()
+                .put("/policydefinitions/" + contractPolicyId)
+                .then().assertThat()
+                .statusCode(204);
     }
 
     private JsonObject contractDefinition(String id, String accessPolicyId, String contractPolicyId) {
