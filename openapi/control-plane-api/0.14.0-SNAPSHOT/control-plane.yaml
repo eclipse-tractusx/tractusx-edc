@@ -4866,6 +4866,7 @@ components:
       example:
         stateTimestamp: 0
         '@type': '@type'
+        pending: true
         profile: profile
         counterPartyId: counterPartyId
         type: CONSUMER
@@ -5006,6 +5007,8 @@ components:
           - PROVIDER
         state:
           type: string
+        pending:
+          type: boolean
         stateTimestamp:
           type: integer
         protocol:
