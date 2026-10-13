@@ -1,5 +1,6 @@
 /********************************************************************************
  * Copyright (c) 2026 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -63,7 +64,7 @@ public class ContractDefinitionPoliciesValidatorExtension implements ServiceExte
         validatorRegistry.register(CONTRACT_DEFINITION_TYPE, contractDefinitionsValidator);
 
         var policyDefinitionsValidator = JsonObjectValidator.newValidator()
-                .verifyId(path -> new NotReferencedByContractDefinition(path, contractDefinitionService))
+                .verify(path -> new PolicyTypeNotChangedWhenReferenced(path, contractDefinitionService, policyDefinitionService))
                 .build();
         validatorRegistry.register(EDC_POLICY_DEFINITION_TYPE, policyDefinitionsValidator);
     }
