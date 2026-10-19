@@ -39,6 +39,12 @@ dependencies {
     implementation(project(":edc-extensions:agreements:retirement-evaluation-bootstrapping"))
     implementation("org.eclipse.tractusx.edc:tx-dcp:$txVersion")
     implementation(project(":edc-extensions:dynamic-issuers"))
+
+
+
+    // Hotfix version overrides (19-10-2026):
+    implementation("com.fasterxml.jackson.core:jackson-core:2.22.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

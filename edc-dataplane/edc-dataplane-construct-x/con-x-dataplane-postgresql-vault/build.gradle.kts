@@ -41,6 +41,12 @@ dependencies {
 
     implementation("org.eclipse.tractusx.edc:dataplane-public-api-v2:$txVersion")
     implementation("org.eclipse.tractusx.edc:dataplane-util:$txVersion")
+
+
+
+    // Hotfix version overrides (19-10-2026):
+    implementation("com.fasterxml.jackson.core:jackson-core:2.22.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
 }
 
 
