@@ -73,6 +73,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
     public SecureTokenService secureTokenService() {
         return ofNullable(divUrlConfig)
                 .map(PathUtils::removeTrailingSlash)
+                .filter(url -> !url.isBlank())
                 .map(divUrl -> {
                     monitor.info("DIV URL configured, will use DIV STS client");
                     return (SecureTokenService) new DivSecureTokenService(httpClient, divUrl, divOauth2Client, typeManager.getMapper(), monitor);
