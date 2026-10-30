@@ -118,6 +118,23 @@ class DidDocumentServiceSelfRegistrationExtensionTest {
     }
 
     @Test
+    void shutdown_shouldNotDeregister_whenRegistrationEnabledAndDeregistrationDisabled(ServiceExtensionContext context, ObjectFactory objectFactory) {
+
+        var settings = Map.of("tx.edc.did.service.self.registration.enabled", "true",
+                "tx.edc.did.service.self.deregistration.enabled", "false");
+        when(context.getConfig()).thenReturn(ConfigFactory.fromMap(settings));
+        context.registerService(DidDocumentServiceClient.class, didDocumentServiceClient);
+        when(didDocumentServiceClient.update(any(Service.class))).thenReturn(ServiceResult.success());
+
+        var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
+        extension.start();
+        verify(didDocumentServiceClient).update(any(Service.class));
+
+        extension.shutdown();
+        verify(didDocumentServiceClient, never()).deleteById(anyString());
+    }
+
+    @Test
     void start_shouldNotSelfRegister_whenClientNotPresent(ObjectFactory objectFactory) {
 
         var extension = objectFactory.constructInstance(DidDocumentServiceSelfRegistrationExtension.class);
