@@ -137,7 +137,8 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
                 .compose(url -> patchRequest(didDocCreateServicePayload(service), url))
                 .map(Request.Builder::build)
                 .compose(request -> this.executeRequest(request, this::handleDidUpdateResponse))
-                .flatMap(res -> ServiceResult.success());
+                .flatMap(ServiceResult::from)
+                .mapEmpty();
     }
 
     /**
@@ -230,7 +231,8 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
                 .compose(url -> patchRequest(didDocDeleteServicePayload(id), url))
                 .map(Request.Builder::build)
                 .compose(request -> this.executeRequest(request, this::handleDidUpdateResponse))
-                .flatMap(res -> ServiceResult.success());
+                .flatMap(ServiceResult::from)
+                .mapEmpty();
     }
 
     /**
@@ -263,7 +265,8 @@ public class DidDocumentServiceDivClient implements DidDocumentServiceClient {
                 .compose(url -> patchRequest(Map.of(), url))
                 .map(Request.Builder::build)
                 .compose(request -> this.executeRequest(request, this::handlePatchStatusResponse))
-                .flatMap(res -> ServiceResult.success());
+                .flatMap(ServiceResult::from)
+                .mapEmpty();
     }
 
     /**

@@ -49,6 +49,7 @@ import org.junit.jupiter.params.support.ParameterDeclarations;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,6 +158,26 @@ class DidDocumentServiceDivClientTest {
         });
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4})
+    void update_service_failure_whenDivRequestFails(int failingRequest) {
+
+        when(divOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
+        var requestCount = new AtomicInteger();
+        when(httpClient.execute(any(Request.class), anyList(), any()))
+                .thenAnswer(invocation -> requestCount.getAndIncrement() == failingRequest
+                        ? Result.failure("DIV request failed")
+                        : Result.success(COMPANY_ID));
+
+        var result = client.update(new Service(DATA_SERVICE_ID, DATA_SERVICE_TYPE, DATA_SERVICE_ENDPOINT));
+
+        assertThat(result).isFailed().satisfies(failure -> {
+            assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.UNEXPECTED);
+            assertThat(failure.getFailureDetail()).contains("DIV request failed");
+        });
+        verify(httpClient, times(failingRequest + 1)).execute(any(Request.class), anyList(), any());
+    }
+
     private static class InvalidServiceProvider implements ArgumentsProvider {
         @Override
         public @NotNull Stream<? extends Arguments> provideArguments(@NotNull ParameterDeclarations parameters, @NotNull ExtensionContext extensionContext) {
@@ -220,6 +241,26 @@ class DidDocumentServiceDivClientTest {
             assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.UNEXPECTED);
             assertThat(failure.getFailureDetail()).contains("Validation Failure");
         });
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2})
+    void deleteById_failure_whenDivRequestFails(int failingRequest) {
+
+        when(divOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
+        var requestCount = new AtomicInteger();
+        when(httpClient.execute(any(Request.class), anyList(), any()))
+                .thenAnswer(invocation -> requestCount.getAndIncrement() == failingRequest
+                        ? Result.failure("DIV request failed")
+                        : Result.success(COMPANY_ID));
+
+        var result = client.deleteById(DATA_SERVICE_ID);
+
+        assertThat(result).isFailed().satisfies(failure -> {
+            assertThat(failure.getReason()).isEqualTo(ServiceFailure.Reason.UNEXPECTED);
+            assertThat(failure.getFailureDetail()).contains("DIV request failed");
+        });
+        verify(httpClient, times(failingRequest + 1)).execute(any(Request.class), anyList(), any());
     }
 
     @Test
