@@ -72,6 +72,7 @@ public class RemoteTokenServiceClientExtension implements ServiceExtension {
         var dimUrlConfig = context.getSetting(DIM_URL, null);
         return ofNullable(dimUrlConfig)
                 .map(PathUtils::removeTrailingSlash)
+                .filter(dimUrl -> !dimUrl.isBlank())
                 .map(dimUrl -> {
                     monitor.info("DIM URL configured, will use DIM STS client");
                     return (SecureTokenService) new DimSecureTokenService(httpClient, dimUrl, dimOauth2Client, typeManager.getMapper(), monitor);
