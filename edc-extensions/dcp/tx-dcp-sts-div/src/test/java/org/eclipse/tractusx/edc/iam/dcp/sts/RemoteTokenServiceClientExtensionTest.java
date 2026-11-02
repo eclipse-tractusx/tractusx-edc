@@ -22,21 +22,38 @@ package org.eclipse.tractusx.edc.iam.dcp.sts;
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.iam.decentralizedclaims.sts.remote.RemoteSecureTokenService;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.tractusx.edc.iam.dcp.sts.div.DivSecureTokenService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.tractusx.edc.iam.dcp.sts.RemoteTokenServiceClientExtension.DIV_URL;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class RemoteTokenServiceClientExtensionTest {
+
+    private static final String DIV_CONFIGURED_LOG = "DIV URL configured, will use DIV STS client";
+    private static final String DIV_NOT_CONFIGURED_LOG = "DIV URL not configured, will use the standard EDC Remote STS client";
+
+    private final Monitor monitor = mock();
+
+    @BeforeEach
+    void setup(ServiceExtensionContext context) {
+        context.registerService(Monitor.class, monitor);
+    }
 
     @Test
     void initialize(ServiceExtensionContext context, ObjectFactory factory) {
@@ -48,6 +65,8 @@ public class RemoteTokenServiceClientExtensionTest {
 
         var extension = factory.constructInstance(RemoteTokenServiceClientExtension.class);
         assertThat(extension.secureTokenService()).isInstanceOf(DivSecureTokenService.class);
+        verify(monitor).info(DIV_CONFIGURED_LOG);
+        verify(monitor, never()).info(DIV_NOT_CONFIGURED_LOG);
     }
 
     @Test
@@ -60,5 +79,21 @@ public class RemoteTokenServiceClientExtensionTest {
 
         assertThat(extension.secureTokenService())
                 .isInstanceOf(RemoteSecureTokenService.class);
+        verify(monitor).info(DIV_NOT_CONFIGURED_LOG);
+        verify(monitor, never()).info(DIV_CONFIGURED_LOG);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "", " ", "/" })
+    void initialize_whenUrlIsBlank_fallsBackToRemoteSts(String divUrl, ServiceExtensionContext context, ObjectFactory f) {
+        var config = ConfigFactory.fromMap(Map.of(DIV_URL, divUrl));
+        when(context.getConfig()).thenReturn(config);
+
+        var extension = f.constructInstance(RemoteTokenServiceClientExtension.class);
+
+        assertThat(extension.secureTokenService())
+                .isInstanceOf(RemoteSecureTokenService.class);
+        verify(monitor).info(DIV_NOT_CONFIGURED_LOG);
+        verify(monitor, never()).info(DIV_CONFIGURED_LOG);
     }
 }
