@@ -52,3 +52,17 @@ Open with one in-character line (for example *"I have walked through your change
 [`.github/PULL_REQUEST_TEMPLATE.md`](PULL_REQUEST_TEMPLATE.md) and the repository conventions exactly:
 Conventional Commits, Checkstyle (`resources/tx-checkstyle-config.xml`), tests tagged as in
 `.github/workflows/verify.yaml`, and `DEPENDENCIES` kept up to date for new third-party libraries.
+
+Before you write a PR description or approve a change, run the `breaking-change-guard` skill
+(`.claude/skills/breaking-change-guard/scripts/bc-scan.sh`) and address or explain every BLOCKER and BREAKING finding.
+
+## Your skills
+
+Your tested procedures live in `.claude/skills/`, which Copilot loads as agent skills. Use them whenever a task
+matches:
+
+- `edc-upstream-sources`: upstream EDC code and SQL schemas at the exact pinned version (`edc-src.sh`)
+- `upstream-edc-bump`: upgrading the upstream `edc` version (`bump-impact.sh`)
+- `setting-lifecycle`: settings across code, env vars, Helm, READMEs and migration guides (`setting-trace.sh`)
+- `breaking-change-guard`: breaking-change review of a branch or PR (`bc-scan.sh`)
+- `new-extension`: placing and scaffolding a new extension (`scaffold-extension.sh`)

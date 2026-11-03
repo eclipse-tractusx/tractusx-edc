@@ -115,6 +115,7 @@ Key Tractus-X extensions to know by heart (verify the details each time):
 
 ### B. Upstream EDC at the exact version this repo uses
 
+0. **Use the `edc-upstream-sources` skill first** (`.claude/skills/edc-upstream-sources/scripts/edc-src.sh`). It wraps the steps below, downloads missing sources and SQL schemas, and diffs versions.
 1. **Gradle cache, preferred because it matches the exact version.** Sources jars for most `org.eclipse.edc`
    artifacts are usually already downloaded:
    ```bash
@@ -192,7 +193,23 @@ under every API.
 
 ## 4. Playbooks
 
-**"What is the setting or env var for X?"**
+### My skills (use them; they hold the tested procedures and scripts)
+
+These skills live in `.claude/skills/`, which both Claude Code and GitHub Copilot load. When a task matches one,
+I load it and follow it instead of improvising:
+
+| Skill | Use it for | Script |
+|---|---|---|
+| `edc-upstream-sources` | Reading, searching and diffing upstream EDC code and SQL schemas at the exact pinned version | `edc-src.sh find/read/grep/diff/settings/schema` |
+| `upstream-edc-bump` | Upgrading the `edc` version: impact analysis, compile fixes, backports, migrations, tests, docs | `bump-impact.sh <old> <new>` |
+| `setting-lifecycle` | Looking up, adding, renaming or deprecating a setting across code, env var, Helm, READMEs and migration guide | `setting-trace.sh <key/ENV/.Values.path>` |
+| `breaking-change-guard` | Reviewing a branch or PR for breaking changes and missing follow-ups | `bc-scan.sh [base] [--strict]` |
+| `new-extension` | Placing and scaffolding a new extension (generic vs `cx-`), wiring and tests | `scaffold-extension.sh` |
+
+Scripts run from the repository root (`.claude/skills/<skill>/scripts/<script>`), are read-only on the repository
+(except `scaffold-extension.sh`, which only creates a new module), and work on macOS and Linux.
+
+**"What is the setting or env var for X?"** → skill `setting-lifecycle` (`setting-trace.sh`).
 Grep the setting declarations (`@Setting`, `@Settings`, `@Configuration`) and string keys in this repo (`tx.edc.*`,
 `tractusx.edc.*`, `edc.*`), then in the upstream sources jars. Map key → env var (upper-case, `.`/`-` → `_`). Check
 the Helm path in `charts/tractusx-connector/values.yaml` and the env mapping in
@@ -210,12 +227,12 @@ Read CX-0152 and the `cx-policy` constraint functions and validators for the all
 value combinations per scope. Produce complete JSON-LD with the correct `@context`. Show the matching
 contract-definition and how the consumer must echo the offer in the negotiation request.
 
-**"How do I upgrade from vA to vB?"**
+**"How do I upgrade from vA to vB?"** → for an upstream EDC bump, skill `upstream-edc-bump`.
 Read every `docs/migration/*` guide between the two versions, plus upstream EDC release notes for the `edc` version
 bump. List Helm and config renames, API path changes, DB migrations (`edc-extensions/migrations`) and behaviour
 changes, in order.
 
-**"How do I build or extend?"**
+**"How do I build or extend?"** → for a new module, skill `new-extension`.
 Show the `ServiceExtension` pattern (`@Extension`, `@Inject`, `@Provider`, `@Setting`), where to register it
 (`META-INF/services/org.eclipse.edc.spi.system.ServiceExtension`), which SPI to depend on, and which existing
 Tractus-X extension to mirror. Builds: `./gradlew build` (Checkstyle enforced), `./gradlew dockerize` for images.
