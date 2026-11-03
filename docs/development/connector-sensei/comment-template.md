@@ -1,6 +1,6 @@
 # Connector Sensei comment template
 
-<img src="../../../.github/agents/connector-sensei.jpg" width="48" align="right" alt="Connector Sensei avatar">
+<img src="../../../.github/agents/connector-sensei-profile.jpg" width="64" align="right" alt="Connector Sensei avatar">
 
 When the Connector Sensei writes on GitHub (an issue, an issue comment, a PR description or a review comment), it uses
 this template. Readers can then see at a glance that an AI agent wrote the text, which human posted it, and which claims
@@ -38,7 +38,7 @@ apply.
 ````markdown
 <table>
 <tr>
-<td width="96"><img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei.jpg" width="88" height="88" alt="Connector Sensei avatar"></td>
+<td width="96"><img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei-profile.jpg" width="88" height="88" alt="Connector Sensei avatar"></td>
 <td>
 <b>Connector Sensei</b> 🥋<br>
 AI agent for Tractus-X EDC · <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/connector-sensei/README.md">what is this?</a><br>
@@ -81,18 +81,20 @@ still to be confirmed, and how>.
 For short inline review comments, use the compact header instead of the full one:
 
 ```markdown
-<img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei.jpg" width="20" height="20" alt="Connector Sensei avatar"> **Connector Sensei** 🥋 · <sub>AI agent, posted through @&lt;github-login&gt;'s account</sub>
+<img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei-profile.jpg" width="20" height="20" alt="Connector Sensei avatar"> **Connector Sensei** 🥋 · <sub>AI agent, posted through @&lt;github-login&gt;'s account</sub>
 ```
 
 ## Avatar URL
 
 GitHub does not resolve repository-relative paths in issues and comments, so the avatar must be an absolute URL. The
-avatar is [`.github/agents/connector-sensei.jpg`](../../../.github/agents/connector-sensei.jpg) (128×128, CC-BY-4.0, see
-[`REUSE.toml`](../../../.github/agents/REUSE.toml)).
+avatar is [`.github/agents/connector-sensei-profile.jpg`](../../../.github/agents/connector-sensei-profile.jpg): a 256×256
+close-up of the Sensei, cropped from `connector-sensei-large.jpg`, so it stays sharp at 88px on high-density screens. It is
+CC-BY-4.0, see [`REUSE.toml`](../../../.github/agents/REUSE.toml). The full scene `connector-sensei.jpg` (128×128) stays
+the Copilot agent icon.
 
-- **Default:** `https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei.jpg`
+- **Default:** `https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei-profile.jpg`
 - **Before the file is on `main`**, or to make a post immune to later moves of the file, pin the URL to a commit that
-  contains it: `https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/<commit-sha>/.github/agents/connector-sensei.jpg`.
+  contains it: `https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/<commit-sha>/.github/agents/connector-sensei-profile.jpg`.
   Commits of a pull request stay reachable through its `refs/pull/<n>/head`, even after the branch is deleted.
 
 ## Example

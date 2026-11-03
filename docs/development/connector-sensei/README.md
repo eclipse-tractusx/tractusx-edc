@@ -31,6 +31,7 @@ shared by both. [How the skills work](skills.md) explains the idea behind them.
 | [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md) | Repository-wide Copilot instructions: Copilot adopts the Sensei identity and its rules even when the agent is not selected |
 | [`.claude/skills/`](../../../.claude/skills/README.md) | The skills: one folder per task with `SKILL.md` (procedure) and `scripts/` (deterministic tooling). Loaded by Claude Code and Copilot. |
 | [`.github/agents/REUSE.toml`](../../../.github/agents/REUSE.toml) | License information for the avatar images (CC-BY-4.0) |
+| [`.github/agents/connector-sensei-profile.jpg`](../../../.github/agents/connector-sensei-profile.jpg) | Close-up profile avatar (256px) used in the GitHub comment header |
 | [`comment-template.md`](comment-template.md) | The template the Sensei uses on GitHub (issues, comments, PR descriptions, reviews): avatar header, AI disclosure, evidence section, sign-off |
 
 ## Prerequisites
