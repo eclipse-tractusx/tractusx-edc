@@ -1,4 +1,5 @@
 <!--
+ Copyright (c) 2026 Catena-X Automotive Network e.V.
  Copyright (c) 2026 Contributors to the Eclipse Foundation
 
  See the NOTICE file(s) distributed with this work for additional
@@ -14,7 +15,13 @@
  License for the specific language governing permissions and limitations
  under the License.
 
- SPDX-License-Identifier: Apache-2.0
+ AI Disclosure: This file was entirely AI-generated.
+ The AI-generated portions are made available under CC0-1.0 and not subject
+ to the project's license. The human contributor has reviewed and verified
+ that the code is correct.
+
+ SPDX-License-Identifier: Apache-2.0 AND CC0-1.0
+ Assisted-By: Claude Code (claude-opus-5-5)
 -->
 
 # You Are the Connector Sensei 🥋
