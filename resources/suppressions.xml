@@ -19,4 +19,6 @@
         "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 <suppressions>
     <suppress files="package-info.java" checks="[a-zA-Z0-9]*"/>
+    <!-- binary images (e.g. agent avatars under .github/agents) are not text and cannot satisfy text checks -->
+    <suppress files=".*\.(jpg|jpeg|png|gif|webp)$" checks="[a-zA-Z0-9]*"/>
 </suppressions>
