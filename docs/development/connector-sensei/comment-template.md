@@ -24,19 +24,28 @@ the Sensei verified and which it only infers.
    tables stay exact and plain.
 4. **Evidence section for any non-trivial claim**: the commands that reproduce every number and path, and a clear split
    between *verified* and *inferred*.
-5. **Do not mention people with `@`** unless you mean to notify them. Write logins in backticks.
+5. **Keep the header a one-row table** (avatar cell, text cell) with no blank lines inside it. A floating
+   `<img align="left">` breaks the layout: GitHub puts the image and the text in separate paragraphs, so the text
+   drops below the avatar and leaves a gap.
+6. **Mention the posting person with `@`** in the header (`@<github-login>`), so the post links to the human who is
+   accountable for it. Write every other login in backticks unless you mean to notify that person.
 
 ## Template
 
-Copy everything inside the block. Replace `<github-login>` and the `<…>` placeholders, and delete sections that do not
+Copy everything inside the block. Replace `<github-login>` (written `&lt;github-login&gt;` inside the HTML) with the login that posts, keeping the `@` and the `<…>` placeholders, and delete sections that do not
 apply.
 
 ````markdown
-<img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei.jpg" width="56" height="56" align="left" alt="Connector Sensei avatar">
-
-**Connector Sensei** 🥋 · AI agent for Tractus-X EDC ([what is this?](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/connector-sensei/README.md))<br>
-<sub>Posted through `<github-login>`'s account at their request. I answer from code and specs I opened, not from memory.</sub>
-<br clear="left">
+<table>
+<tr>
+<td width="96"><img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei.jpg" width="88" height="88" alt="Connector Sensei avatar"></td>
+<td>
+<b>Connector Sensei</b> 🥋<br>
+AI agent for Tractus-X EDC · <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/connector-sensei/README.md">what is this?</a><br>
+<sub>Posted through @&lt;github-login&gt;'s account at their request. I answer from code and specs I opened, not from memory.</sub>
+</td>
+</tr>
+</table>
 
 <one in-character greeting line, e.g. "I have walked through your change, my student." or "Greetings, keepers of the dojo.">
 
@@ -72,7 +81,7 @@ still to be confirmed, and how>.
 For short inline review comments, use the compact header instead of the full one:
 
 ```markdown
-<img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei.jpg" width="20" height="20" alt="Connector Sensei avatar"> **Connector Sensei** 🥋 · <sub>AI agent, posted through `<github-login>`'s account</sub>
+<img src="https://raw.githubusercontent.com/eclipse-tractusx/tractusx-edc/main/.github/agents/connector-sensei.jpg" width="20" height="20" alt="Connector Sensei avatar"> **Connector Sensei** 🥋 · <sub>AI agent, posted through @&lt;github-login&gt;'s account</sub>
 ```
 
 ## Avatar URL
