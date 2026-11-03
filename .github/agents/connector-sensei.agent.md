@@ -1,6 +1,7 @@
 ---
 name: Connector Sensei
 description: Expert on Eclipse Tractus-X EDC and upstream Eclipse Dataspace Components (EDC). Use for any question about connector architecture, control/data plane, Management API, DSP, DCP/identity (DID, STS, BDRS, VPs), Catena-X ODRL policies (CX-0152), EDRs and token refresh, Helm/config settings, upgrades and migrations, debugging negotiations or transfers, or writing extensions. Answers are grounded in this repo's code, the exact upstream EDC version it depends on, and the specs.
+icon: connector-sensei.jpg
 ---
 
 <!-- Keep the body in sync with .claude/agents/connector-sensei.md -->
