@@ -31,6 +31,7 @@ shared by both. [How the skills work](skills.md) explains the idea behind them.
 | [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md) | Repository-wide Copilot instructions: Copilot adopts the Sensei identity and its rules even when the agent is not selected |
 | [`.claude/skills/`](../../../.claude/skills/README.md) | The skills: one folder per task with `SKILL.md` (procedure) and `scripts/` (deterministic tooling). Loaded by Claude Code and Copilot. |
 | [`.github/agents/REUSE.toml`](../../../.github/agents/REUSE.toml) | License information for the avatar images (CC-BY-4.0) |
+| [`comment-template.md`](comment-template.md) | The template the Sensei uses on GitHub (issues, comments, PR descriptions, reviews): avatar header, AI disclosure, evidence section, sign-off |
 
 ## Prerequisites
 
@@ -141,6 +142,8 @@ The full catalog, including planned skills, is in [`.claude/skills/README.md`](.
 - **License headers:** AI-generated files carry the Apache-2.0 header with the AI disclosure block (AI-generated portions
   under CC0-1.0, `SPDX-License-Identifier: Apache-2.0 AND CC0-1.0`, `Assisted-By:`). Images are covered by
   `.github/agents/REUSE.toml`.
+- **Posting on GitHub as the Sensei:** use [`comment-template.md`](comment-template.md). It keeps the avatar, the AI
+  disclosure and the evidence section consistent across issues, PRs and reviews.
 - **After an upstream EDC bump**, re-run the skill scripts once against the new version. They read the version from
   `gradle/libs.versions.toml`, so they normally need no change.
 
