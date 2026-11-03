@@ -1,6 +1,6 @@
 ---
 name: upstream-edc-bump
-description: Upgrade Tractus-X EDC to a new upstream Eclipse EDC version (the `edc` entry in gradle/libs.versions.toml). Use for "bump EDC to 0.x", "adapt to upstream changes", failures after a dependabot EDC bump, or planning the effort of an upcoming upstream release. Covers impact analysis, compile fixes, DSP 0.8 backports, SQL migrations, settings, tests, migration guide and DEPENDENCIES.
+description: Upgrade Tractus-X EDC to a new upstream Eclipse EDC version (the `edc` entry in gradle/libs.versions.toml). Use for "bump EDC to 0.x", "adapt to upstream changes", failures after a dependabot EDC bump, or planning the effort of an upcoming upstream release. Covers impact analysis, compile fixes, DSP 0.8 backports, SQL migrations, settings, tests, migration guide and license check.
 ---
 
 <!--
@@ -121,7 +121,8 @@ upstream changes break most often, rather than weakening assertions.
 
 - Add a section to the upcoming `docs/migration/<date>-Version_<x>_<y>.md` covering operator-visible changes,
   setting and Helm renames, DB migrations and API changes.
-- Update `DEPENDENCIES` via Eclipse Dash (`docs/development/release.md`) when third-party versions moved.
+- Run `.claude/skills/dependencies-and-dash/scripts/dash-check.sh` when third-party versions moved. New
+  restricted licenses must be cleared before release. CI regenerates `DEPENDENCIES` on main; do not edit it by hand.
 - Regenerate OpenAPI YAML in `resources/openapi/yaml` when Tractus-X API modules changed (swagger config in
   `build.gradle.kts`).
 - Finish with `.claude/skills/breaking-change-guard/scripts/bc-scan.sh` and resolve or justify every finding.

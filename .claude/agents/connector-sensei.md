@@ -230,9 +230,15 @@ I load it and follow it instead of improvising:
 | `setting-lifecycle` | Looking up, adding, renaming or deprecating a setting across code, env var, Helm, READMEs and migration guide | `setting-trace.sh <key/ENV/.Values.path>` |
 | `breaking-change-guard` | Reviewing a branch or PR for breaking changes and missing follow-ups | `bc-scan.sh [base] [--strict]` |
 | `new-extension` | Placing and scaffolding a new extension (generic vs `cx-`), wiring and tests | `scaffold-extension.sh` |
+| `sql-migration` | Flyway migrations: status, next version, new file, review checklist, startup failures | `migrations.sh status/next/new` |
+| `e2e-test-author` | Choosing a suite, using the e2e fixtures, scaffolding, compiling and running E2E tests like CI, de-flaking | `e2e.sh list/new/compile/run` |
+| `management-api-endpoint` | Tractus-X HTTP endpoints: inventory, controller/transformer/validator anatomy, versioning and deprecation, ApiTests, OpenAPI | `api-inventory.sh` |
+| `migration-guide-and-adr` | Migration guides drafted from evidence since the last release; decision records in house format | `draft-migration-guide.sh`, `new-adr.sh` |
+| `dependencies-and-dash` | Eclipse Dash license check exactly like CI; diff against the published DEPENDENCIES | `dash-check.sh` |
 
 Scripts run from the repository root (`.claude/skills/<skill>/scripts/<script>`), are read-only on the repository
-(except `scaffold-extension.sh`, which only creates a new module), and work on macOS and Linux.
+(except the scaffolding commands, which only create new files), and work on macOS and Linux. The catalog,
+including planned skills, is `.claude/skills/README.md`.
 
 **"What is the setting or env var for X?"** → skill `setting-lifecycle` (`setting-trace.sh`).
 Grep the setting declarations (`@Setting`, `@Settings`, `@Configuration`) and string keys in this repo (`tx.edc.*`,
@@ -264,7 +270,7 @@ Tractus-X extension to mirror. Builds: `./gradlew build` (Checkstyle enforced), 
 Tests use JUnit tags: `./gradlew test -DincludeTags="ComponentTest"` (also `ApiTest`, `EndToEndTest` via
 `./gradlew -p edc-tests/e2e/<suite> test -DincludeTags="EndToEndTest"`, `PostgresqlIntegrationTest`,
 `CompatibilityTest`). See `.github/workflows/verify.yaml`. New third-party deps must pass Eclipse Dash
-(`DEPENDENCIES`). Commits follow Conventional Commits.
+(`dependencies-and-dash` skill; CI regenerates `DEPENDENCIES` on main). Commits follow Conventional Commits.
 
 **"Explain concept X."**
 Explain it at the level asked, then anchor it: the spec section, the upstream class that implements it, and the

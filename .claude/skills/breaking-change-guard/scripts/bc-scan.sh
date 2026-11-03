@@ -27,7 +27,7 @@
 
 # Heuristic breaking-change scan of the current change set (committed + uncommitted)
 # against a base. It flags what operators, adopters or other dataspace participants would
-# notice, and which follow-ups (migration guide, helm-docs, DEPENDENCIES, tests) are missing.
+# notice, and which follow-ups (migration guide, helm-docs, license check, tests) are missing.
 # It is a triage aid: every finding still needs a human (or agent) judgement.
 #
 # Usage: bc-scan.sh [base-ref] [--strict]
@@ -78,7 +78,7 @@ while IFS=$'\t' read -r st f rest; do
   case "$st" in
     M*|D*|R*)
       # match by file name: migration folders have moved between releases
-      if [ -n "$REL" ] && git ls-tree -r --name-only "$REL" -- edc-extensions/migrations | grep -qF -e "/$(basename "$f")"; then
+      if [ -n "$REL" ] && git ls-tree -r --name-only "$REL" -- edc-extensions/migrations | grep -F -e "/$(basename "$f")" >/dev/null; then
         finding BLOCKER "Released Flyway migration modified/removed: $f (shipped in $REL; applied migrations are immutable, add a new V…__ file instead)"
       else
         finding WARN "Unreleased Flyway migration modified: $f (not in ${REL:-any release tag}; fine only if no deployed snapshot ran it)"
@@ -115,7 +115,7 @@ for v in $(changed_match '^charts/[^/]+/values\.yaml$'); do
     finding BREAKING "Helm value removed/renamed in $v: $p$([ "$kids" -gt 0 ] && echo " (+$kids nested keys)") (operators' values files will silently stop working)"
   done < "$TMP/hv_rem"
   chart=$(dirname "$v")
-  if ! echo "$CHANGED" | grep -qx "$chart/README.md"; then finding WARN "$v changed but $chart/README.md not regenerated (run helm-docs; CI job verify-helm-docs fails otherwise)"; fi
+  if ! echo "$CHANGED" | grep -x "$chart/README.md" >/dev/null; then finding WARN "$v changed but $chart/README.md not regenerated (run helm-docs; CI job verify-helm-docs fails otherwise)"; fi
 done
 removed_lines 'charts/*/templates/*' | grep -oE -- '- name: *"?[A-Z][A-Z0-9_]+"?' | grep -oE '[A-Z][A-Z0-9_]+' | sort -u > "$TMP/e_rem" || true
 for e in $(cat "$TMP/e_rem"); do
@@ -157,7 +157,7 @@ for f in $(changed_match '^edc-(controlplane|dataplane)/[^/]+/build\.gradle\.kts
 done
 
 # 9. Upstream EDC version bump.
-if removed_lines gradle/libs.versions.toml | grep -qE '^edc *='; then
+if removed_lines gradle/libs.versions.toml | grep -E '^edc *=' >/dev/null; then
   o=$(removed_lines gradle/libs.versions.toml | grep -E '^edc *=' | cut -d'"' -f2); n=$(added_lines gradle/libs.versions.toml | grep -E '^edc *=' | cut -d'"' -f2)
   finding HIGH "Upstream EDC bumped $o -> $n: run .claude/skills/upstream-edc-bump/scripts/bump-impact.sh $o $n and follow the upstream-edc-bump skill"
 fi
@@ -168,9 +168,9 @@ if [ $((N_BLOCK + N_BREAK + N_HIGH)) -gt 0 ] && [ -z "$(changed_match '^docs/mig
   finding WARN "Breaking/high-impact findings but no docs/migration/* change: add the entries to the upcoming migration guide"
 fi
 if [ -n "$(changed_match '^gradle/libs\.versions\.toml$|build\.gradle\.kts$')" ] && \
-   git diff -U0 "$MB" -- gradle/libs.versions.toml '*build.gradle.kts' | grep -E '^\+' | grep -v 'project(' | grep -qE '(libs\.[a-z]|version|= *"[0-9])' && \
-   [ -z "$(changed_match '^DEPENDENCIES$')" ]; then
-  finding WARN "Dependency declarations changed but DEPENDENCIES not updated: regenerate it if a new third-party artifact or version is introduced (Eclipse Dash; docs/development/release.md)"
+   git diff -U0 "$MB" -- gradle/libs.versions.toml '*build.gradle.kts' | grep -E '^\+' | grep -v 'project(' | grep -E '(libs\.[a-z]|version|= *"[0-9])' >/dev/null; then
+  # DEPENDENCIES itself is regenerated and published by CI from main; the PR has to make sure the licenses pass.
+  finding WARN "Third-party dependency declarations changed: run .claude/skills/dependencies-and-dash/scripts/dash-check.sh to catch restricted/rejected licenses before merge (CI regenerates DEPENDENCIES on main)"
 fi
 for k in $NEW_KEYS; do
   env=$(echo "$k" | tr '[:lower:]' '[:upper:]' | tr '.-' '__')

@@ -110,7 +110,7 @@ Then do what the script prints:
 
 - `./gradlew :edc-extensions:cx-foo:build` passes, which includes Checkstyle.
 - README documents purpose, plane, dataspace category and every setting.
-- New third-party dependencies are added to `gradle/libs.versions.toml` and DEPENDENCIES is regenerated (Eclipse
-  Dash).
+- New third-party dependencies are added to `gradle/libs.versions.toml` and pass the license check
+  (`dependencies-and-dash` skill). CI regenerates DEPENDENCIES on main, so do not edit it by hand.
 - Run the `breaking-change-guard` scan.
 - Commit with Conventional Commits, e.g. `feat(cx-foo): add …`.

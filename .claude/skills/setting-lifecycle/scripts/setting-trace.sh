@@ -120,7 +120,7 @@ else echo "   (no Helm value maps to this setting)"; fi
 
 hr "Docs (READMEs, usage docs)"
 d=$(G -n -F -e "${KEY:-@@none@@}" -e "${ENV:-@@none@@}" -- '*.md' ':!docs/migration' ':!CHANGELOG.md' ':!.claude' ':!.github')
-if [ -n "$d" ]; then echo "$d" | head -15; echo "$d" | grep -q 'README.md' && HAS_README=1; else echo "   (not documented)"; fi
+if [ -n "$d" ]; then echo "$d" | head -15; echo "$d" | grep 'README.md' >/dev/null && HAS_README=1; else echo "   (not documented)"; fi
 
 hr "Migration guides (history of renames/removals)"
 m=$(G -n -F -e "${KEY:-@@none@@}" -e "${ENV:-@@none@@}" -- docs/migration)

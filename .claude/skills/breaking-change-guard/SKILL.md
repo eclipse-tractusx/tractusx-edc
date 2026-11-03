@@ -1,6 +1,6 @@
 ---
 name: breaking-change-guard
-description: Review a Tractus-X EDC change set (branch, PR or working tree) for changes that break operators, adopters or other dataspace participants, and for missing follow-ups. Covers released SQL migrations, settings, Helm values and env vars, Management API paths, JSON-LD contexts, DSP/DCP wire behaviour, public SPIs, runtime composition, migration guide, helm-docs and DEPENDENCIES. Use before opening or approving a PR, when reviewing someone's PR, or when asked "is this breaking?".
+description: Review a Tractus-X EDC change set (branch, PR or working tree) for changes that break operators, adopters or other dataspace participants, and for missing follow-ups. Covers released SQL migrations, settings, Helm values and env vars, Management API paths, JSON-LD contexts, DSP/DCP wire behaviour, public SPIs, runtime composition, migration guide, helm-docs and license check. Use before opening or approving a PR, when reviewing someone's PR, or when asked "is this breaking?".
 ---
 
 <!--
@@ -51,7 +51,7 @@ To review a PR: `gh pr checkout <n>`, then run the scan against its base (`gh pr
 | BLOCKER | Must not merge as is | A Flyway migration shipped in the latest release was modified or removed; duplicate or out-of-order migration version |
 | BREAKING | Operators or clients break unless handled | Setting key removed or renamed; Helm value subtree removed; env var no longer set by the chart; `@Path` removed |
 | HIGH | Wire or data compatibility risk; needs targeted tests | DSP or DCP implementation changed; JSON-LD context or namespace URL changed; new DB migration; upstream EDC bumped |
-| WARN | Follow-up missing | No migration-guide change; chart README not regenerated; DEPENDENCIES not updated; new setting undocumented; SPI signature changed; feature removed from a runtime |
+| WARN | Follow-up missing | No migration-guide change; chart README not regenerated; third-party dependencies changed without a license check; new setting undocumented; SPI signature changed; feature removed from a runtime |
 
 The scanner is a heuristic. Treat each finding as a question, confirm it by reading the diff, and look beyond it
 (step 2).
@@ -83,7 +83,7 @@ The scanner is a heuristic. Treat each finding as a question, confirm it by read
    - DCP: `edc-tests/e2e/dcp-tests`, `dcp-tck-tests`
    - DB: `-DincludeTags="PostgresqlIntegrationTest"`, plus the upgradeability-test workflow
    - API: `-DincludeTags="ApiTest"` and `management-tests`
-4. **Housekeeping.** Run helm-docs for chart changes, regenerate DEPENDENCIES for new third-party artifacts, update
+4. **Housekeeping.** Run helm-docs for chart changes, run the `dependencies-and-dash` skill for new third-party artifacts, update
    the OpenAPI YAML for API changes, and add a decision record for architectural changes
    (`docs/development/decision-records/<yyyy-mm-dd>-<topic>/README.md`).
 
