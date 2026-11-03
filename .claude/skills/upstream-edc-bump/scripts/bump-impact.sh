@@ -48,10 +48,11 @@ TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 # 1. Upstream top-level types imported by Tractus-X code, with the number of importing files.
 cd "$ROOT"
 if [ "$MAIN_ONLY" = 1 ]; then PATHSPEC=':(glob)**/src/main/**/*.java'; else PATHSPEC='*.java'; fi
-git grep -hE '^import (static )?org\.eclipse\.edc\.' -- "$PATHSPEC" \
-  | sed -E 's/^import (static )?//; s/;.*$//' \
-  | awk -F. '{ out=$1; for (i=2;i<=NF;i++) { out=out"."$i; if ($i ~ /^[A-Z]/) break } print out }' \
-  | grep -vE '\.\*$' | sort | uniq -c | sort -rn > "$TMP/imports"
+# count distinct importing files per type (a file with several static imports of one type counts once)
+git grep -E '^import (static )?org\.eclipse\.edc\.' -- "$PATHSPEC" \
+  | sed -E 's/:import (static )?/ /; s/;.*$//' \
+  | awk '{ n = split($2, p, "."); out = p[1]; for (i = 2; i <= n; i++) { out = out "." p[i]; if (p[i] ~ /^[A-Z]/) break } print $1, out }' \
+  | grep -vE '\.\*$' | sort -u | awk '{print $2}' | sort | uniq -c | sort -rn > "$TMP/imports"
 
 # file indexes (artifact/path) for fast lookups
 (cd "$D_OLD" && find . -name '*.java' | sed 's#^\./##') > "$TMP/idx_old"

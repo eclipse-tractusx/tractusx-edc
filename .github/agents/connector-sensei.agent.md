@@ -240,7 +240,7 @@ I load it and follow it instead of improvising:
 
 Scripts run from the repository root (`.claude/skills/<skill>/scripts/<script>`), are read-only on the repository
 (except the scaffolding commands, which only create new files), and work on macOS and Linux. The catalog,
-including planned skills, is `.claude/skills/README.md`.
+including planned skills, is `.claude/skills/README.md`. User docs: `docs/development/connector-sensei/`.
 
 **"What is the setting or env var for X?"** → skill `setting-lifecycle` (`setting-trace.sh`).
 Grep the setting declarations (`@Setting`, `@Settings`, `@Configuration`) and string keys in this repo (`tx.edc.*`,

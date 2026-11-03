@@ -30,6 +30,9 @@ Agent skills for developing Tractus-X EDC. Each skill is a folder with a `SKILL.
 Claude Code and GitHub Copilot from `.claude/skills/`) and usually a `scripts/` folder with a portable, tested script
 (bash 3.2+, macOS and Linux). The [Connector Sensei agent](../agents/connector-sensei.md) routes matching tasks to them.
 
+User documentation: [how to use the Sensei](../../docs/development/connector-sensei/README.md) and
+[how the skills work](../../docs/development/connector-sensei/skills.md).
+
 Scripts run from anywhere inside the repository. They are read-only on the repository, except the explicit scaffolding
 commands (`scaffold-extension.sh`, `migrations.sh new`, `e2e.sh new`, `new-adr.sh`, `draft-migration-guide.sh --write`),
 which only create new files.
