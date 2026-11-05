@@ -67,6 +67,30 @@ up to a minute; later ones are instant.
    Use the breaking-change-guard skill on my branch and tell me what still needs a migration-guide entry.
    ```
 
+### Start a chat from the command line
+
+Install Claude Code once (`npm install -g @anthropic-ai/claude-code`) and run `claude` once to sign in. Then, from the
+repository root or a worktree of it:
+
+```bash
+# Chat with the Sensei: the whole session runs as the agent
+claude --agent connector-sensei
+
+# The same, with your first question already asked
+claude --agent connector-sensei "Why does my contract negotiation end in TERMINATED with a BPN group policy?"
+
+# One answer printed to the terminal, then exit (quick lookups, scripts)
+claude --agent connector-sensei -p "Which setting configures the BDRS server URL?"
+
+# Continue your last chat in this directory
+claude --agent connector-sensei --continue
+```
+
+Plain `claude` works too: Claude then hands questions to the Sensei when they match its description (step 2 above).
+With `--agent`, the Sensei answers every message itself, with its persona and rules from the first line. To make it
+your default in this repository, put `{"agent": "connector-sensei"}` in `.claude/settings.local.json` (personal settings, keep
+them out of commits).
+
 ## Using it with GitHub Copilot
 
 - **VS Code (Copilot Chat, agent mode):** open the repository, open the chat, and select **Connector Sensei** in the
