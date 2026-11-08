@@ -40,7 +40,7 @@ runs:
 
     - name: Run dash
       id: run-dash
-      uses: eclipse-tractusx/sig-infra/.github/actions/run-dash@main
+      uses: eclipse-tractusx/sig-infra/.github/actions/run-dash@1a2be9d3b599c081a4a307d8124f33d209f7c54e # main
       with:
         dash_input: dependency-list
         dependencies_file: DEPENDENCIES
