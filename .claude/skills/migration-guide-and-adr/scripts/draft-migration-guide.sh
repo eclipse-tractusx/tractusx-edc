@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+#################################################################################
+#  Copyright (c) 2026 Catena-X Automotive Network e.V.
+#  Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  AI Disclosure: This file was entirely AI-generated.
+#  The AI-generated portions are made available under CC0-1.0 and not subject
+#  to the project's license. The human contributor has reviewed and verified
+#  that the code is correct.
+#
+#  SPDX-License-Identifier: Apache-2.0 AND CC0-1.0
+#  Assisted-By: Claude Code (claude-opus-5-5)
+#################################################################################
+
+# Draft the migration guide for the upcoming release from evidence: the breaking-change scan
+# against the latest release tag, the upstream EDC version change, new DB migrations, and the
+# feat/fix/refactor commits merged to main since that release. Prints a skeleton in the format of
+# docs/migration/*.md with every candidate marked TODO for a human to keep, rewrite or drop.
+#
+# Usage: draft-migration-guide.sh [--from <release-tag>] [--branch <ref>] [--write]
+#   --from    previous release (default: newest final release tag, e.g. 0.13.0)
+#   --branch  development line to compare (default: origin/main)
+#   --write   write docs/migration/<yyyy>_<mm>-Version_<a.b>.x_<c.d>.x.md if it does not exist yet
+set -euo pipefail
+
+ROOT=$(git rev-parse --show-toplevel); cd "$ROOT"
+FROM=""; BRANCH="origin/main"; WRITE=0
+while [ $# -gt 0 ]; do
+  case "$1" in --from) FROM="$2"; shift 2 ;; --branch) BRANCH="$2"; shift 2 ;; --write) WRITE=1; shift ;;
+    -h|--help) sed -n '/^# Draft the migration guide/,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) echo "unknown option $1" >&2; exit 1 ;; esac
+done
+[ -n "$FROM" ] || FROM=$(git tag --list '[0-9]*.[0-9]*.[0-9]*' | grep -v -e '-' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
+git rev-parse -q --verify "$FROM^{commit}" >/dev/null || { echo "unknown release tag $FROM" >&2; exit 1; }
+NEXT=$(git show "$BRANCH:gradle.properties" | sed -n 's/^version=//p' | sed 's/-SNAPSHOT//')
+A=$(echo "$FROM" | cut -d. -f1-2); B=$(echo "$NEXT" | cut -d. -f1-2)
+FILE="docs/migration/$(date +%Y_%m)-Version_${A}.x_${B}.x.md"
+existing=$(ls docs/migration | grep -F "Version_${A}.x_${B}.x" || true)
+TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
+
+# Evidence 1: breaking-change scan of the branch against the release.
+SCAN=.claude/skills/breaking-change-guard/scripts/bc-scan.sh
+if [ "$BRANCH" = "HEAD" ] || [ "$(git rev-parse "$BRANCH")" = "$(git rev-parse HEAD)" ]; then
+  bash "$SCAN" "$FROM" > "$TMP/scan" 2>&1 || true
+else
+  echo "(breaking-change scan skipped: check out $BRANCH to include it)" > "$TMP/scan"
+fi
+# Evidence 2: upstream EDC version change.
+edc_old=$(git show "$FROM:gradle/libs.versions.toml" | grep -E '^edc *=' | cut -d'"' -f2)
+edc_new=$(git show "$BRANCH:gradle/libs.versions.toml" | grep -E '^edc *=' | cut -d'"' -f2)
+# Evidence 3: migrations added since the release (by file name, folders move between releases).
+git ls-tree -r --name-only "$FROM" -- edc-extensions/migrations | grep -E '/V[^/]*\.sql$' | xargs -n1 basename | sort > "$TMP/m_old" || true
+git ls-tree -r --name-only "$BRANCH" -- edc-extensions/migrations | grep -E '/src/main/.*/V[^/]*\.sql$' | sort > "$TMP/m_new_paths" || true
+NEW_MIG=$(while read -r p; do b=$(basename "$p"); grep -qxF "$b" "$TMP/m_old" || echo "$p"; done < "$TMP/m_new_paths" || true)
+# Evidence 4: user-facing commits since the release.
+git log "$BRANCH" --not "$FROM" --no-merges --format='%s' \
+  | grep -E '^(feat|fix|refactor|refactoring|perf|revert)(\([^)]*\))?!?:|^[A-Z][a-z]+ ' \
+  | grep -viE '^(chore|ci|build|test|docs)|dependabot|bump ' | sort -u > "$TMP/commits" || true
+BREAKING_COMMITS=$(grep -E '^[a-z]+(\([^)]*\))?!:' "$TMP/commits" || true)
+
+{
+cat <<EOF
+# Migration Guide \`${A}.x -> ${B}.x\`
+
+This document outlines the necessary changes for migrating your tractusx-edc installation from versions ${A}.x to ${B}.x.
+It also outlines some points that adopters and operators should pay close attention to when migrating from one version
+to another.
+
+This document is not a comprehensive feature list.
+
+<!-- TOC -->
+- [Migration Guide \`${A}.x -> ${B}.x\`](#migration-guide-${A//./}x---${B//./}x)
+  - [1. TODO first topic](#1-todo-first-topic)
+<!-- TOC -->
+
+<!--
+  DRAFT generated by .claude/skills/migration-guide-and-adr/scripts/draft-migration-guide.sh
+  from $FROM..$BRANCH. Keep one numbered section per operator-visible topic, use old -> new tables
+  (with the environment variable column) for settings and Helm values, and delete this comment.
+-->
+
+## 1. TODO first topic
+
+TODO
+
+EOF
+if [ "$edc_old" != "$edc_new" ]; then
+  cat <<EOF
+## TODO. Upstream EDC \`$edc_old\` -> \`$edc_new\`
+
+TODO: operator-visible upstream changes (see https://github.com/eclipse-edc/Connector/releases and
+\`.claude/skills/upstream-edc-bump/scripts/bump-impact.sh $edc_old $edc_new\`).
+
+EOF
+fi
+if [ -n "$NEW_MIG" ]; then
+  echo "## TODO. Database migrations"; echo
+  echo "The following schema migrations run automatically on startup (\`tx.edc.postgresql.migration.*\`):"; echo
+  echo "$NEW_MIG" | sed -E 's#.*/(V[^/]*)\.sql#- `\1`#'; echo
+fi
+echo "<!-- EVIDENCE (delete before merging) -------------------------------------------"
+echo; echo "Breaking-change scan $FROM..$BRANCH:"; sed 's/^/  /' "$TMP/scan"
+if [ -n "$BREAKING_COMMITS" ]; then echo; echo "Commits marked breaking (!):"; echo "$BREAKING_COMMITS" | sed 's/^/  - /'; fi
+echo; echo "User-facing commits since $FROM ($(wc -l < "$TMP/commits" | tr -d ' ')):"; sed 's/^/  - /' "$TMP/commits"
+echo "-------------------------------------------------------------------------------- -->"
+} > "$TMP/guide"
+
+if [ "$WRITE" = 1 ]; then
+  if [ -n "$existing" ]; then echo "A guide for ${A}.x -> ${B}.x already exists: docs/migration/$existing (not overwritten). Draft:" >&2; cat "$TMP/guide"; exit 0; fi
+  cp "$TMP/guide" "$FILE"; echo "Wrote $FILE"
+else
+  [ -n "$existing" ] && echo "<!-- note: docs/migration/$existing already exists; merge the relevant parts into it -->"
+  cat "$TMP/guide"
+fi
