@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":edc-extensions:bpn-validation:business-partner-store-sql"))
     implementation(project(":edc-extensions:edr:edr-index-lock-sql"))
     implementation(project(":edc-extensions:migrations:connector-migration"))
+    implementation(project(":edc-extensions:catalog-scaling"))
 
     runtimeOnly(libs.edc.vault.hashicorp)
 }
