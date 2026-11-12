@@ -25,12 +25,14 @@ plugins {
 
 configurations.all {
     exclude(group = "org.eclipse.edc", module = "data-plane-util")
+    exclude(group = "org.eclipse.edc", module = "json-ld-lib")
 }
 
 dependencies {
     runtimeOnly(libs.edc.bom.dataplane.base)
 
     implementation(project(":core:edr-core"))
+    implementation(project(":edc-extensions:json-ld-lib"))
     implementation(project(":edc-extensions:log4j2-monitor"))
     implementation(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-proxy-http"))
     implementation(project(":edc-extensions:dataplane:dataplane-proxy:dataplane-public-api-v2"))

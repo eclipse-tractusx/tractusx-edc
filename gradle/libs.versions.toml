@@ -27,6 +27,8 @@ rsApi = "4.0.0"
 testcontainers = "2.0.5"
 testcontainers-keycloak = "4.3.1"
 titanium = "1.7.0"
+iron-vc = "0.14.0"
+json-schema-validator = "2.0.0"
 log4j2 = "2.26.1"
 wiremock = "3.13.2"
 
@@ -111,6 +113,8 @@ edc-lib-http = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-lib-jersey-providers = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
 edc-lib-management-api = { module = "org.eclipse.edc:management-api-lib", version.ref = "edc" }
 edc-lib-jws2020 = { module = "org.eclipse.edc:jws2020-lib", version.ref = "edc" }
+edc-lib-json = { module = "org.eclipse.edc:json-lib", version.ref = "edc" }
+edc-lib-jsonld = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-lib-query = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
 edc-lib-store = { module = "org.eclipse.edc:store-lib", version.ref = "edc" }
 edc-lib-token = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
@@ -215,6 +219,7 @@ aws-s3transfer = { module = "software.amazon.awssdk:s3-transfer-manager", versio
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+jacksonJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 jacksonJsonP = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jakarta-jsonp", version.ref = "jackson" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 jakartaJson = { module = "jakarta.json:jakarta.json-api", version.ref = "jakarta-json" }
@@ -230,6 +235,8 @@ testcontainers-minio = { module = "org.testcontainers:testcontainers-minio", ver
 testcontainers-localstack = { module = "org.testcontainers:testcontainers-localstack", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 titaniumJsonLd = { module = "com.apicatalog:titanium-json-ld", version.ref = "titanium" }
+jsonSchemaValidator = { module = "com.networknt:json-schema-validator", version.ref = "json-schema-validator" }
+ironVerifiableCredentials = { module = "com.apicatalog:iron-verifiable-credentials", version.ref = "iron-vc" }
 wiremock = { module = "org.wiremock:wiremock-jetty12", version.ref = "wiremock" }
 
 log4j2-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j2" }

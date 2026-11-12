@@ -66,6 +66,7 @@ import java.util.Optional;
  * </ul>
  *
  * <em>Note: VP-JWTs may only contain VCs also represented in JWT format. Mixing formats is not allowed.</em>
+ *
  */
 public class JwtPresentationVerifier implements CredentialVerifier {
 
@@ -74,6 +75,8 @@ public class JwtPresentationVerifier implements CredentialVerifier {
     public static final String VERIFIABLE_CREDENTIAL_JSON_KEY = "verifiableCredential";
     public static final String VP_CLAIM = "vp";
     public static final String VC_CLAIM = "vc";
+    private static final String CONTEXT_CLAIM = "@context";
+    private static final String VCDM_20_CONTEXT = "https://www.w3.org/ns/credentials/v2";
     private final TypeManager typeManager;
     private final String typeContext;
     private final TokenValidationService tokenValidationService;
@@ -95,11 +98,41 @@ public class JwtPresentationVerifier implements CredentialVerifier {
     @Override
     public boolean canHandle(String rawInput) {
         try {
-            SignedJWT.parse(rawInput);
-            return true;
+            var claims = SignedJWT.parse(rawInput).getJWTClaimsSet().getClaims();
+            if (singleFormatGuard(claims).failed()) {
+                return false;
+            }
+            return claims.containsKey(VP_CLAIM) || claims.containsKey(VC_CLAIM);
         } catch (ParseException e) {
             return false;
         }
+    }
+
+    /**
+     * Asserts that the JWT declares exactly one credential/presentation format: either a {@code vc} or a {@code vp}
+     * claim, and - for presentations - a VCDM 1.1 {@code vp} claim without a VCDM 2.0 {@code @context}.
+     *
+     * @param claims the claims of the JWT
+     * @return a failure if more than one format is declared, success otherwise
+     */
+    private Result<Void> singleFormatGuard(Map<String, Object> claims) {
+        var hasVc = claims.containsKey(VC_CLAIM);
+        var hasVp = claims.containsKey(VP_CLAIM);
+        if (hasVc && hasVp) {
+            return Result.failure("JWT must not carry both '%s' and '%s' claims.".formatted(VC_CLAIM, VP_CLAIM));
+        }
+        if (hasVp && hasVcdm20Context(claims)) {
+            return Result.failure("JWT must not combine a '%s' claim with a VCDM 2.0 '@context'.".formatted(VP_CLAIM));
+        }
+        return Result.success();
+    }
+
+    private static boolean hasVcdm20Context(Map<String, Object> claims) {
+        var ctx = claims.get(CONTEXT_CLAIM);
+        if (ctx instanceof Collection<?> contexts) {
+            return contexts.contains(VCDM_20_CONTEXT);
+        }
+        return VCDM_20_CONTEXT.equals(ctx);
     }
 
     /**
@@ -119,6 +152,12 @@ public class JwtPresentationVerifier implements CredentialVerifier {
         try {
             // obtain the actual JSON structure
             var signedJwt = SignedJWT.parse(serializedJwt);
+
+            var guard = singleFormatGuard(signedJwt.getJWTClaimsSet().getClaims());
+            if (guard.failed()) {
+                return guard;
+            }
+
             var keyId = signedJwt.getHeader().getKeyID();
             if (isCredential(signedJwt)) {
                 var rules = new ArrayList<>(tokenValidationRulesRegistry.getRules(JWT_VC_TOKEN_CONTEXT));
@@ -134,6 +173,10 @@ public class JwtPresentationVerifier implements CredentialVerifier {
             //we can be sure to have a presentation token
             verificationResult = tokenValidationService.validate(serializedJwt, publicKeyResolver, vpValidationRules(context.getAudience(), keyId));
 
+            if (verificationResult.failed()) {
+                return verificationResult.mapEmpty();
+            }
+
             var vpClaim = (Map<String, Object>) signedJwt.getJWTClaimsSet().getClaim(VP_CLAIM);
 
             if (!vpClaim.containsKey(VERIFIABLE_CREDENTIAL_JSON_KEY)) {
@@ -142,8 +185,8 @@ public class JwtPresentationVerifier implements CredentialVerifier {
             var rawCredentials = extractCredentials(vpClaim.get(VERIFIABLE_CREDENTIAL_JSON_KEY));
 
             if (rawCredentials.isEmpty()) {
-                // todo: this is allowed by the spec, but it is semantic nonsense. Should we return failure or not?
-                return Result.success();
+                // allowed by the spec
+                return verificationResult.mapEmpty();
             }
 
             // every VC is represented as another JWT, so we verify all of them
