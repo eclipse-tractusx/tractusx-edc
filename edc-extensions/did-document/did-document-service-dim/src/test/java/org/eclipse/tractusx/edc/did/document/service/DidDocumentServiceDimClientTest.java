@@ -162,7 +162,7 @@ class DidDocumentServiceDimClientTest {
     @ValueSource(ints = {0, 1, 2, 3, 4})
     void update_service_failure_whenDivRequestFails(int failingRequest) {
 
-        when(divOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
+        when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
         var requestCount = new AtomicInteger();
         when(httpClient.execute(any(Request.class), anyList(), any()))
                 .thenAnswer(invocation -> requestCount.getAndIncrement() == failingRequest
@@ -247,7 +247,7 @@ class DidDocumentServiceDimClientTest {
     @ValueSource(ints = {0, 1, 2})
     void deleteById_failure_whenDivRequestFails(int failingRequest) {
 
-        when(divOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
+        when(dimOauth2Client.obtainRequestToken()).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("token").build()));
         var requestCount = new AtomicInteger();
         when(httpClient.execute(any(Request.class), anyList(), any()))
                 .thenAnswer(invocation -> requestCount.getAndIncrement() == failingRequest
