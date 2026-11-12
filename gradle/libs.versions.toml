@@ -133,6 +133,7 @@ edc-lib-verifiable-credentials = { module = "org.eclipse.edc:verifiable-credenti
 
 # implementations
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }
+edc-sql-contract-definition = { module = "org.eclipse.edc:contract-definition-store-sql", version.ref = "edc" }
 edc-sql-contract-negotiation = { module = "org.eclipse.edc:contract-negotiation-store-sql", version.ref = "edc" }
 edc-sql-edrindex = { module = "org.eclipse.edc:edr-index-sql", version.ref = "edc" }
 edc-sql-test-fixtures = { module = "org.eclipse.edc:sql-test-fixtures", version.ref = "edc" }

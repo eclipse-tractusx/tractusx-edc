@@ -1,0 +1,79 @@
+﻿%% =====================================================================================================================
+%%  Copyright (c) 2026 Volkswagen AG
+%%
+%%  See the NOTICE file(s) distributed with this work for additional
+%%  information regarding copyright ownership.
+%%
+%%  This program and the accompanying materials are made available under the
+%%  terms of the Apache License, Version 2.0 which is available at
+%%  https://www.apache.org/licenses/LICENSE-2.0.
+%%
+%%  Unless required by applicable law or agreed to in writing, software
+%%  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+%%  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+%%  License for the specific language governing permissions and limitations
+%%  under the License.
+%%
+%%  AI Disclosure: This file was largely AI-generated. The AI-generated
+%%  portions are made available under CC0-1.0 and not subject to the
+%%  project's licence. The human contributor has reviewed and verified
+%%  that the code is correct.
+%%
+%%  SPDX-License-Identifier: CC-BY-4.0 AND CC0-1.0
+%%  Assisted-by: GitHub Copilot (Claude-Opus-5.5)
+%% =====================================================================================================================
+
+flowchart TD
+    PAGE["<b>edc_find_matching_assets_page</b>(p_definitions_table)<br/>Bulk entry point called by EDC (inlinable SQL function).<br/>Joins the matching asset IDs with edc_asset, so filters, ordering<br/>and paging of the calling query apply to the join directly."]
+    FMA["<b>edc_find_matching_asset_ids</b>(p_definitions_table)<br/>Returns the IDs of all assets selected by at least one contract<br/>definition of the given table, incl. the matching definition IDs.<br/>Drives the join from the definitions table."]
+    ONE["<b>edc_find_authorized_asset</b>(p_definitions_table, p_asset_id)<br/>Single-asset entry point called by EDC. Resolves the asset via its<br/>primary key first, then evaluates the definitions' selectors."]
+
+    PAGE --> FMA
+    ONE -->|"per contract definition"| CDCOLS
+
+    SPLIT["<b>edc_split_selector</b>(assets_selector)<br/>Splits a selector into a GIN-indexable jsonpath prefilter<br/>('=' and 'in' criteria with scalar operands, ORing both readings<br/>of keys with dots), a guard jsonpath matching assets on which the<br/>prefilter may disagree with EDC, the '=' criteria to re-check<br/>for those assets, and the remaining criteria."]
+    PARSE["<b>edc_parse_path</b>(key)<br/>Splits a key into path segments like EDC's PathItem:<br/>dots separate, single quotes group."]
+    ACC["<b>edc_jsonpath_accessor</b>(segments)<br/>Renders path segments as jsonpath accessor (@.&quot;a&quot;.&quot;b&quot;)."]
+
+    subgraph exact["Exact path (remaining criteria)"]
+        SELM["<b>edc_selector_matches</b>(props, private_props, criteria)<br/>Tests remaining (non fast-path) criteria.<br/>Parses the criteria and compares to properties using operator.<br/>True if none of the remaining criteria are violated."]
+        CRIT["<b>edc_criterion_matches</b>(props, private_props, left_op, operator, right_op)<br/>Evaluates a single criterion against asset properties.<br/>Supports =, !=, in, not in, &lt;, &lt;=, &gt;, &gt;=, contains, like, ilike.<br/>A null/missing property never matches."]
+        RES["<b>edc_resolve_property</b>(props, private_props, left_op)<br/>Resolves a criterion's leftOperand like EDC's AssetPropertyLookup:<br/>path reading (a.b -> a -> b) and whole-key reading ('a.b'),<br/>properties before private properties."]
+        GET["<b>edc_get_path</b>(obj, segments)<br/>Navigates path segments like EDC's ReflectionUtil<br/>(objects by key, name[i] indexers, no value across lists)."]
+        EQ["<b>edc_equal_matches</b>(a, b)<br/>Equality like EDC EqualOperatorPredicate:<br/>boolean parsing, list membership,<br/>else number/string comparison."]
+        NSC["<b>edc_number_string_compare</b>(a, b, op)<br/>Compares two numbers or two strings (C collation).<br/>Any other type combination yields false."]
+    end
+
+    subgraph fast["Fast path (index probe)"]
+        COL[("edc_asset.effective_properties<br/>generated column + GIN index<br/>(jsonb_path_ops)")]
+        EFF["<b>edc_effective_properties</b>(properties, private_properties)<br/>Merges properties over private properties."]
+        STRIP["<b>edc_strip_nulls</b>(obj)<br/>Removes top-level null values from a JSONB object<br/>to keep them out of the GIN index."]
+    end
+
+    FMA -->|"per contract definition"| CDCOLS
+
+    subgraph stored["Split selectors (computed on write)"]
+        CDCOLS[("edc_contract_definitions.selector_*<br/>eq_filter, ambiguous_filter, eq_criteria, other_criteria<br/>(copied into the temp table per request)")]
+        TRG["<b>edc_contract_definitions_split_selector</b>()<br/>BEFORE INSERT OR UPDATE trigger, recomputes the<br/>selector_* columns from assets_selector.<br/>Stale rows are refreshed when the script runs."]
+    end
+
+    CDCOLS -.->|"maintained by"| TRG
+    TRG --> SPLIT
+
+    CDCOLS -->|"eq_filter: probed via @? on the GIN index"| COL
+    CDCOLS -->|"other_criteria: evaluated per candidate asset"| SELM
+    CDCOLS -->|"eq_criteria: evaluated only for candidates matching ambiguous_filter"| SELM
+    SPLIT -->|"two readings per key"| PARSE
+    SPLIT -->|"build eq_filter / ambiguous_filter"| ACC
+
+    SELM -->|"per criterion"| CRIT
+    CRIT -->|"resolve left operand"| RES
+    RES -->|"path & whole-key reading"| PARSE
+    RES -->|"read value"| GET
+    CRIT -->|"like, ilike, in, not in, contains"| CRIT
+    CRIT -->|"= and !="| EQ
+    CRIT -->|"&lt;, &lt;=, &gt;, &gt;="| NSC
+    EQ -->|"fallback for scalars"| NSC
+
+    COL -.->|"GENERATED ALWAYS AS"| EFF
+    EFF --> STRIP
