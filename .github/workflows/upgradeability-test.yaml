@@ -59,8 +59,16 @@ jobs:
       - name: "Get latest released version"
         id: get-version
         run: |
-          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l -o json | jq -r 'first | .version')
-          echo "Last official release is $RELEASED_VERSION"
+          # pick the newest release of this branch's own minor version line, so that on maintenance
+          # branches (e.g. 0.12.x) the test upgrades from the previous patch release instead of
+          # installing a newer minor (whose values layout differs) and then downgrading to this branch
+          CHART_MINOR=$(grep -E "^version:" charts/tractusx-connector/Chart.yaml | awk '{print $2}' | cut -d. -f1-2)
+          RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l -o json | jq -r --arg prefix "$CHART_MINOR." '[.[] | select(.version | startswith($prefix))] | first | .version // empty')
+          if [ -z "$RELEASED_VERSION" ]; then
+            # no release of this minor exists yet (e.g. main after a version bump): fall back to the newest release overall
+            RELEASED_VERSION=$(helm search repo tractusx/tractusx-connector -l -o json | jq -r 'first | .version')
+          fi
+          echo "Branch chart minor is $CHART_MINOR, upgrading from release $RELEASED_VERSION"
           echo "RELEASE=$RELEASED_VERSION" >> $GITHUB_ENV
           exit 0
 
