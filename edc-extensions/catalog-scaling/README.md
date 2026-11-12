@@ -102,3 +102,11 @@ present, so no table lock will occur.
 
 If however the column or trigger is changed or dropped, the script will re-create them, so the tables will be locked
 during computation. As long as the columns or triggers are not modified or dropped manually, this case should not occur.
+
+## NOTICE
+
+This work is licensed under the CC-BY-4.0
+
+- SPDX-License-Identifier: CC-BY-4.0
+- SPDX-FileCopyrightText: 2026 Volkswagen AG
+- Source URL: https://github.com/eclipse-tractusx/tractusx-edc

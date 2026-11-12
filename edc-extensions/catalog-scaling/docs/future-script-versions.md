@@ -24,3 +24,11 @@ trigger) cannot be dropped without also dropping the generated column or the tri
 - `edc_asset.effective_properties` is a generated column. Its stored values are **not** recomputed when
   `edc_effective_properties` changes. A changed logic requires a new column with a new function and a new index; adding
   it rewrites `edc_asset` under an exclusive lock that blocks all access until commit.
+
+## NOTICE
+
+This work is licensed under the CC-BY-4.0
+
+- SPDX-License-Identifier: CC-BY-4.0
+- SPDX-FileCopyrightText: 2026 Volkswagen AG
+- Source URL: https://github.com/eclipse-tractusx/tractusx-edc
