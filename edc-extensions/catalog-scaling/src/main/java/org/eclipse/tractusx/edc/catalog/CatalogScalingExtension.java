@@ -19,7 +19,6 @@
 
 package org.eclipse.tractusx.edc.catalog;
 
-import javax.sql.DataSource;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DatasetResolver;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DistributionResolver;
 import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
@@ -40,6 +39,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Objects;
+import javax.sql.DataSource;
 
 import static java.lang.String.format;
 
@@ -97,8 +97,8 @@ public class CatalogScalingExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         if (dataSourceName == null || !dataSourceName.equals(contractDefinitionDataSourceName)) {
-            context.getMonitor().warning(format("Different data sources configured for asset and contract definition: %s, %s. "
-                    + "Unable to load catalog scaling improvements, as these rely on assets and contract definitions residing in the same data source.",
+            context.getMonitor().warning(format("Different data sources configured for asset and contract definition: %s, %s. " +
+                    "Unable to load catalog scaling improvements, as these rely on assets and contract definitions residing in the same data source.",
                     dataSourceName, contractDefinitionDataSourceName));
             return;
         }
@@ -141,7 +141,7 @@ public class CatalogScalingExtension implements ServiceExtension {
     private void executeSqlScript(DataSource dataSource, String sql) {
         transactionContext.execute(() -> {
             try (var connection = dataSource.getConnection();
-                var statement = connection.createStatement()) {
+                    var statement = connection.createStatement()) {
                 statement.execute(sql);
             } catch (SQLException e) {
                 throw new IllegalStateException(format("Failed to execute SQL script %s using datasource %s",

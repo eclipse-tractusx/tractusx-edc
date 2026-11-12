@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2024 Cofinity-X
  * Copyright (c) 2026 Volkswagen AG
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static org.eclipse.edc.participantcontext.spi.types.ParticipantResource.queryByParticipantContextId;
 
+//NOTICE: the following file has been used as a baseline: https://github.com/eclipse-edc/Connector/blob/v0.17.0/core/control-plane/control-plane-catalog/src/main/java/org/eclipse/edc/connector/controlplane/catalog/ContractDefinitionResolverImpl.java
 public class ScalingContractDefinitionResolver {
 
     private final PolicyEngine policyEngine;

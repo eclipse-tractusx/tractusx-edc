@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  * Copyright (c) 2026 Volkswagen AG
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -19,7 +20,6 @@
 
 package org.eclipse.tractusx.edc.catalog;
 
-import javax.sql.DataSource;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
@@ -49,9 +49,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import javax.sql.DataSource;
 
 import static org.eclipse.edc.participantcontext.spi.types.ParticipantResource.filterByParticipantContextId;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+
+//NOTICE: the following file has been used as a baseline: https://github.com/eclipse-edc/Connector/blob/v0.17.0/core/control-plane/control-plane-catalog/src/main/java/org/eclipse/edc/connector/controlplane/catalog/DatasetResolverImpl.java
 
 /**
  * Generates datasets from available assets and contract definitions for a given requesting
