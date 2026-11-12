@@ -62,6 +62,16 @@ allprojects {
     apply(plugin = "org.eclipse.edc.autodoc")
     apply(plugin = "jacoco")
 
+    // the edc-build plugin registers the Sonatype snapshot repositories without a content filter, so every release
+    // artifact is first looked up there; Sonatype rate-limits that (HTTP 429), which breaks dependency resolution
+    repositories.withType<MavenArtifactRepository>().configureEach {
+        if (url.toString().contains("snapshots")) {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+    }
+
     dependencies {
 
         implementation("org.slf4j:slf4j-api:2.0.18")
