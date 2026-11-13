@@ -140,7 +140,7 @@ class AssetAndContractDefinitionMatchingIntegrationTest {
      */
     private void verifyBulkQuery(String assetId, List<String> expectedDefinitionIds) throws SQLException {
         try (var connection = EXTENSION.getConnection();
-            var assets = queryManager.queryAssetsWithMatchingContractDefinitions(connection, DEFINITIONS_TABLE, QuerySpec.max())) {
+                var assets = queryManager.queryAssetsWithMatchingContractDefinitions(connection, DEFINITIONS_TABLE, QuerySpec.max())) {
             var result = assets.toList();
 
             if (expectedDefinitionIds.isEmpty()) {
