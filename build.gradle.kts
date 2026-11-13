@@ -107,6 +107,15 @@ allprojects {
         this.isShowViolations = System.getProperty("checkstyle.verbose", "true").toBoolean()
     }
 
+    // Sonatype Central rate-limits bursts of uploads (HTTP 429). When -PpublishPauseMillis is set (CI does this),
+    // wait after each module's upload so that the requests are spread out.
+    val publishPauseMillis = providers.gradleProperty("publishPauseMillis").map { it.toLong() }.getOrElse(0L)
+    if (publishPauseMillis > 0) {
+        tasks.withType<PublishToMavenRepository>().configureEach {
+            doLast { Thread.sleep(publishPauseMillis) }
+        }
+    }
+
 }
 
 subprojects {

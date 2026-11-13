@@ -50,4 +50,6 @@ runs:
         ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ inputs.password }}
         ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ inputs.gpg-private-key }}
         ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ inputs.gpg-passphrase }}
-      run: ./gradlew publishToMavenCentral -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword"
+      # Sonatype Central answers bursts of uploads with HTTP 429. Retrying makes it worse, so the uploads are paced
+      # instead: publishPauseMillis makes the build wait after each module's upload (see build.gradle.kts).
+      run: ./gradlew publishToMavenCentral --no-parallel -PpublishPauseMillis=3000 -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword"
