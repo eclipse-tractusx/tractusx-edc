@@ -74,36 +74,36 @@ allprojects {
 
     dependencies {
 
-        implementation("org.slf4j:slf4j-api:2.0.18")
+        implementation("org.slf4j:slf4j-api:2.0.20")
 
         implementation(platform("io.netty:netty-bom:4.1.137.Final")) {
             because("CVE-2026-56819/56745/55833/55831/59901/50010/47691/45674/45416/44249/42587/42584/42579/42583: netty fixed in 4.1.136; CVE-2026-59903 (CorsHandler Vary header cache poisoning) backported to 4.1.137")
         }
-        implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.4")) {
+        implementation(platform("com.fasterxml.jackson:jackson-bom:2.23.0")) {
             because("CVE-2026-54513/54512 + GHSA-r7wm-3cxj-wff9: jackson-databind/core fixed in 2.21.4")
         }
 
         if (!project.path.startsWith(":edc-tests:runtime:runtime-compatibility:stable")) {
-            implementation(platform("org.eclipse.jetty:jetty-bom:12.1.10")) {
+            implementation(platform("org.eclipse.jetty:jetty-bom:12.1.15")) {
                 because("CVE-2026-10050: jetty-security auth bypass via Digest encoding collision (fixed 12.1.10); CVE-2026-2332: jetty-http request smuggling via chunked extension quoted-string parsing (fixed 12.1.7); CVE-2026-1605: jetty-server DoS via unreleased JDK Inflater from compressed requests (fixed 12.1.6)")
             }
-            implementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.1.10")) {
-                because("CVE-2026-10050: aligns Jetty ee10 modules with jetty-bom 12.1.10")
+            implementation(platform("org.eclipse.jetty.ee10:jetty-ee10-bom:12.1.15")) {
+                because("CVE-2026-10050: aligns Jetty ee10 modules with jetty-bom 12.1.15")
             }
         }
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
-            implementation("org.yaml:snakeyaml:2.6") {
+            implementation("org.yaml:snakeyaml:2.7") {
                 because("version 1.33 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1471.")
             }
-            implementation("net.minidev:json-smart:2.6.0") {
+            implementation("net.minidev:json-smart:2.6.1") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
-            implementation("com.azure:azure-core-http-netty:1.16.6") {
+            implementation("com.azure:azure-core-http-netty:1.17.0") {
                 because("Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
             }
-            implementation("tools.jackson.core:jackson-core:3.2.2") {
+            implementation("tools.jackson.core:jackson-core:3.3.0") {
                 because("older version has vulnerability")
             }
         }
