@@ -1,0 +1,96 @@
+/********************************************************************************
+ * Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+ * Copyright (c) 2026 Cofinity-X GmbH
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+
+package org.eclipse.edc.iam.verifiablecredentials.revocation.statuslist2021;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.edc.http.spi.EdcHttpClient;
+import org.eclipse.edc.iam.verifiablecredentials.revocation.BaseRevocationListService;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialStatus;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.revocation.BitString;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.revocation.statuslist2021.StatusList2021Credential;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.revocation.statuslist2021.StatusList2021Status;
+import org.eclipse.edc.spi.result.Result;
+
+import java.util.Collection;
+
+import static org.eclipse.edc.spi.result.Result.success;
+
+
+/**
+ * StatusList revocation service implementing the <a href="https://w3c.github.io/cg-reports/credentials/CG-FINAL-vc-status-list-2021-20230102/">StatusList2021</a>
+ * specification.
+ */
+public class StatusList2021RevocationService extends BaseRevocationListService<StatusList2021Credential, StatusList2021Status> {
+
+    public StatusList2021RevocationService(ObjectMapper objectMapper, long cacheValidity, Collection<String> acceptedContentTypes, EdcHttpClient httpClient) {
+        super(objectMapper, cacheValidity, acceptedContentTypes, httpClient, StatusList2021Credential.class);
+    }
+
+    @Override
+    protected StatusList2021Status getCredentialStatus(CredentialStatus credentialStatus) {
+        return StatusList2021Status.from(credentialStatus);
+    }
+
+    @Override
+    protected Result<String> getStatusEntryValue(StatusList2021Status credentialStatus) {
+        var index = credentialStatus.getStatusListIndex();
+        var slCredUrl = credentialStatus.getStatusListCredential();
+        var credential = getCredential(slCredUrl);
+        if (credential.failed()) {
+            return credential.mapEmpty();
+        }
+
+        var bitStringResult = BitString.Parser.newInstance().parse(credential.getContent().encodedList());
+
+        if (bitStringResult.failed()) {
+            return bitStringResult.mapEmpty();
+        }
+        var bitString = bitStringResult.getContent();
+
+        // check that the value at index in the bitset is "1"
+        if (bitString.get(index)) {
+            return success(credentialStatus.getStatusListPurpose());
+        }
+        return success(null);
+    }
+
+    @Override
+    protected Result<Void> validateStatusPurpose(StatusList2021Status credentialStatus) {
+        var slCred = getCredential(credentialStatus.getStatusListCredential());
+        if (slCred.failed()) {
+            return slCred.mapEmpty();
+        }
+
+        // check that the "statusPurpose" values match
+        var purpose = credentialStatus.getStatusListPurpose();
+        var slCredPurpose = slCred.getContent().statusPurpose();
+        if (!purpose.equalsIgnoreCase(slCredPurpose)) {
+            return Result.failure("Credential's statusPurpose value must match the status list's purpose: '%s' != '%s'".formatted(purpose, slCredPurpose));
+        }
+
+        return success();
+    }
+
+    @Override
+    protected int getStatusIndex(StatusList2021Status credentialStatus) {
+        return credentialStatus.getStatusListIndex();
+    }
+}

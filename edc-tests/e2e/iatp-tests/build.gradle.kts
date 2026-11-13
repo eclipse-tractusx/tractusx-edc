@@ -41,7 +41,7 @@ dependencies {
     testImplementation(libs.edc.ih.spi.credentials)
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.core.token)
-    testImplementation(libs.edc.identity.vc.ldp)
+    testImplementation(project(":edc-extensions:ldp-verifiable-credentials"))
     testImplementation(libs.edc.lib.jws2020)
     testImplementation(libs.edc.sts.core)
     testRuntimeOnly(libs.edc.transaction.local)

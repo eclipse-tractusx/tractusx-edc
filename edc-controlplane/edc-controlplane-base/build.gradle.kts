@@ -30,6 +30,10 @@ configurations.all {
     // decentralized-claims-sts-remote-client excluded because we have the tx-dcp-sts-dim that takes care to define the correct client in case of DIM
     exclude("org.eclipse.edc", "decentralized-claims-sts-remote-client")
     exclude(group = "org.eclipse.edc", module = "transform-lib")
+    exclude(group = "org.eclipse.edc", module = "jwt-verifiable-credentials")
+    exclude(group = "org.eclipse.edc", module = "ldp-verifiable-credentials")
+    exclude(group = "org.eclipse.edc", module = "verifiable-credentials")
+    exclude(group = "org.eclipse.edc", module = "json-ld-lib")
 }
 
 dependencies {
@@ -71,6 +75,10 @@ dependencies {
     implementation(project(":edc-extensions:did-document:did-document-service-self-registration"))
     implementation(project(":edc-extensions:did-document:did-document-service-dim"))
     implementation(project(":edc-extensions:transform-lib"))
+    implementation(project(":edc-extensions:jwt-verifiable-credentials"))
+    implementation(project(":edc-extensions:ldp-verifiable-credentials"))
+    implementation(project(":edc-extensions:verifiable-credentials"))
+    implementation(project(":edc-extensions:json-ld-lib"))
 
     runtimeOnly(libs.bundles.edc.monitoring)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)

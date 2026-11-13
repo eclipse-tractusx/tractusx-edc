@@ -22,10 +22,24 @@ plugins {
     id("application")
 }
 
+configurations.all {
+    // the EDC credential verifier modules are excluded because this runtime embeds the IdentityHub, which pulls them in again;
+    // the Tractus-X variants (:edc-extensions:jwt-verifiable-credentials, :edc-extensions:ldp-verifiable-credentials,
+    // :edc-extensions:verifiable-credentials, :edc-extensions:json-ld-lib) must be the only copies on the classpath
+    exclude(group = "org.eclipse.edc", module = "jwt-verifiable-credentials")
+    exclude(group = "org.eclipse.edc", module = "ldp-verifiable-credentials")
+    exclude(group = "org.eclipse.edc", module = "verifiable-credentials")
+    exclude(group = "org.eclipse.edc", module = "json-ld-lib")
+}
+
 dependencies {
 
     // use basic (all in-mem) control plane
     implementation(project(":edc-controlplane:edc-controlplane-base"))
+    implementation(project(":edc-extensions:jwt-verifiable-credentials"))
+    implementation(project(":edc-extensions:ldp-verifiable-credentials"))
+    implementation(project(":edc-extensions:verifiable-credentials"))
+    implementation(project(":edc-extensions:json-ld-lib"))
     implementation(project(":edc-extensions:single-participant-vault"))
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))

@@ -27,9 +27,9 @@ dependencies {
     implementation(libs.edc.spi.decentralized.claims)
     implementation(libs.edc.spi.participant.context.single)
     implementation(libs.edc.lib.dcp)
-    implementation(libs.edc.verifiable.credentials)
-    implementation(libs.edc.identity.vc.ldp)
-    implementation(libs.edc.identity.vc.jwt)
+    implementation(project(":edc-extensions:verifiable-credentials"))
+    implementation(project(":edc-extensions:ldp-verifiable-credentials"))
+    implementation(project(":edc-extensions:jwt-verifiable-credentials"))
     implementation(libs.edc.decentralized.claims.service)
 
     implementation(project(":spi:dcp-spi"))
