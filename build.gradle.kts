@@ -32,9 +32,9 @@ plugins {
     alias(libs.plugins.edc.build)
 }
 
-val txScmConnection: String by project
-val txWebsiteUrl: String by project
-val txScmUrl: String by project
+val txScmConnection = project.property("txScmConnection") as String
+val txWebsiteUrl = project.property("txWebsiteUrl") as String
+val txScmUrl = project.property("txScmUrl") as String
 val edcVersion = libs.versions.edc
 
 buildscript {
@@ -105,6 +105,15 @@ allprojects {
 
         //checkstyle violations are reported at the WARN level
         this.isShowViolations = System.getProperty("checkstyle.verbose", "true").toBoolean()
+    }
+
+    // Sonatype Central rate-limits bursts of uploads (HTTP 429). When -PpublishPauseMillis is set (CI does this),
+    // wait after each module's upload so that the requests are spread out.
+    val publishPauseMillis = providers.gradleProperty("publishPauseMillis").map { it.toLong() }.getOrElse(0L)
+    if (publishPauseMillis > 0) {
+        tasks.withType<PublishToMavenRepository>().configureEach {
+            doLast { Thread.sleep(publishPauseMillis) }
+        }
     }
 
 }
