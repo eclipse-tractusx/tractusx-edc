@@ -32,9 +32,9 @@ plugins {
     alias(libs.plugins.edc.build)
 }
 
-val txScmConnection: String by project
-val txWebsiteUrl: String by project
-val txScmUrl: String by project
+val txScmConnection = project.property("txScmConnection") as String
+val txWebsiteUrl = project.property("txWebsiteUrl") as String
+val txScmUrl = project.property("txScmUrl") as String
 val edcVersion = libs.versions.edc
 
 buildscript {
