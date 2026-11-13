@@ -76,7 +76,7 @@ allprojects {
 
         implementation("org.slf4j:slf4j-api:2.0.20")
 
-        implementation(platform("io.netty:netty-bom:4.1.137.Final")) {
+        implementation(platform("io.netty:netty-bom:4.1.138.Final")) {
             because("CVE-2026-56819/56745/55833/55831/59901/50010/47691/45674/45416/44249/42587/42584/42579/42583: netty fixed in 4.1.136; CVE-2026-59903 (CorsHandler Vary header cache poisoning) backported to 4.1.137")
         }
         implementation(platform("com.fasterxml.jackson:jackson-bom:2.23.0")) {
@@ -100,8 +100,8 @@ allprojects {
             implementation("net.minidev:json-smart:2.6.1") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
-            implementation("com.azure:azure-core-http-netty:1.17.0") {
-                because("Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
+            implementation("com.azure:azure-core-http-netty:1.16.6") {
+                because("Do not bump to 1.17.x while netty-bom is 4.1.x: 1.17.0 requires netty 4.2, which mixes with netty-codec 4.1 (NoSuchMethodError) and the AWS SDK is built against netty 4.1. Version 1.15.12 depends on netty libs that have two vulnerabilities: https://mvnrepository.com/artifact/com.azure/azure-core-http-netty/1.15.12")
             }
             implementation("tools.jackson.core:jackson-core:3.3.0") {
                 because("older version has vulnerability")
