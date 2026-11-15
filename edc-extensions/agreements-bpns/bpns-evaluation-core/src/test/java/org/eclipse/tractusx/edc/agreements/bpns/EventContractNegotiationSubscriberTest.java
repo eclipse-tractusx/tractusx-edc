@@ -40,6 +40,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -177,7 +178,7 @@ class EventContractNegotiationSubscriberTest {
     }
 
     @Test
-    void on_shouldLogSevereAndSkipSave_whenBpnResolutionReturnsNull() {
+    void on_shouldLogWarningAndSkipSave_whenBpnResolutionReturnsNull() {
         var agreementId = UUID.randomUUID().toString();
         var providerId = "did:provider";
         var consumerId = "did:consumer";
@@ -209,7 +210,12 @@ class EventContractNegotiationSubscriberTest {
 
         subscriberWithNullResolver.on(envelope);
 
-        verify(monitor, times(2)).severe(anyString());
+        verify(monitor, times(2)).warning(anyString());
+        verify(monitor).warning(contains("did:provider"));
+        verify(monitor).warning(contains("did:consumer"));
+        verify(monitor, times(2)).warning(contains(agreementId));
+        verify(monitor, times(2)).warning(contains("BPN mapping will not be stored"));
+        verify(monitor, times(2)).warning(contains("contract agreement was stored"));
         verify(store, never()).save(any());
     }
 }

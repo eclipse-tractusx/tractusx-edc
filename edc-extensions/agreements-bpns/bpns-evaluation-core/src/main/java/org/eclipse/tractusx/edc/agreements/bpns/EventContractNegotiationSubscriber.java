@@ -69,8 +69,10 @@ public class EventContractNegotiationSubscriber implements EventSubscriber {
         }
         var bpn = bdrsClient.resolveBpn(id);
         if (bpn == null) {
-            monitor.severe("Could not resolve BPN for DID '%s' on agreement '%s'. The agreement will not be stored."
-                    .formatted(id, agreementId));
+            monitor.warning(
+                    ("Could not resolve BPN for DID '%s' on agreement '%s'. " +
+                            "The BPN mapping will not be stored, but the contract agreement was stored.")
+                            .formatted(id, agreementId));
         }
         return bpn;
     }
