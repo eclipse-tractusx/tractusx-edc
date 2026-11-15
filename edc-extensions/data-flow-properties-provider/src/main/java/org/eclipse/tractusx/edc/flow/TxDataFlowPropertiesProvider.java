@@ -25,6 +25,7 @@ package org.eclipse.tractusx.edc.flow;
 import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowPropertiesProvider;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -42,8 +43,8 @@ import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PRE
 
 /**
  * Extension of {@link DataFlowPropertiesProvider} which provides additional properties in the {@link DataFlowStartMessage}
- * such as the consumer DID (audience) and the consumer BPN. Both values are resolved locally without a BDRS call:
- * the DID comes directly from {@code policy.getAssignee()} and the BPN is looked up from {@link AgreementsBpnsStore}.
+ * such as the consumer DID (audience) and the consumer BPN. The BPN is normally looked up from
+ * {@link AgreementsBpnsStore}, with a BDRS fallback for agreements finalized before the mapping was available.
  */
 public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider {
 
@@ -63,8 +64,27 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
         if (isDsp2025(policy)) {
             var entry = agreementsBpnsStore.findByAgreementId(transferProcess.getContractId());
             if (entry == null) {
-                return StatusResult.failure(FATAL_ERROR,
-                        "No BPN entry found for agreement %s".formatted(transferProcess.getContractId()));
+                String bpn;
+                try {
+                    bpn = bdrsClient.resolveBpn(policy.getAssignee(), true);
+                } catch (EdcException exception) {
+                    monitor.warning(
+                            ("Could not refresh BDRS while resolving DID '%s' for agreement '%s'. " +
+                                    "Starting the data flow with the audience only: %s")
+                                    .formatted(policy.getAssignee(), transferProcess.getContractId(), exception.getMessage()));
+                    return StatusResult.success(Map.of(AUDIENCE_PROPERTY, policy.getAssignee()));
+                }
+                if (bpn == null) {
+                    monitor.warning(
+                            ("No BPN entry found for agreement %s and BPN could not be resolved for DID '%s'. " +
+                                    "Starting the data flow with the audience only.")
+                                    .formatted(transferProcess.getContractId(), policy.getAssignee()));
+                    return StatusResult.success(Map.of(AUDIENCE_PROPERTY, policy.getAssignee()));
+                }
+                return StatusResult.success(Map.of(
+                        AUDIENCE_PROPERTY, policy.getAssignee(),
+                        BPN_PROPERTY, bpn
+                ));
             }
             return StatusResult.success(Map.of(
                     AUDIENCE_PROPERTY, policy.getAssignee(),
