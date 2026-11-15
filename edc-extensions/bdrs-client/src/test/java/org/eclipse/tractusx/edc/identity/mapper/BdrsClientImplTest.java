@@ -152,6 +152,22 @@ class BdrsClientImplTest {
         verifyBdrsRequest(1);
     }
 
+    @Test
+    void resolveBpn_whenForceRefresh_shouldResolveDidAddedSinceInitialLookup() {
+        var did = "did:web:new-did";
+        assertThat(client.resolveBpn(did)).isNull();
+        verifyBdrsRequest(1);
+
+        bdrsServer.stubFor(get(urlPathEqualTo("/api/bpn-directory"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Encoding", "gzip")
+                        .withBody(createGzipStream(Map.of("new-bpn", did)))
+                        .withStatus(200)));
+
+        assertThat(client.resolveBpn(did, true)).isEqualTo("new-bpn");
+        verifyBdrsRequest(2);
+    }
+
     @ParameterizedTest(name = "HTTP Status {0}")
     @ValueSource(ints = { 400, 401, 403, 404, 405 })
     void getData_bdrsReturnsError(int code) {
@@ -209,9 +225,12 @@ class BdrsClientImplTest {
     }
 
     private byte[] createGzipStream() {
-        var data = Map.of("bpn1", "did:web:did1",
+        return createGzipStream(Map.of("bpn1", "did:web:did1",
                 "bpn2", "did:web:did2",
-                "bpn3", "did:web:did3");
+                "bpn3", "did:web:did3"));
+    }
+
+    private byte[] createGzipStream(Map<String, String> data) {
 
         var bas = new ByteArrayOutputStream();
         try (var gzip = new GZIPOutputStream(bas)) {

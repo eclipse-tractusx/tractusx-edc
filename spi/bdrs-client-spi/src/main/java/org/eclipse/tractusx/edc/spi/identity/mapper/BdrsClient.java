@@ -43,4 +43,17 @@ public interface BdrsClient {
      * @return The resolved BPN if found, null otherwise
      */
     String resolveBpn(String did);
+
+    /**
+     * Resolve the input DID to a BPN, optionally refreshing the local directory cache before resolving.
+     * Implementations that support forced cache refresh should override this method. The default implementation
+     * delegates to the regular lookup for backward compatibility.
+     *
+     * @param did The participantID (DID)
+     * @param forceRefresh Whether to force a directory refresh
+     * @return The resolved BPN if found, null otherwise
+     */
+    default String resolveBpn(String did, boolean forceRefresh) {
+        return resolveBpn(did);
+    }
 }
