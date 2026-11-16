@@ -48,7 +48,7 @@ from mkdocs.structure.files import File, Files
 
 REPO = "eclipse-tractusx/tractusx-edc"
 CHANGELOG = "changelog/index.md"
-# The landing page shows the latest release as a chip in place of this marker.
+# The landing page shows the major and the latest release as chips in place of this marker.
 HOME = "index.md"
 LATEST_MARKER = "<!-- latest-release -->"
 RELEASES_URL = f"https://github.com/{REPO}/releases"
@@ -137,6 +137,7 @@ def _page(releases: list[dict]) -> str:
     return "\n".join(lines) + "\n"
 
 
+_major: dict | None = None
 _latest: dict | None = None
 
 
@@ -146,34 +147,44 @@ def _version_key(tag: str) -> tuple[int, ...] | None:
     return tuple(int(part) for part in match.group(1).split(".")) if match else None
 
 
-def _latest_release(releases: list[dict]) -> dict | None:
-    """The release with the highest version. Not the newest one: a patch of an older line
-    (0.12.3) can be published after a newer release (0.13.0)."""
+def _major_and_latest(releases: list[dict]) -> tuple[dict | None, dict | None]:
+    """The major release (the highest version) and the latest one (the most recently published).
+    They differ when a patch of an older line (0.12.3) is published after a newer release (0.13.0)."""
     final = [r for r in releases if not r.get("prerelease") and _version_key(r.get("tag_name", ""))]
-    return max(final, key=lambda r: _version_key(r["tag_name"]), default=None)
+    major = max(final, key=lambda r: _version_key(r["tag_name"]), default=None)
+    latest = max(final, key=lambda r: r.get("published_at") or "", default=None)
+    return major, latest
+
+
+def _chip(release: dict, label: str, tooltip: str, icon: str) -> str:
+    tag = release["tag_name"]
+    url = release.get("html_url") or f"{RELEASES_URL}/tag/{tag}"
+    return (f'<a class="tx-chip tx-chip--release" href="{url}" title="{tooltip} {tag}: release notes">'
+            f":{icon}: {label} <strong>{tag}</strong></a>")
 
 
 def on_page_markdown(markdown: str, page, **_: object) -> str:
-    """Show the latest release on the landing page."""
+    """Show the major and the latest release on the landing page (one chip when they are the same)."""
     if page.file.src_uri != HOME or LATEST_MARKER not in markdown or not _latest:
         return markdown
-    tag = _latest["tag_name"]
-    url = _latest.get("html_url") or f"{RELEASES_URL}/tag/{tag}"
-    chip = (f'<a class="tx-chip tx-chip--release" href="{url}" title="Release notes of {tag}">'
-            f":material-tag-outline: Latest release <strong>{tag}</strong></a>")
-    return markdown.replace(LATEST_MARKER, chip, 1)
+    if _major is None or _major["tag_name"] == _latest["tag_name"]:
+        chips = _chip(_latest, "Latest release", "Latest release", "material-tag-outline")
+    else:
+        chips = (_chip(_major, "Major", "Highest released version,", "material-star-four-points-outline")
+                 + _chip(_latest, "Latest", "Most recently published release,", "material-tag-outline"))
+    return markdown.replace(LATEST_MARKER, chips, 1)
 
 
 def on_files(files: Files, config, **_: object) -> Files:
     """Add the generated changelog page to the site."""
-    global _latest
+    global _major, _latest
     releases: list[dict] = []
     if os.environ.get("TX_DOCS_OFFLINE") != "1":
         try:
             releases = _fetch_releases()
         except (urllib.error.URLError, TimeoutError, ValueError, OSError) as error:
             log.info("Release notes not loaded (%s); the changelog links to GitHub Releases.", error)
-    _latest = _latest_release(releases)
+    _major, _latest = _major_and_latest(releases)
     if files.get_file_from_path(CHANGELOG) is None:
         files.append(File.generated(config, CHANGELOG, content=_page(releases)))
     return files
