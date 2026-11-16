@@ -8,9 +8,10 @@ SPDX-FileCopyrightText = "2026 Contributors to the Eclipse Foundation"
 SPDX-License-Identifier = "CC-BY-4.0"
 
 [[annotations]]
-# Connector Sensei avatar (copy of .github/agents/connector-sensei-profile.jpg): generated using
-# Artificial Intelligence and curated by the contributor. Logos and references are copyright of Eclipse Tractus-X.
-path = ["connector-sensei.jpg"]
+# Connector Sensei avatar (copy of .github/agents/connector-sensei-profile.jpg) and full picture (connector-sensei-full.jpg,
+# .github/agents/connector-sensei-large.jpg scaled to 720 px): generated using Artificial Intelligence and curated by
+# the contributor. Logos and references are copyright of Eclipse Tractus-X.
+path = ["connector-sensei.jpg", "connector-sensei-full.jpg"]
 precedence = "closest"
 SPDX-FileCopyrightText = ["2026 Catena-X Automotive Network e.V.", "2026 Contributors to the Eclipse Foundation"]
 SPDX-License-Identifier = "CC-BY-4.0"

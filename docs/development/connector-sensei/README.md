@@ -1,6 +1,6 @@
 # Connector Sensei
 
-<img class="tx-profile-avatar" src="../../assets/images/connector-sensei.jpg" width="168" height="168" align="right" alt="Connector Sensei avatar">
+<img class="tx-sensei-picture" src="../../assets/images/connector-sensei-full.jpg" width="360" align="right" alt="The Connector Sensei: a robot sensei in a Tractus-X robe at a desk with a laptop, a bonsai and a scroll showing the control plane and the data plane">
 
 The **Connector Sensei** is an AI agent for developing and operating Tractus-X EDC. It knows this repository, the
 upstream Eclipse Dataspace Components (EDC) version it is built on, and the specifications behind both: DSP, DCP,

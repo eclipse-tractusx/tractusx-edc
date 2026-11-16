@@ -727,6 +727,13 @@ html::-webkit-scrollbar-thumb:hover {
     color: var(--tx-link);
   }
 
+  /* Material keeps this title on top while the index scrolls (sticky): give it the page
+     ground, so the entries scroll under it instead of showing through it. */
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link,
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link:hover {
+    background-color: var(--md-default-bg-color);
+  }
+
   /* Groups inside a tab ("Deep dives", …): an overline label */
   .md-nav__item--section > .md-nav__link,
   .md-nav--lifted .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link {
@@ -1937,23 +1944,25 @@ html::-webkit-scrollbar-thumb:hover {
   text-decoration: underline;
 }
 
-/* ── Connector Sensei page: the avatar as a profile picture ─────────────── */
+/* ── Connector Sensei page: the full picture, large ───────────────────── */
 
-.md-typeset img.tx-profile-avatar {
+.md-typeset img.tx-sensei-picture {
   float: right;
-  width: 168px;
-  height: 168px;
+  width: 360px;
+  max-width: 50%;
+  height: auto;
   margin: 0 0 1rem 1.5rem;
-  border-radius: 50%;
-  border: 3px solid #d4af37;
-  box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.15), 0 8px 24px rgba(0, 0, 0, 0.35);
-  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.12), 0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
-@media screen and (max-width: 44.984375em) {
-  .md-typeset img.tx-profile-avatar {
+@media screen and (max-width: 59.984375em) {
+  .md-typeset img.tx-sensei-picture {
     float: none;
     display: block;
-    margin: 0 auto 1rem;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 1.2rem;
   }
 }

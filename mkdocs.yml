@@ -104,6 +104,7 @@ hooks:
   - resources/docs/hooks/repo_links.py
   - resources/docs/hooks/generated_indexes.py
   - resources/docs/hooks/release_notes.py
+  - resources/docs/hooks/sensei_skills.py
   - resources/docs/hooks/mermaid_theme.py
 
 validation:
@@ -248,6 +249,7 @@ nav:
       - AI-assisted development:
           - Connector Sensei: development/connector-sensei/README.md
           - How the skills work: development/connector-sensei/skills.md
+          # "Skills" and one page per skill are added by resources/docs/hooks/sensei_skills.py.
       - Project guidelines:
           - Coding principles: development/coding-principles.md
           - Project structure: development/project-structure.md
