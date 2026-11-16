@@ -1,0 +1,3993 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Eclipse Tractus-X EDC: the Catena-X ready dataspace connector built on Eclipse Dataspace Components. Architecture, deployment, tutorials and developer guides.">
+      
+      
+      
+        <link rel="canonical" href="https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/migration/2024-05-Version_0.5.x_0.7.x/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/logo_tractus-x-min.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Migration Guide 0.5.x/0.6.0 -> 0.7.x - Tractus-X EDC Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/tractusx-edc.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    <meta name="robots" content="noindex, nofollow">
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#migration-guide-05x060---07x" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            <div class="tx-preview-banner">
+      Preview of
+      <a href="https://github.com/eclipse-tractusx/tractusx-edc/pull/3160">pull request #3160</a>.
+      It may differ from the
+      <a href="https://eclipse-tractusx.github.io/tractusx-edc/">published documentation</a>.
+    </div>
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+    
+      
+
+  
+
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="tx-header__brand">
+      <a href="../.." title="Tractus-X EDC Documentation" class="md-header__button md-logo" aria-label="Tractus-X EDC Documentation" data-md-component="logo">
+        
+  <img src="../../assets/images/logo_tractus-x.svg" alt="logo">
+
+      </a>
+      <a href="../.." class="tx-header__name" tabindex="-1">
+        <span class="tx-header__product">Tractus-X EDC</span>
+        <span class="tx-header__tag">Docs</span>
+      </a>
+    </div>
+    
+      <div class="md-header__source">
+        <a href="https://github.com/eclipse-tractusx/tractusx-edc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eclipse-tractusx/tractusx-edc
+  </div>
+</a>
+      </div>
+    
+    <div class="tx-header__actions">
+      
+        <a href="https://github.com/copilot?repo=eclipse-tractusx/tractusx-edc" class="tx-header__sensei" target="_blank" rel="noopener" title="Ask the Connector Sensei, the Tractus-X EDC AI agent, on GitHub Copilot: Copilot opens on eclipse-tractusx/tractusx-edc; pick &#34;Connector Sensei&#34; in the agent menu of the prompt box">
+          <img src="../../assets/images/connector-sensei.jpg" alt="" width="24" height="24">
+          <span>Ask Connector Sensei</span>
+        </a>
+      
+      
+        
+        
+          <label class="md-header__button md-icon" for="__search">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          </label>
+          <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Home
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../dataspaces/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dataspaces
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../deployment/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Developers
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Tractus-X EDC Documentation" class="md-nav__button md-logo" aria-label="Tractus-X EDC Documentation" data-md-component="logo">
+      
+  <img src="../../assets/images/logo_tractus-x.svg" alt="logo">
+
+    </a>
+    Tractus-X EDC Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/eclipse-tractusx/tractusx-edc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    eclipse-tractusx/tractusx-edc
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../.." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Home
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../home/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is Tractus-X EDC?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../home/why-tractusx-edc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Why Tractus-X EDC?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../home/known-friends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Known friends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../home/documentation-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../home/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../home/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../home/get-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Get help
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Components
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/identity-and-trust/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identity and trust
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/policies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Catena-X policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/flows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data exchange flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/edr-and-token-refresh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EDRs and token refresh
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence and state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_8" id="__nav_2_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep dives
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deep dives
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/dataplane-signaling/tx-signaling.extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data plane signaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/bidirectional-transfer/BidirectionalDataTransfer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bidirectional data transfer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/decision-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decision records (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../dataspaces/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataspaces
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dataspaces
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dataspaces/create-extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Create a dataspace extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../deployment/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/local-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local quick start (kind)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/helm-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helm chart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms (AWS, Azure, …)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/production-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/upgrades/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upgrades and migrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/first-data-exchange/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Your first data exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/access-control-bpn-groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Restrict access with BPN groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/consume-with-edrs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Consume data with EDRs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/first-extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Write your first extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../integrations/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrations
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/aws-s3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon S3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/azure-blob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure Blob Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../usage/management-api-walkthrough/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Management API walkthrough
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Management API walkthrough
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/01_assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/02_policies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/03_contractdefinitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contract definitions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/04_catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/05_contractnegotiations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contract negotiations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/06_transferprocesses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer processes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/07_edrs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EDRs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/08_contractagreements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contract agreements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/09_responsechannels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Response channels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/management-api-walkthrough/10_nonfiniteproviderpush/10_nonfiniteproviderpush/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non-finite provider push
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../developer/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developers
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/code-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writing extensions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribution workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../development/connector-sensei/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-assisted development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_7" id="__nav_6_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AI-assisted development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/connector-sensei/skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the skills work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_8" id="__nav_6_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project guidelines
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project guidelines
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/coding-principles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding principles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/project-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/repository-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../operations/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tune for production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extension catalogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/json-ld/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    JSON-LD and namespaces
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration guides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-dataplane-signaling-dps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Dataplane Signaling (DPS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Dataplane Signaling (DPS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-automatic-token-renewal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Automatic token renewal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-new-data-format-for-dataaddress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 New data format for DataAddress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-dataplane-signaling-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Dataplane Signaling API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-configuration-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Configuration values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-further-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Further references
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-changes-to-edr-handling-and-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Changes to EDR handling and APIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Changes to EDR handling and APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-example-of-dynamic-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Example of dynamic callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-example-of-static-callbacks-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Example of static callbacks configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-identity-and-trust-protocols-iatp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Identity And Trust Protocols (IATP)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Identity And Trust Protocols (IATP)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-preconditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Preconditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-configuration-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Configuration values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-dids-and-bpns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 DIDs and BPNs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-bpndid-resolution-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. BPN/DID Resolution Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. BPN/DID Resolution Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-config-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Config values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-edc-management-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. EDC Management API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. EDC Management API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#50-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.0 Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#51-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Catalog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-transfer-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Transfer Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-edrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 EDRs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-other-changes-and-noteworthy-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Other changes and noteworthy items
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/eclipse-tractusx/tractusx-edc/edit/main/docs/migration/2024-05-Version_0.5.x_0.7.x.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="migration-guide-05x060---07x">Migration Guide <code>0.5.x/0.6.0 -&gt; 0.7.x</code><a class="headerlink" href="#migration-guide-05x060---07x" title="Permanent link">&para;</a></h1>
+<!-- TOC -->
+
+<ul>
+<li><a href="#migration-guide-05x060---07x">Migration Guide <code>0.5.x/0.6.0 -&gt; 0.7.x</code></a><ul>
+<li><a href="#1-dataplane-signaling-dps">1. Dataplane Signaling (DPS)</a><ul>
+<li><a href="#11-overview">1.1 Overview</a></li>
+<li><a href="#12-automatic-token-renewal">1.2 Automatic token renewal</a></li>
+<li><a href="#13-new-data-format-for-dataaddress">1.3 New data format for <code>DataAddress</code></a></li>
+<li><a href="#14-dataplane-signaling-api">1.4 Dataplane Signaling API</a></li>
+<li><a href="#15-configuration-values">1.5 Configuration values</a></li>
+<li><a href="#16-further-references">1.6 Further references</a></li>
+</ul>
+</li>
+<li><a href="#2-changes-to-edr-handling-and-apis">2. Changes to EDR handling and APIs</a><ul>
+<li><a href="#21-example-of-dynamic-callback">2.1 Example of dynamic callback</a></li>
+<li><a href="#22-example-of-static-callbacks-configuration">2.2 Example of static callbacks configuration</a></li>
+<li><a href="#23-references">2.3 References</a></li>
+</ul>
+</li>
+<li><a href="#3-identity-and-trust-protocols-iatp">3. Identity And Trust Protocols (IATP)</a><ul>
+<li><a href="#31-preconditions">3.1 Preconditions</a></li>
+<li><a href="#32-configuration-values">3.2 Configuration values</a></li>
+<li><a href="#33-dids-and-bpns">3.3 DIDs and BPNs</a></li>
+<li><a href="#34-references">3.4 References</a></li>
+</ul>
+</li>
+<li><a href="#4-bpndid-resolution-service">4. BPN/DID Resolution Service</a><ul>
+<li><a href="#41-config-values">4.1 Config values</a></li>
+<li><a href="#42-references">4.2 References</a></li>
+</ul>
+</li>
+<li><a href="#5-edc-management-api">5. EDC Management API</a><ul>
+<li><a href="#51-catalog">5.1 Catalog</a></li>
+<li><a href="#52-transfer-process">5.2 Transfer Process</a></li>
+<li><a href="#53-edrs">5.3 EDRs</a></li>
+</ul>
+</li>
+<li><a href="#6-other-changes-and-noteworthy-items">6. Other changes and noteworthy items</a></li>
+</ul>
+</li>
+</ul>
+<!-- TOC -->
+
+<h2 id="1-dataplane-signaling-dps">1. Dataplane Signaling (DPS)<a class="headerlink" href="#1-dataplane-signaling-dps" title="Permanent link">&para;</a></h2>
+<h3 id="11-overview">1.1 Overview<a class="headerlink" href="#11-overview" title="Permanent link">&para;</a></h3>
+<p>Dataplane Signaling effectively replaces the previous data plane public API. It is a standardized way for the control
+plane to communicate with the data plane, e.g. when suspending or resuming data transfers.</p>
+<p>New features like token renewal build on top of it.</p>
+<blockquote>
+<p>This replaces the Control API, the Public API and the EDR callbacks</p>
+</blockquote>
+<h3 id="12-automatic-token-renewal">1.2 Automatic token renewal<a class="headerlink" href="#12-automatic-token-renewal" title="Permanent link">&para;</a></h3>
+<p>When a <code>TransferProcess</code> enters the <code>STARTED</code> state, the consumer connector receives the Endpoint Data Reference (EDR)
+that contains the URL to the public API, an access token, a refresh token and endpoint where the token can be refreshed.</p>
+<p>EDRs are now cached automatically within the consumer connector's control plane, and the <a href="#2-changes-to-edr-handling-and-apis">EDR API</a> will
+auto-refresh the token if it is nearing expiry.</p>
+<h3 id="13-new-data-format-for-dataaddress">1.3 New data format for <code>DataAddress</code><a class="headerlink" href="#13-new-data-format-for-dataaddress" title="Permanent link">&para;</a></h3>
+<p>In order for Dataplane Signaling to become aligned with the Dataspace Protocol (DSP), <code>DataAddress</code> objects now conform
+to
+the <code>dspace</code> <a href="https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md#2-updates-to-thedataaddress-format">data format</a>.</p>
+<h3 id="14-dataplane-signaling-api">1.4 Dataplane Signaling API<a class="headerlink" href="#14-dataplane-signaling-api" title="Permanent link">&para;</a></h3>
+<p>This is a new REST api that replaces the old Control API for a more consolidated and streamlined communication between a
+participant's control plane and data plane.</p>
+<h3 id="15-configuration-values">1.5 Configuration values<a class="headerlink" href="#15-configuration-values" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Helm value</th>
+<th>Environment value</th>
+<th>required</th>
+<th>default value</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dataplane.token.refresh.expiry_seconds</code></td>
+<td><code>TX_EDC_DATAPLANE_TOKEN_EXPIRY</code></td>
+<td></td>
+<td>30</td>
+<td>TTL for access tokens</td>
+</tr>
+<tr>
+<td><code>dataplane.token.refresh.expiry_tolerance_seconds</code></td>
+<td><code>TX_EDC_DATAPLANE_TOKEN_EXPIRY_TOLERANCE</code></td>
+<td></td>
+<td>10</td>
+<td>tolerance for token expiry</td>
+</tr>
+<tr>
+<td><code>dataplane.token.refresh.refresh_endpoint</code></td>
+<td><code>TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT</code></td>
+<td></td>
+<td><code>&lt;PUBLIC_API&gt;/token</code></td>
+<td>endpoint for an OAuth2 token refresh request</td>
+</tr>
+<tr>
+<td><code>dataplane.token.signer.privatekey_alias</code></td>
+<td><code>EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS</code></td>
+<td>x</td>
+<td></td>
+<td>alias, under which the private key is stored in the vault</td>
+</tr>
+<tr>
+<td><code>dataplane.token.verifier.publickey_alias</code></td>
+<td><code>EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS</code></td>
+<td>x</td>
+<td></td>
+<td>alias, under which the public key is stored in the vault</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-further-references">1.6 Further references<a class="headerlink" href="#16-further-references" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Dataplane Signaling
+  <a href="https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling.md">documentation</a>
+  and <a href="https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md">token
+  handling</a></li>
+<li><a href="https://github.com/eclipse-tractusx/tractusx-profiles/blob/main/tx/refresh/refresh.token.grant.profile.md">Tractus-X Specification for Token
+  Renewal</a></li>
+<li><a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/dataplane-signaling/tx-signaling.extensions.md">Tractus-X EDC Implementation
+  Documentation</a></li>
+</ul>
+<h2 id="2-changes-to-edr-handling-and-apis">2. Changes to EDR handling and APIs<a class="headerlink" href="#2-changes-to-edr-handling-and-apis" title="Permanent link">&para;</a></h2>
+<p>The setting <code>backendService.httpProxyTokenReceiverUrl</code>, which configured an EDR receiver backend using the upstream
+EDC <a href="https://github.com/eclipse-edc/Connector/tree/main/extensions/control-plane/transfer/transfer-pull-http-dynamic-receiver">extension</a>
+is no longer available as well as the extension is not shipped in the Tractus-X EDC 0.7.x distributions.
+Likewise, the option to dynamically register a consumer-side HTTP-callback via <code>receiverHttpEndpoint</code> in the POST
+/transferprocesses call was removed. Consumer apps should use the /v2/edrs API instead.</p>
+<p>The main reason is that EDC/Tractus-X-EDC switched to Dataplane Signaling for handling transfers and the EDR format
+specified in
+DPS <a href="https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-token-handling.md">spec</a>
+was not handled properly by the receiver extension.</p>
+<p>Now all the EDRs are automatically stored by the consumer's EDR cache and made available via the new
+EDRs API. If users still need to receive the EDR on their backend and want to process this manually, EDC can handle this
+natively by registering an HTTP callback for the <code>transfer.process.start</code> event.</p>
+<p>This can be done in two ways:</p>
+<ul>
+<li>dynamic callbacks (associated to each transfer process)</li>
+<li>static callbacks (configured at boot time)</li>
+</ul>
+<h3 id="21-example-of-dynamic-callback">2.1 Example of dynamic callback<a class="headerlink" href="#21-example-of-dynamic-callback" title="Permanent link">&para;</a></h3>
+<p>When starting a new transfer process <code>callbackAddresses</code> can be attached to the transfer request:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">"callbackAddresses"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">"events"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="s2">"transfer.process.started"</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="p">],</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="nt">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://mybackend/edr"</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="22-example-of-static-callbacks-configuration">2.2 Example of static callbacks configuration<a class="headerlink" href="#22-example-of-static-callbacks-configuration" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>EDC_CALLBACK_CB1_URI="https://mybackend/edr"
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>EDC_CALLBACK_CB1_EVENTS="transfer.process.started"
+</span></code></pre></div>
+<blockquote>
+<p>When configuring static callbacks like above, users will receive notifications about transfer process start events of
+both sides consumer/provider if the connector acts as both. This can be checked by the <code>type</code> property in the event
+itself.</p>
+<p>Users need to be aware that if they handle the receiver manually, they also have to handle EDR token refresh using
+either the EDR API or by manually calling the refresh endpoint (not recommended).</p>
+</blockquote>
+<h3 id="23-references">2.3 References<a class="headerlink" href="#23-references" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://app.swaggerhub.com/apis/eclipse-tractusx-bot/tractusx-edc/0.7.0">OpenAPI Spec</a>, "Control Plane EDR Api"</li>
+<li>More info
+  about <a href="https://github.com/eclipse-edc/Connector/tree/v0.7.2/docs/developer/decision-records/2023-02-28-processing-callbacks">callbacks</a></li>
+</ul>
+<h2 id="3-identity-and-trust-protocols-iatp">3. Identity And Trust Protocols (IATP)<a class="headerlink" href="#3-identity-and-trust-protocols-iatp" title="Permanent link">&para;</a></h2>
+<p>IATP defines the message flow between a consumer connector and a provider connector when they want to exchange DSP
+messages. On every message exchange, the recipient asks the sender for certain VerifiableCredentials, which are accessed
+from the sender's credential storage (= "wallet").</p>
+<p>In this release, the only IATP-compliant wallet is a centrally hosted commercial solution provided by SAP called "DIM".
+Here, the DIM wallet acts as both a Secure Token Service (STS), a CredentialService (CS) and a server for DID documents.</p>
+<p>This setup replaces the Managed Identity Wallet.</p>
+<h3 id="31-preconditions">3.1 Preconditions<a class="headerlink" href="#31-preconditions" title="Permanent link">&para;</a></h3>
+<p>During participant onboarding the following information is generated/disclosed and must be configured before launching
+the connector.</p>
+<ul>
+<li>DIM client ID: during onboarding a Client ID is created, which represents the participant's tenant within DIM</li>
+<li>DIM client secret: similarly, the Client Secret authenticates the tenant with DIM. <strong>The actual secret must be stored
+  under this alias in the participant's vault (Hashicorp Vault: <code>secrets/&lt;ALIAS&gt;</code>)!</strong></li>
+<li>DIM token URL: connectors must use this URL to request access tokens using their client-ID and client secret to obtain
+  an access token for DIM</li>
+<li>DIM STS URL: this is the URL where connectors can request self-issued ID tokens. This is needed for every DSP
+  request, and when querying the <a href="#4-bpndid-resolution-service">BDRS</a>.</li>
+<li>Decentralized Identifier (DID): the DID is a unique identifier that exposes public information such as service
+  endpoints or public key material. This DID is generated by DIM upon registration.</li>
+</ul>
+<h3 id="32-configuration-values">3.2 Configuration values<a class="headerlink" href="#32-configuration-values" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Helm value</th>
+<th>Environment value</th>
+<th>required</th>
+<th>default value</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iatp.id</code></td>
+<td><code>EDC_IAM_ISSUER_ID</code></td>
+<td>x</td>
+<td></td>
+<td>DID, e.g. <code>did:web:your connector</code></td>
+</tr>
+<tr>
+<td><code>iatp.trustedIssuers</code></td>
+<td><code>EDC_IAM_TRUSTED-ISSUER_{{$index}}-ISSUER_ID</code></td>
+<td>x</td>
+<td></td>
+<td>a list of DIDs, each representing an issuer of VCs</td>
+</tr>
+<tr>
+<td><code>iatp.sts.dim.url</code></td>
+<td><code>TX_EDC_IAM_STS_DIM_URL</code></td>
+<td>x</td>
+<td></td>
+<td>URL where connectors can request SI tokens</td>
+</tr>
+<tr>
+<td><code>iatp.sts.oauth.token_url</code></td>
+<td><code>EDC_IAM_STS_OAUTH_TOKEN_URL</code></td>
+<td>x</td>
+<td></td>
+<td>URL where connectors can request OAuth2 access tokens for DIM</td>
+</tr>
+<tr>
+<td><code>iatp.sts.oauth.client.id</code></td>
+<td><code>EDC_IAM_STS_OAUTH_CLIENT_ID</code></td>
+<td>x</td>
+<td></td>
+<td>Client ID issued by DIM</td>
+</tr>
+<tr>
+<td><code>iatp.sts.oauth.client.secret_alias</code></td>
+<td><code>EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS</code></td>
+<td>x</td>
+<td></td>
+<td>alias under which the client secret is stored in the vault</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-dids-and-bpns">3.3 DIDs and BPNs<a class="headerlink" href="#33-dids-and-bpns" title="Permanent link">&para;</a></h3>
+<p>In Tractus-X, BusinessPartnerNumbers (BPNs) are unique, stable identifiers that identify participants within the
+network. IATP relies on Decentralized Identifiers (DIDs), which are used to dereference information about the
+participant such as service endpoints, public key material, etc.</p>
+<p>Since there is no way to implicitly map BPN &lt;&gt; DID, Tractus-X relies on a new core service called <a href="#4-bpndid-resolution-service">"BPN/DID Resolution
+Service" ("BDRS")</a>, which provides that mapping information to authenticated parties.</p>
+<h3 id="34-references">3.4 References<a class="headerlink" href="#34-references" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/eclipse-tractusx/identity-trust/tree/main/specifications">IATP Specification</a></li>
+<li><a href="https://github.com/eclipse-tractusx/tractusx-profiles/tree/main/cx/credentials">Tractus-X Credentials</a></li>
+<li><a href="https://github.com/eclipse-tractusx/tractusx-profiles/tree/main/cx/policy">Tractus-X Policies</a></li>
+</ul>
+<h3 id="35-limitations">3.5 Limitations<a class="headerlink" href="#35-limitations" title="Permanent link">&para;</a></h3>
+<ul>
+<li>It is not possible to define an access policy that would require the evaluation of a VerifiableCredential</li>
+</ul>
+<h2 id="4-bpndid-resolution-service">4. BPN/DID Resolution Service<a class="headerlink" href="#4-bpndid-resolution-service" title="Permanent link">&para;</a></h2>
+<p>The BPN/DID Resolution Service (BDRS) is a new core service that became necessary due to the dual use of identifiers (
+BPNs and DIDs) in Catena-X.</p>
+<p>In short, it exposes a GZipped list of BPN&lt;&gt;DID tuples, which the connector caches locally and updates periodically.
+This API is called the <em>Directory API</em>.</p>
+<p>These requests are authenticated by putting the participant's <code>MembershipCredential</code> in the <code>Authorization</code> header.</p>
+<h3 id="41-config-values">4.1 Config values<a class="headerlink" href="#41-config-values" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Helm value</th>
+<th>Environment value</th>
+<th>required</th>
+<th>default value</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>controlplane.bdrs.cache_validity_seconds</code></td>
+<td><code>TX_IAM_IATP_BDRS_CACHE_VALIDITY</code></td>
+<td></td>
+<td>600</td>
+<td>time (sec) that the client cache is valid</td>
+</tr>
+<tr>
+<td><code>controlplane.bdrs.server.url</code></td>
+<td><code>TX_IAM_IATP_BDRS_SERVER_URL</code></td>
+<td>x</td>
+<td></td>
+<td>base URL of the BDRS server</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-references">4.2 References<a class="headerlink" href="#42-references" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/eclipse-tractusx/bpn-did-resolution-service">BDRS Server on GitHub</a></li>
+<li><a href="https://eclipse-tractusx.github.io/bpn-did-resolution-service/openapi/directory-api/">BDRS Server Directory API</a></li>
+<li><a href="https://eclipse-tractusx.github.io/bpn-did-resolution-service/openapi/management-api/">BDRS Server Management API</a> (
+  not for public consumption)</li>
+</ul>
+<p>Further, the BDRS server is available as Helm chart from the
+official <a href="https://eclipse-tractusx.github.io/charts/dev">Tractus-X Chart Repo</a>:</p>
+<ul>
+<li><code>bdrs-server</code>: official distribution using Postgres</li>
+<li><code>bdrs-server-memory</code>: variant, that uses pure in-mem storage, useful for testing</li>
+</ul>
+<p>To see how BDRS could be used in testing/dev etc. check out
+this <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/edc-extensions/bdrs-client/src/test/java/org/eclipse/tractusx/edc/identity/mapper/BdrsClientImplComponentTest.java">test class</a></p>
+<blockquote>
+<p>Note that consuming the Directory API with tools like Postman or Insomnia is possible, but not straight forward and it
+is out-of-scope for this document.</p>
+</blockquote>
+<h2 id="5-edc-management-api">5. EDC Management API<a class="headerlink" href="#5-edc-management-api" title="Permanent link">&para;</a></h2>
+<h3 id="50-policies">5.0 Policies<a class="headerlink" href="#50-policies" title="Permanent link">&para;</a></h3>
+<p>Due to <a href="https://github.com/eclipse-edc/Connector/issues/4192">#4192</a>
+and <a href="https://github.com/eclipse-edc/Connector/issues/4179">#4179</a></p>
+<p>The <code>action</code> and the <code>leftOperand</code> field are now represented as <code>@id</code> instead of <code>value</code> in JSON-LD.</p>
+<p><code>action</code> from:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">"odrl:permission"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">"odrl:action"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">"odrl:type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.w3.org/ns/odrl/2/use"</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>to:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">"odrl:action"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"odrl:use"</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><code>leftOperand</code> from:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">"odrl:leftOperand"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://w3id.org/catenax/policy/FrameworkAgreement"</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>to:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">"odrl:leftOperand"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cx-policy:FrameworkAgreement"</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>This is reflected in the <code>Catalog</code> as well as in <code>PolicyDefinition</code> API.</p>
+<h3 id="51-catalog">5.1 Catalog<a class="headerlink" href="#51-catalog" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>counterPartyId</code> is a <strong>required</strong> property for the catalog request in Tractus-X EDC. It's not enforced currently (
+  backward compatibility) but if not provided, the IATP flows won't work and thus the catalog request will fail.</li>
+</ul>
+<h3 id="52-transfer-process">5.2 Transfer Process<a class="headerlink" href="#52-transfer-process" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>transferType</code>  is a needed property for the transfer request to be working in tx-edc. <code>transferTypes</code> are the
+  supported transfer format in tx-edc. They return as part of the Catalog response as part of distribution format for an
+  asset. In TX-EDC we currently supports <code>HttpData-PULL</code>, <code>AzureStorage-PUSH</code> and <code>AmazonS3-PUSH</code>. The <code>transferType</code>
+  is not mandatory (backward compatibility) but if not provided the transfer request will fail.</li>
+</ul>
+<h3 id="53-edrs">5.3 EDRs<a class="headerlink" href="#53-edrs" title="Permanent link">&para;</a></h3>
+<p>The 0.5.4 EDRs API was removed due the adoption of DPS (data plane signaling) and reborn under a different shape
+in <code>/v2/edrs</code></p>
+<p>The main difference between 0.5.4 and 0.7.0 is how the token refresh is handled. In 0.5.x when an EDR was about to
+expire, the users had to manually trigger another transfer process, or use the EDR API which did that
+automatically. This approach had major drawbacks like proactively creating transfer process on EDR expiration. In 0.7.0
+this changed radically by adopting DPS and overlaying on top of it
+a <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/development/dataplane-signaling/tx-signaling.extensions.md">refresh</a>
+mechanism for EDRs.</p>
+<p>For a detailed explanation, please refer to
+the <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/docs/usage/management-api-walkthrough/07_edrs.md">EDR API documentation</a>.</p>
+<h2 id="6-other-changes-and-noteworthy-items">6. Other changes and noteworthy items<a class="headerlink" href="#6-other-changes-and-noteworthy-items" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Changes in the policy definition properties: A policy definition now adheres to ODRL and the <code>@type</code> has changed
+  to <code>Set</code></li>
+<li>An <code>Offer</code> does not contain a <code>target</code> property anymore, it has to be injected in the ContractRequest message.</li>
+<li>The <code>consumerId</code> and <code>providerId</code> were replaced by the ODRL <code>assignee</code>and <code>assigner</code>, respectively. The latter also
+  has to be injected in the ContractRequest Message.</li>
+<li>A transfer process has now a new transfer type property that should adhere to the following
+  mapping: https://github.com/eclipse-edc/Connector/blob/v0.7.2/docs/developer/data-plane-signaling/data-plane-signaling-mapping.md</li>
+<li>The EDR API changed, and it's no longer possible to query for EDRs by contract agreement directly. A <code>QuerySpec</code> with
+  a filter has to be used for this.</li>
+<li>The AWS S3 Extension also has been improved and now enables the user to specify S3 object prefixes in the data
+  address. This enables the transfer of multiple files within on single transfer process. For more information, visit
+  the
+  extension <a href="https://github.com/eclipse-edc/Technology-Aws/tree/main/extensions/data-plane/data-plane-aws-s3">readme</a>.</li>
+<li>contrary to previous deprecation warnings, the Business Partner Number evaluation function will remain in place and
+  can continue to be used in parallel to the Business Partner Group evaluation function.</li>
+<li>changes to environment variables in the Azure KeyVault variant of Tractus-X EDC. Note that this does not affect the
+  Helm config values.<ul>
+<li><code>EDC_VAULT_CLIENTID</code> was replaced by <code>AZURE_CLIENT_ID</code></li>
+<li><code>EDC_VAULT_TENANTID</code> was replaced by <code>AZURE_TENANT_ID</code></li>
+<li><code>EDC_VAULT_CLIENTSECRET</code> was replaced by <code>AZURE_CLIENT_SECRET</code></li>
+<li><code>EDC_VAULT_CERTIFICATE</code> was replaced by <code>AZURE_CLIENT_CERTIFICATE_PATH</code></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2021-2026 Contributors to the Eclipse Foundation; 2026 Catena-X Automotive Network e.V. &middot; Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/legalcode">CC-BY-4.0</a>, code under <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a>
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/eclipse-tractusx/tractusx-edc" target="_blank" rel="noopener" title="Tractus-X EDC on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/eclipse-tractusx/tractusx-edc/discussions" target="_blank" rel="noopener" title="Discussions" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.2 1.1 4.2 2.8 5.5 0 .6-.4 2.2-2.8 4.5 2.4-.1 4.6-1 6.5-2.5 1.1.3 2.3.5 3.5.5 5.5 0 10-3.6 10-8s-4.5-8-10-8m0 14c-4.4 0-8-2.7-8-6s3.6-6 8-6 8 2.7 8 6-3.6 6-8 6m.2-10.5c-.9 0-1.6.2-2.1.5-.6.4-.9 1-.8 1.7h2q0-.45.3-.6c.2-.1.4-.2.7-.2s.6.1.8.3.3.4.3.7-.1.5-.2.7c-.2.2-.4.4-.6.5-.5.3-.9.6-1.1.8-.4.3-.5.6-.5 1.1h2c0-.3.1-.5.1-.7.1-.2.3-.3.5-.5.5-.2.8-.5 1.1-.9s.4-.8.4-1.2c0-.7-.3-1.3-.8-1.7-.4-.3-1.2-.5-2.1-.5M11 13v2h2v-2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://eclipse-tractusx.github.io/" target="_blank" rel="noopener" title="Eclipse Tractus-X" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2s.06-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.92 7.92 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8 8 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.7 15.7 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "navigation.footer", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate", "content.action.edit", "content.tabs.link", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../assets/javascripts/mermaid-zoom.js"></script>
+      
+        <script src="../../assets/javascripts/tiles.js"></script>
+      
+        <script src="../../assets/javascripts/external-links.js"></script>
+      
+    
+  </body>
+</html>
