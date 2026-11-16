@@ -631,8 +631,15 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .md-nav--primary .md-nav__link:not(.md-nav__link--active):not(.md-nav__container):hover {
-  background-color: color-mix(in srgb, var(--tx-accent) 10%, transparent);
+  background-color: color-mix(in srgb, var(--tx-accent) 7%, transparent);
   color: var(--tx-link);
+}
+
+/* Pressed: the selected look right away, before the next page has replaced the index */
+.md-nav--primary a.md-nav__link:not(.md-nav__container):active {
+  background-color: color-mix(in srgb, var(--tx-accent) 20%, transparent);
+  box-shadow: inset 3px 0 0 var(--tx-accent);
+  transition: none;
 }
 
 .md-nav--primary .md-nav__link:not(.md-nav__link--active):not(.md-nav__container):hover > .md-ellipsis {
@@ -677,11 +684,13 @@ html::-webkit-scrollbar-thumb:hover {
     padding: 0.36rem 0.6rem;
   }
 
+  /* The selected page: clearly stronger than the hover row, and shown at once */
   .md-nav--primary .md-nav__link--active:not(.md-nav__container) {
     border-radius: 0 var(--tx-radius-sm) var(--tx-radius-sm) 0;
-    background-color: var(--tx-accent-soft);
+    background-color: color-mix(in srgb, var(--tx-accent) 20%, transparent);
     box-shadow: inset 3px 0 0 var(--tx-accent);
     font-weight: 700;
+    transition: none;
   }
 
   /* The tab's own title at the top of the index ("Architecture", …). It links to
