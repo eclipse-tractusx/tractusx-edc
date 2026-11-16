@@ -174,16 +174,39 @@ pre {
   scrollbar-color: var(--md-default-fg-color--lighter) transparent;
 }
 
-/* The page scrollbar spans the whole window, over the fixed header and tabs. Hide it: the page
-   still scrolls with wheel, trackpad and keyboard, and the sidebars and code blocks keep their
-   thin scrollbars inside the content. (An inner scroll container would break Material's
-   scroll tracking of the table of contents and the sticky sidebars.) */
+/* The page scrollbar: always visible but discreet, a thin rounded thumb on a clear track.
+   Chrome and Safari draw it from the ::-webkit-scrollbar rules, which they only honour while
+   scrollbar-width and scrollbar-color are left at auto; Firefox gets the standard properties. */
 html {
-  scrollbar-width: none;
+  scrollbar-width: auto;
+  scrollbar-color: auto;
 }
 
 html::-webkit-scrollbar {
-  display: none;
+  width: 8px;
+  background-color: transparent;
+}
+
+html::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-color: rgba(128, 128, 128, 0.45);  /* fixed: Material's colour variables live on body */
+  background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(212, 175, 55, 0.8);
+}
+
+@supports (-moz-appearance: none) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 128, 128, 0.5) transparent;
+  }
 }
 
 /* ── 2. Header: brand and repository left; Sensei, search and toggle right ── */
@@ -602,6 +625,30 @@ html::-webkit-scrollbar {
   color: var(--tx-link);
 }
 
+/* Hover on a page in the index: a soft gold row, gold text that slides in a little */
+.md-nav--primary .md-nav__link .md-ellipsis {
+  transition: transform 0.18s var(--tx-ease);
+}
+
+.md-nav--primary .md-nav__link:not(.md-nav__link--active):not(.md-nav__container):hover {
+  background-color: color-mix(in srgb, var(--tx-accent) 10%, transparent);
+  color: var(--tx-link);
+}
+
+.md-nav--primary .md-nav__link:not(.md-nav__link--active):not(.md-nav__container):hover > .md-ellipsis {
+  transform: translateX(3px);
+}
+
+/* Section labels without a page of their own ("Deep dives", …) are not links: no hover row */
+[dir] .md-nav--primary .md-nav__item--section > label.md-nav__link:hover {
+  background: none;
+  color: var(--md-default-fg-color--light);
+}
+
+[dir] .md-nav--primary .md-nav__item--section > label.md-nav__link:hover > .md-ellipsis {
+  transform: none;
+}
+
 @media screen and (min-width: 76.25em) {
   .md-sidebar--primary {
     width: 13.2rem;
@@ -619,9 +666,15 @@ html::-webkit-scrollbar {
     padding: 0.36rem 0.6rem;
   }
 
-  .md-nav--primary .md-nav__container > a.md-nav__link {
-    flex: 1 1 auto;
+  /* A section with its own page ("Integrations", …): the wrapper takes no padding,
+     its link fills the row, so the whole row opens the page, not only the text. */
+  [dir] .md-nav--primary .md-nav__item > .md-nav__link.md-nav__container {
     padding: 0;
+  }
+
+  [dir] .md-nav--primary .md-nav__container > a.md-nav__link {
+    flex: 1 1 auto;
+    padding: 0.36rem 0.6rem;
   }
 
   .md-nav--primary .md-nav__link--active:not(.md-nav__container) {
@@ -629,11 +682,6 @@ html::-webkit-scrollbar {
     background-color: var(--tx-accent-soft);
     box-shadow: inset 3px 0 0 var(--tx-accent);
     font-weight: 700;
-  }
-
-  .md-nav--primary .md-nav__link:not(.md-nav__link--active):hover {
-    background-color: var(--md-default-fg-color--lightest);
-    color: var(--md-default-fg-color);
   }
 
   /* The tab's own title at the top of the index ("Architecture", …). It links to
