@@ -1874,3 +1874,21 @@ html::-webkit-scrollbar-thumb:hover {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ── Pull request preview banner (docs/overrides/main.html) ─────────────── */
+
+.md-banner {
+  background-color: var(--tx-kit-blue, #2b44d4);
+  color: #ffffff;
+}
+
+.tx-preview-banner {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.tx-preview-banner a {
+  color: #ffffff;
+  text-decoration: underline;
+}

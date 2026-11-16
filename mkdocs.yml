@@ -29,7 +29,8 @@ site_name: Tractus-X EDC Documentation
 site_description: >-
   Eclipse Tractus-X EDC: the Catena-X ready dataspace connector built on Eclipse
   Dataspace Components. Architecture, deployment, tutorials and developer guides.
-site_url: https://eclipse-tractusx.github.io/tractusx-edc/
+# Pull request builds set DOCS_SITE_URL to their preview address (.github/workflows/publish-docs.yaml).
+site_url: !ENV [DOCS_SITE_URL, 'https://eclipse-tractusx.github.io/tractusx-edc/']
 repo_url: https://github.com/eclipse-tractusx/tractusx-edc
 repo_name: eclipse-tractusx/tractusx-edc
 edit_uri: edit/main/docs/
@@ -133,6 +134,8 @@ extra:
   # Used by resources/docs/hooks/repo_links.py to turn links that leave docs/ into
   # links to the source on GitHub.
   repo_branch: main
+  # Set in pull request builds: a preview banner and noindex (docs/overrides/main.html).
+  preview_pr: !ENV [DOCS_PREVIEW_PR, '']
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/eclipse-tractusx/tractusx-edc

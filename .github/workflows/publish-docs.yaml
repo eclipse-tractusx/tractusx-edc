@@ -26,11 +26,16 @@
 # published, so the changelog page (generated from GitHub Releases by
 # resources/docs/hooks/release_notes.py) always lists the latest release.
 #
+# On pull requests the site is built for its preview address and uploaded with the pull
+# request number; "Deploy documentation preview" (deploy-docs-preview.yaml) then publishes
+# it to pr-preview/<number>/ and links it in the pull request. This workflow itself never
+# gets write access on pull requests.
+#
 # The gh-pages branch is shared: it also serves the Helm repository (index.yaml), the
 # Swagger UIs (openapi/), the JSON-LD contexts (context/), DEPENDENCIES and the Allure
-# reports. The deploy job therefore copies the site over a checkout of gh-pages, which adds
-# and overwrites files but never deletes them, using only GitHub's own actions and git.
-# Never switch this to `mkdocs gh-deploy --force`, which replaces the whole branch.
+# reports. .github/scripts/update-docs-gh-pages.sh therefore adds and overwrites files but
+# never deletes them. Never switch this to `mkdocs gh-deploy --force`, which replaces the
+# whole branch.
 name: Publish documentation
 
 on:
@@ -41,12 +46,15 @@ on:
       - 'mkdocs.yml'
       - 'resources/docs/**'
       - '.github/workflows/publish-docs.yaml'
+      - '.github/scripts/update-docs-gh-pages.sh'
   pull_request:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'resources/docs/**'
       - '.github/workflows/publish-docs.yaml'
+      - '.github/workflows/deploy-docs-preview.yaml'
+      - '.github/scripts/update-docs-gh-pages.sh'
   release:
     types: [published]
   workflow_dispatch:
@@ -78,17 +86,39 @@ jobs:
         run: pip install -r resources/docs/requirements.txt
 
       # --strict turns broken links, unknown anchors and pages missing from the nav into errors.
+      # A pull request is built for its preview address, with a banner and noindex (mkdocs.yml).
       - name: Build site
         env:
           NO_MKDOCS_2_WARNING: '1'
           # Read-only token for the GitHub API (release notes); avoids the anonymous rate limit.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCS_PREVIEW_PR: ${{ github.event.pull_request.number }}
+          DOCS_SITE_URL: >-
+            ${{ github.event_name == 'pull_request'
+            && format('https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/{0}/', github.event.pull_request.number)
+            || 'https://eclipse-tractusx.github.io/tractusx-edc/' }}
         run: mkdocs build --strict --site-dir site
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: documentation-site
           path: site
+          retention-days: 7
+
+      # Read by deploy-docs-preview.yaml, which treats it as untrusted and validates it.
+      - name: Save pull request number
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p meta
+          printf '%s' "${PR_NUMBER}" > meta/pr-number
+
+      - if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: docs-pr-number
+          path: meta/pr-number
           retention-days: 7
 
   deploy:
@@ -114,34 +144,18 @@ jobs:
           name: documentation-site
           path: site
 
-      - name: Check out gh-pages
+      - name: Check out deployment script
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: gh-pages
-          path: gh-pages
-          fetch-depth: 1
-          # Needed to push the site below; this job runs no code from the repository.
-          persist-credentials: true
+          path: tools
+          sparse-checkout: .github/scripts
+          persist-credentials: false
 
+      # Adds and overwrites, never deletes: the branch also holds the Helm index and more.
       - name: Deploy to GitHub Pages
-        working-directory: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Add and overwrite, never delete: the branch also holds the Helm index and more.
-          cp -R ../site/. .
-          touch .nojekyll
-          git add --all
-          if git diff --cached --quiet; then
-            echo "The documentation site is unchanged."
-            exit 0
-          fi
-          # Set for the commit and for the rebase below, which rewrites it.
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit --quiet --message "docs: publish documentation site (${GITHUB_SHA::7})"
-          # Other workflows publish to gh-pages too; rebase onto theirs if one was faster.
-          for attempt in 1 2 3; do
-            git push --quiet origin HEAD:gh-pages && exit 0
-            echo "Push rejected (attempt ${attempt}), rebasing onto the latest gh-pages."
-            git pull --quiet --rebase origin gh-pages
-          done
-          exit 1
+          mkdir "${RUNNER_TEMP}/gh-pages"
+          cd "${RUNNER_TEMP}/gh-pages"
+          bash "${GITHUB_WORKSPACE}/tools/.github/scripts/update-docs-gh-pages.sh" site "${GITHUB_WORKSPACE}/site"
