@@ -13,7 +13,9 @@ used in this repository.
 | Useful to all EDC users | contribute to [upstream EDC](https://github.com/eclipse-edc/Connector) | – |
 
 If a generic feature needs Catena-X behaviour, put the interface in the generic module and the Catena-X implementation
-in a `cx-` module, as `dcp/tx-dcp` and `dcp/cx-dcp` do. Background:
+in a `cx-` module, as `dcp/tx-dcp` and `dcp/cx-dcp` do. Rules of other dataspaces follow the same split: the generic
+module holds the interface, a dataspace-specific module the implementation (see
+[Create a dataspace extension](../dataspaces/create-extension.md)). Background:
 [multi-dataspace support ADR](../development/decision-records/2026-01-07_multi-dataspace-support/README.md).
 
 ## Anatomy

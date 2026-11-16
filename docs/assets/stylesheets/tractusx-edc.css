@@ -39,26 +39,10 @@
 
 /* ── 1. Fonts and tokens ────────────────────────────────────────────────── */
 
-/* Manrope, bundled (assets/fonts, OFL-1.1) so no font is fetched from a third party. */
-@font-face {
-  font-family: "Manrope";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 200 800;
-  src: url("../fonts/manrope-latin-ext-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
-    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-@font-face {
-  font-family: "Manrope";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 200 800;
-  src: url("../fonts/manrope-latin-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
-    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
+/* No font files are shipped or fetched: everything in this repository is Apache-2.0
+   (code) or CC-BY-4.0 (other content), which no third-party font is. Manrope, the
+   Tractus-X font, is used where the reader has it installed; otherwise the system UI
+   font. */
 
 :root {
   /* Tractus-X gold, as in the TestLab documentation */
@@ -87,7 +71,7 @@
   --md-accent-fg-color--transparent: rgba(255, 215, 0, 0.12);
   --md-accent-bg-color: var(--tx-black);
 
-  --md-text-font-family: "Manrope", "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --md-text-font-family: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --md-code-font-family: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", ui-monospace, Menlo, Consolas,
     "Liberation Mono", monospace;
 }
@@ -811,25 +795,31 @@ pre {
 }
 
 @media screen and (min-width: 60em) {
+  /* A little air: off the right edge of the grid, and between the rows */
+  .md-sidebar--secondary .md-sidebar__inner {
+    padding-right: 0.6rem;
+  }
+
   .md-sidebar--secondary .md-nav__title {
+    margin-bottom: 0.45rem;
+    padding: 0 0 0 0.75rem;
     background: none;
     box-shadow: none;
   }
 
   .md-sidebar--secondary .md-nav--secondary > .md-nav__list {
-    border-left: 1px solid var(--tx-border);
+    padding: 0.15rem 0;
+    border-left: 1px solid var(--tx-border-strong);
   }
 
-  .md-sidebar--secondary .md-nav__link {
-    margin-top: 0;
-    margin-left: -1px;
-    padding-top: 0.2rem;
-    padding-bottom: 0.2rem;
-    padding-left: 0.6rem;
+  [dir] .md-sidebar--secondary .md-nav__link {
+    margin: 0 0 0 -1px;
+    padding: 0.32rem 0.4rem 0.32rem 0.75rem;
     border-left: 2px solid transparent;
     border-radius: 0;
     color: var(--md-default-fg-color--light);
-    font-size: 0.66rem;
+    font-size: 0.68rem;
+    line-height: 1.35;
   }
 
   .md-sidebar--secondary .md-nav__link--active,
@@ -838,8 +828,11 @@ pre {
     color: var(--tx-link);
   }
 
-  .md-sidebar--secondary .md-nav .md-nav .md-nav__link {
-    padding-left: 1.2rem;
+  [dir] .md-sidebar--secondary .md-nav .md-nav .md-nav__link {
+    padding-top: 0.22rem;
+    padding-bottom: 0.22rem;
+    padding-left: 1.4rem;
+    font-size: 0.64rem;
   }
 }
 
@@ -1285,13 +1278,14 @@ pre {
   margin-bottom: 0;
 }
 
-/* A closing "→ Go there" link sits at the bottom of the card, so links line up across a row */
-.md-typeset .grid.cards > ul > li > p:last-child:not(:first-child):has(> a:first-child:last-child) {
+/* A closing "→ Go there" link sits at the bottom of the card, so links line up across a row
+   (tiles.js marks the paragraph: CSS cannot see the text around a link). */
+.md-typeset .grid.cards > ul > li > p.tx-card__more {
   margin-top: auto;
   padding-top: 0.4rem;
 }
 
-.md-typeset .grid.cards > ul > li > p:last-child:not(:first-child) > a:first-child:last-child {
+.md-typeset .grid.cards > ul > li > p.tx-card__more > a {
   font-weight: 700;
 }
 
@@ -1452,6 +1446,41 @@ pre {
   .md-typeset .tx-kit__image {
     max-width: 9rem;
   }
+}
+
+/* Docker-Sponsored Open Source badge, in Docker Hub's purple */
+.md-typeset .tx-oss-badge {
+  --tx-oss: #7d2eff;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.55rem 0.15rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--tx-oss) 45%, transparent);
+  border-radius: var(--tx-radius-sm);
+  background-color: color-mix(in srgb, var(--tx-oss) 10%, transparent);
+  color: var(--tx-oss);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .tx-oss-badge {
+  --tx-oss: #b48cff;
+}
+
+.md-typeset .tx-oss-badge .twemoji svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentcolor;
+}
+
+.md-typeset .tx-oss-badge:hover,
+.md-typeset .tx-oss-badge:focus-visible {
+  color: var(--tx-oss);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tx-oss) 25%, transparent);
 }
 
 /* "Time / level" badges at the top of tutorials */

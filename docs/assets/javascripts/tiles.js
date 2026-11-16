@@ -24,13 +24,26 @@
  * The card's link gets a class whose ::after covers the card (see the stylesheet),
  * so a click anywhere on the tile is a click on the real link: middle-click, open in
  * new tab and Material's instant navigation keep working. Cards with several
- * different destinations are left alone. Runs again after every instant navigation.
+ * different destinations are left alone.
+ *
+ * It also marks a card's closing "→ Go there" paragraph (a paragraph that is nothing
+ * but one link) with tx-card__more, which the stylesheet pins to the card's bottom.
+ * CSS alone cannot tell it from a sentence that merely contains one link.
+ * Runs again after every instant navigation.
  */
 (function () {
   "use strict";
 
   function markTiles() {
     document.querySelectorAll(".md-typeset .grid.cards > ul > li").forEach(function (card) {
+      var last = card.lastElementChild;
+      if (last && last.tagName === "P" && last !== card.firstElementChild) {
+        var only = last.querySelectorAll("a[href]");
+        if (only.length === 1 && last.textContent.trim() === only[0].textContent.trim()) {
+          last.classList.add("tx-card__more");
+        }
+      }
+
       var links = Array.prototype.filter.call(card.querySelectorAll("a[href]"), function (a) {
         return !a.classList.contains("headerlink");
       });

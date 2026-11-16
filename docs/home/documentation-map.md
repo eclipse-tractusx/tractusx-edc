@@ -61,6 +61,14 @@ Every part of the documentation, grouped by what you want to do. Not sure where 
 | [Persistence and state](../architecture/persistence.md) | Stores, PostgreSQL, Flyway migrations, vault |
 | [Data plane signaling](../development/dataplane-signaling/tx-signaling.extensions.md) | Deep dive into the Tractus-X signaling extensions |
 | [Bidirectional data transfer](../development/bidirectional-transfer/BidirectionalDataTransfer.md) | Deep dive into response channels |
+| [Decision records (ADRs)](../development/decision-records/index.md) | Every architecture decision, newest first |
+
+### Dataspaces
+
+| Page | What you will find |
+|---|---|
+| [Supported dataspaces](../dataspaces/index.md) | Catena-X, Factory-X, Construct-X and others; the core and flavour model |
+| [Create a dataspace extension](../dataspaces/create-extension.md) | Policies, credential scopes and a runtime for your own dataspace |
 
 ### Deployment
 

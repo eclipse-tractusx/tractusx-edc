@@ -4,6 +4,7 @@ Policies decide **who sees an offer** and **under which conditions data may be u
 [ODRL](https://www.w3.org/TR/odrl-model/) written in JSON-LD. Tractus-X EDC adds the Catena-X constraints defined in
 the standard
 [CX-0152 Policy Constraints for Data Exchange](https://catenax-ev.github.io/docs/next/standards/CX-0152-PolicyConstrainsForDataExchange).
+These constraints are specific to Catena-X; other dataspaces add their own policy rules as extensions.
 
 ## Access policy vs contract policy
 

@@ -5,7 +5,7 @@ This section takes you from "I have nothing" to "my connector runs in production
 
 ## Deploy in five minutes
 
-Pick the variant that matches what you want to do. All three use the **published** Helm charts and Docker Hub images,
+Pick the variant that matches what you want to do. All four use the **published** Helm charts and Docker Hub images,
 so there is nothing to build. You need [Docker](https://docs.docker.com/get-docker/),
 [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation) (or any other Kubernetes cluster),
 [`kubectl`](https://kubernetes.io/docs/tasks/tools/) and [Helm 3](https://helm.sh/docs/intro/install/).
@@ -157,11 +157,33 @@ so there is nothing to build. You need [Docker](https://docs.docker.com/get-dock
 
     Then work through the [production checklist](production-checklist.md) before you let partners in.
 
+=== "Full dataspace (Umbrella)"
+
+    The [Tractus-X Umbrella](https://github.com/eclipse-tractusx/tractus-x-umbrella) deploys a complete dataspace
+    on one cluster: a **provider** and a **consumer** Tractus-X EDC, each with its own
+    [Tractus-X Identity Hub](https://github.com/eclipse-tractusx/tractusx-identityhub) (DCP wallet with STS), an
+    IssuerService that issues their credentials, and the BDRS. Since Umbrella release 25.12 this is its default setup.
+
+    ```bash
+    git clone https://github.com/eclipse-tractusx/tractus-x-umbrella.git
+    cd tractus-x-umbrella/charts/umbrella
+    helm dependency update
+    helm install -f values-adopter-decentralized-identityhub.yaml umbrella . \
+      --namespace umbrella --create-namespace
+    ```
+
+    Prepare the cluster (ingress, host names) with the Umbrella guide for
+    [Linux](https://github.com/eclipse-tractusx/tractus-x-umbrella/blob/main/docs/user/linux/README.md),
+    [macOS](https://github.com/eclipse-tractusx/tractus-x-umbrella/blob/main/docs/user/mac/README.md) or
+    [Windows](https://github.com/eclipse-tractusx/tractus-x-umbrella/blob/main/docs/user/windows/README.md), then follow
+    [Data exchange with the Identity Hub](https://github.com/eclipse-tractusx/tractus-x-umbrella/blob/main/docs/user/common/guides/data-exchange-identityhub.md)
+    for the participant DIDs and BPNs and a Bruno collection for the first exchange.
+
 !!! info "The first two variants cannot join a dataspace"
 
     Their DID, credential service and BDRS are placeholders. The connector starts, its APIs answer and the Helm tests
     pass, but it cannot negotiate with a real partner. For a complete local dataspace with two connectors and identity
-    services, use the [MXD tutorial](https://github.com/eclipse-tractusx/tutorial-resources/tree/main/mxd). To run the
+    services, use the **Umbrella** tab above or the [MXD tutorial](https://github.com/eclipse-tractusx/tutorial-resources/tree/main/mxd). To run the
     charts with images you built yourself, follow the [local quick start](local-quickstart.md), which is the CI
     deployment test.
 
@@ -235,9 +257,11 @@ What this means for you:
 - **Everything else stays internal.** The Management API, the control API and the metrics port must never be reachable
   from outside.
 - **Both planes need PostgreSQL and Vault.** The data plane also has SQL stores and runs the database migrations.
-- **Identity comes from outside.** You need a DID, a credential service (the chart is built for a
-  decentralized identity verification service, DIV, with an STS) and the Catena-X BDRS. See
-  [Identity and trust](../architecture/identity-and-trust.md).
+- **Identity comes from outside.** You need a DID, a DCP wallet with a Secure Token Service (STS) and the BDRS of
+  your dataspace. Wallets in use with Tractus-X EDC are the open-source
+  [Tractus-X Identity Hub](https://github.com/eclipse-tractusx/tractusx-identityhub) and SAP's managed
+  [Decentralized Identity Verification (DIV)](https://www.sap.com/products/technology-platform/decentralized-identity-verification.html);
+  any wallet that implements DCP works. See [Identity and trust](../architecture/identity-and-trust.md).
 
 ## Prerequisites checklist
 

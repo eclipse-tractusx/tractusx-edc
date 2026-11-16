@@ -9,13 +9,31 @@ allowed to do**. Tractus-X EDC answers both with decentralized identity: DIDs, v
 | Actor | What it is | In Tractus-X EDC |
 |---|---|---|
 | **DID** | The connector's identifier, e.g. `did:web:connector.example.com`. Resolves to a DID document with keys and service endpoints. | `participant.id` (setting `edc.participant.id`) |
-| **BPNL** | The Catena-X business partner number of the company. | `participant.bpnl` (setting `tractusx.edc.participant.bpn`) |
+| **BPNL** | The business partner number of the company, as used in Catena-X. | `participant.bpnl` (setting `tractusx.edc.participant.bpn`) |
 | **Credential service** (wallet) | Holds the company's verifiable credentials and creates verifiable presentations (VPs). | External. Found through the DID document. |
 | **STS** | Secure Token Service. Issues **self-issued ID tokens** the connector attaches to its DSP requests. | External; reached via OAuth2 client credentials (`dcp.sts.oauth.*`). A **DIV** flavour is used when `dcp.sts.div.url` is set. |
 | **Trusted issuers** | The DIDs whose credentials you accept. | `dcp.trustedIssuers` |
 | **BDRS** | BPN-DID Resolution Service: a directory mapping BPNLs to DIDs. | `controlplane.bdrs.server.url` |
 
+## Wallets you can use
+
+Tractus-X EDC talks to the wallet only through DCP and an STS, so any DCP-compliant wallet works. In use today:
+
+| Wallet | What it is | Connector settings |
+|---|---|---|
+| [Tractus-X Identity Hub](https://github.com/eclipse-tractusx/tractusx-identityhub) | Open-source DCP wallet and IssuerService of Eclipse Tractus-X, built on the upstream [EDC Identity Hub](https://github.com/eclipse-edc/IdentityHub). You run it yourself, next to the connector. | `dcp.sts.oauth.*` pointing to the Identity Hub STS |
+| [SAP Decentralized Identity Verification (DIV)](https://www.sap.com/products/technology-platform/decentralized-identity-verification.html) | Managed wallet operated by SAP, used by many Catena-X participants. | `dcp.sts.oauth.*` and `dcp.sts.div.url` |
+| Your own | Any wallet that implements the credential service and STS of DCP. | `dcp.sts.oauth.*` |
+
+To see a connector working with the Identity Hub end to end, deploy the
+[Tractus-X Umbrella](https://github.com/eclipse-tractusx/tractus-x-umbrella) with its
+[Identity Hub setup](../deployment/index.md#deploy-in-five-minutes).
+
 ## The Catena-X credentials
+
+Catena-X defines the credentials below and Tractus-X EDC requests them out of the box. Other dataspaces, for example
+in Manufacturing-X, define their own credential types: the connector asks for whatever credentials the policies
+being evaluated reference, and further rules can be added as [extensions](../developer/extensions.md).
 
 | Credential | Says that… | Requested when |
 |---|---|---|

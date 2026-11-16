@@ -1,13 +1,16 @@
 # What is Tractus-X EDC?
 
 Tractus-X EDC is a **dataspace connector**: a piece of software every company runs to take part in a dataspace such as
-[Catena-X](https://catena-x.net/). It lets a company **offer** data to partners under conditions it defines, and
-**obtain** data from partners under conditions they define, without uploading anything to a central platform.
+[Catena-X](https://catena-x.net/), Factory-X, Construct-X or any other dataspace that speaks the Dataspace Protocol.
+It lets a company **offer** data to partners under conditions it defines, and **obtain** data from partners under
+conditions they define, without uploading anything to a central platform.
 
 It is the [Eclipse Tractus-X](https://eclipse-tractusx.github.io/) distribution of the
 [Eclipse Dataspace Components (EDC)](https://github.com/eclipse-edc/Connector) connector. EDC is a framework; Tractus-X
-EDC turns it into ready-to-run Docker images and Helm charts, and adds what Catena-X needs: Catena-X policies, the
-Business Partner Number (BPN) identity, verifiable credential checks, EDR caching with token refresh, and more.
+EDC turns it into ready-to-run Docker images and Helm charts, and adds what dataspaces need: verifiable credential
+checks, EDR caching with token refresh, connector discovery and more. Dataspace-specific rules, such as the Catena-X
+policies and the Business Partner Number (BPN) identity, are added as extensions. See
+[Supported dataspaces](../dataspaces/index.md).
 
 ## The problem it solves
 
@@ -15,8 +18,8 @@ Two companies want to share data, for example a supplier's quality data with a c
 same questions before a single byte moves:
 
 - **Who are you?** The provider must be sure who is asking, without a shared user database.
-- **Are you allowed?** Only partners who are Catena-X members, signed the right framework agreement, or belong to a
-  given business partner group may see an offer.
+- **Are you allowed?** Only partners who hold the right credentials (in Catena-X, for example, membership and a
+  signed framework agreement) or who belong to a given business partner group may see an offer.
 - **Under which terms?** Usage purpose, duration and other conditions must be agreed and recorded.
 - **How do I get the data?** Once agreed, the consumer needs a secure, short-lived way to call the provider's backend.
 
@@ -72,11 +75,12 @@ in one well-protected place. See [Architecture](../architecture/index.md) for th
 
 ## What Tractus-X adds on top of EDC
 
-- **Catena-X policies**: the constraints of standard CX-0152 (`Membership`, `FrameworkAgreement`, `UsagePurpose`,
-  `BusinessPartnerNumber`, `BusinessPartnerGroup`, …) with validation on creation.
+- **Catena-X policies** (for the Catena-X dataspace): the constraints of standard CX-0152 (`Membership`,
+  `FrameworkAgreement`, `UsagePurpose`, `BusinessPartnerNumber`, `BusinessPartnerGroup`, …) with validation on
+  creation.
   [Read more](../architecture/policies.md)
-- **BPN identity**: business partner numbers resolved to DIDs through the BPN-DID Resolution Service (BDRS), and
-  business partner groups for access control.
+- **BPN identity** (Catena-X): business partner numbers resolved to DIDs through the BPN-DID Resolution Service
+  (BDRS), and business partner groups for access control.
 - **EDR management**: one call to negotiate and start a transfer, an EDR cache, and **token refresh** so consumers
   keep access without renegotiating. [Read more](../architecture/edr-and-token-refresh.md)
 - **Connector discovery**: find a partner's connector and supported protocol versions from its DID document.

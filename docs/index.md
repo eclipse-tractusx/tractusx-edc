@@ -10,10 +10,12 @@ hide:
 
 # Tractus-X EDC
 
-The open-source **dataspace connector for Catena-X**. Tractus-X EDC packages the
+The open-source, production-ready **dataspace connector**. Tractus-X EDC packages the
 [Eclipse Dataspace Components (EDC)](https://github.com/eclipse-edc/Connector) with the extensions, policies and
-identity integration a company needs to share data **sovereignly** in the Catena-X automotive dataspace, and in any
-other dataspace that speaks the Dataspace Protocol.
+identity integration a company needs to share data **sovereignly**: in [Catena-X](https://catena-x.net/), in
+[Manufacturing-X](https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/manufacturing-x.html) dataspaces such
+as [Factory-X](https://factory-x.org/) and [Construct-X](https://construct-x.org/), and in any other dataspace that
+speaks the Dataspace Protocol. Every part is an extension, so you can add the rules of your own dataspace.
 
 [Get started :material-rocket-launch-outline:](home/overview.md){ .md-button .md-button--primary }
 [Deploy a connector :material-kubernetes:](deployment/index.md){ .md-button }
@@ -37,6 +39,77 @@ other dataspace that speaks the Dataspace Protocol.
 
     No values file yet? [Deploy in five minutes](deployment/index.md#deploy-in-five-minutes) has copy-paste values
     for a local try-out, with PostgreSQL and Vault or fully in memory.
+
+=== "Docker Compose"
+
+    ```bash
+    cat > compose.yaml <<'EOF'
+    # Tractus-X EDC in memory (control plane and data plane in one container): for a local try-out only,
+    # every restart forgets all assets, policies and contracts. The identity values are placeholders.
+    services:
+      edc:
+        image: tractusx/edc-runtime-memory:0.13.0
+        ports:
+          - "8080:8080"   # health checks: /api/check/readiness
+          - "8081:8081"   # Management API
+          - "8084:8084"   # Dataspace Protocol
+          - "8086:8086"   # data plane public API
+        environment:
+          OTEL_JAVAAGENT_ENABLED: "false"
+          EDC_PARTICIPANT_ID: did:web:changeme
+          EDC_IAM_ISSUER_ID: did:web:changeme
+          EDC_PARTICIPANT_CONTEXT_ID: try-participant-context
+          TRACTUSX_EDC_PARTICIPANT_BPN: BPNL000000000001
+          WEB_HTTP_PORT: "8080"
+          WEB_HTTP_PATH: /api
+          WEB_HTTP_MANAGEMENT_PORT: "8081"
+          WEB_HTTP_MANAGEMENT_PATH: /management
+          WEB_HTTP_MANAGEMENT_AUTH_TYPE: tokenbased
+          WEB_HTTP_MANAGEMENT_AUTH_KEY: password
+          WEB_HTTP_CONTROL_PORT: "8083"
+          WEB_HTTP_CONTROL_PATH: /control
+          WEB_HTTP_PROTOCOL_PORT: "8084"
+          WEB_HTTP_PROTOCOL_PATH: /api/v1/dsp
+          WEB_HTTP_PUBLIC_PORT: "8086"
+          WEB_HTTP_PUBLIC_PATH: /api/public
+          EDC_DSP_CALLBACK_ADDRESS: http://edc:8084/api/v1/dsp
+          EDC_DATAPLANE_API_PUBLIC_BASEURL: http://localhost:8086/api/public
+          TX_EDC_DATAPLANE_TOKEN_REFRESH_ENDPOINT: http://localhost:8086/api/public/token
+          EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: key-1
+          EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: key-1
+          EDC_IAM_STS_OAUTH_TOKEN_URL: https://div.example.org/oauth/token
+          EDC_IAM_STS_OAUTH_CLIENT_ID: try-client-id
+          EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS: try-client-secret
+          TX_EDC_IAM_STS_DIV_URL: https://div.example.org
+          TX_EDC_IAM_DCP_BDRS_SERVER_URL: https://bdrs.example.org
+    EOF
+
+    docker compose up -d
+    curl -s -X POST http://localhost:8081/management/v3/assets/request \
+      -H "X-Api-Key: password" -H "Content-Type: application/json" \
+      -d '{"@context": {"@vocab": "https://w3id.org/edc/v0.0.1/ns/"}, "@type": "QuerySpec"}'
+    ```
+
+    The same settings the `tractusx-connector-memory` chart sets; see [Configuration](deployment/configuration.md)
+    for the rest. To exchange data with a partner, the connector needs a real wallet: see the next tab. For a
+    generated Compose setup with a provider and a consumer, try the
+    [Tractus-X Starter Kit](https://github.com/eclipse-tractusx/tractusx-starter-kit).
+
+=== "Full dataspace (Umbrella)"
+
+    ```bash
+    git clone https://github.com/eclipse-tractusx/tractus-x-umbrella.git
+    cd tractus-x-umbrella/charts/umbrella
+    helm dependency update
+    helm install -f values-adopter-decentralized-identityhub.yaml umbrella . --namespace umbrella --create-namespace
+    ```
+
+    The [Tractus-X Umbrella](https://github.com/eclipse-tractusx/tractus-x-umbrella) runs a whole dataspace on your
+    own cluster: a provider and a consumer Tractus-X EDC, each with its own
+    [Tractus-X Identity Hub](https://github.com/eclipse-tractusx/tractusx-identityhub) as wallet, an IssuerService
+    and the BDRS. Start with its
+    [guide for this setup](https://github.com/eclipse-tractusx/tractus-x-umbrella/blob/main/docs/user/common/guides/data-exchange-identityhub.md)
+    (cluster prerequisites for Linux, macOS and Windows are linked there).
 
 === "Docker images"
 
@@ -122,21 +195,33 @@ other dataspace that speaks the Dataspace Protocol.
 ## Why Tractus-X EDC?
 
 Upstream [EDC](https://github.com/eclipse-edc/Connector) is a framework you assemble a connector from. Tractus-X EDC
-is that connector, **ready for Catena-X**:
+is that connector, **ready to run** in Catena-X, Manufacturing-X and other dataspaces:
 
 <div class="tx-why" markdown>
 
 -   :material-package-variant-closed: <span>**Released runtimes and OSS images** on Docker Hub, for every release</span>
 -   :material-kubernetes: <span>**Helm charts** with PostgreSQL and Vault options, tested on every CI run</span>
--   :material-scale-balance: <span>**Catena-X policies, BPN groups and BDRS** built in</span>
+-   :material-scale-balance: <span>**Catena-X policies, BPN groups and BDRS** built in, and room for your own</span>
+-   :material-puzzle-outline: <span>**Extensible**: add the policies and services of your dataspace as extensions</span>
+-   :material-wallet-outline: <span>**Any DCP wallet**: Tractus-X Identity Hub, SAP DIV or your own</span>
+-   :material-calendar-sync: <span>**A mature release cycle**: quarterly releases with release candidates and backported fixes, aligned with Eclipse Tractus-X</span>
+-   :material-map-marker-path: <span>**An open roadmap**: companies join the public planning and contribute to it</span>
 -   :material-update: <span>**Migrations and upgrade guides** for every release, upgradeability tested in CI</span>
 -   :material-shield-check-outline: <span>**Security scans and Eclipse license checks** of every dependency</span>
 -   :material-account-group-outline: <span>**An open community** with a public Connector Open Meeting</span>
+-   :material-factory: <span>**Production-ready** and running in Catena-X today</span>
 
 </div>
 
 [Why Tractus-X EDC :octicons-arrow-right-24:](home/why-tractusx-edc.md){ .md-button }
 [Who uses it :octicons-arrow-right-24:](home/known-friends.md){ .md-button }
+
+!!! note "Use in production, at your own risk"
+
+    Tractus-X EDC is built, tested and released for production use, and runs in production in Catena-X. Like any
+    open-source software it comes **without warranty** ([Apache License 2.0](https://github.com/eclipse-tractusx/tractusx-edc/blob/main/LICENSE),
+    sections 7 and 8): you operate it, and you are responsible for securing, configuring and updating it. Start with
+    the [production checklist](deployment/production-checklist.md).
 
 ## The connector in one picture
 
@@ -181,8 +266,8 @@ its data to a central platform. [Learn more :octicons-arrow-right-24:](home/over
 
 The [Connector KIT](https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/adoption-view/) describes the
 basic infrastructure for cross-enterprise data exchange in a dataspace: the Dataspace Protocol, identities and
-credentials, policies and asset design. **Tractus-X EDC is its reference implementation**: production-ready and in
-use throughout the Catena-X dataspace.
+credentials, policies and asset design. **Tractus-X EDC is its reference implementation**: production-ready, in
+use throughout the Catena-X dataspace, and reused by other dataspaces such as Construct-X.
 
 [Open the Connector KIT :octicons-arrow-right-24:](https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/adoption-view/){ .md-button .md-button--primary }
 [Operation view](https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/operation-view/){ .md-button }
@@ -212,15 +297,44 @@ use throughout the Catena-X dataspace.
     Copilot and Claude Code. It answers questions about Tractus-X EDC and upstream EDC from the source code at the exact
     pinned version, and cites `file:line`.
 
-## Part of Eclipse Tractus-X
+## Talk to the community
+
+<div class="grid cards" markdown>
+
+-   :material-video-outline: **Connector Open Meeting**
+
+    ---
+
+    Every second Tuesday, open to everyone: questions, demos and what is coming next for Tractus-X EDC.
+
+    [Join the meeting :octicons-arrow-right-24:](https://eclipse-tractusx.github.io/community/open-meetings#edc-weekly){ .md-button .md-button--primary }
+
+-   :material-forum-outline: **Community Office Hour**
+
+    ---
+
+    The weekly open hour of Eclipse Tractus-X for all topics, from your first steps to contributing.
+
+    [Join the office hour :octicons-arrow-right-24:](https://eclipse-tractusx.github.io/community/open-meetings#community-office-hour){ .md-button .md-button--primary }
+
+-   :material-chat-outline: **Matrix chat**
+
+    ---
+
+    Ask the committers and other adopters any time in the Tractus-X EDC room on the Eclipse Matrix server.
+
+    [Open the chat :octicons-arrow-right-24:](https://chat.eclipse.org/#/room/#tractusx-edc:matrix.eclipse.org){ .md-button .md-button--primary }
+
+</div>
 
 Tractus-X EDC is developed in the open by the [Eclipse Tractus-X](https://eclipse-tractusx.github.io/) project.
 Releases, Docker images and Helm charts are published from
-[GitHub](https://github.com/eclipse-tractusx/tractusx-edc/releases). Questions are welcome in the
-[Connector Open Meeting](https://eclipse-tractusx.github.io/community/open-meetings#edc-weekly), the
-[Matrix room](https://chat.eclipse.org/#/room/#tractusx-edc:matrix.eclipse.org) and
-[GitHub Discussions](https://github.com/eclipse-tractusx/tractusx-edc/discussions); bugs and feature requests go to
-[GitHub Issues](https://github.com/eclipse-tractusx/tractusx-edc/issues). All channels: [Get help](home/get-help.md).
+[GitHub](https://github.com/eclipse-tractusx/tractusx-edc/releases). Longer questions go to
+[GitHub Discussions](https://github.com/eclipse-tractusx/tractusx-edc/discussions), bugs and feature requests to
+[GitHub Issues](https://github.com/eclipse-tractusx/tractusx-edc/issues).
+
+[All channels :octicons-arrow-right-24:](home/get-help.md){ .md-button }
+[GitHub Discussions :fontawesome-brands-github:](https://github.com/eclipse-tractusx/tractusx-edc/discussions){ .md-button }
 
 ## NOTICE
 

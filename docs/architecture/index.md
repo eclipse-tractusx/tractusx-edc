@@ -56,7 +56,7 @@ Three conversations happen at the same time:
 | Control plane | Catalog, negotiations, agreements, transfer processes, policies, EDR cache | [Components](components.md) |
 | Data plane | Moves or proxies data; issues and refreshes access tokens | [Components](components.md) |
 | Identity | DID, wallet/credential service, STS, BDRS, trusted issuers | [Identity and trust](identity-and-trust.md) |
-| Policies | ODRL policies with Catena-X constraints, evaluated at catalog, negotiation and transfer time | [Catena-X policies](policies.md) |
+| Policies | ODRL policies with dataspace-specific constraints (in Catena-X, CX-0152), evaluated at catalog, negotiation and transfer time | [Catena-X policies](policies.md) |
 | Flows | The step-by-step choreography between the two connectors | [Data exchange flows](flows.md) |
 | EDRs | Access tokens for pull transfers, cached and refreshed for you | [EDRs and token refresh](edr-and-token-refresh.md) |
 | State | PostgreSQL stores, Flyway migrations, secrets in Vault | [Persistence and state](persistence.md) |

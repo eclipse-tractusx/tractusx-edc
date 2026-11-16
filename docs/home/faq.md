@@ -5,14 +5,39 @@
 ??? question "What is the difference between Eclipse EDC and Tractus-X EDC?"
 
     [Eclipse Dataspace Components](https://github.com/eclipse-edc/Connector) is a generic framework for building
-    connectors. Tractus-X EDC is a **ready-to-run distribution** of it for Catena-X: it selects the upstream modules,
-    adds Catena-X policies, BPN handling, EDR management, the consumer proxy, token refresh and DSP 0.8 compatibility,
-    and ships Docker images and Helm charts. See [Overview](overview.md).
+    connectors. Tractus-X EDC is a **ready-to-run distribution** of it for Catena-X and other dataspaces: it selects
+    the upstream modules, adds EDR management, the consumer proxy, token refresh and DSP 0.8 compatibility, adds
+    Catena-X policies and BPN handling as Catena-X extensions, and ships Docker images and Helm charts. See
+    [Overview](overview.md).
 
 ??? question "Do I need to write code to use it?"
 
     No. Most participants deploy the released Helm chart and use the Management API. You only write code if you need
     your own [extension](../developer/extensions.md).
+
+??? question "Can I use it in a dataspace other than Catena-X?"
+
+    Yes. The connector core is dataspace agnostic, and the Catena-X rules are extensions. Factory-X and Construct-X
+    already build their connectors on Tractus-X EDC. See [Supported dataspaces](../dataspaces/index.md) and
+    [Create a dataspace extension](../dataspaces/create-extension.md).
+
+??? question "Can I use it in production?"
+
+    Yes. Tractus-X EDC is released for production and runs in production in Catena-X. Like any open-source software
+    it comes without warranty (Apache License 2.0): you operate it at your own risk and are responsible for securing
+    and updating it. Work through the [production checklist](../deployment/production-checklist.md) first.
+
+??? question "How often is it released, and can I influence the roadmap?"
+
+    Tractus-X EDC is released **every quarter**, aligned with the Eclipse Tractus-X release. Each release goes through
+    release candidates that are tested before the final version, and fixes for the release in use come as bugfix
+    releases that contain only the fix (see the
+    [versioning decision](../development/decision-records/2024-07-18-Improvements-versioning-scheme/README.md)).
+    The roadmap is open: propose a feature or a bug as an issue in
+    [sig-release](https://github.com/eclipse-tractusx/sig-release/issues/new/choose), join the public planning
+    sessions announced on the [tractusx-dev](https://accounts.eclipse.org/mailing-list/tractusx-dev) mailing list, and
+    follow the [release planning board](https://github.com/orgs/eclipse-tractusx/projects/26). Day-to-day priorities are discussed in the
+    [Connector Open Meeting](https://eclipse-tractusx.github.io/community/open-meetings#edc-weekly).
 
 ??? question "Which Dataspace Protocol versions are supported?"
 
@@ -25,7 +50,8 @@
 ??? question "What do I need besides the connector?"
 
     A PostgreSQL database, a HashiCorp Vault, and access to the dataspace's identity services: a DCP wallet with your
-    credentials and a Secure Token Service, the BPN-DID Resolution Service (BDRS) and the trusted issuer's DID. See
+    credentials and a Secure Token Service, the trusted issuer's DID and, in Catena-X, the BPN-DID Resolution
+    Service (BDRS). See
     [Deployment](../deployment/index.md).
 
 ??? question "Which images are released?"

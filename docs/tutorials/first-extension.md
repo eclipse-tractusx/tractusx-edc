@@ -15,7 +15,8 @@ flowchart TD
   q -- yes --> cx["edc-extensions/cx-&lt;name&gt;<br/>Catena-X specific"]
 ```
 
-Tractus-X EDC separates generic features from Catena-X rules, so that the connector can serve other dataspaces too.
+Tractus-X EDC separates generic features from dataspace-specific rules, such as those of Catena-X, so that the
+connector can serve other dataspaces too.
 The rule is explained in the
 [multi-dataspace support ADR](../development/decision-records/2026-01-07_multi-dataspace-support/README.md).
 Our example is generic.

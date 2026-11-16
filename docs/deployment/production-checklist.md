@@ -44,7 +44,7 @@ for production. Go through this list before you connect a connector to a live da
 ## Trust
 
 - [ ] **Trusted issuers.** Configure `dcp.trustedIssuers` with the DIDs of the issuers your dataspace trusts.
-- [ ] **BDRS.** Set `controlplane.bdrs.server.url` to the BDRS of your dataspace.
+- [ ] **BDRS.** In Catena-X, set `controlplane.bdrs.server.url` to the BDRS of the dataspace.
 - [ ] **Policy validation stays on.** Keep `controlplane.policy.validation.enabled: true` (the default) so that
       malformed Catena-X policies are rejected when they are created.
 

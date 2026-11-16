@@ -12,7 +12,7 @@ Asset
     catalog), `privateProperties` and a `dataAddress` that tells the data plane how to reach the backend.
 
 BDRS
-:   BPN-DID Resolution Service. A dataspace service that maps business partner numbers (BPNs) to DIDs and back.
+:   BPN-DID Resolution Service. A Catena-X dataspace service that maps business partner numbers (BPNs) to DIDs and back.
 
 BPN, BPNL
 :   Business Partner Number. The Catena-X identifier of a legal entity (`BPNL…`), site (`BPNS…`) or address (`BPNA…`).

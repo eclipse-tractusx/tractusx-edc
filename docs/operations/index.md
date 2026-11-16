@@ -12,6 +12,14 @@ Running a connector day to day: knowing that it is healthy, finding out why some
 
     [:octicons-arrow-right-24: Observe](observability.md)
 
+-   :material-speedometer:{ .lg .middle } __Tune for production__
+
+    ---
+
+    Log level, JVM memory, replicas, state machines, database pool, caches and timeouts.
+
+    [:octicons-arrow-right-24: Tune](tuning.md)
+
 -   :material-stethoscope:{ .lg .middle } __Troubleshooting__
 
     ---

@@ -2,8 +2,8 @@
 
 ## Introduction
 
-This walkthrough attempts to be a reference for systems integrators attempting to expose APIs safely to the Catena-X
-dataspace.
+This walkthrough attempts to be a reference for systems integrators attempting to expose APIs safely to a
+dataspace such as Catena-X.
 Please note that improper usage of the Management-API can lead to accidental exposure of competitively sensitive data
 and trade secrets. The assumption is that the systems integrator has two tractusx-edc deployments of version 0.5.1 or
 higher available (one acting as provider, one acting as consumer).

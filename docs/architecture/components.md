@@ -41,9 +41,10 @@ The control plane is the "brain". It never touches the data itself.
   definition.
 - **Contract negotiation.** Runs the negotiation state machine as consumer or provider and stores agreements.
 - **Transfer process.** Starts, suspends and terminates transfers; asks a data plane to do the work.
-- **Policy engine.** Evaluates ODRL policies with the Catena-X constraint functions. See [Catena-X policies](policies.md).
+- **Policy engine.** Evaluates ODRL policies with the constraint functions of the dataspace, in Catena-X
+  those of `cx-policy`. See [Catena-X policies](policies.md).
 - **Identity.** Obtains tokens from the STS, requests and verifies verifiable presentations, resolves BPNs and DIDs via
-  BDRS. See [Identity and trust](identity-and-trust.md).
+  BDRS in Catena-X. See [Identity and trust](identity-and-trust.md).
 - **EDR cache.** Stores the endpoint data references (EDRs) it receives as a consumer and refreshes their tokens. See
   [EDRs and token refresh](edr-and-token-refresh.md).
 
@@ -97,7 +98,7 @@ Both production runtimes are built from shared base modules (`edc-controlplane-b
 | PostgreSQL | Control plane, data plane | All state: assets, policies, negotiations, transfers, EDRs, tokens |
 | HashiCorp Vault | Control plane, data plane | Secrets: STS client secret, token signing keys, credentials of data addresses |
 | Credential service (wallet) and STS | Control plane, data plane | Self-issued tokens and verifiable presentations (DCP) |
-| BDRS | Control plane | Mapping BPNs to DIDs and back |
+| BDRS | Control plane | Mapping BPNs to DIDs and back (Catena-X) |
 | OpenTelemetry collector (optional) | Both | Traces, metrics and business events |
 
 ## What Tractus-X adds

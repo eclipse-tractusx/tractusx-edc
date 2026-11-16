@@ -13,6 +13,15 @@ Tractus-X EDC is developed in the open. Questions are welcome, from first steps 
 
     [:octicons-arrow-right-24: Time and dial-in link](https://eclipse-tractusx.github.io/community/open-meetings#edc-weekly)
 
+-   :material-forum-outline: **Community Office Hour**
+
+    ---
+
+    The weekly open hour of all of Eclipse Tractus-X: news, cross-project questions and how to contribute. A good
+    place for your first visit.
+
+    [:octicons-arrow-right-24: Time and dial-in link](https://eclipse-tractusx.github.io/community/open-meetings#community-office-hour)
+
 -   :material-chat-outline: **Matrix chat**
 
     ---
