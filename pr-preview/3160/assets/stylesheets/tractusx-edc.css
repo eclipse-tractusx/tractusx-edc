@@ -45,6 +45,7 @@
    font. */
 
 :root {
+  --tx-icon-close: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
   /* Tractus-X gold, as in the TestLab documentation */
   --tx-gold: #ffd700;
   --tx-gold-light: #ffeb3b;
@@ -252,7 +253,6 @@ html::-webkit-scrollbar-thumb:hover {
 .md-header__source {
   order: 2;
   width: auto;
-  max-width: 13rem;
   margin-left: 0.5rem;
   padding-left: 0.6rem;
   border-left: 1px solid rgba(255, 255, 255, 0.14);
@@ -504,9 +504,16 @@ html::-webkit-scrollbar-thumb:hover {
   }
 }
 
-@media screen and (min-width: 60em) and (max-width: 76.234375em) {
+/* The repository name in full: Material caps it below the width of its box, which cut
+   "eclipse-tractusx/tractusx-edc" short. It fits next to the brand from 960 px on. */
+@media screen and (min-width: 60em) {
   .md-header__source {
-    max-width: 10rem;
+    flex-shrink: 0;
+    max-width: none;
+  }
+
+  .md-header__source .md-source__repository {
+    max-width: none;
   }
 }
 
@@ -1712,119 +1719,124 @@ html::-webkit-scrollbar-thumb:hover {
   --md-mermaid-font-family: var(--md-text-font-family);
 }
 
-/* Diagrams sit on a card, so they read as figures */
-.md-typeset .mermaid-wrapper,
+/* Diagrams sit on a card, so they read as figures (assets/javascripts/diagrams.js
+   adds the zoom bar and makes the card scroll when zoomed in). */
+.md-typeset .tx-diagram,
 .md-typeset > .mermaid {
   margin: 1.2em 0;
-  padding: 0.8rem;
   border: 1px solid var(--tx-border);
   border-radius: var(--tx-radius);
   background-color: var(--tx-surface-2);
 }
 
-.md-typeset .mermaid-wrapper > .mermaid {
+.md-typeset > .mermaid {
+  padding: 0.8rem;
+}
+
+.tx-diagram {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tx-diagram__bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  padding: 0.35rem 0.4rem 0;
+}
+
+.tx-diagram__button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
   margin: 0;
-}
-
-.md-typeset .mermaid {
-  overflow-x: auto;
-}
-
-.mermaid-wrapper {
-  position: relative;
-}
-
-/* Zoom button (mermaid-zoom.js), top right of the figure */
-.mermaid-zoom-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0.3rem 0.65rem;
+  padding: 0 0.35rem;
   border: 1px solid var(--tx-border-strong);
   border-radius: var(--tx-radius-sm);
   background: var(--md-default-bg-color);
   color: var(--md-default-fg-color--light);
   font-family: var(--md-text-font-family);
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  cursor: zoom-in;
-  opacity: 0.85;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
-}
-
-.mermaid-zoom-btn:hover,
-.mermaid-zoom-btn:focus-visible {
-  border-color: var(--tx-gold);
-  background: var(--tx-gold);
-  color: var(--tx-black);
-  opacity: 1;
-}
-
-.mermaid-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(6px);
-  cursor: zoom-out;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.mermaid-modal-overlay.visible {
-  opacity: 1;
-}
-
-.mermaid-modal-content {
-  width: 96vw;
-  height: 94vh;
-  overflow: auto;
-  padding: 2rem;
-  border: 1px solid var(--tx-border-strong);
-  border-radius: var(--tx-radius);
-  background: var(--md-default-bg-color);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
-  cursor: default;
-}
-
-.mermaid-modal-content .mermaid {
-  display: flex;
-  justify-content: center;
-  min-height: 100%;
-}
-
-.mermaid-modal-close {
-  position: fixed;
-  top: 1rem;
-  right: 1.5rem;
-  z-index: 10000;
-  display: grid;
-  place-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: var(--tx-radius-sm);
-  background: rgba(0, 0, 0, 0.5);
-  color: #ffffff;
-  font-size: 1.3rem;
-  line-height: 1;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.mermaid-modal-close:hover,
-.mermaid-modal-close:focus-visible {
+.tx-diagram__button svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentcolor;
+}
+
+.tx-diagram__level {
+  min-width: 2.9rem;
+}
+
+.tx-diagram__button:hover:not(:disabled),
+.tx-diagram__button:focus-visible {
   border-color: var(--tx-gold);
   background: var(--tx-gold);
   color: var(--tx-black);
+}
+
+.tx-diagram__button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.tx-diagram__viewport {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0.6rem 0.8rem 0.8rem;
+  text-align: center;
+}
+
+.md-typeset .tx-diagram__viewport > .mermaid {
+  margin: 0;
+  overflow: visible;
+}
+
+.md-typeset .tx-diagram__viewport > img {
+  vertical-align: top;
+}
+
+.tx-diagram--zoomed .tx-diagram__viewport {
+  max-height: 80vh;
+  cursor: grab;
+}
+
+.tx-diagram__viewport--dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* Full screen: the figure covers the page, the bar stays on top. */
+.md-typeset .tx-diagram--full {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: var(--md-default-bg-color);
+}
+
+.tx-diagram--full .tx-diagram__bar {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--tx-border);
+}
+
+.tx-diagram--full .tx-diagram__viewport {
+  flex: 1;
+  max-height: none;
+}
+
+.tx-diagram-open,
+.tx-diagram-open body {
+  overflow: hidden;
 }
 
 /* ── 10. Footer ─────────────────────────────────────────────────────────── */
@@ -2067,5 +2079,153 @@ html::-webkit-scrollbar-thumb:hover {
 
   [dir] .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link.md-nav__container > label.md-nav__link {
     border-left: 0;
+  }
+}
+
+/* ── Navigation below desktop width: an accordion ─────────────────────────────
+   Material slides every section in as a new level, so on a deep page the drawer
+   opened three levels down. Sections open below their row instead, like on the
+   desktop: the drawer starts at the main navigation, with the path to the current
+   page open (assets/javascripts/mobile-nav.js scrolls it into view). */
+@media screen and (max-width: 76.234375em) {
+  .md-nav--primary .md-nav__toggle ~ .md-nav {
+    position: static;
+    display: none;
+    height: auto;
+    background-color: transparent;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .md-nav--primary .md-nav__toggle:checked ~ .md-nav {
+    display: flex;
+  }
+
+  /* No level headers with a back arrow: there are no levels to go back from. */
+  .md-nav--primary .md-nav .md-nav__title {
+    display: none;
+  }
+
+  [dir] .md-nav--primary .md-nav > .md-nav__list {
+    overflow: visible;
+    background-color: transparent;
+    box-shadow: none;
+    scroll-snap-type: none;
+  }
+
+  /* Each open section is indented, with a guide line down its pages. */
+  [dir="ltr"] .md-nav--primary .md-nav__item--nested > .md-nav > .md-nav__list {
+    margin-left: 0.9rem;
+    border-left: 1px solid var(--tx-border);
+  }
+
+  [dir="rtl"] .md-nav--primary .md-nav__item--nested > .md-nav > .md-nav__list {
+    margin-right: 0.9rem;
+    border-right: 1px solid var(--tx-border);
+  }
+
+  .md-nav--primary .md-nav .md-nav__item {
+    border-top: 0;
+  }
+
+  /* The arrow points down while its section is open. */
+  .md-nav--primary .md-nav__link .md-nav__icon::after {
+    transition: transform 0.2s;
+  }
+
+  .md-nav--primary .md-nav__toggle:checked ~ .md-nav__link:not([for="__toc"]) .md-nav__icon::after {
+    transform: rotate(90deg);
+  }
+
+  [dir="rtl"] .md-nav--primary .md-nav__toggle:checked ~ .md-nav__link:not([for="__toc"]) .md-nav__icon::after {
+    transform: scale(-1) rotate(-90deg);
+  }
+}
+
+@media screen and (max-width: 59.984375em) {
+  /* The headings of the current page open under it only when its row is tapped,
+     and read as headings, not as more pages. */
+  [dir] .md-nav--primary .md-nav__toggle:not(:checked) ~ .md-nav--secondary {
+    display: none;
+  }
+
+  [dir="ltr"] .md-nav--primary .md-nav--secondary > .md-nav__list {
+    margin-left: 0.9rem;
+    border-left: 1px dashed var(--tx-border);
+  }
+
+  [dir="rtl"] .md-nav--primary .md-nav--secondary > .md-nav__list {
+    margin-right: 0.9rem;
+    border-right: 1px dashed var(--tx-border);
+  }
+
+  .md-nav--primary .md-nav--secondary .md-nav__link {
+    color: var(--md-default-fg-color--light);
+    font-size: 0.7rem;
+  }
+}
+
+@media screen and (max-width: 59.984375em) {
+  .md-nav--primary .md-nav .md-nav__item {
+    font-size: 0.75rem;
+  }
+
+  [dir] .md-nav--primary .md-nav .md-nav__link {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 59.984375em) {
+  /* The drawer fills the screen on phones. */
+  [dir="ltr"] .md-sidebar--primary {
+    left: -100%;
+    width: 100%;
+  }
+
+  [dir="ltr"] [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
+    transform: translateX(100%);
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap,
+  .md-nav--primary {
+    width: 100%;
+  }
+
+  /* With nothing beside the drawer to tap, its title bar shows a close mark (the whole
+     bar is Material's close control). */
+  .md-nav--primary > .md-nav__title[for="__drawer"] {
+    cursor: pointer;
+  }
+
+  .md-nav--primary > .md-nav__title[for="__drawer"]::after {
+    content: "";
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: #ffffff;
+    -webkit-mask: var(--tx-icon-close) center / contain no-repeat;
+    mask: var(--tx-icon-close) center / contain no-repeat;
+  }
+
+  /* The repository box at the bottom of the drawer: readable on the dark ground. */
+  [dir] .md-nav--primary .md-nav__source {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #111111;
+    color: #ffffff;
+  }
+
+  [dir] .md-nav--primary .md-nav__source .md-source,
+  [dir] .md-nav--primary .md-nav__source .md-source__repository {
+    color: #ffffff;
+    opacity: 1;
+  }
+
+  [dir] .md-nav--primary .md-nav__source .md-source__facts {
+    color: rgba(255, 255, 255, 0.75);
+    opacity: 1;
   }
 }
