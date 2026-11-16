@@ -78,6 +78,7 @@ Every part of the documentation, grouped by what you want to do. Not sure where 
 | [Local quick start](../deployment/local-quickstart.md) | Run a connector on kind in minutes |
 | [Helm chart](../deployment/helm-chart.md) | The values that matter, explained |
 | [Configuration](../deployment/configuration.md) | How settings, environment variables and Helm values relate |
+| [Platforms](../deployment/platforms.md) | AWS, Azure and other Kubernetes platforms; projects that deploy there |
 | [Production checklist](../deployment/production-checklist.md) | Security, availability and operations before go-live |
 | [Upgrades and migrations](../deployment/upgrades.md) | How to upgrade safely; [all migration guides](../migration/index.md) |
 
@@ -90,6 +91,7 @@ Every part of the documentation, grouped by what you want to do. Not sure where 
 | [2. Restrict access with BPN groups](../tutorials/access-control-bpn-groups.md) | Show an offer only to selected partners |
 | [3. Consume data with EDRs](../tutorials/consume-with-edrs.md) | One-call negotiation, EDR cache, token refresh |
 | [4. Write your first extension](../tutorials/first-extension.md) | A working `ServiceExtension` with a setting and a test |
+| [Integrations](../integrations/index.md) | Cloud storage and other technologies: [Amazon S3](../integrations/aws-s3.md), [Azure Blob Storage](../integrations/azure-blob.md) |
 | [Management API walkthrough](../usage/management-api-walkthrough/README.md) | Every Management API resource in depth |
 
 ### Developers

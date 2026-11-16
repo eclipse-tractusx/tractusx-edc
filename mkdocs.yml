@@ -210,6 +210,7 @@ nav:
       - Local quick start (kind): deployment/local-quickstart.md
       - Helm chart: deployment/helm-chart.md
       - Configuration: deployment/configuration.md
+      - Platforms (AWS, Azure, …): deployment/platforms.md
       - Production checklist: deployment/production-checklist.md
       - Upgrades and migrations: deployment/upgrades.md
   - Tutorials:
@@ -218,6 +219,10 @@ nav:
       - 2. Restrict access with BPN groups: tutorials/access-control-bpn-groups.md
       - 3. Consume data with EDRs: tutorials/consume-with-edrs.md
       - 4. Write your first extension: tutorials/first-extension.md
+      - Integrations:
+          - integrations/index.md
+          - Amazon S3: integrations/aws-s3.md
+          - Azure Blob Storage: integrations/azure-blob.md
       - Management API walkthrough:
           - usage/management-api-walkthrough/README.md
           - Assets: usage/management-api-walkthrough/01_assets.md

@@ -8,7 +8,7 @@
     connectors. Tractus-X EDC is a **ready-to-run distribution** of it for Catena-X and other dataspaces: it selects
     the upstream modules, adds EDR management, the consumer proxy, token refresh and DSP 0.8 compatibility, adds
     Catena-X policies and BPN handling as Catena-X extensions, and ships Docker images and Helm charts. See
-    [Overview](overview.md).
+    [Why Tractus-X EDC?](why-tractusx-edc.md).
 
 ??? question "Do I need to write code to use it?"
 
