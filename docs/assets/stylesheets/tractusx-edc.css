@@ -2016,3 +2016,56 @@ html::-webkit-scrollbar-thumb:hover {
     margin: 0 auto 1.2rem;
   }
 }
+
+/* ── Rows with a dropdown: the page link and the arrow are one row ───────────
+   Material marks both the link and the arrow (a label) as active, so each got its
+   own highlight and gold bar, with a seam between them. The row itself carries the
+   hover, pressed and selected looks instead, at every screen width. */
+[dir] .md-nav--primary .md-nav__container > .md-nav__link,
+[dir] .md-nav--primary .md-nav__container > .md-nav__link:is(:hover, :focus, :active) {
+  margin: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+[dir] .md-nav--primary .md-nav__container {
+  transition: background-color 0.15s;
+}
+
+[dir] .md-nav--primary .md-nav__container:hover {
+  background-color: color-mix(in srgb, var(--tx-accent) 7%, transparent);
+}
+
+[dir] .md-nav--primary .md-nav__container:hover > .md-nav__link {
+  color: var(--tx-link);
+}
+
+[dir] .md-nav--primary .md-nav__container:has(> .md-nav__link--active),
+[dir] .md-nav--primary .md-nav__container:has(> a.md-nav__link:active) {
+  background-color: color-mix(in srgb, var(--tx-accent) 20%, transparent);
+  box-shadow: inset 3px 0 0 var(--tx-accent);
+  transition: none;
+}
+
+[dir] .md-nav--primary .md-nav__container:has(> .md-nav__link--active) > a.md-nav__link {
+  font-weight: 700;
+}
+
+/* The arrow keeps a quiet divider from the page link, inside the same row. */
+[dir] .md-nav--primary .md-nav__container > label.md-nav__link {
+  flex: 0 0 auto;
+  border-left: 1px solid color-mix(in srgb, var(--md-default-fg-color) 10%, transparent);
+}
+
+@media screen and (min-width: 76.25em) {
+  /* The tab's title at the top of the index stays a plain, sticky heading. */
+  [dir] .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link.md-nav__container,
+  [dir] .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link.md-nav__container:hover {
+    background-color: var(--md-default-bg-color);
+    box-shadow: none;
+  }
+
+  [dir] .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link.md-nav__container > label.md-nav__link {
+    border-left: 0;
+  }
+}
