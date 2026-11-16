@@ -10,6 +10,9 @@ hide:
 
 # Tractus-X EDC
 
+<!-- The latest release chip is filled in at build time by resources/docs/hooks/release_notes.py. -->
+<p class="tx-chips" markdown="span"><span class="tx-chip tx-chip--java">:fontawesome-brands-java: Java</span><!-- latest-release --></p>
+
 The open-source, production-ready **dataspace connector**. Tractus-X EDC packages the
 [Eclipse Dataspace Components (EDC)](https://github.com/eclipse-edc/Connector) with the extensions, policies and
 identity integration a company needs to share data **in a sovereign and secure way**: in

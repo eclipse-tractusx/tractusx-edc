@@ -48,6 +48,9 @@ from mkdocs.structure.files import File, Files
 
 REPO = "eclipse-tractusx/tractusx-edc"
 CHANGELOG = "changelog/index.md"
+# The landing page shows the latest release as a chip in place of this marker.
+HOME = "index.md"
+LATEST_MARKER = "<!-- latest-release -->"
 RELEASES_URL = f"https://github.com/{REPO}/releases"
 API_URL = f"https://api.github.com/repos/{REPO}/releases?per_page=100&page={{page}}"
 MAX_PAGES = 5
@@ -134,14 +137,43 @@ def _page(releases: list[dict]) -> str:
     return "\n".join(lines) + "\n"
 
 
+_latest: dict | None = None
+
+
+def _version_key(tag: str) -> tuple[int, ...] | None:
+    """(0, 13, 0) for "0.13.0" or "v0.13.0"; None for pre-releases such as "0.14.0-rc1"."""
+    match = re.fullmatch(r"v?(\d+(?:\.\d+)*)", tag or "")
+    return tuple(int(part) for part in match.group(1).split(".")) if match else None
+
+
+def _latest_release(releases: list[dict]) -> dict | None:
+    """The release with the highest version. Not the newest one: a patch of an older line
+    (0.12.3) can be published after a newer release (0.13.0)."""
+    final = [r for r in releases if not r.get("prerelease") and _version_key(r.get("tag_name", ""))]
+    return max(final, key=lambda r: _version_key(r["tag_name"]), default=None)
+
+
+def on_page_markdown(markdown: str, page, **_: object) -> str:
+    """Show the latest release on the landing page."""
+    if page.file.src_uri != HOME or LATEST_MARKER not in markdown or not _latest:
+        return markdown
+    tag = _latest["tag_name"]
+    url = _latest.get("html_url") or f"{RELEASES_URL}/tag/{tag}"
+    chip = (f'<a class="tx-chip tx-chip--release" href="{url}" title="Release notes of {tag}">'
+            f":material-tag-outline: Latest release <strong>{tag}</strong></a>")
+    return markdown.replace(LATEST_MARKER, chip, 1)
+
+
 def on_files(files: Files, config, **_: object) -> Files:
     """Add the generated changelog page to the site."""
+    global _latest
     releases: list[dict] = []
     if os.environ.get("TX_DOCS_OFFLINE") != "1":
         try:
             releases = _fetch_releases()
         except (urllib.error.URLError, TimeoutError, ValueError, OSError) as error:
             log.info("Release notes not loaded (%s); the changelog links to GitHub Releases.", error)
+    _latest = _latest_release(releases)
     if files.get_file_from_path(CHANGELOG) is None:
         files.append(File.generated(config, CHANGELOG, content=_page(releases)))
     return files

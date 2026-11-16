@@ -1200,6 +1200,56 @@ html::-webkit-scrollbar-thumb:hover {
   letter-spacing: -0.035em;
 }
 
+/* Chips under the title: the language and the latest release (filled in at build time). */
+.md-typeset .tx-hero .tx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.9rem;
+}
+
+.md-typeset .tx-hero .tx-chip,
+.md-typeset .tx-hero a.tx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--tx-radius-sm);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.md-typeset .tx-hero .tx-chip .twemoji,
+.md-typeset .tx-hero .tx-chip .twemoji svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.md-typeset .tx-hero .tx-chip--java .twemoji {
+  color: #f89820;
+}
+
+.md-typeset .tx-hero a.tx-chip--release {
+  border-color: rgba(255, 215, 0, 0.35);
+  color: var(--tx-gold);
+  transition: border-color 125ms, background-color 125ms;
+}
+
+.md-typeset .tx-hero a.tx-chip--release strong {
+  color: inherit;
+}
+
+.md-typeset .tx-hero a.tx-chip--release:hover,
+.md-typeset .tx-hero a.tx-chip--release:focus-visible {
+  border-color: var(--tx-gold);
+  background-color: rgba(255, 215, 0, 0.12);
+}
+
 .md-typeset .tx-hero h1 .headerlink {
   display: none;
 }
