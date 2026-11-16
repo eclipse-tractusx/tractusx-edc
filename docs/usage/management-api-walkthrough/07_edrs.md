@@ -30,7 +30,7 @@ Alternatively TractusX-EDC provides a single API to collapse those two processes
 
 Example of negotiating a contract for an asset with a framework agreement policy:
 
-```http request
+```http
 POST /v3/edrs HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
@@ -126,7 +126,7 @@ The Consumer Control Plane can be queried for EDRs by the
 
 Here's an example of querying with `assetId`:
 
-```http request
+```http
 POST /v3/edrs/request HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
@@ -164,7 +164,7 @@ The EDR itself contain also authentication information is stored in the secure v
 Finally, after first obtaining them from the Provider Control Plane and
 then locating in the Consumer Control Plane's cache, they can be retrieved using the `transferProcessId`.
 
-```http request
+```http
 GET /v3/edrs/myTransferProcessId/dataaddress HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
@@ -208,7 +208,7 @@ Three ways are currently supported depending on the use case:
 By using the same API described above and passing a query parameter `auto_refresh=true`, the renewal
 will be done automatically if necessary transparently.
 
-```http request
+```http
 GET /v3/edrs/myTransferProcessId/dataaddress?auto_refresh=true HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
@@ -240,7 +240,7 @@ If/When the transfer process transition to `SUSPENDED`/`TERMINATED` the EDR is a
 However, if needed this endpoint will delete the EDR entry associated with the `transfer-process-id` and it will remove the EDR itself
 from the vault.
 
-```http request
+```http
 DELETE /v3/edrs/myTransferProcessId HTTP/1.1
 Host: https://consumer-control.plane/management
 X-Api-Key: password
@@ -263,7 +263,7 @@ token in the authorization header.
 Note: If the HTTP [Asset](01_assets.md) has been configured to proxy also HTTP verb, query parameters and path segments, 
 they will be forwarded to the backend by the Provider Data Plane:
 
-```http request
+```http
 GET /subroute?foo=bar HTTP/1.1
 Host: https://provider-data.plane/api/public
 Authorization: {{TOKEN}}
@@ -283,7 +283,7 @@ Shell APIs but can be used to connect to any Http-based Asset.
 
 Example:
 
-```http request
+```http
 POST /aas/request HTTP/1.1
 Host: https://consumer-data.plane/proxy
 X-Api-Key: password
@@ -303,7 +303,7 @@ url:
 - `queryParams` query parameters to add to the url
 
 So if the `Edr#endpoint` is `http://provider-data.plane:8080/test`, the following request
-```http request
+```http
 POST /aas/request HTTP/1.1
 Host: https://consumer-data.plane/proxy
 X-Api-Key: password

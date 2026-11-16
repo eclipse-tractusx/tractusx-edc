@@ -112,7 +112,7 @@ Both constraints must be combined using an `and` conjunction.
 
 Policies can be created in the Connector as follows:
 
-```http request
+```http
 POST /v3/policydefinitions HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password

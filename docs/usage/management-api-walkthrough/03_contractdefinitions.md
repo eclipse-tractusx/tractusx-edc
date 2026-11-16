@@ -4,7 +4,7 @@ A Contract Definition is the connection between a set of [Assets](01_assets.md) 
 Policy. The two policies are both policies as explained [previously](02_policies.md) but checked in different
 stages of communication between Data Provider and Data Consumer. The creation request looks like this:
 
-```http request
+```http
 POST /v3/contractdefinitions HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password
