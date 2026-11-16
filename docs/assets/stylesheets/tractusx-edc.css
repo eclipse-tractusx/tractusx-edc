@@ -26,8 +26,9 @@
  * (docs/assets/stylesheets/orange-black-theme.css there): gold #FFD700 on black,
  * a black header with the brand centred and a gold section-tab bar.
  * Component shapes follow the Dataspace Management UI
- * (libs/shared/ui-mui/src/theme): 10 px cards, 8 px buttons, Manrope 800 titles,
- * hairline borders, a soft glow on hover and a visible focus ring.
+ * (libs/shared/ui-mui/src/theme): Manrope 800 titles, hairline borders, a soft glow
+ * on hover and a visible focus ring, with the small Tractus-X corner radius
+ * (4 px controls, 6 px cards).
  *
  *   1. Fonts and tokens          6. Content: typography, code, tables
  *   2. Header                    7. Components: hero, cards, buttons, badges
@@ -70,9 +71,9 @@
   --tx-gray: #1e1e1e; /* Tractus-X gray (Design Guidelines) */
   --tx-gray-button: #232323;
 
-  /* Shapes (Dataspace Management UI) */
-  --tx-radius: 10px;
-  --tx-radius-sm: 8px;
+  /* Shapes: the small Tractus-X corner radius */
+  --tx-radius: 6px;
+  --tx-radius-sm: 4px;
   --tx-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   --tx-header-height: 3rem;
@@ -204,7 +205,7 @@ pre {
   position: relative;
   gap: 0.2rem;
   height: var(--tx-header-height);
-  padding: 0 0.6rem;
+  padding: 0 0.4rem 0 0.2rem;
 }
 
 .md-header__button {
@@ -222,7 +223,11 @@ pre {
   outline: 2px solid var(--tx-gold);
 }
 
-/* Repository facts on the left */
+/* Colour-scheme toggle and repository facts on the left, as on TestLab */
+.md-header__option {
+  order: 1;
+}
+
 .md-header__source {
   order: 1;
   width: auto;
@@ -343,9 +348,11 @@ pre {
     padding: 0;
   }
 
+  /* As wide as the "On this page" column under it (12.1rem minus its 0.2rem
+     margins), with the right edge on the same line. */
   .md-search__inner,
   [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
-    width: 13rem;
+    width: 11.5rem;
   }
 
   .md-search__form {
@@ -372,13 +379,15 @@ pre {
   }
 
   .md-search__icon[for="__search"] {
-    top: 0.33rem;
+    top: 50%;
     left: 0.55rem;
+    transform: translateY(-50%);
     color: rgba(255, 255, 255, 0.72);
   }
 
   .md-search__options {
-    top: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
@@ -549,8 +558,9 @@ pre {
   }
 
   .md-nav--primary .md-nav__link--active:not(.md-nav__container) {
+    border-radius: 0 var(--tx-radius-sm) var(--tx-radius-sm) 0;
     background-color: var(--tx-accent-soft);
-    box-shadow: inset 2px 0 0 var(--tx-accent);
+    box-shadow: inset 3px 0 0 var(--tx-accent);
     font-weight: 700;
   }
 
@@ -869,7 +879,7 @@ pre {
 
 /* Code */
 .md-typeset code {
-  border-radius: 6px;
+  border-radius: 3px;
 }
 
 .md-typeset :not(pre) > code {
@@ -903,7 +913,7 @@ pre {
 }
 
 .md-clipboard {
-  border-radius: 6px;
+  border-radius: var(--tx-radius-sm);
   color: var(--md-default-fg-color--lighter);
 }
 
@@ -912,7 +922,7 @@ pre {
 }
 
 .md-typeset kbd {
-  border-radius: 6px;
+  border-radius: 3px;
 }
 
 /* Content tabs */
@@ -986,7 +996,7 @@ pre {
   margin: 0 0 2.2rem;
   padding: 2.6rem 2.4rem 2.4rem;
   border: 1px solid rgba(255, 215, 0, 0.22);
-  border-radius: calc(var(--tx-radius) * 1.6);
+  border-radius: var(--tx-radius);
   background:
     radial-gradient(ellipse 60% 80% at 100% 0%, rgba(255, 215, 0, 0.28), transparent 60%),
     radial-gradient(ellipse 40% 60% at 0% 100%, rgba(184, 134, 11, 0.18), transparent 70%),
@@ -1016,7 +1026,7 @@ pre {
   margin: 0 0 1rem;
   padding: 0.2rem 0.65rem;
   border: 1px solid rgba(255, 215, 0, 0.35);
-  border-radius: 999px;
+  border-radius: var(--tx-radius-sm);
   background-color: rgba(255, 215, 0, 0.08);
   color: var(--tx-gold);
   font-size: 0.6rem;
@@ -1113,7 +1123,7 @@ pre {
   box-shadow: 0 8px 24px -8px rgba(255, 215, 0, 0.6);
 }
 
-/* Buttons (portal: 8 px radius, gold primary, outlined secondary) */
+/* Buttons (portal: gold primary, outlined secondary, small radius) */
 .md-typeset .md-button {
   display: inline-flex;
   align-items: center;
@@ -1223,6 +1233,75 @@ pre {
   color: var(--tx-accent);
 }
 
+/* Connector KIT panel on the landing page: logo left, text and links right */
+.md-typeset .tx-kit {
+  display: grid;
+  grid-template-columns: minmax(7rem, 10rem) 1fr;
+  gap: 1.6rem;
+  align-items: center;
+  margin: 1em 0 2em;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid var(--tx-border-strong);
+  border-radius: var(--tx-radius);
+  background:
+    radial-gradient(ellipse 50% 90% at 0% 50%, rgba(35, 22, 227, 0.14), transparent 70%),
+    var(--tx-surface);
+}
+
+.md-typeset .tx-kit > p:first-child {
+  margin: 0;
+}
+
+.md-typeset .tx-kit__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 12px 24px rgba(35, 22, 227, 0.25));
+}
+
+.md-typeset .tx-kit__body > :first-child {
+  margin-top: 0;
+}
+
+.md-typeset .tx-kit__body > :last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset .tx-kit__eyebrow {
+  margin: 0 0 0.3rem;
+  color: var(--tx-link);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.md-typeset .tx-kit h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3em;
+  font-weight: 800;
+}
+
+.md-typeset .tx-kit .headerlink {
+  display: none;
+}
+
+.md-typeset .tx-kit .md-button {
+  margin: 0.4rem 0.4rem 0 0;
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-typeset .tx-kit {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+    padding: 1.2rem;
+  }
+
+  .md-typeset .tx-kit__image {
+    max-width: 9rem;
+  }
+}
+
 /* "Time / level" badges at the top of tutorials */
 .tx-badges {
   display: flex;
@@ -1237,7 +1316,7 @@ pre {
   gap: 0.3rem;
   padding: 0.15rem 0.6rem;
   border: 1px solid var(--tx-border-strong);
-  border-radius: 999px;
+  border-radius: var(--tx-radius-sm);
   background-color: var(--tx-accent-soft);
   color: var(--md-default-fg-color);
   font-size: 0.62rem;
@@ -1393,7 +1472,7 @@ pre {
   overflow: auto;
   padding: 2rem;
   border: 1px solid var(--tx-border-strong);
-  border-radius: calc(var(--tx-radius) * 1.4);
+  border-radius: var(--tx-radius);
   background: var(--md-default-bg-color);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
   cursor: default;
@@ -1415,7 +1494,7 @@ pre {
   width: 2.2rem;
   height: 2.2rem;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 50%;
+  border-radius: var(--tx-radius-sm);
   background: rgba(0, 0, 0, 0.5);
   color: #ffffff;
   font-size: 1.3rem;

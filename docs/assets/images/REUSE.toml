@@ -14,3 +14,11 @@ path = ["connector-sensei.jpg"]
 precedence = "closest"
 SPDX-FileCopyrightText = ["2026 Catena-X Automotive Network e.V.", "2026 Contributors to the Eclipse Foundation"]
 SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+# Connector KIT logo, as shown on the Eclipse Tractus-X Connector KIT
+# (https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/adoption-view/).
+path = ["connector-kit.svg"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2024 Contributors to the Eclipse Foundation"
+SPDX-License-Identifier = "CC-BY-4.0"

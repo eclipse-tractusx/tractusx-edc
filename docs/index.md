@@ -108,6 +108,29 @@ The **control plane** negotiates *whether* data may flow: it publishes offers, c
 credentials and records contracts. The **data plane** moves the data once a contract exists. Neither company hands
 its data to a central platform. [Learn more :octicons-arrow-right-24:](home/overview.md)
 
+## Part of the Connector KIT
+
+<div class="tx-kit" markdown>
+
+![Connector KIT](assets/images/connector-kit.svg){ .tx-kit__image width="240" height="224" }
+
+<div class="tx-kit__body" markdown>
+
+<p class="tx-kit__eyebrow">Eclipse Tractus-X Connector KIT</p>
+
+The [Connector KIT](https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/adoption-view/) describes the
+basic infrastructure for cross-enterprise data exchange in a dataspace: the Dataspace Protocol, identities and
+credentials, policies and asset design. **Tractus-X EDC is its reference implementation**: production-ready and in
+use throughout the Catena-X dataspace.
+
+[Open the Connector KIT :octicons-arrow-right-24:](https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/adoption-view/){ .md-button .md-button--primary }
+[Operation view](https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/operation-view/){ .md-button }
+[Development view](https://eclipse-tractusx.github.io/docs-kits/kits/connector-kit/software-development-view/architecture/){ .md-button }
+
+</div>
+
+</div>
+
 ## Popular pages
 
 | I want to… | Go to |

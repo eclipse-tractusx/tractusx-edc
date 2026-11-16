@@ -18,9 +18,10 @@
   Assisted-By: Claude Code (claude-opus-5-5)
 
   Material's partials/header.html (mkdocs-material 9.8), laid out like the
-  Tractus-X TestLab documentation: repository on the left, the logo and
-  "Tractus-X EDC  DOCS" centred, search and the colour-scheme toggle on the
-  right, and the gold section tabs underneath (navigation.tabs.sticky).
+  Tractus-X TestLab documentation: colour-scheme toggle and repository on the
+  left, the logo and "Tractus-X EDC  DOCS" centred, search on the right (as wide
+  as the "On this page" column below it), and the gold section tabs underneath
+  (navigation.tabs.sticky).
   The brand is real markup instead of CSS-generated text, so screen readers
   and copy-paste see it.
 -#}
@@ -37,6 +38,11 @@
       {% set icon = config.theme.icon.menu or "material/menu" %}
       {% include ".icons/" ~ icon ~ ".svg" %}
     </label>
+    {% if config.theme.palette %}
+      {% if not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+      {% endif %}
+    {% endif %}
     {% if config.repo_url %}
       <div class="md-header__source">
         {% include "partials/source.html" %}
@@ -60,11 +66,6 @@
             {% include ".icons/" ~ icon ~ ".svg" %}
           </label>
           {% include "partials/search.html" %}
-        {% endif %}
-      {% endif %}
-      {% if config.theme.palette %}
-        {% if not config.theme.palette is mapping %}
-          {% include "partials/palette.html" %}
         {% endif %}
       {% endif %}
     </div>
