@@ -17,12 +17,11 @@
   SPDX-License-Identifier: Apache-2.0
   Assisted-By: Claude Code (claude-opus-5-5)
 
-  Material's partials/header.html (mkdocs-material 9.8), laid out like the
-  Tractus-X TestLab documentation: colour-scheme toggle and repository on the
-  left, the logo and "Tractus-X EDC  DOCS" centred, the "Ask Connector Sensei"
-  button (extra.sensei in mkdocs.yml) and search on the right (search as wide as
-  the "On this page" column below it), and the gold section tabs underneath
-  (navigation.tabs.sticky).
+  Material's partials/header.html (mkdocs-material 9.8): the logo and
+  "Tractus-X EDC  DOCS" on the left with the repository next to it; on the right
+  the "Ask Connector Sensei" button (extra.sensei in mkdocs.yml), search (as wide
+  as the "On this page" column below it) and the colour-scheme toggle at the end;
+  the gold section tabs underneath (navigation.tabs.sticky).
   The brand is real markup instead of CSS-generated text, so screen readers
   and copy-paste see it.
 -#}
@@ -39,16 +38,6 @@
       {% set icon = config.theme.icon.menu or "material/menu" %}
       {% include ".icons/" ~ icon ~ ".svg" %}
     </label>
-    {% if config.theme.palette %}
-      {% if not config.theme.palette is mapping %}
-        {% include "partials/palette.html" %}
-      {% endif %}
-    {% endif %}
-    {% if config.repo_url %}
-      <div class="md-header__source">
-        {% include "partials/source.html" %}
-      </div>
-    {% endif %}
     <div class="tx-header__brand">
       <a href="{{ home }}" title="{{ config.site_name | e }}" class="md-header__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
         {% include "partials/logo.html" %}
@@ -58,6 +47,11 @@
         <span class="tx-header__tag">Docs</span>
       </a>
     </div>
+    {% if config.repo_url %}
+      <div class="md-header__source">
+        {% include "partials/source.html" %}
+      </div>
+    {% endif %}
     <div class="tx-header__actions">
       {% if config.extra.sensei %}
         <a href="{{ config.extra.sensei.url }}" class="tx-header__sensei" target="_blank" rel="noopener" title="{{ config.extra.sensei.title | e }}">
@@ -76,6 +70,11 @@
         {% endif %}
       {% endif %}
     </div>
+    {% if config.theme.palette %}
+      {% if not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+      {% endif %}
+    {% endif %}
     {% if not config.theme.palette is mapping %}
       {% include "partials/javascripts/palette.html" %}
     {% endif %}

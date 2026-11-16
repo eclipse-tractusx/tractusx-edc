@@ -174,7 +174,7 @@ pre {
   scrollbar-color: var(--md-default-fg-color--lighter) transparent;
 }
 
-/* ── 2. Header: repository left, brand centred, search and toggle right ── */
+/* ── 2. Header: brand and repository left; Sensei, search and toggle right ── */
 
 .md-header {
   background: linear-gradient(135deg, #000000 0%, #141414 100%);
@@ -209,16 +209,19 @@ pre {
   outline: 2px solid var(--tx-gold);
 }
 
-/* Colour-scheme toggle and repository facts on the left, as on TestLab */
+/* Repository next to the brand, behind a thin divider; colour-scheme toggle at the far right */
 .md-header__option {
-  order: 1;
+  order: 4;
 }
 
 .md-header__source {
-  order: 1;
+  order: 2;
   width: auto;
   max-width: 13rem;
-  margin-left: 0;
+  margin-left: 0.5rem;
+  padding-left: 0.6rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  transition: opacity 0.2s, visibility 0.2s;
 }
 
 .md-source {
@@ -243,12 +246,12 @@ pre {
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* Brand: logo, "Tractus-X EDC" and a gold DOCS mark, centred as one unit */
+/* Brand: logo, "Tractus-X EDC" and a gold DOCS mark, as one unit on the left */
 .tx-header__brand {
-  order: 2;
+  order: 1;
   display: inline-flex;
   align-items: center;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
 }
 
@@ -302,6 +305,7 @@ pre {
   align-items: center;
   gap: 0.2rem;
   flex: 0 0 auto;
+  margin-left: auto;
 }
 
 /* "Ask Connector Sensei": a small outlined button with the avatar, in gold on hover */
@@ -373,18 +377,8 @@ pre {
     display: none;
   }
 
-  /* Centre the brand on the bar, whatever sits to its left and right. */
   .tx-header__brand {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    height: var(--tx-header-height);
-    transform: translateX(-50%);
-    flex: 0 0 auto;
-  }
-
-  .tx-header__actions {
-    margin-left: auto;
+    margin-left: 0.2rem;
   }
 
   .md-search {
@@ -393,22 +387,18 @@ pre {
 
   /* At rest as wide as the "On this page" column under it (12.1rem minus its
      0.2rem margins), with the right edge on the same line. Opened, it grows to
-     the left to the width of the results list, leaving room for the toggle and
-     repository on narrower screens; the brand fades out meanwhile. */
+     the left to the width of the results list, leaving room for the brand; the
+     repository fades out meanwhile. */
   .md-search__inner {
     width: 11.5rem;
     transition: width 0.25s cubic-bezier(0.1, 0.7, 0.1, 1);
   }
 
   [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
-    width: min(32rem, 100vw - 20rem);
+    width: min(32rem, 100vw - 17rem);
   }
 
-  .tx-header__brand {
-    transition: opacity 0.2s, visibility 0.2s;
-  }
-
-  [data-md-toggle="search"]:checked ~ .md-header .tx-header__brand {
+  [data-md-toggle="search"]:checked ~ .md-header .md-header__source {
     visibility: hidden;
     opacity: 0;
   }
@@ -1336,6 +1326,12 @@ pre {
 .md-typeset .grid.cards .twemoji,
 .md-typeset .grid.cards .lg {
   color: var(--tx-accent);
+}
+
+/* Icons inside buttons take the button's text colour (a gold arrow vanishes on a gold button) */
+.md-typeset .md-button .twemoji,
+.md-typeset .grid.cards .md-button .twemoji {
+  color: inherit;
 }
 
 /* "Why Tractus-X EDC" points on the landing page: a two-column list of advantages */
