@@ -1742,6 +1742,9 @@ html::-webkit-scrollbar-thumb:hover {
   justify-content: flex-end;
   gap: 0.2rem;
   padding: 0.35rem 0.4rem 0;
+  /* Controls, not text: quick clicks on + or − must not select the zoom level. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .tx-diagram__button {
@@ -1760,6 +1763,8 @@ html::-webkit-scrollbar-thumb:hover {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
+  /* Repeated taps zoom the diagram, not the page. */
+  touch-action: manipulation;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
@@ -1790,6 +1795,8 @@ html::-webkit-scrollbar-thumb:hover {
   overscroll-behavior: contain;
   padding: 0.6rem 0.8rem 0.8rem;
   text-align: center;
+  /* An arrow over the labels instead of the text cursor; a hand once zoomed (below). */
+  cursor: default;
 }
 
 .md-typeset .tx-diagram__viewport > .mermaid {
