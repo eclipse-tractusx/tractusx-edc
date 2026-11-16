@@ -2193,6 +2193,17 @@ html::-webkit-scrollbar-thumb:hover {
     width: 100%;
   }
 
+  /* The drawer covers the page, so the page stays still behind it: one scroll, the
+     menu's, and reaching its end does not scroll the page on. */
+  html:has([data-md-toggle="drawer"]:checked),
+  html:has([data-md-toggle="drawer"]:checked) body {
+    overflow: hidden;
+  }
+
+  .md-nav--primary > .md-nav__list {
+    overscroll-behavior: contain;
+  }
+
   /* With nothing beside the drawer to tap, its title bar shows a close mark (the whole
      bar is Material's close control). */
   .md-nav--primary > .md-nav__title[for="__drawer"] {
