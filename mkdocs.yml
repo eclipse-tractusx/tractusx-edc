@@ -115,8 +115,18 @@ extra_css:
 
 extra_javascript:
   - assets/javascripts/mermaid-zoom.js
+  - assets/javascripts/tiles.js
 
 extra:
+  # "Ask Connector Sensei" button in the header (docs/overrides/partials/header.html).
+  # GitHub documents no URL that preselects a repository's custom agent, so the button
+  # opens the Copilot agents page; there, pick this repository and the Connector Sensei
+  # (.github/agents/connector-sensei.agent.md).
+  sensei:
+    url: https://github.com/copilot/agents
+    title: >-
+      Ask the Connector Sensei, the Tractus-X EDC AI agent, on GitHub Copilot: choose the repository
+      eclipse-tractusx/tractusx-edc and the agent "Connector Sensei"
   # Used by resources/docs/hooks/repo_links.py to turn links that leave docs/ into
   # links to the source on GitHub.
   repo_branch: main
@@ -171,9 +181,12 @@ nav:
   - Home:
       - Welcome: index.md
       - What is Tractus-X EDC?: home/overview.md
+      - Why Tractus-X EDC?: home/why-tractusx-edc.md
+      - Known friends: home/known-friends.md
       - Documentation map: home/documentation-map.md
       - Glossary: home/glossary.md
       - FAQ: home/faq.md
+      - Get help: home/get-help.md
   - Architecture:
       - architecture/index.md
       - Components: architecture/components.md

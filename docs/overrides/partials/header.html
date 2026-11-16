@@ -19,8 +19,9 @@
 
   Material's partials/header.html (mkdocs-material 9.8), laid out like the
   Tractus-X TestLab documentation: colour-scheme toggle and repository on the
-  left, the logo and "Tractus-X EDC  DOCS" centred, search on the right (as wide
-  as the "On this page" column below it), and the gold section tabs underneath
+  left, the logo and "Tractus-X EDC  DOCS" centred, the "Ask Connector Sensei"
+  button (extra.sensei in mkdocs.yml) and search on the right (search as wide as
+  the "On this page" column below it), and the gold section tabs underneath
   (navigation.tabs.sticky).
   The brand is real markup instead of CSS-generated text, so screen readers
   and copy-paste see it.
@@ -58,6 +59,12 @@
       </a>
     </div>
     <div class="tx-header__actions">
+      {% if config.extra.sensei %}
+        <a href="{{ config.extra.sensei.url }}" class="tx-header__sensei" target="_blank" rel="noopener" title="{{ config.extra.sensei.title | e }}">
+          <img src="{{ 'assets/images/connector-sensei.jpg' | url }}" alt="" width="24" height="24">
+          <span>Ask Connector Sensei</span>
+        </a>
+      {% endif %}
       {% if "material/search" in config.plugins %}
         {% set search = config.plugins["material/search"] | attr("config") %}
         {% if search.enabled %}

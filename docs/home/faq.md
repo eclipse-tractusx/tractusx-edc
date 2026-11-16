@@ -83,9 +83,12 @@
 
 ??? question "Where do I get help?"
 
-    Ask in [GitHub Discussions](https://github.com/eclipse-tractusx/tractusx-edc/discussions), report bugs as
+    Join the [Connector Open Meeting](https://eclipse-tractusx.github.io/community/open-meetings#edc-weekly), ask in
+    the [Matrix room](https://chat.eclipse.org/#/room/#tractusx-edc:matrix.eclipse.org) or in
+    [GitHub Discussions](https://github.com/eclipse-tractusx/tractusx-edc/discussions), report bugs as
     [issues](https://github.com/eclipse-tractusx/tractusx-edc/issues), and read
-    [Contributing](../developer/contributing.md) before you open a pull request.
+    [Contributing](../developer/contributing.md) before you open a pull request. [Get help](get-help.md) lists every
+    channel.
 
 ??? question "Who is the Connector Sensei?"
 

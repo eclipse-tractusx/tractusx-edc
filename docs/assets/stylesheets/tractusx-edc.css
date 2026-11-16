@@ -318,6 +318,64 @@ pre {
   flex: 0 0 auto;
 }
 
+/* "Ask Connector Sensei": a small outlined button with the avatar, in gold on hover */
+.tx-header__sensei {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 1.9rem;
+  margin-right: 0.4rem;
+  padding: 0 0.6rem 0 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--tx-radius-sm);
+  color: #ffffff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.tx-header__sensei img {
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.tx-header__sensei:hover,
+.tx-header__sensei:focus-visible {
+  border-color: var(--tx-gold);
+  background-color: rgba(255, 215, 0, 0.1);
+  color: var(--tx-gold);
+}
+
+/* Narrower screens: the avatar alone */
+@media screen and (max-width: 76.234375em) {
+  .tx-header__sensei {
+    padding: 0 0.25rem;
+  }
+
+  .tx-header__sensei span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+[data-md-toggle="search"]:checked ~ .md-header .tx-header__sensei {
+  visibility: hidden;
+}
+
+/* Phones: no room next to the brand; Get help links to the Sensei instead */
+@media screen and (max-width: 59.984375em) {
+  .tx-header__sensei {
+    display: none;
+  }
+}
+
 /* Keep the colour-scheme toggle visible and in place while search is open. */
 [data-md-toggle="search"]:checked ~ .md-header .md-header__option {
   max-width: none;
@@ -551,10 +609,17 @@ pre {
     display: none;
   }
 
-  /* Pages are rows with a little air; the active one is a gold pill. */
-  .md-nav--primary .md-nav__item > .md-nav__link {
-    margin-top: 0.1rem;
-    padding: 0.32rem 0.6rem;
+  /* Pages are full-width rows with no gaps between them, so a click anywhere on a
+     row (not only on its text) opens the page. */
+  [dir] .md-nav--primary .md-nav__item > .md-nav__link,
+  [dir] .md-nav--primary .md-nav__container > .md-nav__link {
+    margin: 0;
+    padding: 0.36rem 0.6rem;
+  }
+
+  .md-nav--primary .md-nav__container > a.md-nav__link {
+    flex: 1 1 auto;
+    padding: 0;
   }
 
   .md-nav--primary .md-nav__link--active:not(.md-nav__container) {
@@ -684,9 +749,9 @@ pre {
     font-size: 0.7rem;
   }
 
-  .md-nav--primary .md-nav__link {
-    margin-top: 0.1rem;
-    padding: 0.35rem 0.5rem;
+  [dir] .md-nav--primary .md-nav__link {
+    margin: 0;
+    padding: 0.4rem 0.5rem;
   }
 
   .md-nav--primary .md-nav__link--active {
@@ -742,8 +807,10 @@ pre {
   }
 
   .md-sidebar--secondary .md-nav__link {
-    margin-top: 0.3rem;
+    margin-top: 0;
     margin-left: -1px;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
     padding-left: 0.6rem;
     border-left: 2px solid transparent;
     border-radius: 0;
@@ -1201,13 +1268,41 @@ pre {
 }
 
 .md-typeset .grid.cards > ul > li > :last-child {
-  margin-top: auto;
   margin-bottom: 0;
+}
+
+/* A closing "→ Go there" link sits at the bottom of the card, so links line up across a row */
+.md-typeset .grid.cards > ul > li > p:last-child:not(:first-child):has(> a:first-child:last-child) {
+  margin-top: auto;
   padding-top: 0.4rem;
 }
 
-.md-typeset .grid.cards > ul > li > :last-child:not(:first-child) a {
+.md-typeset .grid.cards > ul > li > p:last-child:not(:first-child) > a:first-child:last-child {
   font-weight: 700;
+}
+
+/* A card with one destination is clickable as a whole tile (tiles.js marks it):
+   the link's ::after covers the card, so Material's instant navigation still applies. */
+.md-typeset .grid.cards > ul > li.tx-tile {
+  position: relative;
+  cursor: pointer;
+}
+
+.md-typeset .grid.cards > ul > li.tx-tile a.tx-tile__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.md-typeset .grid.cards > ul > li.tx-tile a.tx-tile__link:focus-visible {
+  outline: none;
+}
+
+.md-typeset .grid.cards > ul > li.tx-tile:has(a.tx-tile__link:focus-visible) {
+  outline: 2px solid var(--tx-accent);
+  outline-offset: 2px;
 }
 
 /* The leading icon sits in a soft gold tile */
@@ -1231,6 +1326,49 @@ pre {
 .md-typeset .grid.cards .twemoji,
 .md-typeset .grid.cards .lg {
   color: var(--tx-accent);
+}
+
+/* "Why Tractus-X EDC" points on the landing page: a two-column list of advantages */
+.md-typeset .tx-why > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.6rem;
+  margin: 1em 0;
+  padding: 0;
+  list-style: none;
+}
+
+.md-typeset .tx-why > ul > li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.9rem;
+  margin: 0;
+  padding: 0.6rem 0.8rem 0.6rem 3.1rem;
+  border: 1px solid var(--tx-border);
+  border-radius: var(--tx-radius);
+  background-color: var(--tx-surface);
+  font-size: 0.74rem;
+}
+
+.md-typeset .tx-why > ul > li > .twemoji {
+  position: absolute;
+  top: 50%;
+  left: 0.8rem;
+  display: inline-grid;
+  place-items: center;
+  transform: translateY(-50%);
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: var(--tx-radius-sm);
+  background-color: var(--tx-accent-soft);
+  color: var(--tx-accent);
+}
+
+/* Install tabs on the landing page sit on a card */
+.md-typeset .tx-install > .tabbed-set {
+  margin-top: 0.4em;
+  background-color: var(--tx-surface);
 }
 
 /* Connector KIT panel on the landing page: logo left, text and links right */
