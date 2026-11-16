@@ -74,7 +74,7 @@ dataplane:
     level: INFO
 
 postgresql:
-  jdbcUrl: "jdbc:postgresql://postgres.example.com:5432/edc"
+  jdbcUrl: "jdbc:postgresql://<postgres-host>:5432/edc"
   # credentials: see "Configuration" for passing them as Secrets
 
 vault:
