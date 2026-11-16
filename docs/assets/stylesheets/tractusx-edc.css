@@ -245,7 +245,7 @@ html::-webkit-scrollbar-thumb:hover {
   outline: 2px solid var(--tx-gold);
 }
 
-/* Repository next to the brand, behind a thin divider; colour-scheme toggle at the far right */
+/* Repository next to the brand; colour-scheme toggle at the far right */
 .md-header__option {
   order: 4;
 }
@@ -254,8 +254,6 @@ html::-webkit-scrollbar-thumb:hover {
   order: 2;
   width: auto;
   margin-left: 0.5rem;
-  padding-left: 0.6rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
   transition: opacity 0.2s, visibility 0.2s;
 }
 
