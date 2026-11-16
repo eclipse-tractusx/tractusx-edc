@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="./">
       
       
-        <link rel="next" href="../../coding-principles/">
+        <link rel="next" href="edc-upstream-sources/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>How the skills work - Tractus-X EDC Documentation</title>
+        <title>Skills - Tractus-X EDC Documentation</title>
       
     
     
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-the-connector-sensei-skills-work" class="md-skip">
+        <a href="#skills" class="md-skip">
           Skip to content
         </a>
       
@@ -2457,6 +2457,8 @@
       
         
       
+        
+      
     
     
     
@@ -2518,37 +2520,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    How the skills work
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="./" class="md-nav__link">
         
   
   
@@ -2564,163 +2539,382 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+    </li>
   
+
+              
+            
+              
+                
   
   
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why-split-it-this-way" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why split it this way
-      
-    </span>
-  </a>
   
-</li>
+    
+    
       
-        <li class="md-nav__item">
-  <a href="#the-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The flow
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#anatomy-of-a-skill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Anatomy of a skill
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#design-principles-for-the-scripts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Design principles for the scripts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#worked-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Worked examples
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Worked examples">
-      <ul class="md-nav__list">
         
-          <li class="md-nav__item">
-  <a href="#adopting-upstream-changes-edc-version-bump" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adopting upstream changes (EDC version bump)
-      
-    </span>
-  </a>
-  
-</li>
+          
         
-          <li class="md-nav__item">
-  <a href="#adopting-an-upstream-method-or-deprecation" class="md-nav__link">
-    <span class="md-ellipsis">
       
-        Adopting an upstream method or deprecation
-      
-    </span>
-  </a>
-  
-</li>
         
-          <li class="md-nav__item">
-  <a href="#updating-documentation-for-a-release" class="md-nav__link">
-    <span class="md-ellipsis">
       
-        Updating documentation for a release
-      
-    </span>
-  </a>
-  
-</li>
         
-          <li class="md-nav__item">
-  <a href="#reviewing-a-pull-request" class="md-nav__link">
-    <span class="md-ellipsis">
       
-        Reviewing a pull request
-      
-    </span>
-  </a>
-  
-</li>
         
-      </ul>
-    </nav>
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_7_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#catalog" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Catalog
-      
-    </span>
-  </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#writing-a-new-skill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Writing a new skill
-      
-    </span>
-  </a>
+  <span class="md-ellipsis">
+    
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Limits
-      
-    </span>
-  </a>
+    Skills
   
-</li>
-      
-    </ul>
+
+    
+  </span>
   
-</nav>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_6_7_3" id="__nav_6_7_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_7_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Skills
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="edc-upstream-sources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EDC upstream sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="upstream-edc-bump/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upstream EDC bump
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="setting-lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setting lifecycle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="breaking-change-guard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Breaking-change guard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="new-extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    New extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sql-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL migration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="e2e-test-author/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E2E test author
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="management-api-endpoint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Management API endpoint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="migration-guide-and-adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration guide and ADR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dependencies-and-dash/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependencies and Eclipse Dash
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
       
     </li>
   
@@ -3335,152 +3529,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why-split-it-this-way" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why split it this way
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The flow
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#anatomy-of-a-skill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Anatomy of a skill
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#design-principles-for-the-scripts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Design principles for the scripts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#worked-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Worked examples
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Worked examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#adopting-upstream-changes-edc-version-bump" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adopting upstream changes (EDC version bump)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adopting-an-upstream-method-or-deprecation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adopting an upstream method or deprecation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#updating-documentation-for-a-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Updating documentation for a release
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#reviewing-a-pull-request" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reviewing a pull request
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#catalog" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Catalog
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#writing-a-new-skill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Writing a new skill
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Limits
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -3535,6 +3583,24 @@
   
 
       
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Skills
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
     </ol>
   </nav>
 
@@ -3544,273 +3610,75 @@
                   
 
 
-  
-    <a href="https://github.com/eclipse-tractusx/tractusx-edc/edit/main/docs/development/connector-sensei/skills.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
-    </a>
-  
-  
 
-
-<h1 id="how-the-connector-sensei-skills-work">How the Connector Sensei skills work<a class="headerlink" href="#how-the-connector-sensei-skills-work" title="Permanent link">&para;</a></h1>
-<p>The Sensei's skills split each development task into two parts:</p>
-<ol>
-<li><strong>Deterministic scripts collect the facts.</strong> They answer "what is true in this repository and in upstream EDC right
-   now?": which upstream types changed between two versions, where a setting lives, which migrations are released, which
-   endpoints exist, which dependencies are restricted. The same input always produces the same output. They can be read,
-   reviewed, run by anyone, and run in CI.</li>
-<li><strong>The Sensei turns the facts into recommendations.</strong> It reads the script output together with the code, the specs
-   and the project's decision records. Then it explains what the facts mean, recommends what to do, proposes concrete
-   changes (code, config, migration, docs), and asks for the decisions only a human can make.</li>
-</ol>
-<p><strong>The human decides and reviews.</strong> Nothing is pushed or published without you.</p>
-<!-- TOC -->
-<ul>
-<li><a href="#why-split-it-this-way">Why split it this way</a></li>
-<li><a href="#the-flow">The flow</a></li>
-<li><a href="#anatomy-of-a-skill">Anatomy of a skill</a></li>
-<li><a href="#design-principles-for-the-scripts">Design principles for the scripts</a></li>
-<li><a href="#worked-examples">Worked examples</a></li>
-<li><a href="#catalog">Catalog</a></li>
-<li><a href="#writing-a-new-skill">Writing a new skill</a></li>
-<li><a href="#limits">Limits</a></li>
-</ul>
-<!-- TOC -->
-
-<h2 id="why-split-it-this-way">Why split it this way<a class="headerlink" href="#why-split-it-this-way" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Deterministic script</th>
-<th>Sensei (AI agent)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Good at</td>
-<td>Exhaustive, repeatable fact-finding: diffs, inventories, cross-references, version comparisons</td>
-<td>Interpretation, prioritisation, explaining <em>why</em>, adapting a pattern to a new case, writing prose and code</td>
-</tr>
-<tr>
-<td>Weak at</td>
-<td>Judgement, context, "is this acceptable?"</td>
-<td>Remembering facts precisely: upstream EDC renames things often (IATP→DCP, DIM→DIV, <code>v4alpha</code>→<code>v3</code>, DSP 0.8→2025-1), and memory goes stale</td>
-</tr>
-<tr>
-<td>Output</td>
-<td>Reports with severities and <code>path:line</code></td>
-<td>Recommendations, patches, documents, questions</td>
-</tr>
-<tr>
-<td>Trust model</td>
-<td>Inspect the script once, then trust its output</td>
-<td>Check its evidence, review its proposal</td>
-</tr>
-</tbody>
-</table>
-<p>Scripts alone tell you <em>that</em> <code>ContractAgreement</code> changed upstream, but not what to do about it. An agent alone guesses
-from memory, and is often wrong about a fast-moving codebase. Together, the agent's reasoning starts from complete and
-current facts, and every recommendation can be traced back to them.</p>
-<h2 id="the-flow">The flow<a class="headerlink" href="#the-flow" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>flowchart LR
-    D([Developer]) --&gt;|"request: e.g. 'plan the EDC 0.18 upgrade'"| S[Connector Sensei]
-    S --&gt;|loads matching skill| K[SKILL.md&lt;br/&gt;procedure + checklist]
-    K --&gt;|runs| X[[Deterministic script&lt;br/&gt;e.g. bump-impact.sh]]
-    X --&gt;|facts: report with&lt;br/&gt;severities and path:line| S
-    S --&gt;|reads code, upstream sources,&lt;br/&gt;specs, ADRs| E[(Evidence)]
-    S --&gt;|recommendation,&lt;br/&gt;proposed changes, questions| D
-    D --&gt;|reviews, decides, commits| P[Pull request]
-    P --&gt;|same scripts can run in CI&lt;br/&gt;e.g. bc-scan.sh --strict| C{{CI}}</code></pre>
-<ol>
-<li>You describe the goal in your own words.</li>
-<li>The Sensei matches it to a skill from the skill's <code>description</code> and loads its <code>SKILL.md</code>.</li>
-<li>It runs the skill's script(s) and reads the report.</li>
-<li>It verifies and deepens the facts by opening the code the report points to, the upstream sources at the pinned
-   version (<code>edc-upstream-sources</code>), the specs and the decision records.</li>
-<li>It answers with a recommendation and the concrete next step. When you ask, it implements the change, again
-   following the skill's checklist.</li>
-<li>You review. The same deterministic checks can guard the PR in CI.</li>
-</ol>
-<h2 id="anatomy-of-a-skill">Anatomy of a skill<a class="headerlink" href="#anatomy-of-a-skill" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>.claude/skills/&lt;skill-name&gt;/
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── SKILL.md          # front matter (name, description) + procedure, conventions, checklist, pitfalls
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>└── scripts/
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    └── &lt;tool&gt;.sh     # deterministic helper(s): read-only unless they explicitly scaffold new files
-</span></code></pre></div>
-<ul>
-<li><strong><code>description</code></strong> (front matter) decides <em>when</em> the skill is used. It names the task and the trigger phrases
-  ("upgrade EDC", "rename a setting", "is this breaking?").</li>
-<li><strong>The <code>SKILL.md</code> body</strong> is the procedure the Sensei follows: where the truth lives in this repo, the house conventions
-  (naming, versioning, deprecation, docs format), a checklist, and how to debug typical failures.</li>
-<li><strong>The scripts</strong> are the deterministic part. The procedure says when to run them and how to read their output.</li>
-</ul>
-<p>Claude Code and GitHub Copilot both load skills from <code>.claude/skills/</code>. One copy serves both tools.</p>
-<h2 id="design-principles-for-the-scripts">Design principles for the scripts<a class="headerlink" href="#design-principles-for-the-scripts" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Evidence, version-pinned.</strong> Upstream facts come from the exact EDC version in <code>gradle/libs.versions.toml</code>, read from
-   sources jars (Gradle cache or Maven Central). Local clones and memory are never the source.</li>
-<li><strong>Read-only by default.</strong> Scripts never modify existing repository files. Scaffolding commands only create new files
-   and print the remaining manual steps.</li>
-<li><strong>Reproduce CI where CI exists.</strong> <code>dash-check.sh</code> builds the dependency list with the same Gradle tasks as
-   <code>.github/actions/generate-and-check-dependencies</code>. <code>e2e.sh run</code> uses the CI test tags. <code>bc-scan.sh</code> checks what the
-   helm-docs and Checkstyle jobs would reject.</li>
-<li><strong>Honest heuristics.</strong> Where a script guesses (e.g. "this looks like a removed setting"), it says so and grades the
-   finding (BLOCKER, BREAKING, HIGH, WARN). The Sensei is told to confirm each finding.</li>
-<li><strong>Output for humans and agents.</strong> Plain text tables, one finding per line, <code>path:line</code>, severities, and links to the
-   next step.</li>
-<li><strong>Portable.</strong> bash 3.2+ (stock macOS) and Linux, standard tools only, no new build dependencies.</li>
-<li><strong>Tested against real history.</strong> Each script was validated on past changes of this repository, for example:</li>
-<li><code>bump-impact.sh 0.16.0 0.17.0</code> finds the <code>claims</code> columns that became <code>V1_9_0__Add_ClaimsColumn.sql</code>, and the newly
-     deprecated <code>EndpointDataReferenceEntry</code>.</li>
-<li><code>bc-scan.sh</code> reproduces the breaking changes of the IATP→DCP rename (#2684) and the participant-id change (#2742).</li>
-<li><code>dash-check.sh</code> reproduces CI's result: 464 coordinates, 456 approved, 8 restricted.</li>
-</ol>
-<h2 id="worked-examples">Worked examples<a class="headerlink" href="#worked-examples" title="Permanent link">&para;</a></h2>
-<h3 id="adopting-upstream-changes-edc-version-bump">Adopting upstream changes (EDC version bump)<a class="headerlink" href="#adopting-upstream-changes-edc-version-bump" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>"Plan the upgrade from EDC 0.17.0 to 0.18.0."</p>
-</blockquote>
-<ol>
-<li><strong>Facts.</strong> <code>bump-impact.sh 0.17.0 0.18.0</code> lists the upstream types Tractus-X imports that were removed, moved or
-   changed (ranked by how many Tractus-X files use them), upstream settings removed or added, and SQL schema deltas.</li>
-<li><strong>Recommendation.</strong> The Sensei reads the diffs (<code>edc-src.sh diff &lt;Type&gt; 0.17.0 0.18.0</code>) for the high-impact types
-   and the release notes. It groups the work: compile fixes, behaviour changes in overridden areas (DSP 0.8 backports,
-   DCP, policy), new Flyway migrations for each schema delta, settings for the migration guide.</li>
-<li><strong>Proposal.</strong> On request it applies the bump, fixes compile errors type by type, creates migrations with
-   <code>migrations.sh new connector …</code>, and drafts the migration-guide section.</li>
-<li><strong>Guard.</strong> <code>bc-scan.sh</code> and the test suites confirm nothing else broke.</li>
-</ol>
-<h3 id="adopting-an-upstream-method-or-deprecation">Adopting an upstream method or deprecation<a class="headerlink" href="#adopting-an-upstream-method-or-deprecation" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>"Upstream deprecated <code>EndpointDataReferenceEntry</code>. What should we do?"</p>
-</blockquote>
-<ol>
-<li><strong>Facts.</strong> <code>edc-src.sh diff EndpointDataReferenceEntry 0.16.0 0.17.0</code> shows <code>@Deprecated(since =
-   "management-api:v3")</code>. <code>bump-impact.sh</code> shows that 7 Tractus-X main-code files (14 including tests) import it.</li>
-<li><strong>Recommendation.</strong> The Sensei looks up the replacement upstream (<code>edc-src.sh grep</code>), compares it with how
-   Tractus-X uses the type (EDR API, EDR callback, token refresh), and proposes a migration path. That includes whether
-   the Tractus-X <code>/v3/edrs</code> API contract changes for clients.</li>
-<li><strong>Decision for you.</strong> Adopt now or in the next minor, and whether a deprecation period for clients is needed.</li>
-</ol>
-<h3 id="updating-documentation-for-a-release">Updating documentation for a release<a class="headerlink" href="#updating-documentation-for-a-release" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>"Draft the 0.13 → 0.14 migration guide."</p>
-</blockquote>
-<ol>
-<li><strong>Facts.</strong> <code>draft-migration-guide.sh --branch HEAD</code> collects the breaking-change scan against <code>0.13.0</code>, the
-   upstream version change, new migrations, and user-facing commits since the release. On the current branch it surfaced
-   the removed Helm value <code>postgresql.persistence.storageClass</code>.</li>
-<li><strong>Recommendation.</strong> The Sensei turns each relevant item into a numbered section in the house style, fills
-   old→new tables with <code>setting-trace.sh</code>, and lists what it dropped and why.</li>
-<li><strong>Decision for you.</strong> Which items operators really need, and the wording.</li>
-</ol>
-<h3 id="reviewing-a-pull-request">Reviewing a pull request<a class="headerlink" href="#reviewing-a-pull-request" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>"Review PR #1234."</p>
-</blockquote>
-<ol>
-<li><strong>Facts.</strong> <code>bc-scan.sh &lt;base&gt;</code> reports released migrations edited, removed settings, Helm values, env vars and API
-   paths, protocol-surface changes, and missing follow-ups.</li>
-<li><strong>Recommendation.</strong> The Sensei confirms each finding in the diff and adds what the scanner cannot see (JSON-LD shape
-   changes, semantics, security). It proposes fixes, such as deprecating instead of removing, or adding a migration
-   instead of editing one.</li>
-<li><strong>Decision for you.</strong> Approve, request changes, or post comments (it drafts them; you post).</li>
-</ol>
-<h2 id="catalog">Catalog<a class="headerlink" href="#catalog" title="Permanent link">&para;</a></h2>
-<p>See <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/.claude/skills/README.md"><code>.claude/skills/README.md</code></a> for every implemented skill with its script, and for the
-planned skills (<code>cx-policy-constraint</code>, <code>connector-log-triage</code>, <code>multi-dataspace-split</code>), which are documented as
-designs only.</p>
+<h1 id="skills">Skills<a class="headerlink" href="#skills" title="Permanent link">&para;</a></h1>
+<p>The skills are the procedures and scripts the <a href="../">Connector Sensei</a> works with. Each one is a folder
+in <a href="https://github.com/eclipse-tractusx/tractusx-edc/tree/main/.claude/skills"><code>.claude/skills/</code></a> with a <code>SKILL.md</code>, which Claude Code and GitHub
+Copilot load when a request matches its description, and usually a <code>scripts/</code> folder with a tested, read-only
+script you can also run yourself. <a href="./">How the skills work</a> explains the idea.</p>
+<p>This page and the pages of the skills are generated from the <code>SKILL.md</code> files when the site is built.</p>
 <table>
 <thead>
 <tr>
 <th>Skill</th>
-<th>Deterministic part (facts)</th>
-<th>Sensei's part (judgement)</th>
+<th>Use it for</th>
+<th>Scripts</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>edc-upstream-sources</code></td>
-<td>Upstream class, schema or setting at an exact version; diffs between versions</td>
-<td>What the upstream behaviour means for Tractus-X</td>
+<td><a href="edc-upstream-sources/">edc-upstream-sources</a></td>
+<td>Read, search and diff upstream Eclipse EDC (org.eclipse.edc) source code and SQL schemas at the exact version Tractus-X EDC depends on, or any other version.</td>
+<td><code>edc-src.sh</code></td>
 </tr>
 <tr>
-<td><code>upstream-edc-bump</code></td>
-<td>Removed, moved and changed types; settings and schema deltas</td>
-<td>Upgrade plan, fixes, backports, migrations</td>
+<td><a href="upstream-edc-bump/">upstream-edc-bump</a></td>
+<td>Upgrade Tractus-X EDC to a new upstream Eclipse EDC version (the <code>edc</code> entry in gradle/libs.versions.toml).</td>
+<td><code>bump-impact.sh</code></td>
 </tr>
 <tr>
-<td><code>setting-lifecycle</code></td>
-<td>Every place a setting lives (code, env, Helm, docs, guides, tests)</td>
-<td>Rename and deprecation strategy, chart and doc changes</td>
+<td><a href="setting-lifecycle/">setting-lifecycle</a></td>
+<td>Add, rename, deprecate, remove or look up a Tractus-X EDC configuration setting end to end, covering the @Setting declaration, env var, Helm template, values.yaml, helm-docs README, extension README, migration guide and tests.</td>
+<td><code>setting-trace.sh</code></td>
 </tr>
 <tr>
-<td><code>breaking-change-guard</code></td>
-<td>Graded findings for a change set</td>
-<td>Confirm, add what is missing, propose fixes</td>
+<td><a href="breaking-change-guard/">breaking-change-guard</a></td>
+<td>Review a Tractus-X EDC change set (branch, PR or working tree) for changes that break operators, adopters or other dataspace participants, and for missing follow-ups.</td>
+<td><code>bc-scan.sh</code></td>
 </tr>
 <tr>
-<td><code>new-extension</code></td>
-<td>A module scaffold that builds green</td>
-<td>Placement (generic vs <code>cx-</code>), design, wiring</td>
+<td><a href="new-extension/">new-extension</a></td>
+<td>Create a new Tractus-X EDC extension or SPI module the way this repository does it.</td>
+<td><code>scaffold-extension.sh</code></td>
 </tr>
 <tr>
-<td><code>sql-migration</code></td>
-<td>Folder status, next version, new file</td>
-<td>DDL/DML, idempotency, rollout</td>
+<td><a href="sql-migration/">sql-migration</a></td>
+<td>Create, review or debug Tractus-X EDC PostgreSQL Flyway migrations (edc-extensions/migrations).</td>
+<td><code>migrations.sh</code></td>
 </tr>
 <tr>
-<td><code>e2e-test-author</code></td>
-<td>Suite map, test scaffold, CI-equivalent run</td>
-<td>Scenario design, fixtures, de-flaking</td>
+<td><a href="e2e-test-author/">e2e-test-author</a></td>
+<td>Write, run and debug Tractus-X EDC end-to-end tests (edc-tests/e2e/*) that start real consumer and provider connector runtimes, with Postgres, DCP, Kafka or cloud storage via Testcontainers.</td>
+<td><code>e2e.sh</code></td>
 </tr>
 <tr>
-<td><code>management-api-endpoint</code></td>
-<td>Endpoint inventory (context, tests, docs, deprecation)</td>
-<td>API design, versioning, validation, docs</td>
+<td><a href="management-api-endpoint/">management-api-endpoint</a></td>
+<td>Add, change, version or deprecate a Tractus-X EDC HTTP endpoint (Management API extensions such as /v3/edrs, /v3/business-partner-groups, /v3/connectordiscovery, /v3/dataflows, or data plane public, proxy and token APIs).</td>
+<td><code>api-inventory.sh</code></td>
 </tr>
 <tr>
-<td><code>migration-guide-and-adr</code></td>
-<td>Evidence since the last release; ADR skeleton</td>
-<td>The guide and decision text</td>
+<td><a href="migration-guide-and-adr/">migration-guide-and-adr</a></td>
+<td>Write Tractus-X EDC migration guides (docs/migration/<em>.md) and architecture decision records (docs/development/decision-records/</em>/README.md) in the repository's exact format, drafted from evidence (breaking-change scan, upstream version change, new DB migrations, commits since the last release).</td>
+<td><code>draft-migration-guide.sh</code>, <code>new-adr.sh</code></td>
 </tr>
 <tr>
-<td><code>dependencies-and-dash</code></td>
-<td>CI-equivalent dependency list, Dash result, diff vs published</td>
-<td>Alternatives, pinning, IP review path</td>
+<td><a href="dependencies-and-dash/">dependencies-and-dash</a></td>
+<td>Check third-party dependency licenses for Tractus-X EDC with Eclipse Dash before merging.</td>
+<td><code>dash-check.sh</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="writing-a-new-skill">Writing a new skill<a class="headerlink" href="#writing-a-new-skill" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Pick a recurring task</strong> with a clear fact-finding part. Look at what PRs and reviews repeatedly need (<code>git log</code>,
-   review comments).</li>
-<li><strong>Write the script first.</strong></li>
-<li>Deterministic and read-only, or explicit scaffolding.</li>
-<li><code>--help</code> text in the header comment.</li>
-<li><code>set -euo pipefail</code>, and avoid <code>grep -q</code> in pipelines (SIGPIPE under <code>pipefail</code> yields false negatives).</li>
-<li>bash 3.2 compatible.</li>
-<li>The license header with the AI disclosure block, if AI-assisted.</li>
-<li><strong>Validate it on real history.</strong> Run it against past commits or releases where you know the right answer, and keep
-   the results for the PR description.</li>
-<li><strong>Write <code>SKILL.md</code>.</strong> A precise <code>description</code> with trigger phrases, then where the truth lives, the procedure, the
-   house conventions, a checklist and the debugging tips. Keep it under about 200 lines and link, rather than copy,
-   long docs.</li>
-<li><strong>Register it.</strong> Add it to <code>.claude/skills/README.md</code>, the skill table in both agent files, and
-   <code>.github/copilot-instructions.md</code>.</li>
-<li><strong>Consider CI.</strong> If the script's output is a pass/fail gate, it can also run in a workflow (for example
-   <code>bc-scan.sh --strict</code> on PRs). That is a separate decision for the maintainers.</li>
-</ol>
-<h2 id="limits">Limits<a class="headerlink" href="#limits" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Scripts are heuristics where they say so. A clean <code>bc-scan.sh</code> does not prove a change is compatible; the Sensei's
-  review and the compatibility and TCK tests do the rest.</li>
-<li>Some checks need Docker (E2E, Postgres) or network access (upstream sources, Eclipse Dash).</li>
-<li>The Sensei proposes. Contributors remain responsible for what they submit, including the AI disclosure and the review
-  it attests to.</li>
-</ul>
+<p>Planned skills are described in the <a href="https://github.com/eclipse-tractusx/tractusx-edc/blob/main/.claude/skills/README.md">skills catalog</a>.</p>
 
 
 
@@ -3848,7 +3716,7 @@ designs only.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Connector Sensei">
+          <a href="./" class="md-footer__link md-footer__link--prev" aria-label="Previous: How the skills work">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -3858,20 +3726,20 @@ designs only.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Connector Sensei
+                How the skills work
               </div>
             </div>
           </a>
         
         
           
-          <a href="../../coding-principles/" class="md-footer__link md-footer__link--next" aria-label="Next: Coding principles">
+          <a href="edc-upstream-sources/" class="md-footer__link md-footer__link--next" aria-label="Next: EDC upstream sources">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Coding principles
+                EDC upstream sources
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -3893,7 +3761,7 @@ designs only.</p>
     <strong>Written with AI.</strong>
     This documentation was generated with the help of
     <a href="../">Connector Sensei</a>, an AI agent, and may contain
-    mistakes. Found one? <a href="https://github.com/eclipse-tractusx/tractusx-edc/issues/new?labels=documentation&title=docs%3A%20mistake%20on%20%22How%20the%20skills%20work%22&body=Page%3A%20https%3A//eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/%0A%0AWhat%20is%20wrong%3A%0A%0AWhat%20it%20should%20say%20%28with%20a%20link%20to%20the%20code%20or%20spec%2C%20if%20you%20have%20one%29%3A%0A" target="_blank" rel="noopener">Open an issue</a> and we will fix it.
+    mistakes. Found one? <a href="https://github.com/eclipse-tractusx/tractusx-edc/issues/new?labels=documentation&title=docs%3A%20mistake%20on%20%22Skills%22&body=Page%3A%20https%3A//eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/%0A%0AWhat%20is%20wrong%3A%0A%0AWhat%20it%20should%20say%20%28with%20a%20link%20to%20the%20code%20or%20spec%2C%20if%20you%20have%20one%29%3A%0A" target="_blank" rel="noopener">Open an issue</a> and we will fix it.
   </div>
 </div>
 <div class="md-copyright">

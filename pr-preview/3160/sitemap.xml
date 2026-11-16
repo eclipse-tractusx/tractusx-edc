@@ -516,4 +516,48 @@
          <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/changelog/</loc>
          <lastmod>2026-11-16</lastmod>
     </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/edc-upstream-sources/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/upstream-edc-bump/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/setting-lifecycle/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/breaking-change-guard/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/new-extension/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/sql-migration/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/e2e-test-author/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/management-api-endpoint/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/migration-guide-and-adr/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
+    <url>
+         <loc>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/3160/development/connector-sensei/skills/dependencies-and-dash/</loc>
+         <lastmod>2026-11-16</lastmod>
+    </url>
 </urlset>
