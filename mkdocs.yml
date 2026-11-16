@@ -102,6 +102,7 @@ plugins:
 hooks:
   - resources/docs/hooks/repo_links.py
   - resources/docs/hooks/generated_indexes.py
+  - resources/docs/hooks/release_notes.py
   - resources/docs/hooks/mermaid_theme.py
 
 validation:
@@ -254,6 +255,7 @@ nav:
       - APIs: reference/apis.md
       - Extension catalogue: reference/extensions.md
       - JSON-LD and namespaces: reference/json-ld.md
+      - Changelog: changelog/index.md
       - Migration guides: migration/index.md
 
 copyright: >-

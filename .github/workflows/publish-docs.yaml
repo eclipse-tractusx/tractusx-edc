@@ -22,7 +22,9 @@
 
 ---
 # Builds the MkDocs documentation site (mkdocs.yml, docs/) on every pull request that
-# touches it, and publishes it to GitHub Pages from main.
+# touches it, and publishes it to GitHub Pages from main. It also runs when a release is
+# published, so the changelog page (generated from GitHub Releases by
+# resources/docs/hooks/release_notes.py) always lists the latest release.
 #
 # The gh-pages branch is shared: it also serves the Helm repository (index.yaml), the
 # Swagger UIs (openapi/), the JSON-LD contexts (context/), DEPENDENCIES and the Allure
@@ -44,6 +46,8 @@ on:
       - 'mkdocs.yml'
       - 'resources/docs/**'
       - '.github/workflows/publish-docs.yaml'
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -61,6 +65,8 @@ jobs:
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # A release event points at the tag; the site is always built from main.
+          ref: ${{ github.event_name == 'release' && 'main' || '' }}
           persist-credentials: false
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -74,6 +80,8 @@ jobs:
       - name: Build site
         env:
           NO_MKDOCS_2_WARNING: '1'
+          # Read-only token for the GitHub API (release notes); avoids the anonymous rate limit.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mkdocs build --strict --site-dir site
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -85,7 +93,9 @@ jobs:
   deploy:
     name: Publish to GitHub Pages
     needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.repository == 'eclipse-tractusx/tractusx-edc'
+    if: >-
+      github.repository == 'eclipse-tractusx/tractusx-edc' &&
+      (github.event_name == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/main'))
     runs-on: ubuntu-latest
     permissions:
       contents: write

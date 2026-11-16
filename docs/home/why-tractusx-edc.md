@@ -19,7 +19,7 @@ dataspace that speaks DSP and DCP, through [dataspace extensions](../dataspaces/
     Released control plane, data plane and in-memory runtimes, as OSS images on
     [Docker Hub](https://hub.docker.com/u/tractusx): multi-architecture, non-root, for every release.
 
-    <a class="tx-oss-badge" href="https://hub.docker.com/u/tractusx" title="The tractusx images on Docker Hub are part of Docker's Sponsored Open Source program">:material-check-decagram: Sponsored OSS</a>
+    <a class="tx-oss-badge" href="https://hub.docker.com/u/tractusx" title="The tractusx images on Docker Hub are part of Docker's Sponsored Open Source program">:material-check-decagram: Docker Sponsored OSS</a>
 
 -   :material-kubernetes: **Helm charts**
 

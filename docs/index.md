@@ -20,6 +20,7 @@ speaks the Dataspace Protocol. Every part is an extension, so you can add the ru
 [Get started :material-rocket-launch-outline:](home/overview.md){ .md-button .md-button--primary }
 [Deploy a connector :material-kubernetes:](deployment/index.md){ .md-button }
 [Read the code :fontawesome-brands-github:](https://github.com/eclipse-tractusx/tractusx-edc){ .md-button }
+[Join the open meeting :material-video-outline:](https://eclipse-tractusx.github.io/community/open-meetings#edc-weekly){ .md-button }
 
 </div>
 
@@ -286,7 +287,9 @@ use throughout the Catena-X dataspace, and reused by other dataspaces such as Co
 | Write a Catena-X compliant policy | [Catena-X policies](architecture/policies.md) |
 | Understand EDRs and token refresh | [EDRs and token refresh](architecture/edr-and-token-refresh.md) |
 | Configure the Helm chart | [Helm chart](deployment/helm-chart.md) |
-| Upgrade to a new release | [Upgrades and migrations](deployment/upgrades.md) |
+| Upgrade to a new release | [Upgrades and migrations](deployment/upgrades.md), [Changelog](changelog/index.md) |
+| Run it in production | [Production checklist](deployment/production-checklist.md), [Tune for production](operations/tuning.md) |
+| Use it in another dataspace | [Supported dataspaces](dataspaces/index.md), [Create a dataspace extension](dataspaces/create-extension.md) |
 | Fix a failing negotiation or transfer | [Troubleshooting](operations/troubleshooting.md) |
 | Write my own extension | [Tutorial 4: your first extension](tutorials/first-extension.md) |
 | Find every page | [Documentation map](home/documentation-map.md) |
@@ -325,13 +328,21 @@ use throughout the Catena-X dataspace, and reused by other dataspaces such as Co
 
     [Open the chat :octicons-arrow-right-24:](https://chat.eclipse.org/#/room/#tractusx-edc:matrix.eclipse.org){ .md-button .md-button--primary }
 
+-   :material-bug-outline: **Open an issue**
+
+    ---
+
+    Found a bug or missing a feature? Tell us on GitHub, with the version you run and the steps to reproduce it.
+
+    [Open an issue :octicons-arrow-right-24:](https://github.com/eclipse-tractusx/tractusx-edc/issues/new/choose){ .md-button .md-button--primary }
+
 </div>
 
 Tractus-X EDC is developed in the open by the [Eclipse Tractus-X](https://eclipse-tractusx.github.io/) project.
 Releases, Docker images and Helm charts are published from
-[GitHub](https://github.com/eclipse-tractusx/tractusx-edc/releases). Longer questions go to
-[GitHub Discussions](https://github.com/eclipse-tractusx/tractusx-edc/discussions), bugs and feature requests to
-[GitHub Issues](https://github.com/eclipse-tractusx/tractusx-edc/issues).
+[GitHub](https://github.com/eclipse-tractusx/tractusx-edc/releases), and every release is listed in the
+[changelog](changelog/index.md). Longer questions go to
+[GitHub Discussions](https://github.com/eclipse-tractusx/tractusx-edc/discussions).
 
 [All channels :octicons-arrow-right-24:](home/get-help.md){ .md-button }
 [GitHub Discussions :fontawesome-brands-github:](https://github.com/eclipse-tractusx/tractusx-edc/discussions){ .md-button }
