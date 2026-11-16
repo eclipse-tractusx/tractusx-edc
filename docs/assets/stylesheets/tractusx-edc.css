@@ -401,16 +401,30 @@ pre {
     margin-left: auto;
   }
 
-  /* A search field of constant size: it neither grows on focus nor moves. */
   .md-search {
     padding: 0;
   }
 
-  /* As wide as the "On this page" column under it (12.1rem minus its 0.2rem
-     margins), with the right edge on the same line. */
-  .md-search__inner,
-  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
+  /* At rest as wide as the "On this page" column under it (12.1rem minus its
+     0.2rem margins), with the right edge on the same line. Opened, it grows to
+     the left to the width of the results list, leaving room for the toggle and
+     repository on narrower screens; the brand fades out meanwhile. */
+  .md-search__inner {
     width: 11.5rem;
+    transition: width 0.25s cubic-bezier(0.1, 0.7, 0.1, 1);
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
+    width: min(32rem, 100vw - 20rem);
+  }
+
+  .tx-header__brand {
+    transition: opacity 0.2s, visibility 0.2s;
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .tx-header__brand {
+    visibility: hidden;
+    opacity: 0;
   }
 
   .md-search__form {
@@ -461,12 +475,12 @@ pre {
     color: var(--md-default-fg-color);
   }
 
-  /* Results open under the field, as wide as a readable list. */
+  /* Results open under the field, exactly as wide as it. */
   .md-search__output {
     top: 1.9rem;
     right: 0;
-    left: auto;
-    width: 32rem;
+    left: 0;
+    width: auto;
     border-radius: 0 0 var(--tx-radius) var(--tx-radius);
     box-shadow: var(--md-shadow-z3);
   }
