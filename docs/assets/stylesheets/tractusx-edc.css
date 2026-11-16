@@ -1,0 +1,708 @@
+/********************************************************************************
+ * Copyright (c) 2026 Catena-X Automotive Network e.V.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Assisted-By: GitHub Copilot (claude-opus-5.5)
+ ********************************************************************************/
+
+/*
+ * Tractus-X documentation theme for MkDocs Material: gold on black, as used by the
+ * Tractus-X TestLab documentation (orange-black-theme.css), with a local font stack
+ * and contrast-safe link colours for the light scheme.
+ */
+
+:root {
+  --tx-gold: #ffd700;
+  --tx-gold-light: #ffeb3b;
+  --tx-gold-dark: #b8860b;
+  --tx-gold-ink: #7a5c00;
+  --tx-black: #000000;
+
+  --md-primary-fg-color: var(--tx-gold);
+  --md-primary-fg-color--light: var(--tx-gold-light);
+  --md-primary-fg-color--dark: var(--tx-gold-dark);
+  --md-primary-bg-color: #111111;
+  --md-accent-fg-color: var(--tx-gold-dark);
+  --md-accent-fg-color--transparent: rgba(255, 215, 0, 0.1);
+
+  --md-text-font-family: "Manrope", "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --md-code-font-family: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+[data-md-color-scheme="default"] {
+  --md-typeset-a-color: var(--tx-gold-ink);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #1a1a1a;
+  --md-default-fg-color: #e0e0e0;
+  --md-default-bg-color--light: #242424;
+  --md-default-bg-color--lighter: #2a2a2a;
+  --md-default-bg-color--lightest: #303030;
+  --md-code-bg-color: #262626;
+  --md-code-fg-color: #f8f8f2;
+  --md-footer-bg-color: #0a0a0a;
+  --md-footer-fg-color: #ffffff;
+  --md-typeset-a-color: var(--tx-gold);
+  --md-accent-fg-color: var(--tx-gold-light);
+}
+
+body,
+input {
+  font-family: var(--md-text-font-family);
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--md-code-font-family);
+}
+
+/* ── Header: brand left, fixed search and actions right ─────────────────── */
+.md-header {
+  background: #0b0b0b;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.35);
+  box-shadow: none;
+}
+
+.md-header--shadow {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.md-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 3rem;
+  padding: 0 0.6rem;
+}
+
+.tx-header__brand {
+  order: 1;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.md-header__button.md-logo {
+  margin: 0;
+  padding: 0.2rem 0.1rem;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.5rem;
+  width: auto;
+}
+
+/* Material shows the logo only on wide screens; keep it visible everywhere. */
+@media screen and (max-width: 76.234375em) {
+  .md-header__button.md-logo {
+    display: inline-block;
+  }
+}
+
+.md-header__title {
+  margin: 0 0 0 0.3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 3rem;
+  flex-grow: 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-header__title .md-header__ellipsis {
+  display: none;
+}
+
+.md-header__title::before {
+  content: "Tractus-X EDC";
+  color: #ffffff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.md-header__title::after {
+  content: "Docs";
+  display: inline-block;
+  height: auto;
+  line-height: 1.4;
+  padding: 0 0.4rem;
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  border-radius: 1rem;
+  color: var(--tx-gold);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.md-header__button[for="__drawer"] {
+  order: 0;
+}
+
+label.md-header__button[for="__search"] {
+  order: 2;
+  margin-left: auto;
+}
+
+.md-search {
+  order: 3;
+  margin-left: auto;
+}
+
+.md-header__option {
+  order: 4;
+}
+
+.md-header__source {
+  order: 5;
+  width: auto;
+  max-width: 11rem;
+  margin-left: 0.4rem;
+}
+
+/* A search field of constant size: it neither grows on focus nor moves. */
+@media screen and (min-width: 60em) {
+  .md-search__inner,
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
+    width: 14rem;
+  }
+
+  .md-search__form {
+    height: 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 0.4rem;
+    background-color: rgba(255, 255, 255, 0.06);
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+
+  .md-search__form:hover {
+    border-color: rgba(255, 215, 0, 0.6);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .md-search__input,
+  .md-search__suggest {
+    font-size: 0.7rem;
+  }
+
+  .md-search__input::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .md-search__icon[for="__search"] {
+    top: 0.3rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Keep the colour-scheme toggle in place so nothing shifts when search opens. */
+  [data-md-toggle="search"]:checked ~ .md-header .md-header__option {
+    max-width: none;
+    opacity: 1;
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+    border-color: var(--tx-gold);
+    border-radius: 0.4rem 0.4rem 0 0;
+    background-color: var(--md-default-bg-color);
+  }
+
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__input,
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__icon {
+    color: var(--md-default-fg-color);
+  }
+
+  /* Results open under the field, as wide as a readable list. */
+  .md-search__output {
+    width: 30rem;
+    right: 0;
+    left: auto;
+    top: 1.85rem;
+    border-radius: 0 0 0.4rem 0.4rem;
+    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.35);
+  }
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-header__title::after,
+  .md-header__source {
+    display: none;
+  }
+}
+
+/* ── Left navigation: the full index, sticky on desktop ─────────────────── */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    width: 13.5rem;
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    scrollbar-width: thin;
+  }
+
+  .md-nav--primary > .md-nav__list {
+    padding-bottom: 1rem;
+  }
+
+  /* Section headings ("Architecture", "Deployment", …) */
+  .md-nav--lifted > .md-nav__list > .md-nav__item > .md-nav__link,
+  .md-nav--primary > .md-nav__list > .md-nav__item--section > .md-nav__link {
+    margin-top: 1.1rem;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--md-default-fg-color--light);
+  }
+
+  .md-nav--primary > .md-nav__list > .md-nav__item--section:first-child > .md-nav__link {
+    margin-top: 0.4rem;
+  }
+
+  .md-nav--primary > .md-nav__title {
+    display: none;
+  }
+
+  .md-nav--primary > .md-nav__list > .md-nav__item--section > .md-nav__link,
+  .md-nav--primary > .md-nav__list > .md-nav__item--section > .md-nav__link--active {
+    border-left: 0;
+    color: var(--md-default-fg-color--light);
+  }
+
+  .md-nav--primary .md-nav__item--section > .md-nav {
+    margin-left: 0;
+  }
+
+  .md-nav--primary .md-nav__item--section > .md-nav > .md-nav__list {
+    border-left: 1px solid var(--md-default-fg-color--lightest);
+    margin-left: 0.15rem;
+  }
+
+  .md-nav--primary .md-nav__item--section .md-nav__link {
+    padding-left: 0.6rem;
+  }
+}
+
+.md-nav__link {
+  border-radius: 0.3rem;
+  transition: color 0.12s, background-color 0.12s;
+}
+
+.md-nav--primary .md-nav__link--active {
+  font-weight: 700;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-nav--primary .md-nav__item--section .md-nav__link--active {
+    margin-left: -1px;
+    border-left: 2px solid var(--tx-gold);
+    border-radius: 0;
+  }
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: var(--tx-gold);
+}
+
+[data-md-color-scheme="default"] .md-nav__link--active,
+[data-md-color-scheme="default"] .md-nav__link:hover {
+  color: var(--tx-gold-ink);
+}
+
+/* Between 960 px and 1220 px Material turns the index into an off-canvas drawer.
+   Dock that drawer instead, so the index stays on the left at every desktop width. */
+@media screen and (min-width: 60em) and (max-width: 76.234375em) {
+  .md-header__button[for="__drawer"] {
+    display: none;
+  }
+
+  [dir] .md-sidebar--primary,
+  [dir] [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
+    top: 3.05rem;
+    left: 0;
+    z-index: 3;
+    height: calc(100% - 3.05rem);
+    border-right: 1px solid var(--md-default-fg-color--lightest);
+    box-shadow: none;
+    transform: none;
+  }
+
+  [data-md-toggle="drawer"]:checked ~ .md-overlay {
+    display: none;
+  }
+
+  .md-main__inner,
+  .md-footer {
+    padding-left: 12.1rem;
+  }
+
+  .md-nav--primary > .md-nav__title[for="__drawer"] {
+    display: none;
+  }
+
+  .md-nav--primary > .md-nav__list {
+    padding-top: 0.5rem;
+  }
+
+  .md-nav--primary .md-nav__title {
+    height: auto;
+    padding: 0.7rem 0.8rem 0.7rem 2.2rem;
+    line-height: 1.4;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background-color: transparent;
+    border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  }
+
+  .md-nav--primary .md-nav__title .md-nav__icon {
+    top: 0.45rem;
+  }
+
+  .md-nav--primary .md-nav__item,
+  .md-nav--primary .md-nav__title ~ .md-nav__list {
+    border-top: 0;
+    box-shadow: none;
+  }
+
+  .md-nav--primary .md-nav__item {
+    font-size: 0.72rem;
+  }
+
+  .md-nav--primary .md-nav__link {
+    padding: 0.35rem 0.8rem;
+  }
+}
+
+/* ── Right "On this page" column ────────────────────────────────────────── */
+.md-nav--secondary .md-nav__title {
+  font-size: 0;
+}
+
+.md-nav--secondary .md-nav__title::before {
+  content: "On this page";
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media screen and (min-width: 60em) {
+  .md-sidebar--secondary .md-nav__link {
+    font-size: 0.66rem;
+  }
+}
+
+/* ── Breadcrumbs and headings ───────────────────────────────────────────── */
+.md-path {
+  font-size: 0.65rem;
+  margin-bottom: 0.2rem;
+}
+
+.md-typeset h1 {
+  margin-bottom: 0.9em;
+  color: var(--md-default-fg-color);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.md-typeset h2 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Content column: a comfortable reading width on very wide screens. */
+@media screen and (min-width: 100em) {
+  .md-grid {
+    max-width: 90rem;
+  }
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.md-typeset .md-button {
+  border-radius: 0.4rem;
+  font-weight: 700;
+  color: var(--md-typeset-a-color);
+  border-color: currentColor;
+}
+
+.md-typeset .md-button--primary,
+.md-typeset .md-button:hover,
+.md-typeset .md-button:focus {
+  background-color: var(--tx-gold);
+  border-color: var(--tx-gold);
+  color: #000000;
+}
+
+.md-typeset .md-button--primary:hover,
+.md-typeset .md-button--primary:focus {
+  background-color: var(--tx-gold-dark);
+  border-color: var(--tx-gold-dark);
+  color: #ffffff;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.md-footer,
+.md-footer-meta {
+  background-color: #000000;
+}
+
+.md-footer-meta__inner a {
+  color: var(--tx-gold);
+}
+
+/* ── Landing page hero ──────────────────────────────────────────────────── */
+.tx-hero {
+  margin: 0 0 1.5rem;
+  padding: 2.2rem 2rem;
+  border-radius: 0.8rem;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255, 215, 0, 0.35), transparent 45%),
+    linear-gradient(135deg, #000000 0%, #262626 100%);
+  color: #ffffff;
+}
+
+.md-typeset .tx-hero h1 {
+  margin: 0 0 0.6rem;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.tx-hero p {
+  max-width: 44rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.md-typeset .tx-hero a:not(.md-button) {
+  color: var(--tx-gold);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.md-content__inner:has(> .tx-hero) > .md-content__button {
+  display: none;
+}
+
+.md-typeset .tx-hero .md-button {
+  margin: 0.4rem 0.4rem 0 0;
+  color: var(--tx-gold);
+}
+
+.md-typeset .tx-hero .md-button--primary {
+  color: #000000;
+}
+
+/* Cards */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: 0.6rem;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid > .card:hover {
+  border-color: var(--tx-gold);
+  box-shadow: 0 0.2rem 0.8rem rgba(255, 215, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.md-typeset .grid.cards .twemoji,
+.md-typeset .grid.cards .lg {
+  color: var(--tx-gold-dark);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards .twemoji {
+  color: var(--tx-gold);
+}
+
+/* Small "time / level" badges used at the top of tutorials */
+.tx-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: -0.4rem 0 1.2rem;
+}
+
+.tx-badge {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid var(--tx-gold-dark);
+  border-radius: 1rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ── Admonitions: coloured edge and title band ──────────────────────────── */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.4rem;
+  border-width: 0 0 0 0.25rem;
+}
+
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: #a855f7;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.06) 0%, rgba(147, 51, 234, 0.1) 100%);
+}
+
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+  background-color: rgba(168, 85, 247, 0.15);
+}
+
+.md-typeset .tip > .admonition-title::before,
+.md-typeset .tip > summary::before {
+  background-color: #a855f7;
+}
+
+/* FAQ entries (??? question): neutral card with a gold edge, not Material green. */
+.md-typeset details.question {
+  border-color: var(--tx-gold-dark);
+  background-color: transparent;
+  box-shadow: none;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  border-right: 1px solid var(--md-default-fg-color--lightest);
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset .question > summary {
+  background-color: rgba(255, 215, 0, 0.07);
+  font-weight: 600;
+}
+
+.md-typeset .question > summary::before,
+.md-typeset .question > summary::after {
+  background-color: var(--tx-gold-dark);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .question > summary::before,
+[data-md-color-scheme="slate"] .md-typeset .question > summary::after {
+  background-color: var(--tx-gold);
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.md-typeset table:not([class]) {
+  font-size: 0.72rem;
+  border-radius: 0.4rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: rgba(255, 215, 0, 0.12);
+}
+
+/* Sequence-diagram step numbers: Material draws them in the accent background
+   colour, which is white on the light node text of the slate scheme. */
+:root > * {
+  --md-mermaid-sequence-number-bg-color: var(--tx-gold);
+  --md-mermaid-sequence-number-fg-color: #000000;
+}
+
+/* ── Mermaid diagrams: zoom button + modal (mermaid-zoom.js) ─────────────── */
+.md-typeset .mermaid {
+  overflow-x: auto;
+}
+
+.mermaid-wrapper {
+  position: relative;
+}
+
+.mermaid-zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--md-default-fg-color--lighter, #cccccc);
+  border-radius: 4px;
+  background: var(--md-default-bg-color, #ffffff);
+  color: var(--md-default-fg-color--light, #555555);
+  font-size: 0.7rem;
+  font-family: var(--md-text-font-family, inherit);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mermaid-zoom-btn:hover,
+.mermaid-zoom-btn:focus-visible {
+  background: var(--tx-gold);
+  color: #000000;
+  border-color: var(--tx-gold);
+}
+
+.mermaid-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mermaid-modal-overlay.visible {
+  opacity: 1;
+}
+
+.mermaid-modal-content {
+  width: 96vw;
+  height: 94vh;
+  overflow: auto;
+  background: var(--md-default-bg-color, #ffffff);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  cursor: default;
+}
+
+.mermaid-modal-content .mermaid {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.mermaid-modal-close {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 10000;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.mermaid-modal-close:hover {
+  opacity: 1;
+}

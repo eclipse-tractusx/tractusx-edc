@@ -1,0 +1,240 @@
+#################################################################################
+#  Copyright (c) 2026 Catena-X Automotive Network e.V.
+#  Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+#  See the NOTICE file(s) distributed with this work for additional
+#  information regarding copyright ownership.
+#
+#  This program and the accompanying materials are made available under the
+#  terms of the Apache License, Version 2.0 which is available at
+#  https://www.apache.org/licenses/LICENSE-2.0.
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#  Assisted-By: GitHub Copilot (claude-opus-5.5)
+#################################################################################
+
+# Documentation site for Tractus-X EDC, published to GitHub Pages by
+# .github/workflows/publish-docs.yaml. Build locally with:
+#   pip install -r resources/docs/requirements.txt && mkdocs serve
+# Look and feel follow the Tractus-X TestLab documentation
+# (https://eclipse-tractusx.github.io/tractusx-testlab/).
+
+site_name: Tractus-X EDC Documentation
+site_description: >-
+  Eclipse Tractus-X EDC: the Catena-X ready dataspace connector built on Eclipse
+  Dataspace Components. Architecture, deployment, tutorials and developer guides.
+site_url: https://eclipse-tractusx.github.io/tractusx-edc/
+repo_url: https://github.com/eclipse-tractusx/tractusx-edc
+repo_name: eclipse-tractusx/tractusx-edc
+edit_uri: edit/main/docs/
+
+# The gh-pages branch is shared with the Helm repository index, the Swagger UIs,
+# the JSON-LD contexts and the Allure reports. The site is therefore published
+# additively; see the workflow before renaming any top-level section folder.
+exclude_docs: |
+  /README.md
+  /overrides/
+  /release-notes/
+
+# Reachable through generated index pages or links, but not listed in the nav.
+not_in_nav: |
+  /development/README.md
+  /development/connector-sensei/comment-template.md
+  /development/decision-records/*/README.md
+  /migration/*.md
+  /usage/README.md
+
+theme:
+  name: material
+  language: en
+  custom_dir: docs/overrides
+  favicon: assets/images/logo_tractus-x-min.ico
+  logo: assets/images/logo_tractus-x.svg
+  # No web fonts from third-party CDNs; the stylesheet uses a local font stack.
+  font: false
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.path
+    - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.footer
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.tabs.link
+    - toc.follow
+
+plugins:
+  - search
+
+hooks:
+  - resources/docs/hooks/repo_links.py
+  - resources/docs/hooks/generated_indexes.py
+  - resources/docs/hooks/mermaid_theme.py
+
+validation:
+  omitted_files: warn
+  absolute_links: info
+  unrecognized_links: warn
+  anchors: warn
+
+extra_css:
+  - assets/stylesheets/tractusx-edc.css
+
+extra_javascript:
+  - assets/javascripts/mermaid-zoom.js
+
+extra:
+  # Used by resources/docs/hooks/repo_links.py to turn links that leave docs/ into
+  # links to the source on GitHub.
+  repo_branch: main
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/eclipse-tractusx/tractusx-edc
+      name: Tractus-X EDC on GitHub
+    - icon: material/chat-question-outline
+      link: https://github.com/eclipse-tractusx/tractusx-edc/discussions
+      name: Discussions
+    - icon: material/web
+      link: https://eclipse-tractusx.github.io/
+      name: Eclipse Tractus-X
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      # GitHub-compatible heading ids, so anchors written for github.com keep working.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.keys
+  - pymdownx.mark
+
+nav:
+  - Home:
+      - Welcome: index.md
+      - What is Tractus-X EDC?: home/overview.md
+      - Documentation map: home/documentation-map.md
+      - Glossary: home/glossary.md
+      - FAQ: home/faq.md
+  - Architecture:
+      - architecture/index.md
+      - Components: architecture/components.md
+      - Identity and trust: architecture/identity-and-trust.md
+      - Catena-X policies: architecture/policies.md
+      - Data exchange flows: architecture/flows.md
+      - EDRs and token refresh: architecture/edr-and-token-refresh.md
+      - Persistence and state: architecture/persistence.md
+      - Deep dives:
+          - Data plane signaling: development/dataplane-signaling/tx-signaling.extensions.md
+          - Bidirectional data transfer: development/bidirectional-transfer/BidirectionalDataTransfer.md
+  - Deployment:
+      - deployment/index.md
+      - Local quick start (kind): deployment/local-quickstart.md
+      - Helm chart: deployment/helm-chart.md
+      - Configuration: deployment/configuration.md
+      - Production checklist: deployment/production-checklist.md
+      - Upgrades and migrations: deployment/upgrades.md
+  - Tutorials:
+      - tutorials/index.md
+      - 1. Your first data exchange: tutorials/first-data-exchange.md
+      - 2. Restrict access with BPN groups: tutorials/access-control-bpn-groups.md
+      - 3. Consume data with EDRs: tutorials/consume-with-edrs.md
+      - 4. Write your first extension: tutorials/first-extension.md
+      - Management API walkthrough:
+          - usage/management-api-walkthrough/README.md
+          - Assets: usage/management-api-walkthrough/01_assets.md
+          - Policies: usage/management-api-walkthrough/02_policies.md
+          - Contract definitions: usage/management-api-walkthrough/03_contractdefinitions.md
+          - Catalog: usage/management-api-walkthrough/04_catalog.md
+          - Contract negotiations: usage/management-api-walkthrough/05_contractnegotiations.md
+          - Transfer processes: usage/management-api-walkthrough/06_transferprocesses.md
+          - EDRs: usage/management-api-walkthrough/07_edrs.md
+          - Contract agreements: usage/management-api-walkthrough/08_contractagreements.md
+          - Response channels: usage/management-api-walkthrough/09_responsechannels.md
+          - Non-finite provider push: usage/management-api-walkthrough/10_nonfiniteproviderpush/10_nonfiniteproviderpush.md
+  - Developers:
+      - developer/index.md
+      - Development setup: developer/setup.md
+      - Code architecture: developer/code-architecture.md
+      - Writing extensions: developer/extensions.md
+      - Testing: developer/testing.md
+      - Contribution workflow: developer/contributing.md
+      - AI-assisted development:
+          - Connector Sensei: development/connector-sensei/README.md
+          - How the skills work: development/connector-sensei/skills.md
+      - Project guidelines:
+          - Coding principles: development/coding-principles.md
+          - Project structure: development/project-structure.md
+          - Repository structure: development/repository-structure.md
+          - Release process: development/release.md
+      - Decision records: development/decision-records/index.md
+  - Operations:
+      - operations/index.md
+      - Observability: operations/observability.md
+      - Troubleshooting: operations/troubleshooting.md
+  - Reference:
+      - reference/index.md
+      - APIs: reference/apis.md
+      - Extension catalogue: reference/extensions.md
+      - JSON-LD and namespaces: reference/json-ld.md
+      - Migration guides: migration/index.md
+
+copyright: >-
+  Copyright &copy; 2021-2026 Contributors to the Eclipse Foundation; 2026 Catena-X Automotive Network e.V.
+  &middot; Documentation licensed under
+  <a href="https://creativecommons.org/licenses/by/4.0/legalcode">CC-BY-4.0</a>,
+  code under <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a>

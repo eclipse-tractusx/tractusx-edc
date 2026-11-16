@@ -1,0 +1,16 @@
+version = 1
+
+[[annotations]]
+# Eclipse Tractus-X logo, as used by the Tractus-X TestLab documentation.
+path = ["logo_tractus-x.svg", "logo_tractus-x-min.ico"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 Contributors to the Eclipse Foundation"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+# Connector Sensei avatar (copy of .github/agents/connector-sensei-profile.jpg): generated using
+# Artificial Intelligence and curated by the contributor. Logos and references are copyright of Eclipse Tractus-X.
+path = ["connector-sensei.jpg"]
+precedence = "closest"
+SPDX-FileCopyrightText = ["2026 Catena-X Automotive Network e.V.", "2026 Contributors to the Eclipse Foundation"]
+SPDX-License-Identifier = "CC-BY-4.0"
