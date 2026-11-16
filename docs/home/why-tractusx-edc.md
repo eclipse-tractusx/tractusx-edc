@@ -8,7 +8,8 @@ to you.
 **Tractus-X EDC is that connector, ready to run.** It is built on a pinned EDC version and adds the extensions, the
 release artefacts, the tests and the community that a company needs to join a dataspace and to stay in it across
 releases: Catena-X out of the box, and Manufacturing-X dataspaces such as Factory-X and Construct-X, or any other
-dataspace that speaks DSP and DCP, through [dataspace extensions](../dataspaces/index.md).
+dataspace that speaks the [Dataspace Protocol (DSP)](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/) and uses the
+[Decentralized Claims Protocol (DCP)](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/) for authorization, through [dataspace extensions](../dataspaces/index.md).
 
 <div class="grid cards" markdown>
 

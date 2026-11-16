@@ -16,7 +16,7 @@ the one place where all of them are developed.
 | [Factory-X](https://factory-x.org/) (manufacturing, Manufacturing-X) | [Factory-X EDC](https://github.com/factory-x-contributions/factoryx-edc) | Developed externally on Tractus-X EDC as midstream, today by excluding the Catena-X modules. Proof of concept; may be merged here when it reaches production status. |
 | [Construct-X](https://construct-x.org/) (construction, Manufacturing-X) | [Construct-X EDC](https://github.com/project-construct-x/constructx-edc) | Developed externally on Tractus-X EDC. |
 | Semiconductor-X | none yet | Named in the ADR as a dataspace that needs a connector without Catena-X specifics. |
-| Your dataspace | Tractus-X EDC with your extensions | Possible today: write your rules as extensions, see [Create a dataspace extension](create-extension.md). |
+| Any other dataspace that speaks [DSP](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/) and uses [DCP](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/) for authorization | Tractus-X EDC with your extensions | Possible today: write your rules as extensions, see [Create a dataspace extension](create-extension.md). |
 
 Only the **Catena-X flavour** is part of the Tractus-X release for now. Flavours for other dataspaces are built and
 released by those dataspaces, and may join the Tractus-X release later (the ADR leaves that open).

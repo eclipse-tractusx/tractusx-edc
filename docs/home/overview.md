@@ -1,7 +1,9 @@
 # What is Tractus-X EDC?
 
 Tractus-X EDC is a **dataspace connector**: a piece of software every company runs to take part in a dataspace such as
-[Catena-X](https://catena-x.net/), Factory-X, Construct-X or any other dataspace that speaks the Dataspace Protocol.
+[Catena-X](https://catena-x.net/), Factory-X, Construct-X or any other dataspace that speaks the
+[Dataspace Protocol (DSP)](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/) and uses the
+[Decentralized Claims Protocol (DCP)](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/) for authorization.
 It lets a company **offer** data to partners under conditions it defines, and **obtain** data from partners under
 conditions they define, without uploading anything to a central platform.
 

@@ -17,7 +17,9 @@
 
 ??? question "Can I use it in a dataspace other than Catena-X?"
 
-    Yes. The connector core is dataspace agnostic, and the Catena-X rules are extensions. Factory-X and Construct-X
+    Yes, in any dataspace that speaks the [Dataspace Protocol (DSP)](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/) and uses the
+    [Decentralized Claims Protocol (DCP)](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/) for authorization. The connector core is
+    dataspace agnostic, and the Catena-X rules are extensions. Factory-X and Construct-X
     already build their connectors on Tractus-X EDC. See [Supported dataspaces](../dataspaces/index.md) and
     [Create a dataspace extension](../dataspaces/create-extension.md).
 

@@ -15,7 +15,8 @@ The open-source, production-ready **dataspace connector**. Tractus-X EDC package
 identity integration a company needs to share data **in a sovereign and secure way**: in
 [Catena-X](https://catena-x.net/), in [Manufacturing-X](https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/manufacturing-x.html) dataspaces such
 as [Factory-X](https://factory-x.org/) and [Construct-X](https://construct-x.org/), and in any other dataspace that
-speaks the Dataspace Protocol. Every part is an extension, so you can add the rules of your own dataspace.
+speaks the [Dataspace Protocol (DSP)](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/) and uses the
+[Decentralized Claims Protocol (DCP)](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/) for authorization. Every part is an extension, so you can add the rules of your own dataspace.
 
 [Get started :material-rocket-launch-outline:](home/overview.md){ .md-button .md-button--primary }
 [Deploy a connector :material-kubernetes:](deployment/index.md){ .md-button }
