@@ -119,14 +119,15 @@ extra_javascript:
 
 extra:
   # "Ask Connector Sensei" button in the header (docs/overrides/partials/header.html).
-  # GitHub documents no URL that preselects a repository's custom agent, so the button
-  # opens the Copilot agents page; there, pick this repository and the Connector Sensei
-  # (.github/agents/connector-sensei.agent.md).
+  # Copilot on github.com takes the repository from ?repo= but has no URL parameter
+  # for a custom agent (it reads only repo, model, prompt and autosubmit; checked
+  # 2026-11), so the button opens Copilot on this repository and the reader picks the
+  # Connector Sensei (.github/agents/connector-sensei.agent.md) in the agent menu.
   sensei:
-    url: https://github.com/copilot/agents
+    url: https://github.com/copilot?repo=eclipse-tractusx/tractusx-edc
     title: >-
-      Ask the Connector Sensei, the Tractus-X EDC AI agent, on GitHub Copilot: choose the repository
-      eclipse-tractusx/tractusx-edc and the agent "Connector Sensei"
+      Ask the Connector Sensei, the Tractus-X EDC AI agent, on GitHub Copilot: Copilot opens on
+      eclipse-tractusx/tractusx-edc; pick "Connector Sensei" in the agent menu of the prompt box
   # Used by resources/docs/hooks/repo_links.py to turn links that leave docs/ into
   # links to the source on GitHub.
   repo_branch: main
