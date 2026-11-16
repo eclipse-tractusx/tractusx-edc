@@ -626,6 +626,15 @@ html::-webkit-scrollbar-thumb:hover {
   transition: color 0.15s, background-color 0.15s;
 }
 
+/* Index and tabs are controls, not text: a double click or a short drag while opening
+   a page must not leave the entry selected, and a tap on a phone must not flash grey. */
+.md-nav,
+.md-tabs {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .md-nav__link:focus-visible {
   outline-offset: -2px;
 }
