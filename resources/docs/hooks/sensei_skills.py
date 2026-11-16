@@ -45,6 +45,22 @@ from mkdocs.structure.files import File, Files
 SKILLS_DIR = ".claude/skills"
 PAGES_DIR = "development/connector-sensei/skills"
 NAV_SECTION = "AI-assisted development"
+SENSEI_PAGE = "development/connector-sensei/README.md"
+_SKILLS_BLOCK = re.compile(r"<!-- skills:start.*?-->.*?<!-- skills:end -->", re.S)
+# Icons for the cards on the Connector Sensei page; other skills get the default.
+ICONS = {
+    "edc-upstream-sources": "material-source-branch",
+    "upstream-edc-bump": "material-arrow-up-bold-circle-outline",
+    "setting-lifecycle": "material-tune-variant",
+    "breaking-change-guard": "material-shield-alert-outline",
+    "new-extension": "material-puzzle-plus-outline",
+    "sql-migration": "material-database-arrow-up-outline",
+    "e2e-test-author": "material-test-tube",
+    "management-api-endpoint": "material-api",
+    "migration-guide-and-adr": "material-map-marker-path",
+    "dependencies-and-dash": "material-scale-balance",
+}
+DEFAULT_ICON = "material-puzzle-outline"
 NAV_TITLE = "Skills"
 
 _FRONT_MATTER = re.compile(r"\A---\n(?P<yaml>.*?)\n---\n", re.S)
@@ -153,6 +169,34 @@ def on_config(config, **_: object):
     if skills:
         visit(config["nav"])
     return config
+
+
+def on_page_markdown(markdown: str, page, config, **_: object) -> str:
+    """On the Connector Sensei page, replace the skills placeholder with a card per skill."""
+    if page.file.src_uri != SENSEI_PAGE or not _SKILLS_BLOCK.search(markdown):
+        return markdown
+    skills = _skills(_repo_root(config))
+    if not skills:
+        return markdown
+    cards = ['<div class="grid cards" markdown>', ""]
+    for skill in skills:
+        scripts = " ".join(f"`{s}`" for s in skill["scripts"])
+        cards += [
+            f"-   :{ICONS.get(skill['folder'], DEFAULT_ICON)}: **{skill['title']}**",
+            "",
+            "    ---",
+            "",
+            f"    {_first_sentence(skill['description'])}",
+            "",
+            *([f"    {scripts}", ""] if scripts else []),
+            f"    [:octicons-arrow-right-24: `{skill['name']}`](skills/{skill['folder']}.md)",
+            "",
+        ]
+    cards += ["</div>", "", "Each card opens the skill's procedure. [Skills](skills/index.md) lists them in one table."]
+    intro = (f"The Sensei has {len(skills)} skills. It loads the one whose description matches your request, runs "
+             "its script and follows its procedure; you can run the scripts yourself too.")
+    block = "\n".join([intro, "", *cards])
+    return _SKILLS_BLOCK.sub(lambda _: block, markdown, count=1)
 
 
 def on_files(files: Files, config, **_: object) -> Files:

@@ -11,6 +11,7 @@ It works with **Claude Code** and **GitHub Copilot**. Its procedures and determi
 shared by both. [How the skills work](skills.md) explains the idea behind them.
 
 <!-- TOC -->
+- [Skills](#skills)
 - [What is in the repository](#what-is-in-the-repository)
 - [Prerequisites](#prerequisites)
 - [Using it with Claude Code](#using-it-with-claude-code)
@@ -21,6 +22,12 @@ shared by both. [How the skills work](skills.md) explains the idea behind them.
 - [Maintaining the Sensei](#maintaining-the-sensei)
 - [Troubleshooting](#troubleshooting)
 <!-- TOC -->
+
+## Skills
+
+<!-- skills:start: on the site, resources/docs/hooks/sensei_skills.py replaces this part with a card per skill -->
+The skills are listed in the [skills catalog](../../../.claude/skills/README.md).
+<!-- skills:end -->
 
 ## What is in the repository
 
