@@ -1892,3 +1892,68 @@ html::-webkit-scrollbar-thumb:hover {
   color: #ffffff;
   text-decoration: underline;
 }
+
+/* ── Footer: AI notice with the Connector Sensei avatar (partials/copyright.html) ── */
+
+.md-footer-meta__inner {
+  flex-wrap: wrap;
+}
+
+.tx-ai-notice {
+  display: flex;
+  flex: 1 0 100%;
+  gap: 0.9rem;
+  align-items: center;
+  margin: 0.8rem 0.6rem 0.2rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.06);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--md-footer-fg-color--light);
+}
+
+.tx-ai-notice__avatar {
+  flex: 0 0 auto;
+  line-height: 0;
+}
+
+.tx-ai-notice__avatar img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+  object-fit: cover;
+}
+
+.tx-ai-notice strong {
+  color: var(--md-footer-fg-color);
+}
+
+.md-footer-meta .tx-ai-notice a:not(.tx-ai-notice__avatar) {
+  color: #d4af37;
+  text-decoration: underline;
+}
+
+/* ── Connector Sensei page: the avatar as a profile picture ─────────────── */
+
+.md-typeset img.tx-profile-avatar {
+  float: right;
+  width: 168px;
+  height: 168px;
+  margin: 0 0 1rem 1.5rem;
+  border-radius: 50%;
+  border: 3px solid #d4af37;
+  box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.15), 0 8px 24px rgba(0, 0, 0, 0.35);
+  object-fit: cover;
+}
+
+@media screen and (max-width: 44.984375em) {
+  .md-typeset img.tx-profile-avatar {
+    float: none;
+    display: block;
+    margin: 0 auto 1rem;
+  }
+}

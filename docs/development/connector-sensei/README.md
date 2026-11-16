@@ -1,6 +1,6 @@
 # Connector Sensei
 
-<img src="../../../.github/agents/connector-sensei.jpg" width="96" align="right" alt="Connector Sensei avatar">
+<img class="tx-profile-avatar" src="../../assets/images/connector-sensei.jpg" width="168" height="168" align="right" alt="Connector Sensei avatar">
 
 The **Connector Sensei** is an AI agent for developing and operating Tractus-X EDC. It knows this repository, the
 upstream Eclipse Dataspace Components (EDC) version it is built on, and the specifications behind both: DSP, DCP,
@@ -118,6 +118,8 @@ them out of commits).
 | Schema change | "Add an index on `edc_transfer_process.state` and tell me what to test." | `sql-migration` |
 | Prove a feature end to end | "Write an E2E test that a BPN group policy hides the offer from other consumers." | `e2e-test-author` |
 | New endpoint | "Add `GET /v3/edrs/{id}/status`, following our API conventions." | `management-api-endpoint` |
+| Write documentation | "Add a page on configuring the Kafka extension to the documentation site, with the settings from the code." | `setting-lifecycle`, `edc-upstream-sources` |
+| Review documentation | "Check `docs/deployment/helm-chart.md` against the chart and list what is out of date." | `setting-lifecycle` |
 | Dependency hygiene | "Does bumping `com.fasterxml.jackson.core:jackson-databind` introduce restricted licenses?" | `dependencies-and-dash` |
 
 Good requests name the **side** (consumer or provider), the **version** (deployed release, DSP version) and paste
