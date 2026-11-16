@@ -25,7 +25,7 @@
 # Look and feel follow the Tractus-X TestLab documentation
 # (https://eclipse-tractusx.github.io/tractusx-testlab/).
 
-site_name: Tractus-X EDC Documentation
+site_name: Tractus-X EDC Docs
 site_description: >-
   Eclipse Tractus-X EDC: the Catena-X ready dataspace connector built on Eclipse
   Dataspace Components. Architecture, deployment, tutorials and developer guides.
@@ -117,9 +117,10 @@ extra_css:
   - assets/stylesheets/tractusx-edc.css
 
 extra_javascript:
-  - assets/javascripts/mermaid-zoom.js
+  - assets/javascripts/diagrams.js
   - assets/javascripts/tiles.js
   - assets/javascripts/external-links.js
+  - assets/javascripts/mobile-nav.js
 
 extra:
   # "Ask Connector Sensei" button in the header (docs/overrides/partials/header.html).
