@@ -12,8 +12,8 @@ hide:
 
 The open-source, production-ready **dataspace connector**. Tractus-X EDC packages the
 [Eclipse Dataspace Components (EDC)](https://github.com/eclipse-edc/Connector) with the extensions, policies and
-identity integration a company needs to share data **sovereignly**: in [Catena-X](https://catena-x.net/), in
-[Manufacturing-X](https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/manufacturing-x.html) dataspaces such
+identity integration a company needs to share data **in a sovereign and secure way**: in
+[Catena-X](https://catena-x.net/), in [Manufacturing-X](https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/manufacturing-x.html) dataspaces such
 as [Factory-X](https://factory-x.org/) and [Construct-X](https://construct-x.org/), and in any other dataspace that
 speaks the Dataspace Protocol. Every part is an extension, so you can add the rules of your own dataspace.
 
