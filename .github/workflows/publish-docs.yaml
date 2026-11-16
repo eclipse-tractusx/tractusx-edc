@@ -26,16 +26,19 @@
 # published, so the changelog page (generated from GitHub Releases by
 # resources/docs/hooks/release_notes.py) always lists the latest release.
 #
-# On pull requests the site is built for its preview address and uploaded with the pull
-# request number; "Deploy documentation preview" (deploy-docs-preview.yaml) then publishes
-# it to pr-preview/<number>/ and links it in the pull request. This workflow itself never
-# gets write access on pull requests.
+# Pull requests from branches of this repository also get a preview at
+# https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/<number>/, built for that address
+# (with a banner and noindex), linked in a pull request comment and removed when the pull
+# request is closed. Pull requests from forks get a read-only token, so they are only built;
+# the site can be downloaded from the run's "documentation-site" artifact. This avoids the
+# workflow_run and pull_request_target triggers, which would run with write access on
+# untrusted input.
 #
 # The gh-pages branch is shared: it also serves the Helm repository (index.yaml), the
 # Swagger UIs (openapi/), the JSON-LD contexts (context/), DEPENDENCIES and the Allure
 # reports. .github/scripts/update-docs-gh-pages.sh therefore adds and overwrites files but
-# never deletes them. Never switch this to `mkdocs gh-deploy --force`, which replaces the
-# whole branch.
+# never deletes them, apart from pr-preview/<number>/. Never switch this to
+# `mkdocs gh-deploy --force`, which replaces the whole branch.
 name: Publish documentation
 
 on:
@@ -48,12 +51,12 @@ on:
       - '.github/workflows/publish-docs.yaml'
       - '.github/scripts/update-docs-gh-pages.sh'
   pull_request:
+    types: [opened, synchronize, reopened, closed]
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'resources/docs/**'
       - '.github/workflows/publish-docs.yaml'
-      - '.github/workflows/deploy-docs-preview.yaml'
       - '.github/scripts/update-docs-gh-pages.sh'
   release:
     types: [published]
@@ -65,6 +68,7 @@ permissions:
 jobs:
   build:
     name: Build site
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
@@ -105,22 +109,6 @@ jobs:
           path: site
           retention-days: 7
 
-      # Read by deploy-docs-preview.yaml, which treats it as untrusted and validates it.
-      - name: Save pull request number
-        if: github.event_name == 'pull_request'
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          mkdir -p meta
-          printf '%s' "${PR_NUMBER}" > meta/pr-number
-
-      - if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: docs-pr-number
-          path: meta/pr-number
-          retention-days: 7
-
   deploy:
     name: Publish to GitHub Pages
     needs: build
@@ -159,3 +147,161 @@ jobs:
           mkdir "${RUNNER_TEMP}/gh-pages"
           cd "${RUNNER_TEMP}/gh-pages"
           bash "${GITHUB_WORKSPACE}/tools/.github/scripts/update-docs-gh-pages.sh" site "${GITHUB_WORKSPACE}/site"
+
+  # Publishes the preview of a pull request from a branch of this repository and links it in
+  # the pull request. Its author can push to this repository already, so the write token
+  # gives them nothing new; on pull requests from forks the job is skipped.
+  preview:
+    name: Publish preview
+    needs: build
+    if: >-
+      github.repository == 'eclipse-tractusx/tractusx-edc' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    # Shared with remove-preview, so a preview is never published after its removal.
+    concurrency:
+      group: docs-preview-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PREVIEW_URL: https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/${{ github.event.pull_request.number }}/
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: documentation-site
+          path: site
+
+      - name: Check out deployment script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: tools
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+
+      # A newer push or the closing of the pull request may have happened while this job waited.
+      - name: Check that the pull request is still current
+        id: state
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: Number(process.env.PR_NUMBER),
+            });
+            const current = pr.state === 'open' && pr.head.sha === process.env.HEAD_SHA;
+            if (!current) core.notice(`Pull request #${process.env.PR_NUMBER} was closed or updated; skipping.`);
+            core.setOutput('current', String(current));
+
+      - name: Publish to gh-pages
+        if: steps.state.outputs.current == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir "${RUNNER_TEMP}/gh-pages"
+          cd "${RUNNER_TEMP}/gh-pages"
+          bash "${GITHUB_WORKSPACE}/tools/.github/scripts/update-docs-gh-pages.sh" preview "${PR_NUMBER}" "${GITHUB_WORKSPACE}/site"
+
+      - name: Link the preview in the pull request
+        if: steps.state.outputs.current == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '<!-- docs-preview-comment -->';
+            const body = [
+              marker,
+              '### Documentation preview',
+              '',
+              `The documentation of this pull request is published at **${process.env.PREVIEW_URL}**`,
+              '',
+              `Built from ${process.env.HEAD_SHA.slice(0, 7)}. GitHub Pages can take a minute or two to show it. ` +
+                'The preview is updated on every push that changes the documentation and removed when the pull ' +
+                'request is closed.',
+            ].join('\n');
+            const issue_number = Number(process.env.PR_NUMBER);
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner, repo: context.repo.repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number, body,
+              });
+            }
+
+  remove-preview:
+    name: Remove preview
+    if: >-
+      github.repository == 'eclipse-tractusx/tractusx-edc' &&
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: docs-preview-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      MERGED: ${{ github.event.pull_request.merged }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
+
+      - name: Check out deployment script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: tools
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+
+      - name: Remove from gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir "${RUNNER_TEMP}/gh-pages"
+          cd "${RUNNER_TEMP}/gh-pages"
+          bash "${GITHUB_WORKSPACE}/tools/.github/scripts/update-docs-gh-pages.sh" remove "${PR_NUMBER}"
+
+      - name: Update the preview comment
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '<!-- docs-preview-comment -->';
+            const issue_number = Number(process.env.PR_NUMBER);
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner, repo: context.repo.repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
+            if (!existing) return;
+            const merged = process.env.MERGED === 'true';
+            const body = [
+              marker,
+              '### Documentation preview',
+              '',
+              'The preview was removed because this pull request was closed.' +
+                (merged ? ' The changes appear on https://eclipse-tractusx.github.io/tractusx-edc/ once main is published.' : ''),
+            ].join('\n');
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body,
+            });

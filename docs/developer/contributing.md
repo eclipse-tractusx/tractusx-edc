@@ -76,9 +76,11 @@ pip install -r resources/docs/requirements.txt
 mkdocs serve        # http://127.0.0.1:8000/tractusx-edc/
 ```
 
-Before you push, run `mkdocs build --strict`. CI runs it too, and publishes a preview of every pull request that
-changes the documentation at `https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/<number>/`, linked in a
-comment on the pull request and removed when it is closed. New pages must be added to `nav` in `mkdocs.yml` and end
+Before you push, run `mkdocs build --strict`. CI runs it too. For a pull request from a branch of this repository
+that changes the documentation, it also publishes a preview at
+`https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/<number>/`, links it in a comment on the pull request and
+removes it when the pull request is closed. Pull requests from forks are only built; download the site from the
+`documentation-site` artifact of the run. New pages must be added to `nav` in `mkdocs.yml` and end
 with the `## NOTICE` section.
 
 ## Decision records {#decision-records}
