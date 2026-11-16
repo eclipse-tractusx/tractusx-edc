@@ -28,8 +28,9 @@
 #
 # The gh-pages branch is shared: it also serves the Helm repository (index.yaml), the
 # Swagger UIs (openapi/), the JSON-LD contexts (context/), DEPENDENCIES and the Allure
-# reports. The site is therefore published with keep_files, which adds and overwrites
-# files but never deletes them. Never switch this to `mkdocs gh-deploy --force`.
+# reports. The deploy job therefore copies the site over a checkout of gh-pages, which adds
+# and overwrites files but never deletes them, using only GitHub's own actions and git.
+# Never switch this to `mkdocs gh-deploy --force`, which replaces the whole branch.
 name: Publish documentation
 
 on:
@@ -113,10 +114,34 @@ jobs:
           name: documentation-site
           path: site
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+      - name: Check out gh-pages
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          keep_files: true
-          commit_message: 'docs: publish documentation site'
+          ref: gh-pages
+          path: gh-pages
+          fetch-depth: 1
+          # Needed to push the site below; this job runs no code from the repository.
+          persist-credentials: true
+
+      - name: Deploy to GitHub Pages
+        working-directory: gh-pages
+        run: |
+          # Add and overwrite, never delete: the branch also holds the Helm index and more.
+          cp -R ../site/. .
+          touch .nojekyll
+          git add --all
+          if git diff --cached --quiet; then
+            echo "The documentation site is unchanged."
+            exit 0
+          fi
+          # Set for the commit and for the rebase below, which rewrites it.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit --quiet --message "docs: publish documentation site (${GITHUB_SHA::7})"
+          # Other workflows publish to gh-pages too; rebase onto theirs if one was faster.
+          for attempt in 1 2 3; do
+            git push --quiet origin HEAD:gh-pages && exit 0
+            echo "Push rejected (attempt ${attempt}), rebasing onto the latest gh-pages."
+            git pull --quiet --rebase origin gh-pages
+          done
+          exit 1
