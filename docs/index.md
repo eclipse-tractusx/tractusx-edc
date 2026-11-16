@@ -6,6 +6,8 @@ hide:
 
 <div class="tx-hero" markdown>
 
+<p class="tx-eyebrow">Eclipse Tractus-X · Dataspace connector</p>
+
 # Tractus-X EDC
 
 The open-source **dataspace connector for Catena-X**. Tractus-X EDC packages the
