@@ -615,9 +615,14 @@ html::-webkit-scrollbar-thumb:hover {
   font-size: 0.7rem;
 }
 
+/* Square rows: the hover, pressed and selected states and the focus ring keep straight edges */
 .md-nav__link {
-  border-radius: var(--tx-radius-sm);
+  border-radius: 0;
   transition: color 0.15s, background-color 0.15s;
+}
+
+.md-nav__link:focus-visible {
+  outline-offset: -2px;
 }
 
 .md-nav__link--active,
@@ -686,7 +691,7 @@ html::-webkit-scrollbar-thumb:hover {
 
   /* The selected page: clearly stronger than the hover row, and shown at once */
   .md-nav--primary .md-nav__link--active:not(.md-nav__container) {
-    border-radius: 0 var(--tx-radius-sm) var(--tx-radius-sm) 0;
+    border-radius: 0;
     background-color: color-mix(in srgb, var(--tx-accent) 20%, transparent);
     box-shadow: inset 3px 0 0 var(--tx-accent);
     font-weight: 700;

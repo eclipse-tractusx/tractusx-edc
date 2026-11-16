@@ -9,9 +9,9 @@ less ceremony. Tractus-X EDC offers two helpers on the consumer side:
 ```mermaid
 sequenceDiagram
   participant App
-  participant CCP as Consumer CP
-  participant CDP as Consumer DP (proxy)
-  participant PDP as Provider DP
+  participant CCP as Consumer control plane
+  participant CDP as Consumer data plane (proxy)
+  participant PDP as Provider data plane
   App->>CCP: POST /v3/edrs (offer)
   Note over CCP: negotiation + transfer + EDR cache
   App->>CDP: POST /proxy/aas/request {transferProcessId}

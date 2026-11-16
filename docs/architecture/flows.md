@@ -1,8 +1,8 @@
 # Data exchange flows
 
-This page shows, as sequence diagrams, what happens between consumer and provider. **CP** is a control plane, **DP** a
-data plane. Identity checks (see [Identity and trust](identity-and-trust.md)) happen on every DSP call and are drawn
-only once.
+This page shows, as sequence diagrams, what happens between the control planes and data planes of consumer and
+provider. Identity checks (see [Identity and trust](identity-and-trust.md)) happen on every DSP call and are drawn only
+once.
 
 ```mermaid
 flowchart LR
@@ -15,8 +15,8 @@ flowchart LR
 sequenceDiagram
   autonumber
   participant App as Consumer app
-  participant CCP as Consumer CP
-  participant PCP as Provider CP
+  participant CCP as Consumer control plane
+  participant PCP as Provider control plane
   App->>CCP: POST /v3/catalog/request (counterPartyAddress, counterPartyId, protocol)
   CCP->>CCP: compute credential scopes, get token from STS
   CCP->>PCP: DSP CatalogRequestMessage + token
@@ -34,8 +34,8 @@ The offers contain the **contract policy**. Distributions tell you the transfer 
 sequenceDiagram
   autonumber
   participant App as Consumer app
-  participant CCP as Consumer CP
-  participant PCP as Provider CP
+  participant CCP as Consumer control plane
+  participant PCP as Provider control plane
   App->>CCP: POST /v3/contractnegotiations (offer policy, counterPartyAddress, protocol)
   CCP-->>App: 200 { @id: negotiationId }
   CCP->>PCP: DSP ContractRequestMessage
@@ -59,9 +59,9 @@ backend, and the consumer receives an **EDR** (endpoint + token).
 sequenceDiagram
   autonumber
   participant App as Consumer app
-  participant CCP as Consumer CP
-  participant PCP as Provider CP
-  participant PDP as Provider DP
+  participant CCP as Consumer control plane
+  participant PCP as Provider control plane
+  participant PDP as Provider data plane
   participant BE as Provider backend
   App->>CCP: POST /v3/transferprocesses (contractId, transferType HttpData-PULL)
   CCP->>PCP: DSP TransferRequestMessage
@@ -89,9 +89,9 @@ example when `DataUsageEndDate` is reached). Tokens are short-lived and **refres
 sequenceDiagram
   autonumber
   participant App as Consumer app
-  participant CCP as Consumer CP
-  participant PCP as Provider CP
-  participant PDP as Provider DP
+  participant CCP as Consumer control plane
+  participant PCP as Provider control plane
+  participant PDP as Provider data plane
   participant Dest as Consumer destination
   App->>CCP: POST /v3/transferprocesses (transferType e.g. HttpData-PUSH, dataDestination)
   CCP->>PCP: DSP TransferRequestMessage
@@ -115,8 +115,8 @@ transfer and caches the resulting EDR.
 sequenceDiagram
   autonumber
   participant App as Consumer app
-  participant CCP as Consumer CP
-  participant PCP as Provider CP
+  participant CCP as Consumer control plane
+  participant PCP as Provider control plane
   App->>CCP: POST /v3/edrs (offer, counterPartyAddress, protocol)
   CCP->>PCP: negotiation …
   PCP-->>CCP: agreement (FINALIZED)
@@ -136,9 +136,9 @@ Before the first catalog request you need the partner's DSP address and protocol
 sequenceDiagram
   autonumber
   participant App as Consumer app
-  participant CCP as Consumer CP
+  participant CCP as Consumer control plane
   participant DID as Partner DID document
-  participant PCP as Partner CP
+  participant PCP as Partner control plane
   App->>CCP: POST /v3/connectordiscovery/connectors (counterPartyId = partner DID)
   CCP->>DID: resolve DID, read services of type DataService
   loop each connector

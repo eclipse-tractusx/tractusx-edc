@@ -60,9 +60,9 @@ share one connector safely.
 ```mermaid
 sequenceDiagram
   autonumber
-  participant CCP as Consumer CP
+  participant CCP as Consumer control plane
   participant STS as Consumer STS
-  participant PDP as Provider DP
+  participant PDP as Provider data plane
   CCP->>STS: self-issued token, audience = tx-auth:refreshAudience
   STS-->>CCP: ID token
   CCP->>PDP: POST {refreshEndpoint}<br/>grant_type=refresh_token&refresh_token=…<br/>Authorization: Bearer <ID token>

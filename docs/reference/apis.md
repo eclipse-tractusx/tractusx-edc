@@ -60,23 +60,23 @@ The [Management API walkthrough](../usage/management-api-walkthrough/README.md) 
 
 | Method | Path | Plane / context | Purpose |
 |---|---|---|---|
-| `POST` | `/v3/edrs` | CP management | Negotiate and start a transfer in one call |
-| `POST` | `/v3/edrs/request` | CP management | Query cached EDRs |
-| `GET` | `/v3/edrs/{transferProcessId}/dataaddress?auto_refresh=true` | CP management | Get a (refreshed) EDR |
-| `POST` | `/v3/edrs/{transferProcessId}/refresh` | CP management | Force a token refresh |
-| `DELETE` | `/v3/edrs/{transferProcessId}` | CP management | Remove a cached EDR |
-| `POST`, `PUT` | `/v3/business-partner-groups` | CP management | Assign a BPN to groups |
-| `GET` | `/v3/business-partner-groups/{bpn}`, `/group/{group}`, `/groups` | CP management | Read groups |
-| `DELETE` | `/v3/business-partner-groups/{bpn}` | CP management | Remove a BPN |
-| `POST` | `/v3/contractagreements/retirements` | CP management | Retire an agreement early |
-| `POST` | `/v3/contractagreements/retirements/request` | CP management | List retired agreements |
-| `DELETE` | `/v3/contractagreements/retirements/{agreementId}` | CP management | Reactivate an agreement |
-| `POST` | `/v3/connectordiscovery/dspversionparams` | CP management | Find the DSP version and address of a connector |
-| `POST` | `/v3/connectordiscovery/connectors` | CP management | Find the connectors of a participant |
-| `POST` | `/v3/dataflows/{id}/trigger` | DP management | Re-trigger a non-finite push data flow |
-| `POST` | `/aas/request` | DP proxy (`/proxy`) | Fetch data through the consumer proxy |
-| `POST` | `/token` | DP public | Refresh an access token |
-| any | `/{path}` | DP public | Provider data access with an EDR token |
+| `POST` | `/v3/edrs` | Control plane, Management API | Negotiate and start a transfer in one call |
+| `POST` | `/v3/edrs/request` | Control plane, Management API | Query cached EDRs |
+| `GET` | `/v3/edrs/{transferProcessId}/dataaddress?auto_refresh=true` | Control plane, Management API | Get a (refreshed) EDR |
+| `POST` | `/v3/edrs/{transferProcessId}/refresh` | Control plane, Management API | Force a token refresh |
+| `DELETE` | `/v3/edrs/{transferProcessId}` | Control plane, Management API | Remove a cached EDR |
+| `POST`, `PUT` | `/v3/business-partner-groups` | Control plane, Management API | Assign a BPN to groups |
+| `GET` | `/v3/business-partner-groups/{bpn}`, `/group/{group}`, `/groups` | Control plane, Management API | Read groups |
+| `DELETE` | `/v3/business-partner-groups/{bpn}` | Control plane, Management API | Remove a BPN |
+| `POST` | `/v3/contractagreements/retirements` | Control plane, Management API | Retire an agreement early |
+| `POST` | `/v3/contractagreements/retirements/request` | Control plane, Management API | List retired agreements |
+| `DELETE` | `/v3/contractagreements/retirements/{agreementId}` | Control plane, Management API | Reactivate an agreement |
+| `POST` | `/v3/connectordiscovery/dspversionparams` | Control plane, Management API | Find the DSP version and address of a connector |
+| `POST` | `/v3/connectordiscovery/connectors` | Control plane, Management API | Find the connectors of a participant |
+| `POST` | `/v3/dataflows/{id}/trigger` | Data plane, management | Re-trigger a non-finite push data flow |
+| `POST` | `/aas/request` | Data plane, consumer proxy (`/proxy`) | Fetch data through the consumer proxy |
+| `POST` | `/token` | Data plane, public API | Refresh an access token |
+| any | `/{path}` | Data plane, public API | Provider data access with an EDR token |
 
 !!! warning "Deprecated `v4alpha` paths"
 
