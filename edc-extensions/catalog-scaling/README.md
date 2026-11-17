@@ -9,6 +9,9 @@ and contract definitions to the database with an index-backed fast-path for all 
 `=` is commonly used when defining assets and contract definitions in a 1:1 relation, this allows for a significant
 performance improvement when generating a catalog.
 
+What this gains compared to the upstream implementation, including diagrams and load test results, is described in
+[docs/performance.md](docs/performance.md).
+
 ## Prerequisites
 
 As the `DatasetResolver` implementation provided by this extension moves the matching of assets and contract definitions
