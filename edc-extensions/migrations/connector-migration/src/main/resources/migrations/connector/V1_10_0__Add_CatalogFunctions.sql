@@ -747,19 +747,9 @@ RETURNS TABLE (
 LANGUAGE plpgsql STABLE AS $$
 BEGIN
     RETURN QUERY EXECUTE format($q$
-        WITH cd AS MATERIALIZED (
-            -- reads the split selectors stored on the contract definitions (see edc_contract_definitions_split_selector)
-            SELECT t.contract_definition_id,
-                   t.participant_context_id,
-                   t.selector_eq_filter        AS eq_filter,
-                   t.selector_ambiguous_filter AS ambiguous_filter,
-                   t.selector_eq_criteria      AS eq_criteria,
-                   t.selector_other_criteria   AS other_criteria
-            FROM %s t
-        )
         SELECT a.asset_id,
                array_agg(DISTINCT cd.contract_definition_id)::varchar[]
-        FROM cd
+        FROM %s cd
         CROSS JOIN LATERAL (
             -- fast-path: probes the GIN index once per contract definition
             SELECT x.asset_id,
@@ -767,15 +757,15 @@ BEGIN
                    x.private_properties AS private_props
             FROM edc_asset x
             WHERE x.participant_context_id = cd.participant_context_id
-              AND x.effective_properties @? cd.eq_filter
+              AND x.effective_properties @? cd.selector_eq_filter
             -- OFFSET 0 prevents the planner from flattening this subquery into a regular join
             OFFSET 0
         ) a
         -- "=" criteria are only evaluated exactly for assets on which eq_filter may disagree with EDC
-        WHERE (cd.ambiguous_filter IS NULL
-               OR NOT (a.props @? cd.ambiguous_filter)
-               OR edc_selector_matches(a.props, a.private_props, cd.eq_criteria))
-          AND edc_selector_matches(a.props, a.private_props, cd.other_criteria) -- evaluates the remaining criteria exactly
+        WHERE (cd.selector_ambiguous_filter IS NULL
+               OR NOT (a.props @? cd.selector_ambiguous_filter)
+               OR edc_selector_matches(a.props, a.private_props, cd.selector_eq_criteria))
+          AND edc_selector_matches(a.props, a.private_props, cd.selector_other_criteria) -- evaluates the remaining criteria exactly
         GROUP BY a.asset_id
         $q$, quote_ident(p_definitions_table)); -- renders the table name as a safe SQL identifier
 END;
@@ -867,7 +857,7 @@ BEGIN
             FROM edc_asset x
             WHERE x.asset_id = $1
         ),
-        cd AS MATERIALIZED (
+        cd AS NOT MATERIALIZED (
             -- reads the split selectors stored on the contract definitions (see edc_contract_definitions_split_selector)
             SELECT t.contract_definition_id,
                    t.participant_context_id,

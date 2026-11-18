@@ -23,10 +23,10 @@ runtime using Postgres as its database.
 ## How It Works
 
 The `DatasetResolver` implementation provided by this extension uses a set of Postgres functions to run the queries
-for finding and generating datasets. At start-up, the extension runs an
-[SQL script](src/main/resources/sql/script.sql) that creates the necessary functions, as well as additional columns in
-the asset and contract definition tables, which are managed by Postgres either as a generated column or through a
-trigger.
+for finding and generating datasets. As part of the [database migrations](../migrations/connector-migration), an
+[SQL script](../migrations/connector-migration/src/main/resources/migrations/connector/V1_10_0__Add_CatalogFunctions.sqlsql)
+is run that creates the necessary functions, as well as additional columns in the asset and contract definition tables,
+which are managed by Postgres either as a generated column or through a trigger.
 
 For assets, the effective properties (i.e. the asset's properties merged over its private properties) are stored in
 a separate column. This makes them GIN-indexable, which allows for faster queries when searching for assets with
@@ -68,7 +68,9 @@ which first looks for the corresponding asset by ID, and then utilizes the same 
 definitions for the asset.
 
 A component diagram of the query functions is available in the [docs directory](docs/2_postgres-functions.mmd).
-You can find in-depth documentation for each function in the [SQL script](src/main/resources/sql/script.sql) itself.
+You can find in-depth documentation for each function in the
+[SQL migration script](../migrations/connector-migration/src/main/resources/migrations/connector/V1_10_0__Add_CatalogFunctions.sql)
+itself.
 
 ## Configuration
 
