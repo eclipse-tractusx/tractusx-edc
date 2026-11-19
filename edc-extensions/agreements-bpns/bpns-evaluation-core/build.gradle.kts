@@ -26,6 +26,7 @@ plugins {
 dependencies {
     api(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
     api(project(":spi:bdrs-client-spi"))
+    implementation(project(":core:core-utils"))
     implementation(libs.edc.runtime.metamodel)
     implementation(libs.edc.spi.boot)
     implementation(libs.edc.spi.contract)

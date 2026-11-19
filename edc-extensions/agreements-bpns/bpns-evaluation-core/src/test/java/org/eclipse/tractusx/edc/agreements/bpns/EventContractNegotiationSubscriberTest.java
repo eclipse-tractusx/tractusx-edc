@@ -29,13 +29,13 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
-import org.eclipse.tractusx.edc.tests.MockBdrsClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +43,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,13 +51,13 @@ class EventContractNegotiationSubscriberTest {
 
     private final AgreementsBpnsStore store = mock();
     private final Monitor monitor = mock();
-    private final BdrsClient bdrsClient = new MockBdrsClient((s) -> s, (s) -> "resolvedBpn");
+    private static final String OWN_BPN = "resolvedProviderBpn";
     private EventContractNegotiationSubscriber subscriber;
 
     @BeforeEach
     void setup() {
         when(monitor.withPrefix(anyString())).thenReturn(monitor);
-        subscriber = new EventContractNegotiationSubscriber(store, monitor, bdrsClient);
+        subscriber = new EventContractNegotiationSubscriber(store, monitor, OWN_BPN);
     }
 
     @Test
@@ -66,7 +65,7 @@ class EventContractNegotiationSubscriberTest {
         var agreementId = UUID.randomUUID().toString();
         var providerId = "did:provider";
         var consumerId = "did:consumer";
-        var resolvedBpn = "resolvedBpn";
+        var resolvedBpn = "resolvedConsumerBpn";
 
         when(store.save(any())).thenReturn(StoreResult.success());
 
@@ -76,6 +75,9 @@ class EventContractNegotiationSubscriberTest {
                 .consumerId(consumerId)
                 .assetId("asset")
                 .policy(Policy.Builder.newInstance().assignee(consumerId).build())
+                .claims(Map.of("vc", List.of(Map.of(
+                        "type", "MembershipCredential",
+                        "credentialSubject", Map.of("id", consumerId, "holderIdentifier", resolvedBpn)))))
                 .build();
 
         var event = ContractNegotiationFinalized.Builder.newInstance()
@@ -98,7 +100,7 @@ class EventContractNegotiationSubscriberTest {
         verify(store).save(captor.capture());
         AgreementsBpnsEntry entry = captor.getValue();
         assert entry.getAgreementId().equals(agreementId);
-        assert entry.getProviderBpn().equals(resolvedBpn);
+        assert entry.getProviderBpn().equals(OWN_BPN);
         assert entry.getConsumerBpn().equals(resolvedBpn);
     }
 
@@ -178,13 +180,10 @@ class EventContractNegotiationSubscriberTest {
     }
 
     @Test
-    void on_shouldLogWarningAndSkipSave_whenBpnResolutionReturnsNull() {
+    void on_shouldLogDebugAndSkipSave_whenHolderIdentifierIsMissing() {
         var agreementId = UUID.randomUUID().toString();
         var providerId = "did:provider";
         var consumerId = "did:consumer";
-
-        var subscriberWithNullResolver = new EventContractNegotiationSubscriber(
-                store, monitor, new MockBdrsClient((s) -> s, (s) -> null));
 
         var agreement = ContractAgreement.Builder.newInstance()
                 .id(agreementId)
@@ -208,14 +207,11 @@ class EventContractNegotiationSubscriberTest {
                 .payload(event)
                 .build();
 
-        subscriberWithNullResolver.on(envelope);
+        subscriber.on(envelope);
 
-        verify(monitor, times(2)).warning(anyString());
-        verify(monitor).warning(contains("did:provider"));
-        verify(monitor).warning(contains("did:consumer"));
-        verify(monitor, times(2)).warning(contains(agreementId));
-        verify(monitor, times(2)).warning(contains("BPN mapping will not be stored"));
-        verify(monitor, times(2)).warning(contains("contract agreement was stored"));
+        verify(monitor).debug(contains(agreementId));
+        verify(monitor).debug(contains("providerBpn"));
+        verify(monitor).debug(contains("consumerBpn"));
         verify(store, never()).save(any());
     }
 }
