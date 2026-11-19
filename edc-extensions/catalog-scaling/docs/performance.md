@@ -58,8 +58,8 @@ flowchart LR
     CDR <-->|"contract definitions,<br/>policies"| DB
     LOAD <-->|"A assets over the wire"| DB
 
-    style MATCH fill:#f8d7da,stroke:#c0392b
-    style LOAD fill:#f8d7da,stroke:#c0392b
+    style MATCH fill:#f8d7da,stroke:#c0392b,color:#1f2328
+    style LOAD fill:#f8d7da,stroke:#c0392b,color:#1f2328
 ```
 
 The consequences are visible in the load tests: high CPU and heavy garbage collection on the control plane pod, a
