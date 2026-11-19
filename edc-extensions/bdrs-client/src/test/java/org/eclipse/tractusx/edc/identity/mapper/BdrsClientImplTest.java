@@ -152,22 +152,6 @@ class BdrsClientImplTest {
         verifyBdrsRequest(1);
     }
 
-    @Test
-    void resolveBpn_whenForceRefresh_shouldResolveDidAddedSinceInitialLookup() {
-        var did = "did:web:new-did";
-        assertThat(client.resolveBpn(did)).isNull();
-        verifyBdrsRequest(1);
-
-        bdrsServer.stubFor(get(urlPathEqualTo("/api/bpn-directory"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Encoding", "gzip")
-                        .withBody(createGzipStream(Map.of("new-bpn", did)))
-                        .withStatus(200)));
-
-        assertThat(client.resolveBpn(did, true)).isEqualTo("new-bpn");
-        verifyBdrsRequest(2);
-    }
-
     @ParameterizedTest(name = "HTTP Status {0}")
     @ValueSource(ints = { 400, 401, 403, 404, 405 })
     void getData_bdrsReturnsError(int code) {

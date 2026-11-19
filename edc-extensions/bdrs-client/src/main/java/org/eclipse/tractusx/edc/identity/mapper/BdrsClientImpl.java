@@ -118,21 +118,6 @@ class BdrsClientImpl implements BdrsClient {
 
     @Override
     public String resolveBpn(String did) {
-        return resolveBpn(did, false);
-    }
-
-    @Override
-    public String resolveBpn(String did, boolean forceRefresh) {
-        if (forceRefresh) {
-            lock.writeLock().lock();
-            try {
-                updateCache().orElseThrow(f -> new EdcException(f.getFailureDetail()));
-                return cacheDidBpn.get(did);
-            } finally {
-                lock.writeLock().unlock();
-            }
-        }
-
         lock.readLock().lock();
         try {
             if (!isCacheExpired()) {
