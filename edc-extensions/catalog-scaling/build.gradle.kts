@@ -36,4 +36,5 @@ dependencies {
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(libs.edc.junit))
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
+    testImplementation(project(":edc-extensions:migrations:connector-migration"))
 }

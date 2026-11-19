@@ -35,11 +35,7 @@ import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.Objects;
-import javax.sql.DataSource;
 
 import static java.lang.String.format;
 
@@ -87,8 +83,6 @@ public class CatalogScalingExtension implements ServiceExtension {
     @Inject
     private QueryExecutor queryExecutor;
 
-    private boolean enabled;
-
     @Override
     public String name() {
         return NAME;
@@ -103,8 +97,6 @@ public class CatalogScalingExtension implements ServiceExtension {
             return;
         }
 
-        enabled = true;
-
         var contractDefinitionResolver = new ScalingContractDefinitionResolver(contractDefinitionStore, policyEngine, policyDefinitionStore);
         var queryManager = new CatalogRequestQueryManager(dataSourceRegistry, dataSourceName, transactionContext,
                 typeManager.getMapper(), queryExecutor, new WrappedAssetStatements(), contractDefinitionCopyBatchSize);
@@ -113,40 +105,5 @@ public class CatalogScalingExtension implements ServiceExtension {
                 queryManager, policyDefinitionStore, distributionResolver,
                 () -> Objects.requireNonNull(dataSourceRegistry.resolve(dataSourceName), format("DataSource %s could not be resolved", dataSourceName)),
                 transactionContext));
-    }
-
-    @Override
-    public void start() {
-        if (!enabled) {
-            return;
-        }
-
-        var dataSource = Objects.requireNonNull(dataSourceRegistry.resolve(dataSourceName),
-                format("DataSource %s could not be resolved", dataSourceName));
-        var sql = loadSqlScript();
-        executeSqlScript(dataSource, sql);
-    }
-
-    private String loadSqlScript() {
-        try (var inputStream = getClass().getResourceAsStream(SQL_SCRIPT_PATH)) {
-            if (inputStream == null) {
-                throw new IllegalStateException(format("SQL script resource %s was not found", SQL_SCRIPT_PATH));
-            }
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new IllegalStateException(format("Failed to read SQL script resource %s", SQL_SCRIPT_PATH), e);
-        }
-    }
-
-    private void executeSqlScript(DataSource dataSource, String sql) {
-        transactionContext.execute(() -> {
-            try (var connection = dataSource.getConnection();
-                    var statement = connection.createStatement()) {
-                statement.execute(sql);
-            } catch (SQLException e) {
-                throw new IllegalStateException(format("Failed to execute SQL script %s using datasource %s",
-                                SQL_SCRIPT_PATH, dataSourceName), e);
-            }
-        });
     }
 }

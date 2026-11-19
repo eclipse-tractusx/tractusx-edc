@@ -86,7 +86,7 @@ class AssetAndContractDefinitionMatchingIntegrationTest {
 
         EXTENSION.runQuery(getResourceFileContentAsString("asset-index-schema.sql"));
         EXTENSION.runQuery(getResourceFileContentAsString("contract-definition-schema.sql"));
-        EXTENSION.runQuery(getResourceFileContentAsString("sql/script.sql"));
+        EXTENSION.runQuery(getResourceFileContentAsString("migrations/connector/V1_10_0__Add_CatalogFunctions.sql"));
     }
 
     @AfterEach
