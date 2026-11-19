@@ -27,6 +27,7 @@ import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.tractusx.edc.core.utils.credentials.MembershipCredentialUtils;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
 
@@ -90,7 +91,7 @@ public class BusinessPartnerGroupLegacyFunction<C extends ParticipantAgentPolicy
     private static final List<Operator> ALLOWED_OPERATORS = List.of(EQ, NEQ, IN, IS_ALL_OF, IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
-    private BdrsClient bdrsClient;
+    private final BdrsClient bdrsClient;
     private final Monitor monitor;
 
     public BusinessPartnerGroupLegacyFunction(BusinessPartnerStore store, BdrsClient bdrsClient, Monitor monitor) {
@@ -122,7 +123,11 @@ public class BusinessPartnerGroupLegacyFunction<C extends ParticipantAgentPolicy
         }
 
         if (identity.startsWith(DID_PREFIX)) {
-            identity = bdrsClient.resolveBpn(identity);
+            identity = MembershipCredentialUtils.extractBpn(participantAgent.getClaims(), identity).orElse(null);
+        }
+        if (identity == null) {
+            context.reportProblem("Could not extract a BPN for participant DID '%s' from its MembershipCredential".formatted(participantAgent.getIdentity()));
+            return false;
         }
         var groups = store.resolveForBpn(identity);
 

@@ -59,7 +59,9 @@ class BusinessPartnerGroupConstraintFunctionTest {
         var bpn = "BPNL00000000001A";
         var allowedGroups = List.of("group1", "group2");
         when(participantAgent.getIdentity()).thenReturn(didIdentity);
-        when(bdrsClient.resolveBpn(didIdentity)).thenReturn(bpn);
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(Map.of(
+                "type", "MembershipCredential",
+                "credentialSubject", Map.of("id", didIdentity, "holderIdentifier", bpn)))));
         when(store.resolveForBpn(bpn)).thenReturn(StoreResult.success(allowedGroups));
         assertThat(function.evaluate(Operator.IS_ANY_OF, allowedGroups, null, context)).isTrue();
     }
