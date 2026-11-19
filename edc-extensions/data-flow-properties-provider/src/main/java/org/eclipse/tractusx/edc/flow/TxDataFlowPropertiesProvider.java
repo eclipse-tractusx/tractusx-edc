@@ -25,11 +25,11 @@ package org.eclipse.tractusx.edc.flow;
 import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowPropertiesProvider;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
+import org.eclipse.tractusx.edc.core.utils.credentials.MembershipCredentialUtils;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import java.util.Map;
@@ -44,7 +44,7 @@ import static org.eclipse.tractusx.edc.spi.identity.mapper.BdrsConstants.DID_PRE
 /**
  * Extension of {@link DataFlowPropertiesProvider} which provides additional properties in the {@link DataFlowStartMessage}
  * such as the consumer DID (audience) and the consumer BPN. The BPN is normally looked up from
- * {@link AgreementsBpnsStore}, with a BDRS fallback for agreements finalized before the mapping was available.
+ * {@link AgreementsBpnsStore} as a compatibility fallback for transfers finalized before claims were persisted.
  */
 public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider {
 
@@ -62,34 +62,19 @@ public class TxDataFlowPropertiesProvider implements DataFlowPropertiesProvider 
     public StatusResult<Map<String, String>> propertiesFor(TransferProcess transferProcess, Policy policy) {
 
         if (isDsp2025(policy)) {
-            var entry = agreementsBpnsStore.findByAgreementId(transferProcess.getContractId());
-            if (entry == null) {
-                String bpn;
-                try {
-                    bpn = bdrsClient.resolveBpn(policy.getAssignee(), true);
-                } catch (EdcException exception) {
-                    monitor.warning(
-                            ("Could not refresh BDRS while resolving DID '%s' for agreement '%s'. " +
-                                    "Starting the data flow with the audience only: %s")
-                                    .formatted(policy.getAssignee(), transferProcess.getContractId(), exception.getMessage()));
-                    return StatusResult.success(Map.of(AUDIENCE_PROPERTY, policy.getAssignee()));
-                }
-                if (bpn == null) {
-                    monitor.warning(
-                            ("No BPN entry found for agreement %s and BPN could not be resolved for DID '%s'. " +
-                                    "Starting the data flow with the audience only.")
-                                    .formatted(transferProcess.getContractId(), policy.getAssignee()));
-                    return StatusResult.success(Map.of(AUDIENCE_PROPERTY, policy.getAssignee()));
-                }
-                return StatusResult.success(Map.of(
-                        AUDIENCE_PROPERTY, policy.getAssignee(),
-                        BPN_PROPERTY, bpn
-                ));
+            var consumerDid = policy.getAssignee();
+            var claims = transferProcess.getClaims();
+            var bpn = MembershipCredentialUtils.extractBpn(claims, consumerDid).orElse(null);
+            if (bpn == null && (claims == null || claims.isEmpty())) {
+                var entry = agreementsBpnsStore.findByAgreementId(transferProcess.getContractId());
+                bpn = entry == null ? null : entry.getConsumerBpn();
             }
-            return StatusResult.success(Map.of(
-                    AUDIENCE_PROPERTY, policy.getAssignee(),
-                    BPN_PROPERTY, entry.getConsumerBpn()
-            ));
+            if (bpn == null) {
+                return StatusResult.failure(FATAL_ERROR,
+                        "No MembershipCredential holderIdentifier found for consumer DID '%s' on agreement '%s'"
+                                .formatted(consumerDid, transferProcess.getContractId()));
+            }
+            return StatusResult.success(Map.of(AUDIENCE_PROPERTY, consumerDid, BPN_PROPERTY, bpn));
         } else if (isDsp08(policy)) {
             var bpn = policy.getAssignee();
             var did = bdrsClient.resolveDid(bpn);

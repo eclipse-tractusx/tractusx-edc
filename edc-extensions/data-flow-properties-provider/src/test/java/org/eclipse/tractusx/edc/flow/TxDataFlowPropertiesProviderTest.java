@@ -23,18 +23,19 @@ package org.eclipse.tractusx.edc.flow;
 
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.RETURNS_SELF;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -67,15 +68,21 @@ public class TxDataFlowPropertiesProviderTest {
             assertThat(properties).containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID);
             assertThat(properties).containsEntry(BPN_PROPERTY, CONSUMER_BPN);
         });
-        verify(bdrs, never()).resolveBpn(CONSUMER_DID, true);
+        verify(bdrs, never()).resolveBpn(CONSUMER_DID);
     }
 
     @Test
-    void shouldResolveBpnFromBdrs_whenAssigneeIsDidAndEntryNotFound() {
+    void shouldExtractBpnFromMembershipCredential_whenAssigneeIsDidAndEntryNotFound() {
         when(store.findByAgreementId(CONTRACT_ID)).thenReturn(null);
-        when(bdrs.resolveBpn(CONSUMER_DID, true)).thenReturn(CONSUMER_BPN);
+        var claims = Map.<String, Object>of("vc", List.of(Map.of(
+                "type", "MembershipCredential",
+                "credentialSubject", Map.of("id", CONSUMER_DID, "holderIdentifier", CONSUMER_BPN))));
+        var transferProcess = TransferProcess.Builder.newInstance()
+                .contractId(CONTRACT_ID)
+                .claims(claims)
+                .build();
 
-        var result = provider.propertiesFor(createTransferProcess(CONTRACT_ID), createPolicy(CONSUMER_DID));
+        var result = provider.propertiesFor(transferProcess, createPolicy(CONSUMER_DID));
 
         assertThat(result).isSucceeded().satisfies(properties -> {
             assertThat(properties).containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID);
@@ -84,36 +91,27 @@ public class TxDataFlowPropertiesProviderTest {
     }
 
     @Test
-    void shouldReturnAudienceOnly_whenAssigneeIsDidAndBpnCannotBeResolved() {
-        when(store.findByAgreementId(CONTRACT_ID)).thenReturn(null);
-        when(bdrs.resolveBpn(CONSUMER_DID, true)).thenReturn(null);
+    void shouldReturnFatalError_whenMembershipCredentialHasNoHolderIdentifier() {
+        when(store.findByAgreementId(CONTRACT_ID)).thenReturn(AgreementsBpnsEntry.Builder.newInstance()
+                .withAgreementId(CONTRACT_ID)
+                .withProviderBpn("BPNL000000000002")
+                .withConsumerBpn(CONSUMER_BPN)
+                .build());
+        var claims = Map.<String, Object>of("vc", List.of(Map.of(
+                "type", "MembershipCredential",
+                "credentialSubject", Map.of("id", CONSUMER_DID))));
+        var transferProcess = TransferProcess.Builder.newInstance()
+                .contractId(CONTRACT_ID)
+                .claims(claims)
+                .build();
 
-        var result = provider.propertiesFor(createTransferProcess(CONTRACT_ID), createPolicy(CONSUMER_DID));
+        var result = provider.propertiesFor(transferProcess, createPolicy(CONSUMER_DID));
 
-        assertThat(result).isSucceeded().satisfies(properties -> {
-            assertThat(properties).containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID);
-            assertThat(properties).doesNotContainKey(BPN_PROPERTY);
-        });
-        verify(bdrs).resolveBpn(CONSUMER_DID, true);
-        verify(monitor).warning(contains("Starting the data flow with the audience only"));
-        verify(monitor).warning(contains(CONTRACT_ID));
-        verify(monitor).warning(contains(CONSUMER_DID));
-    }
-
-    @Test
-    void shouldReturnAudienceOnly_whenBdrsRefreshFails() {
-        when(store.findByAgreementId(CONTRACT_ID)).thenReturn(null);
-        when(bdrs.resolveBpn(CONSUMER_DID, true)).thenThrow(new EdcException("BDRS unavailable"));
-
-        var result = provider.propertiesFor(createTransferProcess(CONTRACT_ID), createPolicy(CONSUMER_DID));
-
-        assertThat(result).isSucceeded().satisfies(properties -> {
-            assertThat(properties).containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID);
-            assertThat(properties).doesNotContainKey(BPN_PROPERTY);
-        });
-        verify(monitor).warning(contains("Starting the data flow with the audience only"));
-        verify(monitor).warning(contains(CONTRACT_ID));
-        verify(monitor).warning(contains(CONSUMER_DID));
+        assertThat(result).isFailed()
+                .detail().isEqualTo("No MembershipCredential holderIdentifier found for consumer DID '%s' on agreement '%s'"
+                        .formatted(CONSUMER_DID, CONTRACT_ID));
+        verify(store, never()).findByAgreementId(CONTRACT_ID);
+        verify(bdrs, never()).resolveBpn(CONSUMER_DID);
     }
 
     @Test
