@@ -209,9 +209,12 @@ class BdrsClientImplTest {
     }
 
     private byte[] createGzipStream() {
-        var data = Map.of("bpn1", "did:web:did1",
+        return createGzipStream(Map.of("bpn1", "did:web:did1",
                 "bpn2", "did:web:did2",
-                "bpn3", "did:web:did3");
+                "bpn3", "did:web:did3"));
+    }
+
+    private byte[] createGzipStream(Map<String, String> data) {
 
         var bas = new ByteArrayOutputStream();
         try (var gzip = new GZIPOutputStream(bas)) {

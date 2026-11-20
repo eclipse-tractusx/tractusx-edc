@@ -25,6 +25,7 @@ plugins {
 dependencies {
     implementation(libs.edc.spi.transfer)
     implementation(project(":spi:core-spi"))
+    implementation(project(":core:core-utils"))
     implementation(project(":spi:bdrs-client-spi"))
     implementation(project(":edc-extensions:agreements-bpns:bpns-evaluation-spi"))
 

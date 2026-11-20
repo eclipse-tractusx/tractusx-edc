@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +50,6 @@ import static org.eclipse.edc.policy.model.Operator.LEQ;
 import static org.eclipse.edc.policy.model.Operator.LT;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BusinessPartnerGroupFunctionTest {
@@ -113,17 +113,18 @@ class BusinessPartnerGroupFunctionTest {
     }
     
     @Test
-    void evaluate_whenIdentityIsDid_shouldResolveBpn() {
+    void evaluate_whenIdentityIsDid_shouldUseMembershipCredentialBpn() {
         var did = "did:web:foo";
         var allowedGroups = List.of(TEST_GROUP_1, TEST_GROUP_2);
         when(agent.getIdentity()).thenReturn(did);
-        when(bdrsClient.resolveBpn(did)).thenReturn(TEST_BPN);
+        when(agent.getClaims()).thenReturn(Map.of("vc", List.of(Map.of(
+                "type", "MembershipCredential",
+                "credentialSubject", Map.of("id", did, "holderIdentifier", TEST_BPN)))));
         when(store.resolveForBpn(TEST_BPN)).thenReturn(StoreResult.success(allowedGroups));
         
         var result = function.evaluate(IS_ANY_OF, allowedGroups, unusedPermission, context);
         
         assertThat(result).isTrue();
-        verify(bdrsClient).resolveBpn(did);
     }
 
     @Test

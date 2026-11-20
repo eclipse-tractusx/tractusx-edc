@@ -36,13 +36,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BusinessPartnerNumberPermissionFunctionTest {
@@ -64,16 +64,17 @@ class BusinessPartnerNumberPermissionFunctionTest {
     }
 
     @Test
-    void testBdrsClientCalledWhenIdentityIsDid() {
+    void testMembershipCredentialUsedWhenIdentityIsDid() {
         var did = "did:web:foo";
         var bpn = "foo";
         when(participantAgent.getIdentity()).thenReturn(did);
-        when(bdrsClient.resolveBpn(did)).thenReturn(bpn);
+        when(participantAgent.getClaims()).thenReturn(Map.of("vc", List.of(Map.of(
+                "type", "MembershipCredential",
+                "credentialSubject", Map.of("id", did, "holderIdentifier", bpn)))));
 
         var result = validation.evaluate(Operator.IS_ANY_OF, bpnList("foo"), unusedPermission, policyContext);
 
         assertThat(result).isTrue();
-        verify(bdrsClient).resolveBpn(did);
     }
 
     @Test

@@ -23,6 +23,7 @@ import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.tractusx.edc.core.utils.credentials.MembershipCredentialUtils;
 import org.eclipse.tractusx.edc.policy.cx.common.ValueValidatingConstraintFunction;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.eclipse.tractusx.edc.validation.businesspartner.spi.store.BusinessPartnerStore;
@@ -50,7 +51,7 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
     private static final List<Operator> ALLOWED_OPERATORS = List.of(IS_ANY_OF, IS_NONE_OF);
     private static final Map<Operator, Function<BpnGroupHolder, Boolean>> OPERATOR_EVALUATOR_MAP = new HashMap<>();
     private final BusinessPartnerStore store;
-    private BdrsClient bdrsClient;
+    private final BdrsClient bdrsClient;
 
     public BusinessPartnerGroupConstraintFunction(BusinessPartnerStore store, BdrsClient bdrsClient) {
         super(
@@ -81,7 +82,11 @@ public class BusinessPartnerGroupConstraintFunction<C extends ParticipantAgentPo
         }
 
         if (identity.startsWith(DID_PREFIX)) {
-            identity = bdrsClient.resolveBpn(identity);
+            identity = MembershipCredentialUtils.extractBpn(participantAgent.getClaims(), identity).orElse(null);
+        }
+        if (identity == null) {
+            context.reportProblem("Could not extract a BPN for participant DID '%s' from its MembershipCredential".formatted(participantAgent.getIdentity()));
+            return false;
         }
         var groups = store.resolveForBpn(identity);
 

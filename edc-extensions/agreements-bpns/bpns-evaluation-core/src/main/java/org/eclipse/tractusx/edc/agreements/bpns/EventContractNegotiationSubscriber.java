@@ -26,18 +26,24 @@ import org.eclipse.edc.spi.event.EventSubscriber;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
+import org.eclipse.tractusx.edc.core.utils.credentials.MembershipCredentialUtils;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 public class EventContractNegotiationSubscriber implements EventSubscriber {
     private final AgreementsBpnsStore store;
     private final Monitor monitor;
-    private final BdrsClient bdrsClient;
-    private static final String DID_PREFIX = "did";
+    private final String ownBpn;
 
-    public EventContractNegotiationSubscriber(AgreementsBpnsStore store, Monitor monitor, BdrsClient bdrsClient) {
+    public EventContractNegotiationSubscriber(AgreementsBpnsStore store, Monitor monitor, String ownBpn) {
         this.store = store;
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
-        this.bdrsClient = bdrsClient;
+        this.ownBpn = ownBpn;
+    }
+
+    public EventContractNegotiationSubscriber(AgreementsBpnsStore store, Monitor monitor, BdrsClient ignored) {
+        this.store = store;
+        this.monitor = monitor.withPrefix(getClass().getSimpleName());
+        this.ownBpn = null;
     }
 
 
@@ -47,10 +53,12 @@ public class EventContractNegotiationSubscriber implements EventSubscriber {
         var agreement = payload.getContractAgreement();
         var agreementId = agreement.getId();
 
-        var providerBpn = extractBpn(agreementId, agreement.getProviderId());
-        var consumerBpn = extractBpn(agreementId, agreement.getConsumerId());
+        var providerBpn = extractBpn(agreement.getProviderId(), agreement.getClaims(), true);
+        var consumerBpn = extractBpn(agreement.getConsumerId(), agreement.getClaims(), false);
 
         if (providerBpn == null || consumerBpn == null) {
+            monitor.debug("Could not create BPN mapping for agreement '%s': providerBpn=%s, consumerBpn=%s"
+                    .formatted(agreementId, providerBpn, consumerBpn));
             return;
         }
 
@@ -63,15 +71,17 @@ public class EventContractNegotiationSubscriber implements EventSubscriber {
         store.save(entry).onFailure(failure -> monitor.severe(failure.getFailureDetail()));
     }
 
-    private String extractBpn(String agreementId, String id) {
-        if (!id.startsWith(DID_PREFIX)) {
+    private String extractBpn(String id, java.util.Map<String, Object> claims, boolean ownParticipant) {
+        if (!id.startsWith("did")) {
             return id;
         }
-        var bpn = bdrsClient.resolveBpn(id);
-        if (bpn == null) {
-            monitor.severe("Could not resolve BPN for DID '%s' on agreement '%s'. The agreement will not be stored."
-                    .formatted(id, agreementId));
+        var counterpartyBpn = MembershipCredentialUtils.extractBpn(claims, id);
+        if (counterpartyBpn.isPresent()) {
+            return counterpartyBpn.get();
         }
-        return bpn;
+        if (ownParticipant) {
+            return ownBpn;
+        }
+        return null;
     }
 }
