@@ -10,6 +10,21 @@ only vary by using different extensions for
 - Persistence of the Control-Plane-State
 - Persistence of Secrets (Vault)
 
+## Documentation Site
+
+This folder is published as the documentation site at
+<https://eclipse-tractusx.github.io/tractusx-edc/> (built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/),
+configured in [`mkdocs.yml`](../mkdocs.yml)). To preview it locally:
+
+```shell
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r resources/docs/requirements.txt
+mkdocs serve
+```
+
+Then open <http://127.0.0.1:8000/tractusx-edc/>. Pull requests that touch the documentation run
+`mkdocs build --strict` in the `Publish documentation` workflow. New pages must be added to the `nav` in `mkdocs.yml`.
+
 ## Connector Setup
 
 The three supported setups are.

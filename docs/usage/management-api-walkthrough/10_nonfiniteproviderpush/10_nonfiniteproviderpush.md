@@ -20,7 +20,7 @@ data address property that represents the finiteness of the data address. A valu
 to non-finite. As an example, the following request registers an `HttpData` Asset that represents an API that produces 
 non-finite data:
 
-```http request
+```http
 POST /v3/assets HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -55,7 +55,7 @@ The Data Provider can initiate additional transfers on demand by invoking the `D
 available within the management API context and is exposed through the data plane. To trigger a new data transfer, execute 
 the following request:
 
-```http request
+```http
 POST /v3/dataflows/{{TRANSFER_PROCESS_ID}}/trigger HTTP/1.1
 Host: https://provider-data.plane/api/management
 X-Api-Key: password

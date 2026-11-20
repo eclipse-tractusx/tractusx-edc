@@ -122,3 +122,7 @@ edc-tests/miw-tests/src/test/resources/docker-environment/postgres_data/
 # Allure Results
 
 **/allure-results/*
+
+# MkDocs documentation site build output and hook bytecode
+/site/
+resources/docs/hooks/__pycache__/
