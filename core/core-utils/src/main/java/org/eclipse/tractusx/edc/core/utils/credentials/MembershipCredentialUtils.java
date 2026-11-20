@@ -19,6 +19,7 @@
 
 package org.eclipse.tractusx.edc.core.utils.credentials;
 
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
 import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 
 import java.util.Collection;
@@ -55,7 +56,7 @@ public final class MembershipCredentialUtils {
                     continue;
                 }
                 var bpn = vc.getCredentialSubject().stream()
-                        .filter(subject -> matchesDid(subject.getClaims(), did))
+                        .filter(subject -> matchesDid(subject, did))
                         .flatMap(subject -> subject.getClaims().entrySet().stream())
                         .filter(entry -> entry.getKey().endsWith(HOLDER_IDENTIFIER))
                         .map(Map.Entry::getValue)
@@ -113,6 +114,16 @@ public final class MembershipCredentialUtils {
             subjectDid = claims.get("@id");
         }
         return did.equals(subjectDid);
+    }
+
+    private static boolean matchesDid(CredentialSubject subject, String did) {
+        if (did == null) {
+            return true;
+        }
+        if (subject.getId() != null) {
+            return did.equals(subject.getId());
+        }
+        return matchesDid(subject.getClaims(), did);
     }
 
     private static boolean isMembershipCredential(Object type) {

@@ -41,7 +41,7 @@ class MembershipCredentialUtilsTest {
                 .issuer(new Issuer("did:web:issuer", Map.of()))
                 .issuanceDate(Instant.now())
                 .credentialSubject(CredentialSubject.Builder.newInstance()
-                        .claim("id", DID)
+                        .id(DID)
                         .claim("holderIdentifier", BPN)
                         .build())
                 .build();
@@ -58,6 +58,22 @@ class MembershipCredentialUtilsTest {
 
         assertThat(MembershipCredentialUtils.extractBpn(claims, DID))
                 .contains(BPN);
+    }
+
+    @Test
+    void shouldRejectVerifiableCredentialFromAnotherDid() {
+        var credential = VerifiableCredential.Builder.newInstance()
+                .types(List.of("VerifiableCredential", "MembershipCredential"))
+                .issuer(new Issuer("did:web:issuer", Map.of()))
+                .issuanceDate(Instant.now())
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id("did:web:other")
+                        .claim("holderIdentifier", BPN)
+                        .build())
+                .build();
+
+        assertThat(MembershipCredentialUtils.extractBpn(Map.of("vc", List.of(credential)), DID))
+                .isEmpty();
     }
 
     @Test

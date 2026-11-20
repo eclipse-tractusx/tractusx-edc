@@ -22,6 +22,9 @@ package org.eclipse.tractusx.edc.agreements.bpns;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.CredentialSubject;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.Issuer;
+import org.eclipse.edc.iam.verifiablecredentials.spi.model.VerifiableCredential;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.event.EventEnvelope;
@@ -34,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -66,6 +70,15 @@ class EventContractNegotiationSubscriberTest {
         var providerId = "did:provider";
         var consumerId = "did:consumer";
         var resolvedBpn = "resolvedConsumerBpn";
+        var credential = VerifiableCredential.Builder.newInstance()
+                .types(List.of("VerifiableCredential", "MembershipCredential"))
+                .issuer(new Issuer("did:web:issuer", Map.of()))
+                .issuanceDate(Instant.now())
+                .credentialSubject(CredentialSubject.Builder.newInstance()
+                        .id(consumerId)
+                        .claim("holderIdentifier", resolvedBpn)
+                        .build())
+                .build();
 
         when(store.save(any())).thenReturn(StoreResult.success());
 
@@ -75,9 +88,7 @@ class EventContractNegotiationSubscriberTest {
                 .consumerId(consumerId)
                 .assetId("asset")
                 .policy(Policy.Builder.newInstance().assignee(consumerId).build())
-                .claims(Map.of("vc", List.of(Map.of(
-                        "type", "MembershipCredential",
-                        "credentialSubject", Map.of("id", consumerId, "holderIdentifier", resolvedBpn)))))
+                .claims(Map.of("vc", List.of(credential)))
                 .build();
 
         var event = ContractNegotiationFinalized.Builder.newInstance()
