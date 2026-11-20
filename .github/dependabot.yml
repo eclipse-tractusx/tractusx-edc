@@ -74,9 +74,14 @@ updates:
           - "com.apicatalog*"
           - "org.bouncycastle*"
           - "com.nimbusds*"
-      cloud-sdks:
+      # AWS and Azure SDKs are grouped separately because they can move to different
+      # Netty lines at different times (e.g. azure-storage-blob 12.37+ is on Netty 4.2.x
+      # while the AWS SDK is still on 4.1.x), so one must not block the other.
+      aws-sdk:
         patterns:
           - "software.amazon.awssdk*"
+      azure-sdk:
+        patterns:
           - "com.azure*"
       database:
         patterns:
