@@ -39,16 +39,22 @@ public class MockIdentityServiceExtension implements ServiceExtension {
 
     private final String bpn;
     private final String did;
+    private final boolean includeLocalMembershipCredential;
 
     public MockIdentityServiceExtension(String bpn, String did) {
+        this(bpn, did, false);
+    }
+
+    public MockIdentityServiceExtension(String bpn, String did, boolean includeLocalMembershipCredential) {
         this.bpn = bpn;
         this.did = did;
+        this.includeLocalMembershipCredential = includeLocalMembershipCredential;
     }
 
     @Provider
     public IdentityService mockIdentityService() {
         var mockTokenValidationService = new MockTokenValidationService();
         var mockTokenValidationAction = new MockTokenValidationAction(mockTokenValidationService, didPublicKeyResolver, jtiValidationStore);
-        return new MockVcIdentityService(bpn, did, mockTokenValidationAction);
+        return new MockVcIdentityService(bpn, did, includeLocalMembershipCredential, mockTokenValidationAction);
     }
 }
