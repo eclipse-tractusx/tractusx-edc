@@ -37,6 +37,10 @@ runs:
         ./gradlew :edc-dataplane:allDependencies --configuration runtimeClasspath | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" > dependency-list-d
         cat dependency-list-c dependency-list-d | sort | uniq > dependency-list
         cat dependency-list
+        if [ ! -s dependency-list ]; then
+          echo "ERROR: Generated dependency-list is empty!"
+          exit 1
+        fi
 
     - name: Run dash
       id: run-dash
@@ -48,11 +52,24 @@ runs:
         fail_on_rejected: true
         fail_on_restricted: ${{ inputs.run == 'strict' }}
 
+    - name: Validate DEPENDENCIES file is not empty
+      shell: bash
+      run: |
+        if [ ! -s DEPENDENCIES ]; then
+          echo "ERROR: DEPENDENCIES file is empty or missing after running dash!"
+          exit 1
+        fi
+        echo "DEPENDENCIES file is valid and non-empty ($(wc -l < DEPENDENCIES) lines)."
+
     - name: Print file
       shell: bash
       if: failure()
       run: |
         echo "=== Please copy the following content back to DEPENDENCIES ==="
-        cat DEPENDENCIES
+        if [ -s DEPENDENCIES ]; then
+          cat DEPENDENCIES
+        else
+          echo "No DEPENDENCIES file generated or file is empty."
+        fi
         echo "=== end of content ==="
         exit 1
