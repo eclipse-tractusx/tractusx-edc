@@ -27,7 +27,6 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 import org.eclipse.tractusx.edc.core.utils.credentials.MembershipCredentialUtils;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 public class EventContractNegotiationSubscriber implements EventSubscriber {
     private final AgreementsBpnsStore store;
@@ -39,13 +38,6 @@ public class EventContractNegotiationSubscriber implements EventSubscriber {
         this.monitor = monitor.withPrefix(getClass().getSimpleName());
         this.ownBpn = ownBpn;
     }
-
-    public EventContractNegotiationSubscriber(AgreementsBpnsStore store, Monitor monitor, BdrsClient ignored) {
-        this.store = store;
-        this.monitor = monitor.withPrefix(getClass().getSimpleName());
-        this.ownBpn = null;
-    }
-
 
     @Override
     public <E extends Event> void on(EventEnvelope<E> envelope) {
