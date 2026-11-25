@@ -48,8 +48,10 @@ runs:
 
     - name: Verify existing DEPENDENCIES file is not empty
       shell: bash
+      env:
+        FAIL_ON_OUT_OF_DATE: ${{ inputs.fail_on_out_of_date }}
       run: |
-        if [[ "${{ inputs.fail_on_out_of_date }}" == "true" ]]; then
+        if [[ "$FAIL_ON_OUT_OF_DATE" == "true" ]]; then
           if [ ! -s DEPENDENCIES ]; then
             echo "ERROR: Existing DEPENDENCIES file is empty or does not exist!"
             exit 1
