@@ -26,10 +26,6 @@ inputs:
     description: How the dependencies check must be applied. The "standard" will fail only for 'rejected' dependencies, "strict" will fail also for 'restricted' ones.
     required: false
     default: standard
-  fail_on_out_of_date:
-    description: Boolean indicating if the action should fail, if current DEPENDENCIES file is out of date. Default='false'
-    required: false
-    default: "false"
 
 runs:
   using: "composite"
@@ -46,36 +42,73 @@ runs:
           exit 1
         fi
 
-    - name: Verify existing DEPENDENCIES file is not empty
+    - name: Backup existing DEPENDENCIES file
       shell: bash
-      env:
-        FAIL_ON_OUT_OF_DATE: ${{ inputs.fail_on_out_of_date }}
       run: |
-        if [[ "$FAIL_ON_OUT_OF_DATE" == "true" ]]; then
-          if [ ! -s DEPENDENCIES ]; then
-            echo "ERROR: Existing DEPENDENCIES file is empty or does not exist!"
-            exit 1
-          fi
+        if [ -s DEPENDENCIES ]; then
+          cp DEPENDENCIES DEPENDENCIES.bak
         fi
 
     - name: Run dash
       id: run-dash
       uses: eclipse-tractusx/sig-infra/.github/actions/run-dash@1a2be9d3b599c081a4a307d8124f33d209f7c54e # main
       with:
-        dash_input: dependency-list
+        dash_input: -batch 50 dependency-list
         dependencies_file: DEPENDENCIES
-        fail_on_out_of_date: ${{ inputs.fail_on_out_of_date }}
+        fail_on_out_of_date: false
         fail_on_rejected: true
         fail_on_restricted: ${{ inputs.run == 'strict' }}
+
+    - name: Restore DEPENDENCIES if Dash failed and produced empty file
+      shell: bash
+      run: |
+        if [ ! -s DEPENDENCIES ] && [ -s DEPENDENCIES.bak ]; then
+          echo "WARNING: Dash failed to produce DEPENDENCIES. Restoring previous valid DEPENDENCIES file."
+          cp DEPENDENCIES.bak DEPENDENCIES
+        fi
+        rm -f DEPENDENCIES.bak
 
     - name: Validate DEPENDENCIES file is not empty
       shell: bash
       run: |
         if [ ! -s DEPENDENCIES ]; then
-          echo "ERROR: DEPENDENCIES file is empty or missing after running dash!"
+          echo "ERROR: DEPENDENCIES file is empty or does not exist!"
           exit 1
         fi
         echo "DEPENDENCIES file is valid and non-empty ($(wc -l < DEPENDENCIES) lines)."
+
+    - name: Validate dependencies match release
+      shell: bash
+      run: |
+        sed 's/:/\//g' dependency-list | sort -u > release-coords
+        awk -F, '{print $1}' DEPENDENCIES | sed -e 's#^maven/mavencentral/##' -e 's#^npm/npmjs/##' | sort -u > deps-coords
+        missing=$(comm -23 release-coords deps-coords)
+        rm -f release-coords deps-coords
+        if [ -n "$missing" ]; then
+          echo "ERROR: The following release dependencies are missing from DEPENDENCIES file:"
+          echo "$missing"
+          exit 1
+        fi
+        echo "All release dependencies match DEPENDENCIES file."
+
+    - name: Verify license compliance of DEPENDENCIES
+      shell: bash
+      env:
+        MODE: ${{ inputs.run }}
+      run: |
+        rejected=$(grep ' rejected,' DEPENDENCIES || true)
+        if [[ -n "$rejected" ]]; then
+          echo "ERROR: The following dependencies are rejected: $rejected"
+          exit 1
+        fi
+        if [[ "$MODE" == "strict" ]]; then
+          restricted=$(grep ' restricted,' DEPENDENCIES || true)
+          if [[ -n "$restricted" ]]; then
+            echo "ERROR: The following dependencies are restricted: $restricted"
+            exit 1
+          fi
+        fi
+        echo "License compliance check passed (mode: $MODE)."
 
     - name: Print file
       shell: bash

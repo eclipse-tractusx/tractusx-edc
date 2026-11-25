@@ -76,6 +76,12 @@ jobs:
           else 
             echo "update_main_branch_version=false" >> $GITHUB_OUTPUT
           fi
+          if [[ -z $SNAPSHOT ]];
+          then
+            echo "is_official_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_official_release=false" >> $GITHUB_OUTPUT
+          fi
       - name: Validations
         env:
           REPOSITORY: ${{ github.repository }}
@@ -83,7 +89,8 @@ jobs:
           RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
         run: |
           if [[ "$REPOSITORY" != "eclipse-tractusx/tractusx-edc" ]]; then
-            echo "Running on fork $REPOSITORY: release artifacts will not be published."
+            echo "This workflow can only be run on the eclipse-tractusx/tractusx-edc repository."
+            exit 1
           fi
 
           if [[ ! "$REF_NAME" =~ ^release/ ]]; then
@@ -105,8 +112,7 @@ jobs:
       - name: Check dependencies before release
         uses: ./.github/actions/generate-and-check-dependencies
         with:
-          run: strict
-          fail_on_out_of_date: "true"
+          run: ${{ steps.update-main.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
 
   run-all-tests:
     name: "Run All Tests"
@@ -123,7 +129,7 @@ jobs:
     needs: [ validation, run-all-tests ]
     permissions:
       contents: read
-    if: needs.validation.outputs.RELEASE_VERSION && github.repository == 'eclipse-tractusx/tractusx-edc'
+    if: needs.validation.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-maven-publish.yaml
     secrets:
       ORG_GPG_PRIVATE_KEY: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
@@ -137,7 +143,7 @@ jobs:
   docker-release:
     name: Publish Docker images
     needs: [ validation, run-all-tests ]
-    if: needs.validation.outputs.RELEASE_VERSION && github.repository == 'eclipse-tractusx/tractusx-edc'
+    if: needs.validation.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-docker-publish.yaml
     secrets:
       DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
@@ -154,7 +160,7 @@ jobs:
       contents: write
       pages: write
 
-    if: needs.validation.outputs.RELEASE_VERSION && github.repository == 'eclipse-tractusx/tractusx-edc'
+    if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
@@ -194,7 +200,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    if: needs.validation.outputs.RELEASE_VERSION && github.repository == 'eclipse-tractusx/tractusx-edc'
+    if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
@@ -245,7 +251,6 @@ jobs:
     permissions:
       contents: write
     needs: [ validation, run-all-tests ]
-    if: github.repository == 'eclipse-tractusx/tractusx-edc'
     uses: ./.github/workflows/publish-openapi-ui.yml
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
@@ -258,7 +263,7 @@ jobs:
     needs: [ validation, github-release ]
     permissions:
       contents: write
-    if: needs.validation.outputs.RELEASE_VERSION && github.repository == 'eclipse-tractusx/tractusx-edc'
+    if: needs.validation.outputs.RELEASE_VERSION
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
@@ -297,7 +302,7 @@ jobs:
     name: "Bump main branch version"
     runs-on: ubuntu-latest
     needs: [ validation, github-release ]
-    if: ${{ needs.validation.outputs.update_main_branch_version == 'true' && github.repository == 'eclipse-tractusx/tractusx-edc' }}
+    if: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
     permissions:
       contents: write
       packages: write
