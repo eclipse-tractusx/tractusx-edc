@@ -38,10 +38,11 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
 
     public static final String TX_EDC_DID_SERVICE_SELF_REGISTRATION_ENABLED = "tx.edc.did.service.self.registration.enabled";
     public static final String TX_EDC_DID_SERVICE_SELF_DEREGISTRATION_ENABLED = "tx.edc.did.service.self.deregistration.enabled";
-    public static final String TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID = "tx.edc.did.service.self.registration.id";
 
     public static final String DATA_SERVICE_TYPE = "DataService";
     public static final String VERSION_METADATA_ENDPOINT_PATH = "/.well-known/dspace-version";
+
+    private static final String PARTICIPANT_CONTEXT_ID_PROPERTY = "edc.participant.context.id";
 
     @Inject
     private Monitor monitor;
@@ -114,13 +115,13 @@ public class DidDocumentServiceSelfRegistrationExtension implements ServiceExten
     private Result<String> validatedServiceId(String serviceId) {
 
         if (serviceId == null || serviceId.isBlank()) {
-            return Result.failure("Service ID for DID Document Service configured via Property '%s' is missing or blank but self-registration / de-registration is enabled.".formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID));
+            return Result.failure("Service ID for DID Document Service configured via Property '%s' is missing or blank but self-registration / de-registration is enabled.".formatted(PARTICIPANT_CONTEXT_ID_PROPERTY));
         }
         try {
             new URI(serviceId);
         } catch (URISyntaxException ex) {
-            return Result.failure("Service ID for DID Document Service self-registration configured via Property '%s' does not contain a valid URI (%s) but self-registration is enabled.'"
-                    .formatted(TX_EDC_DID_SERVICE_SELF_REGISTRATION_ID, ex.getMessage()));
+            return Result.failure("Service ID for DID Document Service self-registration configured via Property '%s' does not contain a valid URI ('%s') but self-registration is enabled."
+                    .formatted(PARTICIPANT_CONTEXT_ID_PROPERTY, ex.getMessage()));
         }
         return Result.success(serviceId);
     }
