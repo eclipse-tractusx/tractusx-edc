@@ -25,8 +25,10 @@
 # touches it, and publishes it to GitHub Pages from main. It also runs when a release is
 # published, so the changelog page (generated from GitHub Releases by
 # resources/docs/hooks/release_notes.py) always lists the latest release. The release workflow
-# (.github/workflows/release.yml) calls it after it has created the GitHub release: a release
-# created with GITHUB_TOKEN does not trigger the `release` event of other workflows.
+# (.github/workflows/release.yml) dispatches it on main after it has created the GitHub release:
+# a release created with GITHUB_TOKEN does not trigger the `release` event of other workflows,
+# but a workflow_dispatch does. There is deliberately no workflow_call trigger: it would expose
+# the pull request checkouts below to callers (poutine untrusted_checkout_exec).
 #
 # Pull requests from branches of this repository also get a preview at
 # https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/<number>/, built for that address
@@ -62,13 +64,6 @@ on:
       - '.github/scripts/update-docs-gh-pages.sh'
   release:
     types: [published]
-  workflow_call:
-    inputs:
-      release:
-        description: "Called by the release workflow: build from main and publish"
-        type: boolean
-        required: false
-        default: false
   workflow_dispatch:
 
 permissions:
@@ -87,8 +82,8 @@ jobs:
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # A release (event or release workflow) points at a tag or release branch; the site is always built from main.
-          ref: ${{ (github.event_name == 'release' || inputs.release) && 'main' || '' }}
+          # A release event points at the tag; the site is always built from main.
+          ref: ${{ github.event_name == 'release' && 'main' || '' }}
           persist-credentials: false
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -123,8 +118,7 @@ jobs:
     needs: build
     if: >-
       github.repository == 'eclipse-tractusx/tractusx-edc' &&
-      (github.event_name == 'release' || inputs.release ||
-      (github.event_name != 'pull_request' && github.ref == 'refs/heads/main'))
+      (github.event_name == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/main'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
