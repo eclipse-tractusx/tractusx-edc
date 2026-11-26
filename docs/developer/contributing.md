@@ -80,7 +80,8 @@ Before you push, run `mkdocs build --strict`. CI runs it too. For a pull request
 that changes the documentation, it also publishes a preview at
 `https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/<number>/`, links it in a comment on the pull request and
 removes it when the pull request is closed. Pull requests from forks are only built; download the site from the
-`documentation-site` artifact of the run. New pages must be added to `nav` in `mkdocs.yml` and end
+`documentation-site` artifact of the run. The site is published from `main` on every push that changes the
+documentation and by the release workflow (`.github/workflows/release.yml`) after each release. New pages must be added to `nav` in `mkdocs.yml` and end
 with the `## NOTICE` section.
 
 ## Decision records {#decision-records}

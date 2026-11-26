@@ -245,6 +245,20 @@ jobs:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
       latest: ${{ inputs.latest }}
 
+  # Release: Publish the documentation site (its changelog lists the new release)
+  publish-docs-to-gh-pages:
+    name: "Publish documentation site to GitHub Pages"
+    needs: [ validation, github-release, publish-allure-report-link-to-release ]
+    # pull-requests: write is only used by the preview jobs of publish-docs.yaml, which are
+    # skipped here; GitHub requires the caller to grant every permission a called job declares.
+    permissions:
+      contents: write
+      pull-requests: write
+    if: needs.validation.outputs.RELEASE_VERSION
+    uses: ./.github/workflows/publish-docs.yaml
+    with:
+      release: true
+
   # Release: Update Release Notes with Allure Report Link
   publish-allure-report-link-to-release:
     name: "Update Release Notes with Allure Report Link"
