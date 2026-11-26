@@ -3830,7 +3830,8 @@ who follows a few rules.</p>
 that changes the documentation, it also publishes a preview at
 <code>https://eclipse-tractusx.github.io/tractusx-edc/pr-preview/&lt;number&gt;/</code>, links it in a comment on the pull request and
 removes it when the pull request is closed. Pull requests from forks are only built; download the site from the
-<code>documentation-site</code> artifact of the run. New pages must be added to <code>nav</code> in <code>mkdocs.yml</code> and end
+<code>documentation-site</code> artifact of the run. The site is published from <code>main</code> on every push that changes the
+documentation and by the release workflow (<code>.github/workflows/release.yml</code>) after each release. New pages must be added to <code>nav</code> in <code>mkdocs.yml</code> and end
 with the <code>## NOTICE</code> section.</p>
 <h2 id="decision-records">Decision records<a class="headerlink" href="#decision-records" title="Permanent link">&para;</a></h2>
 <p>Significant technical decisions are recorded as <strong>architecture decision records (ADRs)</strong> in
