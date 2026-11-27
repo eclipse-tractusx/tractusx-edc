@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2025 Cofinity-X GmbH
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,13 +15,21 @@
  * under the License.
  *
  * SPDX-License-Identifier: Apache-2.0
+ * Assisted-By: Claude Code (claude-opus-5-5)
  ********************************************************************************/
 
 plugins {
     `java-library`
+    `maven-publish`
 }
 
 dependencies {
-    api(libs.edc.spi.core)
-    api(libs.dsp.spi.http)
+    implementation(libs.edc.spi.core)
+    implementation(libs.edc.spi.asset)
+    implementation(libs.edc.spi.policy)
+    implementation(libs.edc.spi.transfer)
+    implementation(libs.edc.spi.dataplane.selector)
+    implementation(libs.edc.spi.web)
+
+    testImplementation(libs.edc.junit)
 }

@@ -20,7 +20,6 @@
 package org.eclipse.tractusx.edc.callback;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferRequest;
 import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
@@ -29,6 +28,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;
+import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackMessage;
 
 import java.util.UUID;
 
@@ -51,7 +51,7 @@ public class ContractNegotiationCallback implements InProcessCallback {
     }
 
     @Override
-    public <T extends Event> Result<Void> invoke(CallbackEventRemoteMessage<T> message) {
+    public <T extends Event> Result<Void> invoke(InProcessCallbackMessage<T> message) {
         if (message.getEventEnvelope().getPayload() instanceof ContractNegotiationFinalized) {
             return initiateTransfer((ContractNegotiationFinalized) message.getEventEnvelope().getPayload());
         }

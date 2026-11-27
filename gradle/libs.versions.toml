@@ -2,15 +2,16 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.17.0"
+edc = "0.18.2"
+edc-technology = "0.18.0"
 edc-build = "1.5.4"
 allure = "2.35.6"
 awaitility = "4.3.0"
 aws = "2.59.0"
 azure-storage-blob = "12.36.0"
 bouncyCastle-jdk18on = "1.87"
-dcp-tck = "1.0.1"
-dsp-tck = "1.0.0"
+dcp-tck = "1.0.2"
+dsp-tck = "1.0.1"
 common-tck = "1.0.0"
 flyway = "13.12.2"
 jackson = "2.23.0"
@@ -46,6 +47,7 @@ edc-spi-boot = { module = "org.eclipse.edc:boot-spi", version.ref = "edc" }
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
 edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-spi-controlplane = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
+edc-spi-asset = { module = "org.eclipse.edc:asset-spi", version.ref = "edc" }
 edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-spi-decentralized-claims = { module = "org.eclipse.edc:decentralized-claims-spi", version.ref = "edc" }
 edc-spi-edrstore = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
@@ -83,6 +85,7 @@ edc-core-policy-monitor = { module = "org.eclipse.edc:policy-monitor-core", vers
 edc-core-runtime = { module = "org.eclipse.edc:runtime-core", version.ref = "edc" }
 edc-core-token = { module = "org.eclipse.edc:token-core", version.ref = "edc" }
 edc-controlplane-callback-staticendpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
+edc-controlplane-callback-eventdispatcher = { module = "org.eclipse.edc:callback-event-dispatcher", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-api-core = { module = "org.eclipse.edc:api-core", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
@@ -139,14 +142,14 @@ edc-sql-test-fixtures = { module = "org.eclipse.edc:sql-test-fixtures", version.
 
 # azure stuff
 azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
-edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
-edc-azure-blob-provision = { module = "org.eclipse.edc.azure:data-plane-provision-blob", version.ref = "edc" }
+edc-dpf-azblob = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc-technology" }
+edc-azure-blob-provision = { module = "org.eclipse.edc.azure:data-plane-provision-blob", version.ref = "edc-technology" }
 
 # EDC aws s3 stuff
-edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc" }
-edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
-edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
-edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:data-plane-provision-aws-s3", version.ref = "edc" }
+edc-aws-s3-core = { module = "org.eclipse.edc.aws:aws-s3-core", version.ref = "edc-technology" }
+edc-dpf-awss3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc-technology" }
+edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc-technology" }
+edc-aws-provision-s3 = { module = "org.eclipse.edc.aws:data-plane-provision-aws-s3", version.ref = "edc-technology" }
 
 # DCP Modules
 edc-core-did = { module = "org.eclipse.edc:identity-did-core", version.ref = "edc" }

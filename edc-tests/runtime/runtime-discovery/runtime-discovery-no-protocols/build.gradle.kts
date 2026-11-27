@@ -30,7 +30,6 @@ dependencies {
         exclude(module = "dataspace-protocol")
         exclude(module = "dsp-catalog-08")
         exclude(module = "dsp-http-api-configuration-08")
-        exclude(module = "dsp-http-dispatcher-08")
         exclude(module = "dsp-negotiation-08")
         exclude(module = "dsp-transfer-process-08")
         exclude(module = "dsp-2025")

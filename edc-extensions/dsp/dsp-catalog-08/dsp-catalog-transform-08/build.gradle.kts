@@ -27,4 +27,6 @@ dependencies {
 
     implementation(libs.edc.lib.transform)
     implementation(libs.edc.lib.dsp.catalog.transform)
+
+    testImplementation(libs.edc.junit)
 }

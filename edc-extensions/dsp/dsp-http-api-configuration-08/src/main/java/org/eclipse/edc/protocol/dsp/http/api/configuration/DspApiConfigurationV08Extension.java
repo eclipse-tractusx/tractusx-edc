@@ -45,6 +45,7 @@ import org.eclipse.edc.transform.transformer.edc.to.JsonObjectToCriterionTransfo
 import org.eclipse.edc.transform.transformer.edc.to.JsonObjectToQuerySpecTransformer;
 import org.eclipse.edc.transform.transformer.edc.to.JsonValueToGenericTypeTransformer;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
@@ -96,7 +97,7 @@ public class DspApiConfigurationV08Extension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        dataspaceProfileContextRegistry.registerDefault(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), participantIdExtractionFunction));
+        dataspaceProfileContextRegistry.registerDefault(new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), participantIdExtractionFunction, DSP_NAMESPACE_V_08, List.of()));
 
         // registers ns for DSP scope
         registerNamespaces();

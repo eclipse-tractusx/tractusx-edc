@@ -34,7 +34,15 @@ public interface Dsp08Constants {
     String V_08_PATH = "/";
     ProtocolVersion V_08 = new ProtocolVersion(V_08_VERSION, V_08_PATH, DSP_HTTPS_BINDING);
 
-    String DSP_SCOPE_V_08 = DSP_SCOPE + DSP_CONTEXT_SEPARATOR + V_08_VERSION;
+    /**
+     * Name of the DSP 0.8 dataspace profile, equal to {@code HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP}.
+     */
+    String DATASPACE_PROTOCOL_HTTP_V_08 = "dataspace-protocol-http";
+
+    /**
+     * Since EDC 0.18 the DSP JSON-LD scope is keyed by the dataspace profile name, not the protocol version.
+     */
+    String DSP_SCOPE_V_08 = DSP_SCOPE + DSP_CONTEXT_SEPARATOR + DATASPACE_PROTOCOL_HTTP_V_08;
 
     String DSP_TRANSFORMER_CONTEXT_V_08 = DSP_TRANSFORMER_CONTEXT + DSP_CONTEXT_SEPARATOR + V_08_VERSION;
 

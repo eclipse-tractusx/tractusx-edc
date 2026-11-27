@@ -19,29 +19,34 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolverRegistry;
+import org.eclipse.edc.connector.controlplane.callback.dispatcher.CallbackHttpClient;
+import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackClient;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackRegistry;
 
-import static org.eclipse.tractusx.edc.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
-
+/**
+ * Handles callback addresses with the {@code local} scheme in-process, e.g. the automatic EDR negotiation of the
+ * EDR API ({@code local://adapter}).
+ * <p>
+ * Since EDC 0.18 the upstream callback dispatcher sends every callback through a single {@link CallbackClient}, so this
+ * extension provides one that handles {@code local} callbacks and delegates all others to the upstream
+ * {@link CallbackHttpClient}.
+ */
 @Extension(LocalCallbackExtension.NAME)
 public class LocalCallbackExtension implements ServiceExtension {
+
     public static final String NAME = "Local callbacks extension";
 
-    public static final String LOCAL = "local";
-
-    @Inject
-    private RemoteMessageDispatcherRegistry registry;
-    @Inject
-    private CallbackProtocolResolverRegistry resolverRegistry;
     @Inject
     private TransferProcessService transferProcessService;
     @Inject
@@ -50,6 +55,12 @@ public class LocalCallbackExtension implements ServiceExtension {
     private Monitor monitor;
     @Inject
     private SingleParticipantContextSupplier singleParticipantContextSupplier;
+    @Inject
+    private EdcHttpClient httpClient;
+    @Inject
+    private TypeManager typeManager;
+    @Inject
+    private Vault vault;
 
     @Override
     public String name() {
@@ -58,19 +69,12 @@ public class LocalCallbackExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-
         callbackRegistry.registerHandler(new ContractNegotiationCallback(transferProcessService, monitor, singleParticipantContextSupplier));
-
-        resolverRegistry.registerResolver(this::resolveProtocol);
-        registry.register(CALLBACK_EVENT_LOCAL, new InProcessCallbackMessageDispatcher(callbackRegistry));
-
     }
 
-    private String resolveProtocol(String scheme) {
-
-        if (scheme.equalsIgnoreCase(LOCAL)) {
-            return CALLBACK_EVENT_LOCAL;
-        }
-        return null;
+    @Provider
+    public CallbackClient callbackClient() {
+        var httpCallbackClient = new CallbackHttpClient(httpClient, typeManager.getMapper(), vault);
+        return new LocalCallbackClient(callbackRegistry, httpCallbackClient, monitor.withPrefix(LocalCallbackClient.class.getSimpleName()));
     }
 }
