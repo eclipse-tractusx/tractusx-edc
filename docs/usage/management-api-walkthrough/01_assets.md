@@ -4,7 +4,7 @@ An Asset is the fundamental representation of an arbitrary backend interface in 
 with its Control Plane as a first step to expose it to the Dataspace via the Dataplane later on. This registration is
 executed via the following Request:
 
-```http request
+```http
 POST /v3/assets HTTP/1.1
 Host: https://provider-control.plane/api/management
 X-Api-Key: password

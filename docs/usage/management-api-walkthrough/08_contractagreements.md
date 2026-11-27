@@ -4,7 +4,7 @@ The Management API has a provider-internal endpoint to retrieve existing Contrac
 endpoint (to be used with the previously explained `QuerySpec` object) but allows retrieval of single agreements by id
 like this:
 
-```http request
+```http
 GET /v3/contractagreements/{{AGREEMENT_ID}} HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password

@@ -13,6 +13,7 @@ Container images and deployments of the Eclipse Dataspace Components for the Tra
 
 Please also refer to:
 
+- [Documentation site](https://eclipse-tractusx.github.io/tractusx-edc/)
 - [Our docs](https://github.com/eclipse-tractusx/tractusx-edc/tree/main/docs)
 - [Our Releases](https://github.com/eclipse-tractusx/tractusx-edc/releases)
 - [Eclipse Dataspace Components](https://github.com/eclipse-edc/Connector)

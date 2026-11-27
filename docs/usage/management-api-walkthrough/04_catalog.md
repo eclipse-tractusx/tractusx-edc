@@ -25,7 +25,7 @@ DSP discovery is supported with the following requests
 
 For the full flow including the DID document download:
 
-```http request
+```http
 POST /v3/connectordiscovery/connectors HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -44,7 +44,7 @@ Content-Type: application/json
 
 or, if a connector base address is already known:
 
-```http request
+```http
 POST /v3/connectordiscovery/dspversionparams HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password
@@ -95,7 +95,7 @@ As mentioned in the beginning of this document, a catalog request is the first a
 during the data transfer sequence. A catalog request is done the following way:
 
 
-```http request
+```http
 POST /v3/catalog/request HTTP/1.1
 Host: https://consumer-control.plane/api/management
 X-Api-Key: password

@@ -1,6 +1,6 @@
 # Connector Sensei
 
-<img src="../../../.github/agents/connector-sensei.jpg" width="96" align="right" alt="Connector Sensei avatar">
+<img class="tx-sensei-picture" src="../../assets/images/connector-sensei-full.jpg" width="360" align="right" alt="The Connector Sensei: a robot sensei in a Tractus-X robe at a desk with a laptop, a bonsai and a scroll showing the control plane and the data plane">
 
 The **Connector Sensei** is an AI agent for developing and operating Tractus-X EDC. It knows this repository, the
 upstream Eclipse Dataspace Components (EDC) version it is built on, and the specifications behind both: DSP, DCP,
@@ -11,6 +11,7 @@ It works with **Claude Code** and **GitHub Copilot**. Its procedures and determi
 shared by both. [How the skills work](skills.md) explains the idea behind them.
 
 <!-- TOC -->
+- [Skills](#skills)
 - [What is in the repository](#what-is-in-the-repository)
 - [Prerequisites](#prerequisites)
 - [Using it with Claude Code](#using-it-with-claude-code)
@@ -21,6 +22,12 @@ shared by both. [How the skills work](skills.md) explains the idea behind them.
 - [Maintaining the Sensei](#maintaining-the-sensei)
 - [Troubleshooting](#troubleshooting)
 <!-- TOC -->
+
+## Skills
+
+<!-- skills:start: on the site, resources/docs/hooks/sensei_skills.py replaces this part with a card per skill -->
+The skills are listed in the [skills catalog](../../../.claude/skills/README.md).
+<!-- skills:end -->
 
 ## What is in the repository
 
@@ -118,6 +125,8 @@ them out of commits).
 | Schema change | "Add an index on `edc_transfer_process.state` and tell me what to test." | `sql-migration` |
 | Prove a feature end to end | "Write an E2E test that a BPN group policy hides the offer from other consumers." | `e2e-test-author` |
 | New endpoint | "Add `GET /v3/edrs/{id}/status`, following our API conventions." | `management-api-endpoint` |
+| Write documentation | "Add a page on configuring the Kafka extension to the documentation site, with the settings from the code." | `setting-lifecycle`, `edc-upstream-sources` |
+| Review documentation | "Check `docs/deployment/helm-chart.md` against the chart and list what is out of date." | `setting-lifecycle` |
 | Dependency hygiene | "Does bumping `com.fasterxml.jackson.core:jackson-databind` introduce restricted licenses?" | `dependencies-and-dash` |
 
 Good requests name the **side** (consumer or provider), the **version** (deployed release, DSP version) and paste

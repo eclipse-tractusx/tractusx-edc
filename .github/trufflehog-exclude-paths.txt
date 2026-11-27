@@ -24,3 +24,8 @@
 # (Postgres JDBC URLs pointing to the test databases) that TruffleHog >= 3.97.9
 # reports as "unknown" results on full-history scans.
 ^\.github/workflows/business-tests\.yaml$
+
+# Documentation of the Helm chart. Its history contains an example JDBC URL without
+# credentials, with a sample host name, which TruffleHog reports as an "unknown"
+# result. The page now uses a placeholder.
+^docs/deployment/helm-chart\.md$
