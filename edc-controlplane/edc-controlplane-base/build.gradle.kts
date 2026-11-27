@@ -33,9 +33,16 @@ configurations.all {
     // We decided to not provide the federated catalog feature with this runtime
     exclude("org.eclipse.edc", "federated-catalog-api")
     exclude("org.eclipse.edc", "federated-catalog-spi")
-    exclude("org.eclipse.edc", "federated-catalog-core")
-    exclude("org.eclipse.edc", "federated-catalog-core-2025")
+    exclude("org.eclipse.edc", "catalog-crawler-core")
     exclude("org.eclipse.edc", "federated-catalog-cache-sql")
+
+    // The upstream BOM ships the new Data Plane Signaling (DPS) implementation since 0.18.0, which is not compatible
+    // with the Tractus-X data planes yet. The legacy signaling is provided by edc-extensions:legacy-data-plane-signaling,
+    // a backport of the deprecated upstream transfer-data-plane-signaling module with a fixed resume.
+    exclude("org.eclipse.edc", "data-plane-signaling")
+    exclude("org.eclipse.edc", "data-plane-signaling-core")
+    exclude("org.eclipse.edc", "data-plane-signaling-oauth2")
+    exclude("org.eclipse.edc", "transfer-data-plane-signaling")
 }
 
 dependencies {
@@ -53,13 +60,13 @@ dependencies {
     implementation(project(":edc-extensions:cx-policy"))
     implementation(project(":edc-extensions:cx-policy-legacy"))
     implementation(project(":edc-extensions:data-flow-properties-provider"))
+    implementation(project(":edc-extensions:legacy-data-plane-signaling"))
     implementation(project(":edc-extensions:dcp:cx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp"))
     implementation(project(":edc-extensions:dcp:tx-dcp-sts-div"))
     implementation(project(":edc-extensions:dcp:verifiable-presentation-cache"))
     implementation(project(":edc-extensions:dsp:dsp-catalog-08"))
     implementation(project(":edc-extensions:dsp:dsp-http-api-configuration-08"))
-    implementation(project(":edc-extensions:dsp:dsp-http-dispatcher-08"))
     implementation(project(":edc-extensions:dsp:dsp-negotiation-08"))
     implementation(project(":edc-extensions:dsp:dsp-transfer-process-08"))
     implementation(project(":edc-extensions:edr:edr-api-v2"))

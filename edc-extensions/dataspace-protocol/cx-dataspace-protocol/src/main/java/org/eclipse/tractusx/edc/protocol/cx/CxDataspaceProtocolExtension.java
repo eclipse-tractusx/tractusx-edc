@@ -34,9 +34,11 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.protocol.cx.identifier.BpnExtractionFunction;
 import org.eclipse.tractusx.edc.protocol.cx.identifier.CatenaxParticipantIdentityResolver;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.eclipse.edc.protocol.dsp.http.spi.types.HttpMessageProtocol.DATASPACE_PROTOCOL_HTTP;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.DSP_NAMESPACE_V_08;
 import static org.eclipse.edc.protocol.dsp.spi.type.Dsp08Constants.V_08;
 
 public class CxDataspaceProtocolExtension implements ServiceExtension {
@@ -56,7 +58,7 @@ public class CxDataspaceProtocolExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         Stream.of(
-                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), new BpnExtractionFunction(monitor))
+                new DataspaceProfileContext(DATASPACE_PROTOCOL_HTTP, V_08, () -> dspWebhookAddress.get(), new BpnExtractionFunction(monitor), DSP_NAMESPACE_V_08, List.of())
         ).forEach(contextRegistry::register);
     }
 

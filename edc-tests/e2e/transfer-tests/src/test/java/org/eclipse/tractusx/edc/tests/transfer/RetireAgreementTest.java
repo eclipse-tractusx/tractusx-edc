@@ -40,6 +40,7 @@ import java.util.UUID;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_BPN;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_DID;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
@@ -142,7 +143,7 @@ public class RetireAgreementTest {
         // verify no new TP can start for same contract agreement
 
         var privateProperties = Json.createObjectBuilder().build();
-        var dataDestination = Json.createObjectBuilder().add("type", "HttpData").build();
+        var dataDestination = Json.createObjectBuilder().add(EDC_NAMESPACE + "type", "HttpData").build();
 
         var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, agreementId, privateProperties, dataDestination, "HttpData-PULL");
 

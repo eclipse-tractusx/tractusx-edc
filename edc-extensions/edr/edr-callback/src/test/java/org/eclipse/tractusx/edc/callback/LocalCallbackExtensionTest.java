@@ -19,10 +19,8 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolver;
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackProtocolResolverRegistry;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackRegistry;
@@ -32,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.tractusx.edc.callback.InProcessCallbackMessageDispatcher.CALLBACK_EVENT_LOCAL;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,30 +37,17 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(DependencyInjectionExtension.class)
 public class LocalCallbackExtensionTest {
 
-    RemoteMessageDispatcherRegistry dispatcherRegistry = mock(RemoteMessageDispatcherRegistry.class);
-
-    CallbackProtocolResolverRegistry resolverRegistry = mock(CallbackProtocolResolverRegistry.class);
-
     InProcessCallbackRegistry inProcessCallbackRegistry = mock(InProcessCallbackRegistry.class);
 
     @BeforeEach
     void setUp(ServiceExtensionContext context) {
-
-        context.registerService(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
-        context.registerService(CallbackProtocolResolverRegistry.class, resolverRegistry);
         context.registerService(InProcessCallbackRegistry.class, inProcessCallbackRegistry);
+        context.registerService(EdcHttpClient.class, mock(EdcHttpClient.class));
     }
 
     @Test
     void shouldInitializeTheExtension(ServiceExtensionContext context, LocalCallbackExtension extension) {
         extension.initialize(context);
-
-        var captor = ArgumentCaptor.forClass(CallbackProtocolResolver.class);
-        verify(resolverRegistry).registerResolver(captor.capture());
-
-        var resolver = captor.getValue();
-        assertThat(resolver.resolve("local")).isEqualTo(CALLBACK_EVENT_LOCAL);
-        assertThat(resolver.resolve("test")).isNull();
 
         var callbackArgumentCaptor = ArgumentCaptor.forClass(InProcessCallback.class);
         verify(inProcessCallbackRegistry, times(1)).registerHandler(callbackArgumentCaptor.capture());
@@ -71,5 +55,10 @@ public class LocalCallbackExtensionTest {
         assertThat(callbackArgumentCaptor.getAllValues())
                 .flatExtracting(Object::getClass)
                 .containsExactly(ContractNegotiationCallback.class);
+    }
+
+    @Test
+    void shouldProvideLocalCallbackClient(LocalCallbackExtension extension) {
+        assertThat(extension.callbackClient()).isInstanceOf(LocalCallbackClient.class);
     }
 }

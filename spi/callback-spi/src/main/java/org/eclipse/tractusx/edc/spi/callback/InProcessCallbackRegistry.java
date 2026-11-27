@@ -19,12 +19,9 @@
 
 package org.eclipse.tractusx.edc.spi.callback;
 
-
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.result.Result;
-
 
 /**
  * Registry for {@link InProcessCallback}
@@ -40,9 +37,9 @@ public interface InProcessCallbackRegistry {
     void registerHandler(InProcessCallback callback);
 
     /**
-     * Handles a {@link CallbackEventRemoteMessage} by calling registered {@link InProcessCallback}
+     * Handles a {@link InProcessCallbackMessage} by calling registered {@link InProcessCallback}
      *
      * @param message The message
      */
-    <T extends Event> Result<Void> handleMessage(CallbackEventRemoteMessage<T> message);
+    <T extends Event> Result<Void> handleMessage(InProcessCallbackMessage<T> message);
 }

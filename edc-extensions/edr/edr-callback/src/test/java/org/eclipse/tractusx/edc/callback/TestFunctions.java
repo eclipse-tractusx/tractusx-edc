@@ -29,7 +29,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessTerminated;
 import org.eclipse.edc.policy.model.Policy;
@@ -37,6 +36,7 @@ import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.callback.CallbackAddress;
+import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackMessage;
 
 import java.time.Instant;
 import java.util.Date;
@@ -115,7 +115,7 @@ public class TestFunctions {
                 .build();
     }
 
-    public static <T extends Event> CallbackEventRemoteMessage<T> remoteMessage(T event) {
+    public static <T extends Event> InProcessCallbackMessage<T> remoteMessage(T event) {
         var callback = CallbackAddress.Builder.newInstance()
                 .events(Set.of("test"))
                 .uri("local://test")
@@ -127,6 +127,6 @@ public class TestFunctions {
                 .at(System.currentTimeMillis())
                 .payload(event)
                 .build();
-        return new CallbackEventRemoteMessage<T>(callback, envelope, "local");
+        return new InProcessCallbackMessage<>(callback, envelope);
     }
 }

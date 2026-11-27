@@ -24,7 +24,11 @@ plugins {
 
 
 dependencies {
-    implementation(project(":edc-tests:runtime:runtime-postgresql"))
+    implementation(project(":edc-tests:runtime:runtime-postgresql")) {
+        // Since EDC 0.18 the tck-extension provides its own no-op DataFlowController, as the DSP TCK only covers the
+        // control plane protocol. Remove the legacy data plane signaling so that this controller is the only one.
+        exclude(module = "legacy-data-plane-signaling")
+    }
     runtimeOnly(libs.tck.extension)
 }
 

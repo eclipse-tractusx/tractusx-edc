@@ -19,10 +19,10 @@
 
 package org.eclipse.tractusx.edc.callback;
 
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallback;
+import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackMessage;
 import org.eclipse.tractusx.edc.spi.callback.InProcessCallbackRegistry;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class InProcessCallbackRegistryImpl implements InProcessCallbackRegistry 
     }
 
     @Override
-    public <T extends Event> Result<Void> handleMessage(CallbackEventRemoteMessage<T> message) {
+    public <T extends Event> Result<Void> handleMessage(InProcessCallbackMessage<T> message) {
         return handlers.stream()
                 .map(handler -> handler.invoke(message))
                 .filter(Result::failed)

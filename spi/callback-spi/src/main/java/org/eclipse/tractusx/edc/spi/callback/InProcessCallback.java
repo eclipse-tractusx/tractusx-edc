@@ -19,15 +19,14 @@
 
 package org.eclipse.tractusx.edc.spi.callback;
 
-import org.eclipse.edc.connector.controlplane.services.spi.callback.CallbackEventRemoteMessage;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.result.Result;
 
 /**
- * In process callback for handling {@link CallbackEventRemoteMessage}
+ * In process callback for handling {@link InProcessCallbackMessage}
  */
 @FunctionalInterface
 public interface InProcessCallback {
 
-    <T extends Event> Result<Void> invoke(CallbackEventRemoteMessage<T> message);
+    <T extends Event> Result<Void> invoke(InProcessCallbackMessage<T> message);
 }
