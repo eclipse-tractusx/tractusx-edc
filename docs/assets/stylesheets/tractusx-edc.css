@@ -2254,3 +2254,16 @@ html::-webkit-scrollbar-thumb:hover {
     opacity: 1;
   }
 }
+
+
+/* Fix: a section heading row with sub-pages (the lifted, sticky heading) kept the page
+   background on its container, so the gold selected row showed the page colour (black in
+   the dark scheme) behind the text. Keep it opaque for the sticky header, but gold. */
+[dir] .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link.md-nav__container:has(> .md-nav__link--active),
+[dir] .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link.md-nav__container:has(> a.md-nav__link:active) {
+  background-color: color-mix(in srgb, var(--tx-accent) 20%, var(--md-default-bg-color));
+  box-shadow: inset 3px 0 0 var(--tx-accent);
+}
+[dir] .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link.md-nav__container > .md-nav__link {
+  background-color: transparent;
+}
