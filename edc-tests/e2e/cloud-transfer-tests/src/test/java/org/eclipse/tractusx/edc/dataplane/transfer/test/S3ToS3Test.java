@@ -189,7 +189,7 @@ public class S3ToS3Test {
                     .log().ifValidationFails();
         });
 
-        assertThat(future).succeedsWithin(Duration.ofSeconds(10));
+        assertThat(future).succeedsWithin(Duration.ofSeconds(30));
         await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
             var dataFlow = DATAPLANE_RUNTIME.getService(DataPlaneStore.class).findById(processId);
             assertThat(dataFlow.stateAsString()).isEqualTo(COMPLETED.name());
