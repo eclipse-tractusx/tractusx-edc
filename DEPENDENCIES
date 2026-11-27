@@ -118,18 +118,18 @@ maven/mavencentral/io.netty/netty-transport/4.1.128.Final, Apache-2.0 AND BSD-3-
 maven/mavencentral/io.netty/netty-transport/4.1.130.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.132.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.33.1, Apache-2.0, approved, #32912
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.33.1-alpha, Apache-2.0, approved, #33262
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.33.1, Apache-2.0, approved, #33263
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.33.1-alpha, Apache-2.0, approved, #33264
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.33.1-alpha, Apache-2.0, approved, #33265
-maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.44.0, Apache-2.0, approved, #32898
-maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.67.0-alpha, Apache-2.0, approved, #32884
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.34.0, Apache-2.0, approved, #33688
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.34.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.34.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.34.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.34.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.45.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.68.0-alpha, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.61.0, Apache-2.0, approved, #29641
-maven/mavencentral/io.opentelemetry/opentelemetry-api/1.67.0, Apache-2.0, approved, #32465
-maven/mavencentral/io.opentelemetry/opentelemetry-common/1.67.0, Apache-2.0, approved, #32463
-maven/mavencentral/io.opentelemetry/opentelemetry-context/1.67.0, Apache-2.0, approved, #32464
+maven/mavencentral/io.opentelemetry/opentelemetry-api/1.68.0, Apache-2.0, approved, #33273
+maven/mavencentral/io.opentelemetry/opentelemetry-common/1.68.0, Apache-2.0, approved, #33274
+maven/mavencentral/io.opentelemetry/opentelemetry-context/1.68.0, Apache-2.0, approved, #33271
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.2.13, Apache-2.0, approved, #23393
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.2.13, Apache-2.0, approved, #23394
 maven/mavencentral/io.projectreactor/reactor-core/3.7.14, Apache-2.0, approved, #17529
