@@ -29,12 +29,17 @@ import org.eclipse.tractusx.edc.agreements.bpns.spi.types.AgreementsBpnsEntry;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.AUDIENCE_PROPERTY;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.BPN_PROPERTY;
 import static org.mockito.Mockito.RETURNS_SELF;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TxDataFlowPropertiesProviderTest {
@@ -45,7 +50,8 @@ public class TxDataFlowPropertiesProviderTest {
 
     private final AgreementsBpnsStore store = mock();
     private final BdrsClient bdrs = mock();
-    private final TxDataFlowPropertiesProvider provider = new TxDataFlowPropertiesProvider(store, bdrs, mock(Monitor.class, RETURNS_SELF));
+    private final Monitor monitor = mock(Monitor.class, RETURNS_SELF);
+    private final TxDataFlowPropertiesProvider provider = new TxDataFlowPropertiesProvider(store, bdrs, monitor);
 
     @Test
     void shouldReturnProperties_whenAssigneeIsDidAndEntryFound() {
@@ -62,16 +68,50 @@ public class TxDataFlowPropertiesProviderTest {
             assertThat(properties).containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID);
             assertThat(properties).containsEntry(BPN_PROPERTY, CONSUMER_BPN);
         });
+        verify(bdrs, never()).resolveBpn(CONSUMER_DID);
     }
 
     @Test
-    void shouldReturnFatalError_whenAssigneeIsDidAndEntryNotFound() {
+    void shouldExtractBpnFromMembershipCredential_whenAssigneeIsDidAndEntryNotFound() {
         when(store.findByAgreementId(CONTRACT_ID)).thenReturn(null);
+        var claims = Map.<String, Object>of("vc", List.of(Map.of(
+                "type", "MembershipCredential",
+                "credentialSubject", Map.of("id", CONSUMER_DID, "holderIdentifier", CONSUMER_BPN))));
+        var transferProcess = TransferProcess.Builder.newInstance()
+                .contractId(CONTRACT_ID)
+                .claims(claims)
+                .build();
 
-        var result = provider.propertiesFor(createTransferProcess(CONTRACT_ID), createPolicy(CONSUMER_DID));
+        var result = provider.propertiesFor(transferProcess, createPolicy(CONSUMER_DID));
+
+        assertThat(result).isSucceeded().satisfies(properties -> {
+            assertThat(properties).containsEntry(AUDIENCE_PROPERTY, CONSUMER_DID);
+            assertThat(properties).containsEntry(BPN_PROPERTY, CONSUMER_BPN);
+        });
+    }
+
+    @Test
+    void shouldReturnFatalError_whenMembershipCredentialHasNoHolderIdentifier() {
+        when(store.findByAgreementId(CONTRACT_ID)).thenReturn(AgreementsBpnsEntry.Builder.newInstance()
+                .withAgreementId(CONTRACT_ID)
+                .withProviderBpn("BPNL000000000002")
+                .withConsumerBpn(CONSUMER_BPN)
+                .build());
+        var claims = Map.<String, Object>of("vc", List.of(Map.of(
+                "type", "MembershipCredential",
+                "credentialSubject", Map.of("id", CONSUMER_DID))));
+        var transferProcess = TransferProcess.Builder.newInstance()
+                .contractId(CONTRACT_ID)
+                .claims(claims)
+                .build();
+
+        var result = provider.propertiesFor(transferProcess, createPolicy(CONSUMER_DID));
 
         assertThat(result).isFailed()
-                .detail().isEqualTo("No BPN entry found for agreement %s".formatted(CONTRACT_ID));
+                .detail().isEqualTo("No MembershipCredential holderIdentifier found for consumer DID '%s' on agreement '%s'"
+                        .formatted(CONSUMER_DID, CONTRACT_ID));
+        verify(store, never()).findByAgreementId(CONTRACT_ID);
+        verify(bdrs, never()).resolveBpn(CONSUMER_DID);
     }
 
     @Test

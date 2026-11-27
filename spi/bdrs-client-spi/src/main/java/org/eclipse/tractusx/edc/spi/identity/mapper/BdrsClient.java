@@ -43,4 +43,5 @@ public interface BdrsClient {
      * @return The resolved BPN if found, null otherwise
      */
     String resolveBpn(String did);
+
 }

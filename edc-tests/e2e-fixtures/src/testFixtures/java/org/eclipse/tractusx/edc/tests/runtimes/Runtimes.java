@@ -38,6 +38,7 @@ import java.util.function.Supplier;
 
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_PREFIX;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.BPN_SUFFIX;
+import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.CONSUMER_NAME;
 import static org.eclipse.tractusx.edc.tests.TestRuntimeConfiguration.DID_PREFIX;
 
 public interface Runtimes {
@@ -55,7 +56,8 @@ public interface Runtimes {
                         .configurationProvider(configurationProvider)
                         .registerServiceMock(AudienceResolver.class, remoteMessage -> Result.success(remoteMessage.getCounterPartyAddress()))
                         .registerServiceMock(BdrsClient.class, new MockBdrsClient(bpnToDid, didToBpn))
-                        .registerSystemExtension(ServiceExtension.class, new MockIdentityServiceExtension(participant.getBpn(), participant.getDid()))
+                        .registerSystemExtension(ServiceExtension.class, new MockIdentityServiceExtension(
+                                participant.getBpn(), participant.getDid(), CONSUMER_NAME.equals(participant.getName())))
                         .registerServiceMock(DefaultParticipantIdExtractionFunction.class, ct -> "id")
         );
     }

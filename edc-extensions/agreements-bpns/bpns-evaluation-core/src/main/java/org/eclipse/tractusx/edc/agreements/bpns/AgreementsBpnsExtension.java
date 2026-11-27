@@ -22,11 +22,11 @@ package org.eclipse.tractusx.edc.agreements.bpns;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.tractusx.edc.agreements.bpns.spi.store.AgreementsBpnsStore;
-import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 
 import static org.eclipse.tractusx.edc.agreements.bpns.AgreementsBpnsExtension.NAME;
 
@@ -40,10 +40,10 @@ public class AgreementsBpnsExtension implements ServiceExtension {
 
 
     @Inject
-    private BdrsClient bdrsClient;
-
-    @Inject
     AgreementsBpnsStore store;
+
+    @Setting(description = "the BPN of the participant", key = "tractusx.edc.participant.bpn")
+    private String ownBpn;
 
     @Override
     public String name() {
@@ -53,6 +53,6 @@ public class AgreementsBpnsExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         eventRouter.register(ContractNegotiationFinalized.class, new EventContractNegotiationSubscriber(store,
-                context.getMonitor(), bdrsClient));
+                context.getMonitor(), ownBpn));
     }
 }

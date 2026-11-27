@@ -28,6 +28,7 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.spi.result.Failure;
 import org.eclipse.edc.spi.result.Result;
+import org.eclipse.tractusx.edc.core.utils.credentials.MembershipCredentialUtils;
 import org.eclipse.tractusx.edc.spi.identity.mapper.BdrsClient;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,7 +65,7 @@ public class BusinessPartnerNumberPermissionLegacyFunction<C extends Participant
             Operator.HAS_PART
     );
 
-    private BdrsClient bdrsClient;
+    private final BdrsClient bdrsClient;
 
     public BusinessPartnerNumberPermissionLegacyFunction(BdrsClient bdrsClient) {
         this.bdrsClient = bdrsClient;
@@ -87,7 +88,11 @@ public class BusinessPartnerNumberPermissionLegacyFunction<C extends Participant
         }
 
         if (identity.startsWith(DID_PREFIX)) {
-            identity = bdrsClient.resolveBpn(identity);
+            identity = MembershipCredentialUtils.extractBpn(participantAgent.getClaims(), identity).orElse(null);
+        }
+        if (identity == null) {
+            context.reportProblem("Could not extract a BPN for participant DID '%s' from its MembershipCredential".formatted(participantAgent.getIdentity()));
+            return false;
         }
 
         return switch (operator) {

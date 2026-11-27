@@ -54,12 +54,18 @@ public class MockVcIdentityService implements IdentityService {
     private static final String VC_CLAIM = "vc";
     private final String businessPartnerNumber;
     private final String did;
+    private final boolean includeLocalMembershipCredential;
     private final TypeManager typeManager = new JacksonTypeManager();
     private final TokenValidationAction tokenValidationAction;
 
     public MockVcIdentityService(String businessPartnerNumber, String did, TokenValidationAction tokenValidationAction) {
+        this(businessPartnerNumber, did, false, tokenValidationAction);
+    }
+
+    public MockVcIdentityService(String businessPartnerNumber, String did, boolean includeLocalMembershipCredential, TokenValidationAction tokenValidationAction) {
         this.businessPartnerNumber = businessPartnerNumber;
         this.did = did;
+        this.includeLocalMembershipCredential = includeLocalMembershipCredential;
         this.tokenValidationAction = tokenValidationAction;
     }
 
@@ -85,7 +91,14 @@ public class MockVcIdentityService implements IdentityService {
         var claimToken = claimTokenResult.getContent();
         var bpnlConsumer = claimToken.getStringClaim(BUSINESS_PARTNER_NUMBER_CLAIM);
         var didConsumer = claimToken.getStringClaim(ISSUER);
-        var credentials = List.of(membershipCredential(bpnlConsumer, didConsumer), bpnCredential(bpnlConsumer, didConsumer), dataExchangeGovernanceCredential(bpnlConsumer, didConsumer));
+        var credentials = new java.util.ArrayList<VerifiableCredential>();
+        credentials.addAll(List.of(
+                membershipCredential(bpnlConsumer, didConsumer),
+                bpnCredential(bpnlConsumer, didConsumer),
+                dataExchangeGovernanceCredential(bpnlConsumer, didConsumer)));
+        if (includeLocalMembershipCredential && !did.equals(didConsumer)) {
+            credentials.add(membershipCredential(businessPartnerNumber, did));
+        }
 
         var claimTokenWithVc = ClaimToken.Builder.newInstance()
                 .claim(VC_CLAIM, credentials)

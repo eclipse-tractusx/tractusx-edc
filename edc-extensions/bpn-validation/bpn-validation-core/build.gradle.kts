@@ -26,6 +26,7 @@ plugins {
 dependencies {
     api(project(":edc-extensions:bpn-validation:bpn-validation-spi"))
     implementation(project(":spi:core-spi"))
+    implementation(project(":core:core-utils"))
     implementation(project(":spi:bdrs-client-spi"))
     api(libs.edc.spi.core)
     implementation(libs.edc.spi.catalog)

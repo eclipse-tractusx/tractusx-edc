@@ -22,6 +22,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":spi:core-spi"))
     implementation(libs.edc.spi.core)
     implementation(libs.edc.spi.decentralized.claims)
     implementation(libs.edc.spi.vc)
