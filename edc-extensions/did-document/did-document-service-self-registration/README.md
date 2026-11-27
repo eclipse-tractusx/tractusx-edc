@@ -9,7 +9,7 @@ When enabled, the extension registers a service entry with below details in the 
 
 | Property        | Value                                                                                             |
 |-----------------|---------------------------------------------------------------------------------------------------|
-| id              | Value defined via config `tx.edc.did.service.self.registration.id`                                |
+| id              | `urn:<participant context id>`, defined via config `edc.participant.context.id`                   |
 | type            | DataService                                                                                       |
 | serviceEndpoint | The EDC's data space version endpoint (e.g., `https://<edc-host>/edc/.well-known/dspace-version`) |
 
@@ -22,12 +22,9 @@ When enabled, the extension registers a service entry with below details in the 
 ## Configuration
 The extension is controlled by the following configuration properties:
 
-| Property                                       | Required | Default | Description                                                          |
-|------------------------------------------------|----------|---------|----------------------------------------------------------------------|
-| `tx.edc.did.service.self.registration.enabled` | false    | false   | Enables or disables self-registration extension.                     |
-| `tx.edc.did.service.self.registration.id`      | false    | (none)  | The ID to use for service self-registration (should be a valid URI). |
-
-> `tx.edc.did.service.self.registration.id` is required if self-registration is enabled (`tx.edc.did.service.self.registration.enabled=true`).
+| Property                                       | Required | Default | Description                                      |
+|------------------------------------------------|----------|---------|--------------------------------------------------|
+| `tx.edc.did.service.self.registration.enabled` | false    | false   | Enables or disables self-registration extension. |
 
 ## Extension Lifecycle
 - **On Startup:**
