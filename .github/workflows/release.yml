@@ -43,17 +43,9 @@ permissions:
   contents: read
 
 jobs:
-  run-all-tests:
-    name: "Run All Tests"
-    permissions:
-      contents: write
-    uses: ./.github/workflows/run-all-tests.yml
-    with:
-      publish: false
   # Gate
   validation:
     name: "Workflow Validation"
-    needs: [ run-all-tests ]
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
@@ -84,6 +76,12 @@ jobs:
           else 
             echo "update_main_branch_version=false" >> $GITHUB_OUTPUT
           fi
+          if [[ -z $SNAPSHOT ]];
+          then
+            echo "is_official_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_official_release=false" >> $GITHUB_OUTPUT
+          fi
       - name: Validations
         env:
           REPOSITORY: ${{ github.repository }}
@@ -110,12 +108,25 @@ jobs:
         run: |
           git show-ref --tags --verify --quiet "refs/tags/$PREVIOUS_TAG" \
             || (echo "Tag '$PREVIOUS_TAG' not found." && exit 1)
-  
+      - uses: ./.github/actions/setup-java
+      - name: Check dependencies before release
+        uses: ./.github/actions/generate-and-check-dependencies
+        with:
+          run: ${{ steps.update-main.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
+
+  run-all-tests:
+    name: "Run All Tests"
+    needs: [ validation ]
+    permissions:
+      contents: write
+    uses: ./.github/workflows/run-all-tests.yml
+    with:
+      publish: false
 
   # Release: Maven Artifacts
   maven-release:
     name: Publish extension's release version to maven repository
-    needs: [ validation ]
+    needs: [ validation, run-all-tests ]
     permissions:
       contents: read
     if: needs.validation.outputs.RELEASE_VERSION
@@ -131,7 +142,7 @@ jobs:
   # Release: docker images
   docker-release:
     name: Publish Docker images
-    needs: [ validation ]
+    needs: [ validation, run-all-tests ]
     if: needs.validation.outputs.RELEASE_VERSION
     uses: ./.github/workflows/trigger-docker-publish.yaml
     secrets:
@@ -143,7 +154,7 @@ jobs:
   # Release: Helm charts
   helm-release:
     name: Publish helm charts
-    needs: [ validation ]
+    needs: [ validation, run-all-tests ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -239,7 +250,7 @@ jobs:
     name: "Publish OpenAPI UI spec GitHub Pages"
     permissions:
       contents: write
-    needs: [ validation ]
+    needs: [ validation, run-all-tests ]
     uses: ./.github/workflows/publish-openapi-ui.yml
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
